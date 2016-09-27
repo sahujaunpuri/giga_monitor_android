@@ -1,0 +1,92 @@
+<FrameLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#e6e6e6">
+
+
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/layoutDevice"
+        android:background="@drawable/background_with_shadow"
+        android:layout_marginTop="5dp"
+        android:layout_marginLeft="10dp"
+        android:layout_marginRight="10dp">
+
+
+        <TableLayout
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="3dp"
+            android:stretchColumns="1">
+
+            <TableRow
+                android:id="@+id/tableRow1"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:layout_marginBottom="10dp"
+                android:gravity="center_vertical" >
+
+                <ImageView
+                    android:layout_width="15dp"
+                    android:layout_height="15dp"
+                    android:layout_gravity="right|center_vertical"
+                    android:layout_marginRight="5dp"
+                    android:focusable="false"
+                    android:visibility="visible"
+                    android:src="@drawable/ic_indicator_plus"
+                    android:id="@+id/iv_indicator" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textAppearance="?android:attr/textAppearanceMedium"
+                    android:textColor="@color/button_material_dark"
+                    android:text="Device Name"
+                    android:layout_gravity="left|center_vertical"
+                    android:id="@+id/tv_hostname_list_device" />
+
+
+                <ImageView
+                    android:layout_width="35dp"
+                    android:layout_height="35dp"
+                    android:layout_gravity="right|center_vertical"
+                    android:layout_marginRight="7dp"
+                    android:focusable="false"
+                    android:visibility="gone"
+                    android:src="@drawable/ic_grid"
+                    android:id="@+id/iv_grid_list_device" />
+
+
+                <ImageView
+                    android:layout_width="35dp"
+                    android:layout_height="35dp"
+                    android:layout_marginRight="30dp"
+                    android:layout_marginLeft="7dp"
+                    android:focusable="false"
+                    android:visibility="gone"
+                    android:src="@drawable/ic_more"
+                    android:id="@+id/iv_device_more" />
+
+                <ProgressBar
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:layout_marginLeft="10dp"
+                    android:layout_marginRight="10dp"
+                    android:visibility="invisible"
+                    android:id="@+id/pb_expandable_list" />
+
+
+            </TableRow>
+        </TableLayout>
+
+    </LinearLayout>
+
+
+</FrameLayout>
+
+

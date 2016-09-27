@@ -1,0 +1,99 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:paddingLeft="@dimen/activity_horizontal_margin"
+    android:paddingRight="@dimen/activity_horizontal_margin"
+    android:paddingTop="@dimen/activity_vertical_margin"
+    android:paddingBottom="@dimen/activity_vertical_margin"
+    tools:context="br.inatel.icc.gigasecurity.gigamonitor.config.wifi.WifiConfigActivity">
+
+    <CheckBox
+        android:id="@+id/checkbox_wifi_enabled"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/enable"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:checked="false"
+        android:layout_alignParentEnd="true"
+        android:visibility="gone" />
+
+    <CheckBox
+        android:id="@+id/checkbox_wifi_dhcp_enabled"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="visibi"
+        android:layout_toEndOf="@id/checkbox_wifi_enabled"
+        android:layout_alignParentTop="true"
+        android:layout_toRightOf="@+id/checkbox_wifi_enabled"
+        android:checked="false"
+        android:visibility="gone" />
+
+    <TextView
+        android:id="@+id/text_view_ip_address"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/margintop_config_item"
+        android:text="@string/label_ethernet_ip_address"
+        android:textAppearance="?android:attr/textAppearanceSmall"
+        android:layout_below="@+id/checkbox_wifi_enabled"
+        />
+
+    <EditText
+        android:id="@+id/edit_text_wifi_ip_address"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/text_view_ip_address"
+        android:hint="0.0.0.0"
+        android:inputType="number"
+        android:digits="0123456789."
+        android:singleLine="true"
+         />
+
+
+    <TextView
+        android:id="@+id/textview_wifi_mask"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/label_ethernet_mask"
+        android:textAppearance="?android:attr/textAppearanceSmall"
+        android:layout_below="@+id/edit_text_wifi_ip_address"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true" />
+
+    <EditText
+        android:id="@+id/edit_text_wifi_mask"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/textview_wifi_mask"
+        android:hint="0.0.0.0"
+        android:inputType="number"
+        android:digits="0123456789."
+        android:singleLine="true"
+        />
+
+    <TextView
+        android:id="@+id/textview_wifi_gateway"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/label_ethernet_gateway"
+        android:textAppearance="?android:attr/textAppearanceSmall"
+        android:layout_below="@+id/edit_text_wifi_mask"
+     />
+
+    <EditText
+        android:id="@+id/edit_text_wifi_gateway"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/textview_wifi_gateway"
+        android:hint="0.0.0.0"
+        android:inputType="number"
+        android:digits="0123456789."
+        android:singleLine="true"
+        android:layout_centerVertical="true"
+ />
+
+
+</RelativeLayout>

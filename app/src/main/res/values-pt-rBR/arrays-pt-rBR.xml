@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <string-array name="ddns_type">
+        <item>Giga DDNS</item>
+    </string-array>
+
+    <string-array name="net_card">
+        <item>Wire Netcard</item>
+    </string-array>
+
+    <string-array name="transfer_policy">
+        <item>Adaptative</item>
+    </string-array>
+
+    <string-array name="device_functions">
+        <item>Monitor</item>
+        <item>Intercom</item>
+        <item>Playback</item>
+        <item>PTZ</item>
+        <item>Events</item>
+        <item>Alarm</item>
+        <item>Settings</item>
+    </string-array>
+
+    <string-array name="event_code_types_names">
+        <item>ALL</item>
+    </string-array>
+
+
+    <array name="event_code_types_value">
+        <item>0</item>
+    </array>
+
+    <string-array name="preferences_front_light_values" tools:ignore="MissingTranslation">
+        <item>ON</item>
+        <item>AUTO</item>
+        <item>OFF</item>
+    </string-array>
+    <string-array name="preferences_front_light_options">
+        <item>@string/preferences_front_light_on</item>
+        <item>@string/preferences_front_light_auto</item>
+        <item>@string/preferences_front_light_off</item>
+    </string-array>
+
+
+    <string-array name="country_codes" tools:ignore="MissingTranslation">
+        <item>-</item>
+        <item>AR</item>
+        <item>AU</item>
+        <item>BR</item>
+        <item>BG</item>
+        <item>CA</item>
+        <item>CH</item>
+        <item>CN</item>
+        <item>CZ</item>
+        <item>DE</item>
+        <item>DK</item>
+        <item>ES</item>
+        <item>FI</item>
+        <item>FR</item>
+        <item>GB</item>
+        <item>GR</item>
+        <item>HU</item>
+        <item>ID</item>
+        <item>IT</item>
+        <item>JP</item>
+        <item>KR</item>
+        <item>NL</item>
+        <item>PL</item>
+        <item>PT</item>
+        <item>RO</item>
+        <item>RU</item>
+        <item>SE</item>
+        <item>SK</item>
+        <item>SI</item>
+        <item>TR</item>
+        <item>TW</item>
+        <item>US</item>
+    </string-array>
+</resources>

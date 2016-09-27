@@ -1,0 +1,24 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:paddingLeft="@dimen/activity_horizontal_margin"
+    android:paddingRight="@dimen/activity_horizontal_margin"
+    tools:context="br.inatel.icc.gigasecurity.gigamonitor.config.wifi.WifiSearchActivity">
+
+    <TextView
+        android:id="@+id/text_view_wifi_warning"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:gravity="center"
+        android:visibility="gone"
+        android:textColor="@color/secondary_color"
+        android:text="Couldn't search for wifi! There are no SDK objects and no SdkConfigType key for wifi searching."/>
+
+    <ListView
+        android:id="@+id/list_view_wifi"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        />
+
+</RelativeLayout>

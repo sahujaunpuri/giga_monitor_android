@@ -1,0 +1,155 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:paddingBottom="@dimen/activity_vertical_margin"
+    tools:context="br.inatel.icc.gigasecurity.gigamonitor.activities.DevicePlaybackVideoActivity">
+
+    <com.xm.video.MySurfaceView
+        android:id="@+id/surface_view"
+        android:layout_width="fill_parent"
+        android:layout_height="240dp"
+        android:background="@android:color/transparent"
+        android:clickable="true"
+        android:focusable="true"
+        android:focusableInTouchMode="true" />
+
+    <TextView
+        android:id="@+id/text_view_p_status"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_above="@+id/view_playback_controls"
+        android:gravity="center"
+        android:layout_below="@id/surface_view_test_1" />
+
+    <LinearLayout
+        android:id="@id/view_playback_controls"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:orientation="vertical">
+
+        <LinearLayout
+            style="?attr/buttonBarStyle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <Button
+                android:id="@+id/button_ptz_left_top"
+                style="?attr/actionButtonStyle"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:onClick="leftTopButtonClick"
+                android:text="↖"
+                android:textSize="30sp" />
+
+            <Button
+                android:id="@+id/button_ptz_top"
+                style="?attr/actionButtonStyle"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:onClick="topButtonClick"
+                android:text="↑"
+                android:textSize="30sp" />
+
+            <Button
+                android:id="@+id/button_ptz_right_top"
+                style="?attr/actionButtonStyle"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:onClick="rightTopButtonClick"
+                android:text="↗"
+                android:textSize="30sp" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            style="?attr/buttonBarStyle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:id="@+id/linearLayout">
+
+            <Button
+                style="?attr/actionButtonStyle"
+                android:id="@+id/button_ptz_left"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:onClick="leftButtonClick"
+                android:text="←"
+                android:textSize="30sp" />
+
+            <Button
+                style="?attr/actionButtonStyle"
+                android:id="@+id/button_ptz_stop"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="●"
+                android:textSize="50sp" />
+
+            <Button
+                style="?attr/actionButtonStyle"
+                android:id="@+id/button_ptz_right"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:onClick="rightButtonClick"
+                android:text="→"
+                android:textSize="30sp" />
+        </LinearLayout>
+
+        <LinearLayout
+            style="?attr/buttonBarStyle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:id="@+id/linearLayout2">
+
+            <Button
+                style="?attr/actionButtonStyle"
+                android:id="@+id/button_ptz_left_down"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:onClick="leftDownButtonClick"
+                android:text="↙"
+                android:textSize="30sp" />
+
+            <Button
+                style="?attr/actionButtonStyle"
+                android:id="@+id/button_ptz_down"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:onClick="downButtonClick"
+                android:text="↓"
+                android:textSize="30sp" />
+
+            <Button
+                style="?attr/actionButtonStyle"
+                android:id="@+id/button_ptz_right_down"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:onClick="rightDownButtonClick"
+                android:text="↘"
+                android:textSize="30sp"/>
+        </LinearLayout>
+
+        <LinearLayout
+            style="?attr/buttonBarStyle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+        </LinearLayout>
+
+    </LinearLayout>
+
+</RelativeLayout>

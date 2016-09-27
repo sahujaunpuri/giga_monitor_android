@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <com.xm.video.MySurfaceView
+        android:id="@+id/surface_view_test_1"
+        android:layout_width="fill_parent"
+        android:layout_height="240dp"
+        android:clickable="true"
+        android:focusable="true"
+        android:focusableInTouchMode="true"
+        android:background="@android:color/transparent"
+        android:layout_weight="1"/>
+
+    <LinearLayout
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        style="?attr/buttonBarStyle">
+
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Play/Pause"
+            android:id="@+id/button_start_video"
+            style="?attr/buttonBarButtonStyle"
+            android:layout_weight="1" />
+
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Stop Video"
+            android:id="@+id/button_stop_video"
+            style="?attr/buttonBarButtonStyle"
+            android:layout_weight="1" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        style="?attr/buttonBarStyle">
+
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Start Audio"
+            android:id="@+id/button_start_audio"
+            style="?attr/buttonBarButtonStyle"
+            android:layout_weight="1" />
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Stop Audio"
+            android:id="@+id/button_stop_audio"
+            style="?attr/buttonBarButtonStyle"
+            android:layout_weight="1" />
+    </LinearLayout>
+
+</LinearLayout>

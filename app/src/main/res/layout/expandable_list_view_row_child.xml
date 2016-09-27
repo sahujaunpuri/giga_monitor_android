@@ -1,0 +1,55 @@
+<FrameLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginLeft="10dp"
+    android:layout_marginRight="10dp"
+    android:gravity="center"
+    android:id="@+id/frame_layout_child"
+    android:background="#e6e6e6">
+
+    <TableLayout
+        android:id="@+id/table_layout_child"
+        android:layout_width="match_parent"
+        android:layout_height="190dp"
+        android:layout_gravity="center_horizontal|top"
+        android:layout_marginLeft="10dp"
+        android:layout_marginRight="10dp">
+    </TableLayout>
+
+    <ImageView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginRight="20dp"
+        android:visibility="invisible"
+        android:src="@drawable/ic_next"
+        android:id="@+id/iv_icon_next"
+        android:layout_gravity="right|center_vertical" />
+
+    <ImageView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="20dp"
+        android:visibility="invisible"
+        android:src="@drawable/ic_previous"
+        android:id="@+id/iv_icon_previous"
+        android:layout_gravity="left|center_vertical" />
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="10dp"
+        android:layout_marginRight="10dp"
+        android:visibility="gone"
+        android:textSize="20dp"
+        android:textColor="#000"
+        android:text="@string/label_error_login"
+        android:background="@android:color/white"
+        android:gravity="center"
+        android:layout_gravity="center"
+        android:id="@+id/tv_error_login" />
+
+
+</FrameLayout>
+
+

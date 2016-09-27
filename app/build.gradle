@@ -1,0 +1,36 @@
+apply plugin: 'com.android.application'
+
+android {
+    compileSdkVersion 21
+    buildToolsVersion "21.1.2"
+
+    defaultConfig {
+        applicationId "br.inatel.icc.gigasecurity.gigamonitor"
+        minSdkVersion 14
+        targetSdkVersion 21
+        versionCode 1
+        versionName "0.4.12"
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+    }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_7
+        targetCompatibility JavaVersion.VERSION_1_7
+    }
+}
+
+dependencies {
+    compile fileTree(dir: 'libs', include: ['*.jar'])
+    compile 'com.android.support:support-v4:21.0.3'
+    compile 'com.android.support:appcompat-v7:21.0.3'
+    compile files('libs/NetSdk.jar')
+    compile 'com.google.code.gson:gson:2.3.1'
+    compile 'com.google.zxing:core:3.2.0'
+    compile 'com.android.support:recyclerview-v7:+'
+}
