@@ -96,6 +96,8 @@ public class ChannelRecyclerViewAdapter extends RecyclerView.Adapter<ChannelRecy
 
         startDeviceVideo(mDevice, listComponent.surfaceViewComponents.get(position));
 
+
+
         listComponent.surfaceViewComponents.get(position).mySurfaceView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

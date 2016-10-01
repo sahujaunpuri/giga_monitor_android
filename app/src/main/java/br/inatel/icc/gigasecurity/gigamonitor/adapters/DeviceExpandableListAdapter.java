@@ -8,6 +8,7 @@ import android.content.res.Configuration;
 import android.os.Bundle;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.Display;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -144,9 +145,43 @@ public class DeviceExpandableListAdapter extends BaseExpandableListAdapter {
                         DeviceListActivity.listComponents.get(groupPosition).lastNumQuad = 1;
                     }
 
-                    childViewHolder[groupPosition].recyclerViewChannels.setLayoutManager(new GridLayoutManager(mContext, DeviceListActivity.listComponents.get(groupPosition).numQuad, GridLayoutManager.HORIZONTAL, false));
+                    childViewHolder[groupPosition].gridLayoutManager = new GridLayoutManager(mContext, DeviceListActivity.listComponents.get(groupPosition).numQuad, GridLayoutManager.HORIZONTAL, false);
+                    childViewHolder[groupPosition].recyclerViewChannels.setLayoutManager(childViewHolder[groupPosition].gridLayoutManager);
                     childViewHolder[groupPosition].mRecyclerAdapter = new ChannelRecyclerViewAdapter(mContext, groupViewHolder[groupPosition].mDevice, DeviceListActivity.listComponents.get(groupPosition).numQuad, childViewHolder[groupPosition], DeviceListActivity.listComponents.get(groupPosition));
                     childViewHolder[groupPosition].recyclerViewChannels.setAdapter(childViewHolder[groupPosition].mRecyclerAdapter);
+
+                    childViewHolder[groupPosition].recyclerViewChannels.setOnScrollListener(new RecyclerView.OnScrollListener()
+                    {
+
+                        @Override
+                        public void onScrollStateChanged(final RecyclerView recyclerView,final int newState) {
+                            super.onScrollStateChanged(recyclerView, newState);
+
+                            if(newState == 0) {
+                                int totalQuads = 0;
+                                if (DeviceListActivity.listComponents.get(groupPosition).numQuad == 2) {
+                                    totalQuads = 4;
+                                } else if (DeviceListActivity.listComponents.get(groupPosition).numQuad == 3) {
+                                    totalQuads = 9;
+                                } else if (DeviceListActivity.listComponents.get(groupPosition).numQuad == 4) {
+                                    totalQuads = 16;
+                                }
+                                if (totalQuads != 0) {
+                                    final int currentLastVisibleItem = childViewHolder[groupPosition].gridLayoutManager.findLastVisibleItemPosition();
+                                    final int currentFirstVisibleItem = childViewHolder[groupPosition].gridLayoutManager.findFirstVisibleItemPosition();
+                                    if (currentLastVisibleItem % totalQuads == totalQuads - 1) {
+                                        childViewHolder[groupPosition].gridLayoutManager.smoothScrollToPosition(childViewHolder[groupPosition].recyclerViewChannels, null, currentLastVisibleItem);
+                                    } else if (currentFirstVisibleItem % totalQuads == 0) {
+                                        childViewHolder[groupPosition].gridLayoutManager.smoothScrollToPosition(childViewHolder[groupPosition].recyclerViewChannels, null, currentFirstVisibleItem);
+                                    } else if (currentLastVisibleItem == groupViewHolder[groupPosition].mDevice.getChannelNumber() - 1) {
+                                        childViewHolder[groupPosition].gridLayoutManager.smoothScrollToPosition(childViewHolder[groupPosition].recyclerViewChannels, null, currentLastVisibleItem);
+                                    } else {
+                                        childViewHolder[groupPosition].gridLayoutManager.smoothScrollToPosition(childViewHolder[groupPosition].recyclerViewChannels, null, currentFirstVisibleItem);
+                                    }
+                                }
+                            }
+                        }
+                    });
                 }
             });
         }
@@ -216,10 +251,43 @@ public class DeviceExpandableListAdapter extends BaseExpandableListAdapter {
                         DeviceListActivity.listComponents.get(groupPosition).lastNumQuad = 1;
                     }
 
-                    childViewHolder[groupPosition].recyclerViewChannels.setLayoutManager(new GridLayoutManager(mContext, DeviceListActivity.listComponents.get(groupPosition).numQuad, GridLayoutManager.HORIZONTAL, false));
+                    childViewHolder[groupPosition].gridLayoutManager = new GridLayoutManager(mContext, DeviceListActivity.listComponents.get(groupPosition).numQuad, GridLayoutManager.HORIZONTAL, false);
+                    childViewHolder[groupPosition].recyclerViewChannels.setLayoutManager(childViewHolder[groupPosition].gridLayoutManager);
                     childViewHolder[groupPosition].mRecyclerAdapter = new ChannelRecyclerViewAdapter(mContext, groupViewHolder[groupPosition].mDevice, DeviceListActivity.listComponents.get(groupPosition).numQuad, childViewHolder[groupPosition], DeviceListActivity.listComponents.get(groupPosition));
                     childViewHolder[groupPosition].recyclerViewChannels.setAdapter(childViewHolder[groupPosition].mRecyclerAdapter);
 
+                    childViewHolder[groupPosition].recyclerViewChannels.setOnScrollListener(new RecyclerView.OnScrollListener()
+                    {
+
+                        @Override
+                        public void onScrollStateChanged(final RecyclerView recyclerView,final int newState) {
+                            super.onScrollStateChanged(recyclerView, newState);
+
+                            if(newState == 0) {
+                                int totalQuads = 0;
+                                if (DeviceListActivity.listComponents.get(groupPosition).numQuad == 2) {
+                                    totalQuads = 4;
+                                } else if (DeviceListActivity.listComponents.get(groupPosition).numQuad == 3) {
+                                    totalQuads = 9;
+                                } else if (DeviceListActivity.listComponents.get(groupPosition).numQuad == 4) {
+                                    totalQuads = 16;
+                                }
+                                if (totalQuads != 0) {
+                                    final int currentLastVisibleItem = childViewHolder[groupPosition].gridLayoutManager.findLastVisibleItemPosition();
+                                    final int currentFirstVisibleItem = childViewHolder[groupPosition].gridLayoutManager.findFirstVisibleItemPosition();
+                                    if (currentLastVisibleItem % totalQuads == totalQuads - 1) {
+                                        childViewHolder[groupPosition].gridLayoutManager.smoothScrollToPosition(childViewHolder[groupPosition].recyclerViewChannels, null, currentLastVisibleItem);
+                                    } else if (currentFirstVisibleItem % totalQuads == 0) {
+                                        childViewHolder[groupPosition].gridLayoutManager.smoothScrollToPosition(childViewHolder[groupPosition].recyclerViewChannels, null, currentFirstVisibleItem);
+                                    } else if (currentLastVisibleItem == groupViewHolder[groupPosition].mDevice.getChannelNumber() - 1) {
+                                        childViewHolder[groupPosition].gridLayoutManager.smoothScrollToPosition(childViewHolder[groupPosition].recyclerViewChannels, null, currentLastVisibleItem);
+                                    } else {
+                                        childViewHolder[groupPosition].gridLayoutManager.smoothScrollToPosition(childViewHolder[groupPosition].recyclerViewChannels, null, currentFirstVisibleItem);
+                                    }
+                                }
+                            }
+                        }
+                    });
                 }
             });
         }
@@ -228,7 +296,7 @@ public class DeviceExpandableListAdapter extends BaseExpandableListAdapter {
     }
 
     @Override
-    public View getChildView(int groupPosition, int childPosition, boolean isLastChild, View convertView, ViewGroup parent) {
+    public View getChildView(final int groupPosition, int childPosition, boolean isLastChild, View convertView, ViewGroup parent) {
         if(childViewHolder[groupPosition] == null) {
             childViewHolder[groupPosition] = new ChildViewHolder();
 
@@ -262,9 +330,44 @@ public class DeviceExpandableListAdapter extends BaseExpandableListAdapter {
                     //DeviceListActivity.listComponents.get(groupPosition).numQuad = 1;
                 }
 
-                childViewHolder[groupPosition].recyclerViewChannels.setLayoutManager(new GridLayoutManager(mContext, DeviceListActivity.listComponents.get(groupPosition).numQuad, GridLayoutManager.HORIZONTAL, false));
+                childViewHolder[groupPosition].gridLayoutManager = new GridLayoutManager(mContext, DeviceListActivity.listComponents.get(groupPosition).numQuad, GridLayoutManager.HORIZONTAL, false);
+                childViewHolder[groupPosition].recyclerViewChannels.setLayoutManager(childViewHolder[groupPosition].gridLayoutManager);
                 childViewHolder[groupPosition].mRecyclerAdapter = new ChannelRecyclerViewAdapter(mContext, groupViewHolder[groupPosition].mDevice, DeviceListActivity.listComponents.get(groupPosition).numQuad, childViewHolder[groupPosition], DeviceListActivity.listComponents.get(groupPosition));
                 childViewHolder[groupPosition].recyclerViewChannels.setAdapter(childViewHolder[groupPosition].mRecyclerAdapter);
+
+                childViewHolder[groupPosition].recyclerViewChannels.setOnScrollListener(new RecyclerView.OnScrollListener()
+                {
+
+                    @Override
+                    public void onScrollStateChanged(final RecyclerView recyclerView,final int newState) {
+                        super.onScrollStateChanged(recyclerView, newState);
+
+                        if(newState == 0) {
+                            int totalQuads = 0;
+                            if (DeviceListActivity.listComponents.get(groupPosition).numQuad == 2) {
+                                totalQuads = 4;
+                            } else if (DeviceListActivity.listComponents.get(groupPosition).numQuad == 3) {
+                                totalQuads = 9;
+                            } else if (DeviceListActivity.listComponents.get(groupPosition).numQuad == 4) {
+                                totalQuads = 16;
+                            }
+                            if (totalQuads != 0) {
+                                final int currentLastVisibleItem = childViewHolder[groupPosition].gridLayoutManager.findLastVisibleItemPosition();
+                                final int currentFirstVisibleItem = childViewHolder[groupPosition].gridLayoutManager.findFirstVisibleItemPosition();
+                                if (currentLastVisibleItem % totalQuads == totalQuads - 1) {
+                                    childViewHolder[groupPosition].gridLayoutManager.smoothScrollToPosition(childViewHolder[groupPosition].recyclerViewChannels, null, currentLastVisibleItem);
+                                } else if (currentFirstVisibleItem % totalQuads == 0) {
+                                    childViewHolder[groupPosition].gridLayoutManager.smoothScrollToPosition(childViewHolder[groupPosition].recyclerViewChannels, null, currentFirstVisibleItem);
+                                } else if (currentLastVisibleItem == groupViewHolder[groupPosition].mDevice.getChannelNumber() - 1) {
+                                    childViewHolder[groupPosition].gridLayoutManager.smoothScrollToPosition(childViewHolder[groupPosition].recyclerViewChannels, null, currentLastVisibleItem);
+                                } else {
+                                    childViewHolder[groupPosition].gridLayoutManager.smoothScrollToPosition(childViewHolder[groupPosition].recyclerViewChannels, null, currentFirstVisibleItem);
+                                }
+                            }
+                        }
+                    }
+                });
+
             }
 
             setLayoutSize(groupPosition);
@@ -308,6 +411,8 @@ public class DeviceExpandableListAdapter extends BaseExpandableListAdapter {
         public TextView tvChnNumber, tvMessage;
         public ChannelRecyclerViewAdapter mRecyclerAdapter;
         public int lastFirstVisiblePosition = 0;
+
+        public  GridLayoutManager gridLayoutManager;
     }
 
     private void loginDevice(final Device mDevice, final GroupViewHolder groupViewHolder, final ChildViewHolder childViewHolder, final int position) {
@@ -338,9 +443,43 @@ public class DeviceExpandableListAdapter extends BaseExpandableListAdapter {
 
                         DeviceListActivity.listComponents.get(position).createComponents();
 
-                        childViewHolder.recyclerViewChannels.setLayoutManager(new GridLayoutManager(mContext, DeviceListActivity.listComponents.get(position).numQuad, GridLayoutManager.HORIZONTAL, false));
+                        childViewHolder.gridLayoutManager = new GridLayoutManager(mContext, DeviceListActivity.listComponents.get(position).numQuad, GridLayoutManager.HORIZONTAL, false);
+                        childViewHolder.recyclerViewChannels.setLayoutManager(childViewHolder.gridLayoutManager);
                         childViewHolder.mRecyclerAdapter = new ChannelRecyclerViewAdapter(mContext, groupViewHolder.mDevice, DeviceListActivity.listComponents.get(position).numQuad, childViewHolder, DeviceListActivity.listComponents.get(position));
                         childViewHolder.recyclerViewChannels.setAdapter(childViewHolder.mRecyclerAdapter);
+
+                        childViewHolder.recyclerViewChannels.setOnScrollListener(new RecyclerView.OnScrollListener()
+                        {
+
+                            @Override
+                            public void onScrollStateChanged(final RecyclerView recyclerView,final int newState) {
+                                super.onScrollStateChanged(recyclerView, newState);
+
+                                if(newState == 0) {
+                                    int totalQuads = 0;
+                                    if (DeviceListActivity.listComponents.get(position).numQuad == 2) {
+                                        totalQuads = 4;
+                                    } else if (DeviceListActivity.listComponents.get(position).numQuad == 3) {
+                                        totalQuads = 9;
+                                    } else if (DeviceListActivity.listComponents.get(position).numQuad == 4) {
+                                        totalQuads = 16;
+                                    }
+                                    if (totalQuads != 0) {
+                                        final int currentLastVisibleItem = childViewHolder.gridLayoutManager.findLastVisibleItemPosition();
+                                        final int currentFirstVisibleItem = childViewHolder.gridLayoutManager.findFirstVisibleItemPosition();
+                                        if (currentLastVisibleItem % totalQuads == totalQuads - 1) {
+                                            childViewHolder.gridLayoutManager.smoothScrollToPosition(childViewHolder.recyclerViewChannels, null, currentLastVisibleItem);
+                                        } else if (currentFirstVisibleItem % totalQuads == 0) {
+                                            childViewHolder.gridLayoutManager.smoothScrollToPosition(childViewHolder.recyclerViewChannels, null, currentFirstVisibleItem);
+                                        } else if (currentLastVisibleItem == mDevice.getChannelNumber() - 1) {
+                                            childViewHolder.gridLayoutManager.smoothScrollToPosition(childViewHolder.recyclerViewChannels, null, currentLastVisibleItem);
+                                        } else {
+                                            childViewHolder.gridLayoutManager.smoothScrollToPosition(childViewHolder.recyclerViewChannels, null, currentFirstVisibleItem);
+                                        }
+                                    }
+                                }
+                            }
+                        });
 
                     }
                 });
@@ -449,6 +588,7 @@ public class DeviceExpandableListAdapter extends BaseExpandableListAdapter {
 
         mContext.startActivity(intent);
     }
+
 
 
 }

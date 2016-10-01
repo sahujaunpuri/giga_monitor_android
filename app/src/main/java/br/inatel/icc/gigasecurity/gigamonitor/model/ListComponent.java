@@ -75,6 +75,7 @@ public class ListComponent {
 
             surfaceViewComponents.add(surfaceViewComponent);
         }
+        Log.v("TESTE","teste");
     }
 
     public void changeSurfaceViewSize(SurfaceViewComponent surfaceViewComponent, FrameLayout frameLayout) {

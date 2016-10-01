@@ -103,6 +103,14 @@ public class MediaActivity extends ActionBarActivity {
 
     }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+        //if(!ivImageSelected) {
+            mAdapter.notifyDataSetChanged();
+        //}
+    }
+
     private void initComponents() {
         gvMedia = (GridView) findViewById(R.id.grid_view_media);
         ivImage = (ImageView) findViewById(R.id.iv_image);
