@@ -499,17 +499,23 @@ public class DeviceManager {
         return mediaStorageDir;
     }
 
-    public File stopSnapvideo(final MySurfaceView surfaceView, Context context) {
+    public File stopSnapvideo(final MySurfaceView surfaceView, Context context,long duration) {
 
         File file = surfaceView.onStopRecord(true);
 
-        ContentValues values = new ContentValues();
+        Log.v("Rocali","Duration "+duration+ " Spacee "+file.getTotalSpace() + "  ");
 
-        values.put(MediaStore.Video.Media.TITLE, file.getName());
-        values.put(MediaStore.Video.Media.MIME_TYPE, "video/mp4");
-        values.put(MediaStore.Video.Media.DATA, file.getAbsolutePath());
+        if (duration > 1000 && file.getTotalSpace() > 0) {  //Save just if the video has more than 1 second
+            Log.v("Rocali","Save "+duration);
 
-        context.getContentResolver().insert(MediaStore.Video.Media.EXTERNAL_CONTENT_URI, values);
+            ContentValues values = new ContentValues();
+
+            values.put(MediaStore.Video.Media.TITLE, file.getName());
+            values.put(MediaStore.Video.Media.MIME_TYPE, "video/mp4");
+            values.put(MediaStore.Video.Media.DATA, file.getAbsolutePath());
+
+            context.getContentResolver().insert(MediaStore.Video.Media.EXTERNAL_CONTENT_URI, values);
+        }
 
         return file;
     }

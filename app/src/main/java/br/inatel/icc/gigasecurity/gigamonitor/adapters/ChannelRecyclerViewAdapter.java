@@ -5,6 +5,7 @@ import android.content.Context;
 import android.os.Handler;
 import android.os.Looper;
 import android.provider.MediaStore;
+import android.provider.Settings;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -43,6 +44,7 @@ public class ChannelRecyclerViewAdapter extends RecyclerView.Adapter<ChannelRecy
     public boolean doubleClick = false;
     public final Handler handler = new Handler(Looper.getMainLooper());
     public final ListComponent listComponent;
+    public long clickRecTime;
 
     public ChannelRecyclerViewAdapter(Context mContext, Device mDevice, int numQuad, DeviceExpandableListAdapter.ChildViewHolder chieldViewHolder, ListComponent listComponent) {
         this.mContext = mContext;
@@ -240,15 +242,17 @@ public class ChannelRecyclerViewAdapter extends RecyclerView.Adapter<ChannelRecy
         childViewHolder.ivPlayPause.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(listComponent.surfaceViewComponents.get(msvSelected).isPlaying) {
-                    listComponent.surfaceViewComponents.get(msvSelected).mySurfaceView.onPause();
-                    listComponent.surfaceViewComponents.get(msvSelected).isPlaying = false;
-                    childViewHolder.ivPlayPause.setImageDrawable(mContext.getResources().getDrawable(R.drawable.ic_play_off));
-                } else {
-                    listComponent.surfaceViewComponents.get(msvSelected).mySurfaceView.onPlay();
-                    listComponent.surfaceViewComponents.get(msvSelected).isPlaying = true;
-                    childViewHolder.ivPlayPause.setImageDrawable(mContext.getResources().getDrawable(R.drawable.ic_pause));
-                }
+
+                    if (listComponent.surfaceViewComponents.get(msvSelected).isPlaying) {
+                        listComponent.surfaceViewComponents.get(msvSelected).mySurfaceView.onPause();
+                        listComponent.surfaceViewComponents.get(msvSelected).isPlaying = false;
+                        childViewHolder.ivPlayPause.setImageDrawable(mContext.getResources().getDrawable(R.drawable.ic_play_off));
+                    } else {
+                        listComponent.surfaceViewComponents.get(msvSelected).mySurfaceView.onPlay();
+                        listComponent.surfaceViewComponents.get(msvSelected).isPlaying = true;
+                        childViewHolder.ivPlayPause.setImageDrawable(mContext.getResources().getDrawable(R.drawable.ic_pause));
+                    }
+
             }
         });
 
@@ -315,12 +319,18 @@ public class ChannelRecyclerViewAdapter extends RecyclerView.Adapter<ChannelRecy
         childViewHolder.ivSnapvideo.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (listComponent.surfaceViewComponents.get(msvSelected).mySurfaceView.getRecordState() == 0) {
+                if (!listComponent.surfaceViewComponents.get(msvSelected).isREC()) {
+                    Log.v("Rocali","Start REC");
+                    clickRecTime = System.currentTimeMillis();
+                    listComponent.surfaceViewComponents.get(msvSelected).setREC(true);
                     mDeviceManager.startSnapvideo(listComponent.surfaceViewComponents.get(msvSelected).mySurfaceView);
                     childViewHolder.ivSnapvideo.setImageDrawable(mContext.getResources().getDrawable(R.drawable.ic_snapvideo_on));
                 } else {
-                    mDeviceManager.stopSnapvideo(listComponent.surfaceViewComponents.get(msvSelected).mySurfaceView, mContext);
+                    long duration = System.currentTimeMillis() - clickRecTime;
+                    Log.v("Rocali","Stop REC"+duration);
+                    mDeviceManager.stopSnapvideo(listComponent.surfaceViewComponents.get(msvSelected).mySurfaceView, mContext,duration);
                     childViewHolder.ivSnapvideo.setImageDrawable(mContext.getResources().getDrawable(R.drawable.ic_snapvideo));
+                    listComponent.surfaceViewComponents.get(msvSelected).setREC(false);
                 }
             }
         });

@@ -20,6 +20,10 @@ public class SurfaceViewComponent implements Serializable {
     public boolean isPlaying = false;
     public boolean isHD = false;
 
+
+
+    public boolean isREC = false;
+
     public MySurfaceView getMySurfaceView() {
         return mySurfaceView;
     }
@@ -74,6 +78,14 @@ public class SurfaceViewComponent implements Serializable {
 
     public void setIsHD(boolean isHD) {
         this.isHD = isHD;
+    }
+
+    public boolean isREC() {
+        return isREC;
+    }
+
+    public void setREC(boolean REC) {
+        isREC = REC;
     }
 
 }
