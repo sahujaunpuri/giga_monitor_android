@@ -52,6 +52,8 @@ public class DeviceManager {
 
     private final HashMap<Long, Device> mLoggedDevices = new HashMap<Long, Device>();
 
+    private int channelOnRec;
+
 
     private DeviceManager() {
 
@@ -74,6 +76,8 @@ public class DeviceManager {
         });
 
         mVoiceSessions = new HashMap<Long, VoiceIntercom>();
+
+        channelOnRec = -1;  //No channel on rec
     }
 
     public void loginDevice(final Device device, final LoginMethod lm, final LoginDeviceInterface loginDeviceInterface) {
@@ -480,33 +484,41 @@ public class DeviceManager {
         return pictureFile;
     }
 
-    public File startSnapvideo(MySurfaceView surfaceView) {
+    public File startSnapvideo(MySurfaceView surfaceView,int channel) {
+        if (channelOnRec != -1) { //Cannot record more than one video at the same time
+            return null;
 
-        File mediaStorageDir = new File(Environment.getExternalStorageDirectory().getAbsolutePath()
-                + "/Movies/Giga Monitor/");
+        } else {
+            channelOnRec = channel;
 
-        //Create the storage directory if it does not exist.
-        if (!mediaStorageDir.exists()){
-            if (!mediaStorageDir.mkdirs()){
-                return null;
+            File mediaStorageDir = new File(Environment.getExternalStorageDirectory().getAbsolutePath()
+                    + "/Movies/Giga Monitor/");
+
+            //Create the storage directory if it does not exist.
+            if (!mediaStorageDir.exists()) {
+                if (!mediaStorageDir.mkdirs()) {
+                    return null;
+                }
             }
+
+            surfaceView.initRecord(mediaStorageDir.getAbsolutePath());
+
+            mediaStorageDir = surfaceView.onStartRecord();
+
+            return mediaStorageDir;
         }
-
-        surfaceView.initRecord(mediaStorageDir.getAbsolutePath());
-
-        mediaStorageDir = surfaceView.onStartRecord();
-
-        return mediaStorageDir;
     }
 
-    public File stopSnapvideo(final MySurfaceView surfaceView, Context context,long duration) {
+    public File stopSnapvideo(final MySurfaceView surfaceView, Context context) {
+
+        channelOnRec = -1;
 
         File file = surfaceView.onStopRecord(true);
 
-        Log.v("Rocali","Duration "+duration+ " Spacee "+file.getTotalSpace() + "  ");
+        Log.v("Rocali"," Total Spacee "+file.getTotalSpace() + "  Free Space "+file.getFreeSpace() + " Usable Space "+file.getUsableSpace() +" Lengt "+ file.length());
 
-        if (duration > 1000 && file.getTotalSpace() > 0) {  //Save just if the video has more than 1 second
-            Log.v("Rocali","Save "+duration);
+        if (file.length() > 10000) {  //Save just if the video has more than 10kb
+            Log.v("Rocali","Save "+file.length());
 
             ContentValues values = new ContentValues();
 
@@ -515,9 +527,11 @@ public class DeviceManager {
             values.put(MediaStore.Video.Media.DATA, file.getAbsolutePath());
 
             context.getContentResolver().insert(MediaStore.Video.Media.EXTERNAL_CONTENT_URI, values);
-        }
 
-        return file;
+            return file;
+        } else {
+            return null;
+        }
     }
 
     public boolean cleanDevices(Context context) {
@@ -983,6 +997,10 @@ public class DeviceManager {
         public void setList(ArrayList<Device> list) {
             this.list = list;
         }
+    }
+
+    public int getChannelOnRec() {
+        return channelOnRec+1;
     }
 
 

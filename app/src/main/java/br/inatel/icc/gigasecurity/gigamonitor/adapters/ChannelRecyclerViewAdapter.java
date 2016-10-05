@@ -15,6 +15,7 @@ import android.view.ViewGroup;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.FrameLayout;
+import android.widget.Toast;
 
 import com.xm.video.MySurfaceView;
 
@@ -22,6 +23,7 @@ import java.io.File;
 
 import br.inatel.icc.gigasecurity.gigamonitor.R;
 import br.inatel.icc.gigasecurity.gigamonitor.activities.DeviceListActivity;
+import br.inatel.icc.gigasecurity.gigamonitor.activities.DeviceSearchListActivity;
 import br.inatel.icc.gigasecurity.gigamonitor.core.DeviceManager;
 import br.inatel.icc.gigasecurity.gigamonitor.enums.PlayState;
 import br.inatel.icc.gigasecurity.gigamonitor.model.Device;
@@ -320,17 +322,26 @@ public class ChannelRecyclerViewAdapter extends RecyclerView.Adapter<ChannelRecy
             @Override
             public void onClick(View v) {
                 if (!listComponent.surfaceViewComponents.get(msvSelected).isREC()) {
-                    Log.v("Rocali","Start REC");
-                    clickRecTime = System.currentTimeMillis();
-                    listComponent.surfaceViewComponents.get(msvSelected).setREC(true);
-                    mDeviceManager.startSnapvideo(listComponent.surfaceViewComponents.get(msvSelected).mySurfaceView);
-                    childViewHolder.ivSnapvideo.setImageDrawable(mContext.getResources().getDrawable(R.drawable.ic_snapvideo_on));
+                    if (mDeviceManager.startSnapvideo(listComponent.surfaceViewComponents.get(msvSelected).mySurfaceView,msvSelected) != null) {
+                        Log.v("Rocali", "Start REC Channel " + msvSelected);
+                        clickRecTime = System.currentTimeMillis();
+                        listComponent.surfaceViewComponents.get(msvSelected).setREC(true);
+                        childViewHolder.ivSnapvideo.setImageDrawable(mContext.getResources().getDrawable(R.drawable.ic_snapvideo_on));
+                    } else {
+                        Toast.makeText(mContext, "Gravando no canal "+mDeviceManager.getChannelOnRec(), Toast.LENGTH_LONG).show();
+                    }
                 } else {
                     long duration = System.currentTimeMillis() - clickRecTime;
-                    Log.v("Rocali","Stop REC"+duration);
-                    mDeviceManager.stopSnapvideo(listComponent.surfaceViewComponents.get(msvSelected).mySurfaceView, mContext,duration);
-                    childViewHolder.ivSnapvideo.setImageDrawable(mContext.getResources().getDrawable(R.drawable.ic_snapvideo));
-                    listComponent.surfaceViewComponents.get(msvSelected).setREC(false);
+                    if (duration > 1000) {
+                        if (mDeviceManager.stopSnapvideo(listComponent.surfaceViewComponents.get(msvSelected).mySurfaceView, mContext) != null) {
+                            Log.v("Rocali", "Stop REC Channel " + msvSelected + " duration " + duration);
+                            childViewHolder.ivSnapvideo.setImageDrawable(mContext.getResources().getDrawable(R.drawable.ic_snapvideo));
+                            listComponent.surfaceViewComponents.get(msvSelected).setREC(false);
+                        } else {
+                            Toast.makeText(mContext, "Não foi possível salvar o video", Toast.LENGTH_LONG).show();
+                        }
+                    }
+
                 }
             }
         });

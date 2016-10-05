@@ -34,6 +34,9 @@ import com.xm.NetSdk;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.Date;
 import java.util.zip.CheckedOutputStream;
 
 import br.inatel.icc.gigasecurity.gigamonitor.R;
@@ -50,8 +53,8 @@ import static android.graphics.Paint.FILTER_BITMAP_FLAG;
 public class MediaGridAdapter extends BaseAdapter {
 
     private Context mContext;
-    private File[] mImagesFile;
-    private ArrayList<File> mVideoFile;
+    private ArrayList<File> mImageFiles;
+    private ArrayList<File> mVideoFiles;
 
     private ArrayList<Uri> mImageUris;
     private ArrayList<Uri> mVideoUris;
@@ -79,44 +82,53 @@ public class MediaGridAdapter extends BaseAdapter {
     }
 
     private void getImgFiles() {
-        File imgFiles = new File("/sdcard/Pictures/Giga Monitor");
-        this.mImagesFile = imgFiles.listFiles();
-
-        int i = 0;
-        while (i < this.mImagesFile.length){
+        File imgFile = new File("/sdcard/Pictures/Giga Monitor");
+        File[] imgFiles = imgFile.listFiles();
+        mImageFiles = new ArrayList<>();
+        for(int i =0; i<imgFiles.length; i++) {
+            mImageFiles.add(imgFiles[i]);
+            //Aux Array
             this.mImageUris.add(null);
-            i++;
         }
     }
 
     private void getVideoFiles() {
         File videoFile = new File("/sdcard/Movies/Giga Monitor");
         File[] videoFiles = videoFile.listFiles();
-        mVideoFile = new ArrayList<>();
+        mVideoFiles = new ArrayList<>();
         for(int i =0; i<videoFiles.length; i++) {
             if(videoFiles[i].getName().contains(".mp4")) {
-                mVideoFile.add(videoFiles[i]);
+                mVideoFiles.add(videoFiles[i]);
+
+                //Aux Arrays
                 mVideoUris.add(null);
                 mVideoBitmaps.add(null);
             }
         }
+        Collections.sort(mVideoFiles, new Comparator<File>() {
+            public int compare(File video1, File video2) {
+                Date datevideo1 = new Date(video1.lastModified());
+                Date datevideo2 = new Date(video2.lastModified());
+                return datevideo1.compareTo(datevideo2);
+            }
+        });
     }
 
     @Override
     public int getCount() {
         if(this.pictureMode) {
-            return mImagesFile.length;
+            return mImageFiles.size();
         } else {
-            return mVideoFile.size();
+            return mVideoFiles.size();
         }
     }
 
     @Override
     public Object getItem(int position) {
         if(this.pictureMode) {
-            return mImagesFile[position];
+            return mImageFiles.get(position);
         } else {
-            return mVideoFile.get(position);
+            return mVideoFiles.get(position);
         }
     }
 
@@ -196,7 +208,7 @@ public class MediaGridAdapter extends BaseAdapter {
                                         public void onClick(DialogInterface dialog, int which) {
                                             if (which == 0) {
 
-                                                mImagesFile[position].delete();
+                                                mImageFiles.get(position).delete();
 
                                                 Intent intent = new Intent(mContext, MediaActivity.class);
                                                 intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP);
@@ -232,7 +244,7 @@ public class MediaGridAdapter extends BaseAdapter {
                 }
             }.execute();
 
-            Log.v("Rocali",mVideoFile.get(position).getName());
+            //Log.v("Rocali",mVideoFiles.get(position).getName());
 
 
             fVideoView.setOnClickListener(new View.OnClickListener() {
@@ -261,7 +273,7 @@ public class MediaGridAdapter extends BaseAdapter {
                                         @Override
                                         public void onClick(DialogInterface dialog, int which) {
                                             if (which == 0) {
-                                                mVideoFile.get(position).delete();
+                                                mVideoFiles.get(position).delete();
 
                                                 Intent intent = new Intent(mContext, MediaActivity.class);
                                                 intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP);
@@ -281,7 +293,7 @@ public class MediaGridAdapter extends BaseAdapter {
 
     public Bitmap getVideoBitmap(int position) {
         if (mVideoBitmaps.get(position) == null) {
-            Bitmap thumb = ThumbnailUtils.createVideoThumbnail(mVideoFile.get(position).getPath(), MediaStore.Images.Thumbnails.MINI_KIND);
+            Bitmap thumb = ThumbnailUtils.createVideoThumbnail(mVideoFiles.get(position).getPath(), MediaStore.Images.Thumbnails.MINI_KIND);
             if (thumb == null) {
                 /*
                 FFmpegMediaMetadataRetriever retriever = new  FFmpegMediaMetadataRetriever();
@@ -299,7 +311,7 @@ public class MediaGridAdapter extends BaseAdapter {
                 MediaMetadataRetriever retriever = new MediaMetadataRetriever();
 
                 try {
-                    retriever.setDataSource(mVideoFile.get(position).getPath());
+                    retriever.setDataSource(mVideoFiles.get(position).getPath());
 
                     thumb = retriever.getFrameAtTime((long)100000,MediaMetadataRetriever.OPTION_CLOSEST_SYNC);
 
@@ -316,8 +328,8 @@ public class MediaGridAdapter extends BaseAdapter {
                 }*/
 
 
-                Log.v("Rocali"," NO IMAGE"+mVideoFile.get(position).getName());
-                thumb = createBitmapToText(mVideoFile.get(position).getName());
+                //Log.v("Rocali"," NO IMAGE"+mVideoFiles.get(position).getName());
+                thumb = createBitmapToText(mVideoFiles.get(position).getName());
             }
             mVideoBitmaps.add(position,thumb);
         }
@@ -327,7 +339,7 @@ public class MediaGridAdapter extends BaseAdapter {
     public Uri getImageUri(int position) {
         Log.v("Rocali","getImageUri "+position);
         if (mImageUris.get(position) == null) {
-            Uri uri = Uri.fromFile(mImagesFile[position]);
+            Uri uri = Uri.fromFile(mImageFiles.get(position));
             mImageUris.add(position,uri);
         }
         return mImageUris.get(position);
@@ -336,7 +348,7 @@ public class MediaGridAdapter extends BaseAdapter {
     public Uri getVideoUri(int position) {
         Log.v("Rocali","getVideoUri "+position);
         if (mVideoUris.get(position) == null) {
-            Uri uri = Uri.fromFile(mVideoFile.get(position));
+            Uri uri = Uri.fromFile(mVideoFiles.get(position));
             mVideoUris.add(position,uri);
         }
         return mVideoUris.get(position);
