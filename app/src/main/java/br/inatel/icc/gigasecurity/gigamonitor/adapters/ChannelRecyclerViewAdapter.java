@@ -117,11 +117,54 @@ public class ChannelRecyclerViewAdapter extends RecyclerView.Adapter<ChannelRecy
                     }
 
                     //Rocali
-                    //childViewHolder.gridLayoutManager = new GridLayoutManager(mContext, listComponent.numQuad, GridLayoutManager.HORIZONTAL, false);
-                    //childViewHolder.recyclerViewChannels.setLayoutManager(childViewHolder.gridLayoutManager);
-                    childViewHolder.recyclerViewChannels.setLayoutManager(new GridLayoutManager(mContext, listComponent.numQuad, GridLayoutManager.HORIZONTAL, false));
+                    childViewHolder.gridLayoutManager = new GridLayoutManager(mContext, listComponent.numQuad, GridLayoutManager.HORIZONTAL, false);
+                    childViewHolder.recyclerViewChannels.setLayoutManager(childViewHolder.gridLayoutManager);
+                    //childViewHolder.recyclerViewChannels.setLayoutManager(new GridLayoutManager(mContext, listComponent.numQuad, GridLayoutManager.HORIZONTAL, false));
                     childViewHolder.mRecyclerAdapter = new ChannelRecyclerViewAdapter(mContext, mDevice, listComponent.numQuad, childViewHolder, listComponent);
                     childViewHolder.recyclerViewChannels.setAdapter(childViewHolder.mRecyclerAdapter);
+
+                    childViewHolder.recyclerViewChannels.setOnScrollListener(new RecyclerView.OnScrollListener()
+                    {
+
+                        @Override
+                        public void onScrollStateChanged(final RecyclerView recyclerView,final int newState) {
+                            super.onScrollStateChanged(recyclerView, newState);
+
+                            if(newState == 0) {
+                                int totalQuads = 0;
+                                if (listComponent.numQuad == 1) {
+                                    totalQuads = 1;
+                                } else if (listComponent.numQuad == 2) {
+                                    totalQuads = 4;
+                                } else if (listComponent.numQuad == 3) {
+                                    totalQuads = 9;
+                                } else if (listComponent.numQuad == 4) {
+                                    totalQuads = 16;
+                                }
+                                final int currentLastVisibleItem = childViewHolder.gridLayoutManager.findLastVisibleItemPosition();
+                                final int currentFirstVisibleItem = childViewHolder.gridLayoutManager.findFirstVisibleItemPosition();
+                                if (totalQuads > 1) {
+                                    if (currentLastVisibleItem % totalQuads == totalQuads - 1) {
+                                        childViewHolder.gridLayoutManager.smoothScrollToPosition(childViewHolder.recyclerViewChannels, null, currentLastVisibleItem);
+                                    } else if (currentFirstVisibleItem % totalQuads == 0) {
+                                        childViewHolder.gridLayoutManager.smoothScrollToPosition(childViewHolder.recyclerViewChannels, null, currentFirstVisibleItem);
+                                    } else if (currentLastVisibleItem == mDevice.getChannelNumber() - 1) {
+                                        childViewHolder.gridLayoutManager.smoothScrollToPosition(childViewHolder.recyclerViewChannels, null, currentLastVisibleItem);
+                                    } else {
+                                        childViewHolder.gridLayoutManager.smoothScrollToPosition(childViewHolder.recyclerViewChannels, null, currentFirstVisibleItem);
+                                    }
+                                } else if (totalQuads == 1) {
+                                    if (childViewHolder.lastFirstVisibleItem != currentFirstVisibleItem) {
+                                        childViewHolder.gridLayoutManager.smoothScrollToPosition(childViewHolder.recyclerViewChannels, null, currentFirstVisibleItem);
+                                    } else if (childViewHolder.lastLastVisibleItem != currentLastVisibleItem) {
+                                        childViewHolder.gridLayoutManager.smoothScrollToPosition(childViewHolder.recyclerViewChannels, null, currentLastVisibleItem);
+                                    }
+                                }
+                                childViewHolder.lastFirstVisibleItem = currentFirstVisibleItem;
+                                childViewHolder.lastLastVisibleItem = currentLastVisibleItem;
+                            }
+                        }
+                    });
 
                     listComponent.changeSurfaceViewSize(listComponent.surfaceViewComponents.get(msvSelected), myViewHolder.frameLayout);
 
