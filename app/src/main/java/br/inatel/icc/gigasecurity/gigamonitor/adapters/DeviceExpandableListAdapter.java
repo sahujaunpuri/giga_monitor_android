@@ -344,7 +344,9 @@ public class DeviceExpandableListAdapter extends BaseExpandableListAdapter {
 
                         if(newState == 0) {
                             int totalQuads = 0;
-                            if (DeviceListActivity.listComponents.get(groupPosition).numQuad == 2) {
+                            if (DeviceListActivity.listComponents.get(groupPosition).numQuad == 1) {
+                                totalQuads = 2;
+                            } else if (DeviceListActivity.listComponents.get(groupPosition).numQuad == 2) {
                                 totalQuads = 4;
                             } else if (DeviceListActivity.listComponents.get(groupPosition).numQuad == 3) {
                                 totalQuads = 9;
@@ -421,6 +423,7 @@ public class DeviceExpandableListAdapter extends BaseExpandableListAdapter {
             @Override
             public void onLoginSuccess(long loginID) {
 
+                //Rocali Check here
                 ((DeviceListActivity) mContext).runOnUiThread(new Runnable() {
                     @Override
                     public void run() {

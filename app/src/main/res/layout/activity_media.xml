@@ -6,26 +6,27 @@
     android:orientation="vertical"
     tools:context="br.inatel.icc.gigasecurity.gigamonitor.activities.MediaActivity">
 
+
     <LinearLayout
-        android:orientation="horizontal"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:gravity="center"
-        android:layout_gravity="center"
-        android:layout_centerHorizontal="true">
+            android:orientation="horizontal"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:layout_gravity="center"
+            android:layout_centerHorizontal="true">
 
-        <ImageView
-            android:layout_width="30dp"
-            android:layout_height="30dp"
-            android:src="@drawable/ic_camera_on"
-            android:id="@+id/iv_image" />
+            <ImageView
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:src="@drawable/ic_camera_on"
+                android:id="@+id/iv_image" />
 
-        <ImageView
-            android:layout_width="31dp"
-            android:layout_height="31dp"
-            android:layout_margin="10dp"
-            android:src="@drawable/ic_video_off"
-            android:id="@+id/iv_video" />
+            <ImageView
+                android:layout_width="31dp"
+                android:layout_height="31dp"
+                android:layout_margin="10dp"
+                android:src="@drawable/ic_video_off"
+                android:id="@+id/iv_video" />
     </LinearLayout>
 
     <GridView
@@ -36,7 +37,8 @@
         android:layout_gravity="center"
         android:horizontalSpacing="10dp"
         android:verticalSpacing="10dp"
-        android:gravity="center" />
+        android:gravity="center"
+        android:layout_margin="10px"/>
 
 
 

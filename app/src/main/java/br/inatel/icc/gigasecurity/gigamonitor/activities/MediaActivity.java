@@ -1,14 +1,22 @@
 package br.inatel.icc.gigasecurity.gigamonitor.activities;
 
 import android.content.Context;
+import android.graphics.Bitmap;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Environment;
 import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
 import android.view.View;
+import android.view.Window;
 import android.widget.GridView;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
+import android.widget.Toast;
+
+import com.xm.MyConfig;
+import com.xm.NetSdk;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -21,10 +29,8 @@ public class MediaActivity extends ActionBarActivity {
     public static GridView gvMedia;
     public static MediaGridAdapter mAdapter;
     public static ImageView ivImage, ivVideo;
-    public static File[] allImageFiles, allFiles;
-    public static ArrayList<File> allVideoFiles = new ArrayList<>();
-    public static File files;
     public boolean ivImageSelected = true;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -33,37 +39,18 @@ public class MediaActivity extends ActionBarActivity {
 
         initComponents();
 
-        files = new File("/sdcard/Pictures/Giga Monitor");
+        mAdapter = new MediaGridAdapter(MediaActivity.this);
 
-        allFiles = files.listFiles();
-
-        allImageFiles = files.listFiles();
-
-        if (allImageFiles != null) {
-            mAdapter = new MediaGridAdapter(MediaActivity.this, allImageFiles, null);
-
-            gvMedia.setAdapter(mAdapter);
-        }
-
-
+        gvMedia.setAdapter(mAdapter);
 
         ivImage.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 if(!ivImageSelected) {
-                    files = new File("/sdcard/Pictures/Giga Monitor");
-
-                    allImageFiles = files.listFiles();
-
-                    if (allImageFiles != null) {
-                        mAdapter = new MediaGridAdapter(MediaActivity.this, allImageFiles, null);
-
-                        gvMedia.setAdapter(mAdapter);
-                    }
-
+                    mAdapter.changeGridMode(true);
+                    mAdapter.notifyDataSetChanged();
                     ivVideo.setImageDrawable(getResources().getDrawable(R.drawable.ic_video_off));
                     ivImage.setImageDrawable(getResources().getDrawable(R.drawable.ic_camera_on));
-
                     ivImageSelected = true;
                 }
             }
@@ -74,41 +61,14 @@ public class MediaActivity extends ActionBarActivity {
             @Override
             public void onClick(View v) {
                 if(ivImageSelected) {
-                    allVideoFiles.clear();
-
-                    files = new File("/sdcard/Movies/Giga Monitor");
-
-                    allFiles = files.listFiles();
-
-                    if (allFiles != null) {
-
-                        for(int i =0; i<allFiles.length; i++) {
-                            if(allFiles[i].getName().contains(".mp4")) {
-                                allVideoFiles.add(allFiles[i]);
-                            }
-                        }
-
-                        mAdapter = new MediaGridAdapter(MediaActivity.this, null, allVideoFiles);
-
-                        gvMedia.setAdapter(mAdapter);
-                    }
-
+                    mAdapter.changeGridMode(false);
+                    mAdapter.notifyDataSetChanged();
                     ivVideo.setImageDrawable(getResources().getDrawable(R.drawable.ic_video_on));
                     ivImage.setImageDrawable(getResources().getDrawable(R.drawable.ic_camera_off));
-
                     ivImageSelected = false;
                 }
             }
         });
-
-    }
-
-    @Override
-    protected void onResume() {
-        super.onResume();
-        //if(!ivImageSelected) {
-            mAdapter.notifyDataSetChanged();
-        //}
     }
 
     private void initComponents() {
@@ -116,5 +76,7 @@ public class MediaActivity extends ActionBarActivity {
         ivImage = (ImageView) findViewById(R.id.iv_image);
         ivVideo = (ImageView) findViewById(R.id.iv_video);
     }
+
+
 
 }

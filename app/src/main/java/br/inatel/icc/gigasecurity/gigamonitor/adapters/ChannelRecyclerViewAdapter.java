@@ -116,6 +116,9 @@ public class ChannelRecyclerViewAdapter extends RecyclerView.Adapter<ChannelRecy
                         childViewHolder.lastFirstVisiblePosition = lm.findFirstVisibleItemPosition();
                     }
 
+                    //Rocali
+                    //childViewHolder.gridLayoutManager = new GridLayoutManager(mContext, listComponent.numQuad, GridLayoutManager.HORIZONTAL, false);
+                    //childViewHolder.recyclerViewChannels.setLayoutManager(childViewHolder.gridLayoutManager);
                     childViewHolder.recyclerViewChannels.setLayoutManager(new GridLayoutManager(mContext, listComponent.numQuad, GridLayoutManager.HORIZONTAL, false));
                     childViewHolder.mRecyclerAdapter = new ChannelRecyclerViewAdapter(mContext, mDevice, listComponent.numQuad, childViewHolder, listComponent);
                     childViewHolder.recyclerViewChannels.setAdapter(childViewHolder.mRecyclerAdapter);
