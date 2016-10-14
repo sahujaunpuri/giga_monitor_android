@@ -10,6 +10,8 @@ import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Rect;
 import android.graphics.RectF;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
 import android.media.MediaMetadataRetriever;
 import android.media.MediaPlayer;
 import android.media.ThumbnailUtils;
@@ -26,6 +28,7 @@ import android.widget.BaseAdapter;
 import android.widget.GridView;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.VideoView;
 
@@ -33,6 +36,8 @@ import com.xm.MyConfig;
 import com.xm.NetSdk;
 
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -63,7 +68,7 @@ public class MediaGridAdapter extends BaseAdapter {
     public long videoClickDownTime = 0;
     private boolean pictureMode;
 
-    public static Bitmap blankBitmap;
+    public static Drawable blankDrawable;
 
     public MediaGridAdapter(Context mContext) {
         this.mContext = mContext;
@@ -78,7 +83,8 @@ public class MediaGridAdapter extends BaseAdapter {
 
 
 
-        blankBitmap = Bitmap.createBitmap(1, 1, Bitmap.Config.ARGB_8888);
+        Bitmap blankBitmap = Bitmap.createBitmap(1, 1, Bitmap.Config.ARGB_8888);
+        blankDrawable = new BitmapDrawable(mContext.getResources(), blankBitmap);
     }
 
     private void getImgFiles() {
@@ -139,39 +145,41 @@ public class MediaGridAdapter extends BaseAdapter {
 
     @Override
     public View getView(final int position, View convertView, ViewGroup parent) {
-        ImageView imageView = null;
-        ImageView videoView = null;
+        TextView imageView = null;
+        TextView videoView = null;
 
         if (convertView == null) {
 
             if(this.pictureMode) {
 
-                imageView = new ImageView(mContext);
+                imageView = new TextView(mContext);
                 imageView.setLayoutParams(new GridView.LayoutParams(GridView.AUTO_FIT, 120));
-                imageView.setScaleType(ImageView.ScaleType.CENTER_CROP);
+                //imageView.setScaleType(ImageView.ScaleType.CENTER_CROP);
 
             } else {
 
-                videoView = new ImageView(mContext);
+                videoView = new TextView(mContext);
                 videoView.setLayoutParams(new GridView.LayoutParams(GridView.AUTO_FIT, 120));
-                videoView.setScaleType(ImageView.ScaleType.CENTER_CROP);
+                //videoView.setScaleType(ImageView.ScaleType.CENTER_CROP);
 
             }
 
         } else {
 
             if(this.pictureMode) {
-                imageView = (ImageView) convertView;
+                imageView = (TextView) convertView;
             } else {
-                videoView = (ImageView) convertView;
+                videoView = (TextView) convertView;
             }
 
         }
 
         if(this.pictureMode) {
 
-            final ImageView fImageView = imageView;
-            fImageView.setImageBitmap(blankBitmap);
+            final TextView fImageView = imageView;
+            fImageView.setBackground(blankDrawable);
+            fImageView.setText(mImageFiles.get(position).getName());
+            ///fImageView.setImageBitmap(blankBitmap);
 
             new AsyncTask<Void, Void, Uri>() {
                 @Override
@@ -182,7 +190,17 @@ public class MediaGridAdapter extends BaseAdapter {
                 @Override
                 protected void onPostExecute(Uri uri) {
                     super.onPostExecute(uri);
-                    fImageView.setImageURI(uri);
+                    Drawable drawable;
+                    try {
+                        InputStream inputStream = mContext.getContentResolver().openInputStream(uri);
+                        drawable = Drawable.createFromStream(inputStream, uri.toString() );
+                        fImageView.setText("");
+                        fImageView.setBackground(drawable);
+                    } catch (FileNotFoundException e) {
+                        e.printStackTrace();
+                    }
+                    //fImageView.setBackground();
+                    //fImageView.setImageURI(uri);
                 }
             }.execute();
 
@@ -226,8 +244,10 @@ public class MediaGridAdapter extends BaseAdapter {
             return imageView;
 
         } else {
-            final ImageView fVideoView = videoView;
-            fVideoView.setImageBitmap(blankBitmap);
+            final TextView fVideoView = videoView;
+            //fVideoView.setImageBitmap(blankBitmap);
+            fVideoView.setBackground(blankDrawable);
+            fVideoView.setText(mVideoFiles.get(position).getName());
 
             new AsyncTask<Void, Void, Bitmap>() {
                 @Override
@@ -240,7 +260,12 @@ public class MediaGridAdapter extends BaseAdapter {
                 @Override
                 protected void onPostExecute(Bitmap bitmap) {
                     super.onPostExecute(bitmap);
-                    fVideoView.setImageBitmap(bitmap);
+                    if (bitmap != null) {
+                        Drawable drawable = new BitmapDrawable(mContext.getResources(), bitmap);
+                        fVideoView.setText("");
+                        fVideoView.setBackground(drawable);
+                    }
+                    //fVideoView.setImageBitmap(bitmap);
                 }
             }.execute();
 
@@ -329,7 +354,7 @@ public class MediaGridAdapter extends BaseAdapter {
 
 
                 //Log.v("Rocali"," NO IMAGE"+mVideoFiles.get(position).getName());
-                thumb = createBitmapToText(mVideoFiles.get(position).getName());
+                //thumb = createBitmapToText(mVideoFiles.get(position).getName());
             }
             mVideoBitmaps.add(position,thumb);
         }

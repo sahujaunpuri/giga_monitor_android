@@ -48,6 +48,7 @@ public class ChannelRecyclerViewAdapter extends RecyclerView.Adapter<ChannelRecy
     public final ListComponent listComponent;
     public long clickRecTime;
 
+
     public ChannelRecyclerViewAdapter(Context mContext, Device mDevice, int numQuad, DeviceExpandableListAdapter.ChildViewHolder chieldViewHolder, ListComponent listComponent) {
         this.mContext = mContext;
         this.mDevice = mDevice;
@@ -84,6 +85,10 @@ public class ChannelRecyclerViewAdapter extends RecyclerView.Adapter<ChannelRecy
     @Override
     public void onBindViewHolder(final ChannelRecyclerViewAdapter.MyViewHolder myViewHolder, final int position) {
 
+        listComponent.reOrderSurfaceViewComponents();
+
+        Log.v("Rocali", "ChannelAdapater Channelno "+ listComponent.surfaceViewComponents.get(position).mySurfaceViewChannelId + " For position "+position);
+
         myViewHolder.frameLayout.removeAllViews();
         ViewGroup parent = (ViewGroup) listComponent.surfaceViewComponents.get(position).mySurfaceView.getParent();
 
@@ -91,14 +96,17 @@ public class ChannelRecyclerViewAdapter extends RecyclerView.Adapter<ChannelRecy
             parent.removeAllViews();
         }
 
+
+
         myViewHolder.frameLayout.addView(listComponent.surfaceViewComponents.get(position).mySurfaceView);
         myViewHolder.frameLayout.addView(listComponent.surfaceViewComponents.get(position).progressBar);
 
-        listComponent.surfaceViewComponents.get(position).chnInfo.ChannelNo = position;
+        listComponent.surfaceViewComponents.get(position).chnInfo.ChannelNo = listComponent.surfaceViewComponents.get(position).mySurfaceViewChannelId;
 
         listComponent.changeSurfaceViewSize(listComponent.surfaceViewComponents.get(position), myViewHolder.frameLayout);
 
         startDeviceVideo(mDevice, listComponent.surfaceViewComponents.get(position));
+
 
 
 
@@ -133,8 +141,16 @@ public class ChannelRecyclerViewAdapter extends RecyclerView.Adapter<ChannelRecy
                         @Override
                         public void onScrollStateChanged(final RecyclerView recyclerView,final int newState) {
                             super.onScrollStateChanged(recyclerView, newState);
-
                             if(newState == 0) {
+                                final int currentFirstVisibleItem = childViewHolder.gridLayoutManager.findFirstVisibleItemPosition();
+                                final int currentLastVisibleItem = childViewHolder.gridLayoutManager.findLastVisibleItemPosition();
+
+                                final int itemToScroll = mDeviceManager.scrollToItem(listComponent.numQuad,mDevice.getChannelNumber(),currentFirstVisibleItem,currentLastVisibleItem,childViewHolder.lastFirstVisibleItem,childViewHolder.lastLastVisibleItem);
+                                childViewHolder.gridLayoutManager.smoothScrollToPosition(childViewHolder.recyclerViewChannels, null, itemToScroll);
+
+                                childViewHolder.lastFirstVisibleItem = currentFirstVisibleItem;
+                                childViewHolder.lastLastVisibleItem = currentLastVisibleItem;
+                                /*
                                 int totalQuads = 0;
                                 if (listComponent.numQuad == 1) {
                                     totalQuads = 1;
@@ -165,7 +181,7 @@ public class ChannelRecyclerViewAdapter extends RecyclerView.Adapter<ChannelRecy
                                     }
                                 }
                                 childViewHolder.lastFirstVisibleItem = currentFirstVisibleItem;
-                                childViewHolder.lastLastVisibleItem = currentLastVisibleItem;
+                                childViewHolder.lastLastVisibleItem = currentLastVisibleItem;*/
                             }
                         }
                     });
@@ -182,27 +198,29 @@ public class ChannelRecyclerViewAdapter extends RecyclerView.Adapter<ChannelRecy
 
                     if (childViewHolder.layoutMenu.getVisibility() == View.GONE) {
 
+                        msvSelected = listComponent.surfaceViewComponents.get(position).mySurfaceViewChannelId;
+
                         myViewHolderSelected = myViewHolder;
 
-                        int channelPosition = position + 1;
+                        int channelPosition = msvSelected + 1;
 
                         childViewHolder.tvChnNumber.setText("Canal " + channelPosition);
 
-                        if (listComponent.surfaceViewComponents.get(position).chnInfo.nStream == 0) {
+                        if (listComponent.surfaceViewComponents.get(msvSelected).chnInfo.nStream == 0) {
                             childViewHolder.ivHQ.setImageDrawable(mContext.getResources().getDrawable(R.drawable.ic_hq_on));
                         } else {
                             childViewHolder.ivHQ.setImageDrawable(mContext.getResources().getDrawable(R.drawable.ic_hq_off));
                         }
 
-                        if (listComponent.surfaceViewComponents.get(position).isPlaying) {
+                        if (listComponent.surfaceViewComponents.get(msvSelected).isPlaying) {
                             childViewHolder.ivPlayPause.setImageDrawable(mContext.getResources().getDrawable(R.drawable.ic_pause));
                         } else {
                             childViewHolder.ivPlayPause.setImageDrawable(mContext.getResources().getDrawable(R.drawable.ic_play_off));
                         }
 
-                        int recordState = listComponent.surfaceViewComponents.get(position).mySurfaceView.getRecordState();
+                        //int recordState = listComponent.surfaceViewComponents.get(position).mySurfaceView.getRecordState();
 
-                        if (recordState == 5 || recordState == 0) {
+                        if (!listComponent.surfaceViewComponents.get(msvSelected).isREC()) {
                             childViewHolder.ivSnapvideo.setImageDrawable(mContext.getResources().getDrawable(R.drawable.ic_snapvideo));
                         } else {
                             childViewHolder.ivSnapvideo.setImageDrawable(mContext.getResources().getDrawable(R.drawable.ic_snapvideo_on));
@@ -230,7 +248,7 @@ public class ChannelRecyclerViewAdapter extends RecyclerView.Adapter<ChannelRecy
                             }
                         }).start();
 
-                        msvSelected = position;
+
                     } else {
                         childViewHolder.layoutMenu.setVisibility(View.GONE);
                     }
@@ -328,6 +346,7 @@ public class ChannelRecyclerViewAdapter extends RecyclerView.Adapter<ChannelRecy
                         listComponent.surfaceViewComponents.get(msvSelected).setREC(true);
                         childViewHolder.ivSnapvideo.setImageDrawable(mContext.getResources().getDrawable(R.drawable.ic_snapvideo_on));
                     } else {
+                        //int channelPosition = listComponent.surfaceViewComponents.get(position).mySurfaceViewChannelId + 1;
                         Toast.makeText(mContext, "Gravando no canal "+mDeviceManager.getChannelOnRec(), Toast.LENGTH_LONG).show();
                     }
                 } else {
@@ -335,11 +354,11 @@ public class ChannelRecyclerViewAdapter extends RecyclerView.Adapter<ChannelRecy
                     if (duration > 1000) {
                         if (mDeviceManager.stopSnapvideo(listComponent.surfaceViewComponents.get(msvSelected).mySurfaceView, mContext) != null) {
                             Log.v("Rocali", "Stop REC Channel " + msvSelected + " duration " + duration);
-                            childViewHolder.ivSnapvideo.setImageDrawable(mContext.getResources().getDrawable(R.drawable.ic_snapvideo));
-                            listComponent.surfaceViewComponents.get(msvSelected).setREC(false);
                         } else {
                             Toast.makeText(mContext, "Não foi possível salvar o video", Toast.LENGTH_LONG).show();
                         }
+                        childViewHolder.ivSnapvideo.setImageDrawable(mContext.getResources().getDrawable(R.drawable.ic_snapvideo));
+                        listComponent.surfaceViewComponents.get(msvSelected).setREC(false);
                     }
 
                 }

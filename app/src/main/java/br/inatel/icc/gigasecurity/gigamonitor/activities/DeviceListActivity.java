@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.content.res.Configuration;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -14,6 +15,7 @@ import android.widget.ExpandableListView;
 import android.widget.RelativeLayout;
 
 import java.util.ArrayList;
+import java.util.concurrent.ExecutionException;
 
 import br.inatel.icc.gigasecurity.gigamonitor.R;
 import br.inatel.icc.gigasecurity.gigamonitor.adapters.DeviceExpandableListAdapter;
@@ -67,17 +69,42 @@ public class DeviceListActivity extends ActionBarActivity {
             @Override
             public boolean onGroupClick(ExpandableListView parent, View v, int groupPosition, long id) {
 
-                if (previousGroup == -1) {
-                    previousGroup = groupPosition;
-
+                Log.v("Rocalii","onGroupClick"+groupPosition);
+                if (groupPosition == previousGroup) {
+                    Log.v("Rocalii","Close "+groupPosition);
+                    previousGroup = -1;
                     return false;
                 } else {
-                    mAdapter = new DeviceExpandableListAdapter(mContext, mDevices);
-                    mExpandableListView.setAdapter(mAdapter);
+                    if (previousGroup == -1) {
+                        Log.v("Rocalii","Open = "+groupPosition);
 
-                    previousGroup = -1;
 
-                    return true;
+                        previousGroup = groupPosition;
+
+                        return false;
+                    } else {
+                        if(mAdapter.isConnected()) {
+                            Log.v("Rocalii","CONNECTEd");
+                            //mAdapter.refreshAdapter();
+                            //mAdapter = new DeviceExpandableListAdapter(mContext, mDevices);
+                            //mExpandableListView.setAdapter(mAdapter);
+                        } else {
+                            Log.v("Rocalii","NOT CONNECTED");
+                        }
+                        Log.v("Rocalii","Lets close = "+previousGroup+" to open "+groupPosition);
+                        mExpandableListView.collapseGroup(previousGroup);
+                    /*try {
+                        mAdapter = new DeviceExpandableListAdapter(mContext, mDevices);
+                        mExpandableListView.setAdapter(mAdapter);
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                        //mExpandableListView.collapseGroup(groupPosition);
+                    }*/
+
+                        previousGroup = -1;
+
+                        return true;
+                    }
                 }
 
             }

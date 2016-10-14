@@ -1003,5 +1003,37 @@ public class DeviceManager {
         return channelOnRec+1;
     }
 
+    public int scrollToItem(int numQuad, int totalChannels, int currentFirstVisibleItem, int currentLastVisibleItem,int lastFirstVisibleItem, int lastLastVisibleItem) {
+        int itemToScroll = 0;
+        int totalQuads = 0;
+        if (numQuad == 1) {
+            totalQuads = 1;
+        } else if (numQuad == 2) {
+            totalQuads = 4;
+        } else if (numQuad == 3) {
+            totalQuads = 9;
+        } else if (numQuad == 4) {
+            totalQuads = 16;
+        }
+        if (totalQuads > 1) {
+            if (currentLastVisibleItem % totalQuads == totalQuads - 1) {
+                itemToScroll = currentLastVisibleItem;
+            } else if (currentFirstVisibleItem % totalQuads == 0) {
+                itemToScroll = currentFirstVisibleItem;
+            } else if (currentLastVisibleItem == totalChannels - 1) {
+                itemToScroll = currentLastVisibleItem;
+            } else {
+                itemToScroll = currentFirstVisibleItem;
+            }
+        } else if (totalQuads == 1) {
+            if (lastFirstVisibleItem != currentFirstVisibleItem) {
+                itemToScroll = currentFirstVisibleItem;
+            } else if (lastLastVisibleItem != currentLastVisibleItem){
+                itemToScroll = currentLastVisibleItem;
+            }
+        }
+        return itemToScroll;
+    }
+
 
 }

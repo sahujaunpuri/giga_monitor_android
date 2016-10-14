@@ -22,6 +22,11 @@ public class SurfaceViewComponent implements Serializable {
 
 
 
+    public int mySurfaceViewChannelId;
+    public int mySurfaceViewOrderId;
+
+
+
     public boolean isREC = false;
 
     public MySurfaceView getMySurfaceView() {
@@ -86,6 +91,14 @@ public class SurfaceViewComponent implements Serializable {
 
     public void setREC(boolean REC) {
         isREC = REC;
+    }
+
+    public int getMySurfaceViewChannelId() {
+        return mySurfaceViewChannelId;
+    }
+
+    public void setMySurfaceViewChannelId(int mySurfaceViewChannelId) {
+        this.mySurfaceViewChannelId = mySurfaceViewChannelId;
     }
 
 }

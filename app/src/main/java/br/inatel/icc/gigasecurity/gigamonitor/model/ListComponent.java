@@ -13,7 +13,11 @@ import android.widget.ProgressBar;
 import com.xm.ChnInfo;
 import com.xm.video.MySurfaceView;
 
+import java.io.File;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.Date;
 
 import br.inatel.icc.gigasecurity.gigamonitor.activities.DeviceListActivity;
 
@@ -27,6 +31,13 @@ public class ListComponent {
     public Context mContext;
     public int numQuad, lastNumQuad, surfaceViewWidth, surfaceViewHeight;
     public Display mDisplay;
+
+    private int[][] inverseMatrix = new int[][]{
+            { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15 },
+            { 0, 2, 1, 3, 4, 6, 5, 7, 8, 10, 9, 11, 12, 14, 13, 15 },
+            { 0, 3, 6, 1, 4, 7, 2, 5, 8, 9, 10, 11, 12, 13, 14, 15 },//Rocali Correct here
+            { 0, 4, 8, 12, 1, 5, 9, 13, 2, 6, 10, 14, 3, 7, 11, 15 }
+    };
 
     public ListComponent(Device mDevice) {
         this.mDevice = mDevice;
@@ -47,6 +58,9 @@ public class ListComponent {
             SurfaceViewComponent surfaceViewComponent = new SurfaceViewComponent();
 
             surfaceViewComponent.mySurfaceViewID = DeviceListActivity.mySurfaceViewID++;
+
+            surfaceViewComponent.mySurfaceViewChannelId = i;
+            surfaceViewComponent.mySurfaceViewOrderId = i;
 
             //Create MySurfaceView
             surfaceViewComponent.mySurfaceView = new MySurfaceView(mContext, 0);
@@ -75,7 +89,7 @@ public class ListComponent {
 
             surfaceViewComponents.add(surfaceViewComponent);
         }
-        Log.v("TESTE","teste");
+        Log.v("Rocali","teste");
     }
 
     public void changeSurfaceViewSize(SurfaceViewComponent surfaceViewComponent, FrameLayout frameLayout) {
@@ -94,6 +108,21 @@ public class ListComponent {
         surfaceViewComponent.mySurfaceView.setLayoutParams(lpSurfaceView);
         frameLayout.setLayoutParams(lpFrameLayout);
         surfaceViewComponent.progressBar.setLayoutParams(lpProgressBar);
+    }
+
+    public void reOrderSurfaceViewComponents() {
+        for (SurfaceViewComponent svc : surfaceViewComponents) {
+            svc.mySurfaceViewOrderId = inverseMatrix[numQuad-1][svc.mySurfaceViewChannelId];
+        }
+
+        Collections.sort(surfaceViewComponents, new Comparator<SurfaceViewComponent>() {
+            public int compare(SurfaceViewComponent svc1, SurfaceViewComponent svc2) {
+                return svc1.mySurfaceViewOrderId - svc2.mySurfaceViewOrderId;
+            }
+        });
+        for (SurfaceViewComponent s : surfaceViewComponents) {
+            Log.v("Rocali","Chanelno "+ s.mySurfaceViewChannelId+ " orderID "+s.mySurfaceViewOrderId);
+        }
     }
 
 }

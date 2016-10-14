@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.res.Configuration;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -42,17 +43,22 @@ public class DeviceExpandableListAdapter extends BaseExpandableListAdapter {
     private DeviceManager mDeviceManager;
     private GroupViewHolder[] groupViewHolder;
     private ChildViewHolder[] childViewHolder;
+    private boolean connected;
 
     public DeviceExpandableListAdapter(Context mContext, ArrayList<Device> mDevices) {
         this.mContext        = mContext;
         this.mDevices        = mDevices;
+        init();
+
+    }
+
+    public void init() {
         this.mDeviceManager  = DeviceManager.getInstance();
         this.mInflater       = LayoutInflater.from(mContext);
         this.groupViewHolder = new GroupViewHolder[mDevices.size()];
         this.childViewHolder = new ChildViewHolder[mDevices.size()];
-
+        this.connected = false;
     }
-
     @Override
     public int getGroupCount() {
         return mDevices.size();
@@ -116,6 +122,11 @@ public class DeviceExpandableListAdapter extends BaseExpandableListAdapter {
                 @Override
                 public void onClick(View v) {
 
+                    Log.v("Rocali","Change numQuad 1");
+
+                    DeviceListActivity.listComponents.get(groupPosition).numQuad = nextNumQuad(DeviceListActivity.listComponents.get(groupPosition).numQuad,groupViewHolder[groupPosition].mDevice.getChannelNumber());
+                    DeviceListActivity.listComponents.get(groupPosition).lastNumQuad = DeviceListActivity.listComponents.get(groupPosition).numQuad;
+/*
                     if (DeviceListActivity.listComponents.get(groupPosition).numQuad == 1) {
                         DeviceListActivity.listComponents.get(groupPosition).numQuad = 2;
                         DeviceListActivity.listComponents.get(groupPosition).lastNumQuad = 2;
@@ -144,7 +155,7 @@ public class DeviceExpandableListAdapter extends BaseExpandableListAdapter {
                         DeviceListActivity.listComponents.get(groupPosition).numQuad = 1;
                         DeviceListActivity.listComponents.get(groupPosition).lastNumQuad = 1;
                     }
-
+*/
                     childViewHolder[groupPosition].gridLayoutManager = new GridLayoutManager(mContext, DeviceListActivity.listComponents.get(groupPosition).numQuad, GridLayoutManager.HORIZONTAL, false);
                     childViewHolder[groupPosition].recyclerViewChannels.setLayoutManager(childViewHolder[groupPosition].gridLayoutManager);
                     childViewHolder[groupPosition].mRecyclerAdapter = new ChannelRecyclerViewAdapter(mContext, groupViewHolder[groupPosition].mDevice, DeviceListActivity.listComponents.get(groupPosition).numQuad, childViewHolder[groupPosition], DeviceListActivity.listComponents.get(groupPosition));
@@ -160,6 +171,15 @@ public class DeviceExpandableListAdapter extends BaseExpandableListAdapter {
                             super.onScrollStateChanged(recyclerView, newState);
 
                             if(newState == 0) {
+                                final int currentFirstVisibleItem = childViewHolder[groupPosition].gridLayoutManager.findFirstVisibleItemPosition();
+                                final int currentLastVisibleItem = childViewHolder[groupPosition].gridLayoutManager.findLastVisibleItemPosition();
+
+                                final int itemToScroll = mDeviceManager.scrollToItem(DeviceListActivity.listComponents.get(groupPosition).numQuad,groupViewHolder[groupPosition].mDevice.getChannelNumber(),currentFirstVisibleItem,currentLastVisibleItem,childViewHolder[groupPosition].lastFirstVisibleItem,childViewHolder[groupPosition].lastLastVisibleItem);
+                                childViewHolder[groupPosition].gridLayoutManager.smoothScrollToPosition(childViewHolder[groupPosition].recyclerViewChannels, null, itemToScroll);
+
+                                childViewHolder[groupPosition].lastFirstVisibleItem = currentFirstVisibleItem;
+                                childViewHolder[groupPosition].lastLastVisibleItem = currentLastVisibleItem;
+                                /*
                                 int totalQuads = 0;
                                 if (DeviceListActivity.listComponents.get(groupPosition).numQuad == 1) {
                                     totalQuads = 1;
@@ -191,7 +211,7 @@ public class DeviceExpandableListAdapter extends BaseExpandableListAdapter {
                                     }
                                 }
                                 childViewHolder[groupPosition].lastFirstVisibleItem = currentFirstVisibleItem;
-                                childViewHolder[groupPosition].lastLastVisibleItem = currentLastVisibleItem;
+                                childViewHolder[groupPosition].lastLastVisibleItem = currentLastVisibleItem;*/
                             }
                         }
                     });
@@ -234,6 +254,10 @@ public class DeviceExpandableListAdapter extends BaseExpandableListAdapter {
                 @Override
                 public void onClick(View v) {
 
+                    DeviceListActivity.listComponents.get(groupPosition).numQuad = nextNumQuad(DeviceListActivity.listComponents.get(groupPosition).numQuad,groupViewHolder[groupPosition].mDevice.getChannelNumber());
+                    DeviceListActivity.listComponents.get(groupPosition).lastNumQuad = DeviceListActivity.listComponents.get(groupPosition).numQuad;
+                    /*
+
                     if (DeviceListActivity.listComponents.get(groupPosition).numQuad == 1) {
                         DeviceListActivity.listComponents.get(groupPosition).numQuad = 2;
                         DeviceListActivity.listComponents.get(groupPosition).lastNumQuad = 2;
@@ -262,7 +286,10 @@ public class DeviceExpandableListAdapter extends BaseExpandableListAdapter {
                     } else if (DeviceListActivity.listComponents.get(groupPosition).numQuad == 4) {
                         DeviceListActivity.listComponents.get(groupPosition).numQuad = 1;
                         DeviceListActivity.listComponents.get(groupPosition).lastNumQuad = 1;
-                    }
+                    }*/
+
+                    Log.v("Rocali","Change numQuad "+DeviceListActivity.listComponents.get(groupPosition).numQuad);
+                    //DeviceListActivity.listComponents.get(groupPosition).reOrderSurfaceViewComponents();
 
                     childViewHolder[groupPosition].gridLayoutManager = new GridLayoutManager(mContext, DeviceListActivity.listComponents.get(groupPosition).numQuad, GridLayoutManager.HORIZONTAL, false);
                     childViewHolder[groupPosition].recyclerViewChannels.setLayoutManager(childViewHolder[groupPosition].gridLayoutManager);
@@ -279,6 +306,15 @@ public class DeviceExpandableListAdapter extends BaseExpandableListAdapter {
                             super.onScrollStateChanged(recyclerView, newState);
 
                             if(newState == 0) {
+                                final int currentFirstVisibleItem = childViewHolder[groupPosition].gridLayoutManager.findFirstVisibleItemPosition();
+                                final int currentLastVisibleItem = childViewHolder[groupPosition].gridLayoutManager.findLastVisibleItemPosition();
+
+                                final int itemToScroll = mDeviceManager.scrollToItem(DeviceListActivity.listComponents.get(groupPosition).numQuad,groupViewHolder[groupPosition].mDevice.getChannelNumber(),currentFirstVisibleItem,currentLastVisibleItem,childViewHolder[groupPosition].lastFirstVisibleItem,childViewHolder[groupPosition].lastLastVisibleItem);
+                                childViewHolder[groupPosition].gridLayoutManager.smoothScrollToPosition(childViewHolder[groupPosition].recyclerViewChannels, null, itemToScroll);
+
+                                childViewHolder[groupPosition].lastFirstVisibleItem = currentFirstVisibleItem;
+                                childViewHolder[groupPosition].lastLastVisibleItem = currentLastVisibleItem;
+                                /*
                                 int totalQuads = 0;
                                 if (DeviceListActivity.listComponents.get(groupPosition).numQuad == 1) {
                                     totalQuads = 1;
@@ -311,13 +347,14 @@ public class DeviceExpandableListAdapter extends BaseExpandableListAdapter {
                                 }
                                 childViewHolder[groupPosition].lastFirstVisibleItem = currentFirstVisibleItem;
                                 childViewHolder[groupPosition].lastLastVisibleItem = currentLastVisibleItem;
+                                */
                             }
                         }
                     });
                 }
             });
         }
-
+        groupViewHolder[groupPosition].convertView.setBackgroundColor(Color.WHITE);
         return groupViewHolder[groupPosition].convertView;
     }
 
@@ -339,6 +376,7 @@ public class DeviceExpandableListAdapter extends BaseExpandableListAdapter {
 
 
             if(groupViewHolder[groupPosition].mDevice.getLoginID() == 0) {
+                this.connected = false;
                 loginDevice(groupViewHolder[groupPosition].mDevice, groupViewHolder[groupPosition], childViewHolder[groupPosition], groupPosition);
             } else {
                 childViewHolder[groupPosition].tvMessage.setVisibility(View.GONE);
@@ -371,6 +409,15 @@ public class DeviceExpandableListAdapter extends BaseExpandableListAdapter {
                         super.onScrollStateChanged(recyclerView, newState);
 
                         if(newState == 0) {
+                            final int currentFirstVisibleItem = childViewHolder[groupPosition].gridLayoutManager.findFirstVisibleItemPosition();
+                            final int currentLastVisibleItem = childViewHolder[groupPosition].gridLayoutManager.findLastVisibleItemPosition();
+
+                            final int itemToScroll = mDeviceManager.scrollToItem(DeviceListActivity.listComponents.get(groupPosition).numQuad,groupViewHolder[groupPosition].mDevice.getChannelNumber(),currentFirstVisibleItem,currentLastVisibleItem,childViewHolder[groupPosition].lastFirstVisibleItem,childViewHolder[groupPosition].lastLastVisibleItem);
+                            childViewHolder[groupPosition].gridLayoutManager.smoothScrollToPosition(childViewHolder[groupPosition].recyclerViewChannels, null, itemToScroll);
+
+                            childViewHolder[groupPosition].lastFirstVisibleItem = currentFirstVisibleItem;
+                            childViewHolder[groupPosition].lastLastVisibleItem = currentLastVisibleItem;
+                            /*
                             int totalQuads = 0;
                             if (DeviceListActivity.listComponents.get(groupPosition).numQuad == 1) {
                                 totalQuads = 1;
@@ -402,7 +449,7 @@ public class DeviceExpandableListAdapter extends BaseExpandableListAdapter {
                                 }
                             }
                             childViewHolder[groupPosition].lastFirstVisibleItem = currentFirstVisibleItem;
-                            childViewHolder[groupPosition].lastLastVisibleItem = currentLastVisibleItem;
+                            childViewHolder[groupPosition].lastLastVisibleItem = currentLastVisibleItem;*/
                         }
                     }
                 });
@@ -466,6 +513,7 @@ public class DeviceExpandableListAdapter extends BaseExpandableListAdapter {
                 ((DeviceListActivity) mContext).runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
+
                         childViewHolder.tvMessage.setVisibility(View.GONE);
                         childViewHolder.recyclerViewChannels.setVisibility(View.VISIBLE);
 
@@ -500,6 +548,15 @@ public class DeviceExpandableListAdapter extends BaseExpandableListAdapter {
                                 super.onScrollStateChanged(recyclerView, newState);
 
                                 if(newState == 0) {
+                                    final int currentFirstVisibleItem = childViewHolder.gridLayoutManager.findFirstVisibleItemPosition();
+                                    final int currentLastVisibleItem = childViewHolder.gridLayoutManager.findLastVisibleItemPosition();
+
+                                    final int itemToScroll = mDeviceManager.scrollToItem(DeviceListActivity.listComponents.get(position).numQuad,mDevice.getChannelNumber(),currentFirstVisibleItem,currentLastVisibleItem,childViewHolder.lastFirstVisibleItem,childViewHolder.lastLastVisibleItem);
+                                    childViewHolder.gridLayoutManager.smoothScrollToPosition(childViewHolder.recyclerViewChannels, null, itemToScroll);
+
+                                    childViewHolder.lastFirstVisibleItem = currentFirstVisibleItem;
+                                    childViewHolder.lastLastVisibleItem = currentLastVisibleItem;
+                                    /*
                                     int totalQuads = 0;
                                     if (DeviceListActivity.listComponents.get(position).numQuad == 1) {
                                         totalQuads = 1;
@@ -534,10 +591,11 @@ public class DeviceExpandableListAdapter extends BaseExpandableListAdapter {
                                         }
                                     }
                                     childViewHolder.lastFirstVisibleItem = currentFirstVisibleItem;
-                                    childViewHolder.lastLastVisibleItem = currentLastVisibleItem;
+                                    childViewHolder.lastLastVisibleItem = currentLastVisibleItem;*/
                                 }
                             }
                         });
+                        connected = true;
 
                     }
                 });
@@ -647,6 +705,40 @@ public class DeviceExpandableListAdapter extends BaseExpandableListAdapter {
         mContext.startActivity(intent);
     }
 
+    public int nextNumQuad(int numQuad,int totalChannels) {
+        int nextNumQuad = 1;
+        if (numQuad == 1) {
+            nextNumQuad = 2;
+
+        } else if (numQuad == 2) {
+            if(totalChannels > 4) {
+                nextNumQuad = 3;
+            } else {
+                nextNumQuad = 1;
+            }
+
+        } else if (numQuad == 3) {
+
+            if(totalChannels > 9) {
+                nextNumQuad = 4;
+
+            } else {
+                nextNumQuad = 1;
+            }
+
+        } else if (numQuad == 4) {
+            nextNumQuad = 1;
+        }
+        return nextNumQuad;
+    }
+
+    public boolean isConnected() {
+        return connected;
+    }
+
+    public void refreshAdapter() {
+        init();
+    }
 
 
 }
