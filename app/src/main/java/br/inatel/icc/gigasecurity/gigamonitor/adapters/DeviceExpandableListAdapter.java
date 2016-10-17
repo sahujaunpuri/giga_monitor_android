@@ -156,6 +156,7 @@ public class DeviceExpandableListAdapter extends BaseExpandableListAdapter {
                         DeviceListActivity.listComponents.get(groupPosition).lastNumQuad = 1;
                     }
 */
+
                     childViewHolder[groupPosition].gridLayoutManager = new GridLayoutManager(mContext, DeviceListActivity.listComponents.get(groupPosition).numQuad, GridLayoutManager.HORIZONTAL, false);
                     childViewHolder[groupPosition].recyclerViewChannels.setLayoutManager(childViewHolder[groupPosition].gridLayoutManager);
                     childViewHolder[groupPosition].mRecyclerAdapter = new ChannelRecyclerViewAdapter(mContext, groupViewHolder[groupPosition].mDevice, DeviceListActivity.listComponents.get(groupPosition).numQuad, childViewHolder[groupPosition], DeviceListActivity.listComponents.get(groupPosition));
@@ -354,7 +355,6 @@ public class DeviceExpandableListAdapter extends BaseExpandableListAdapter {
                 }
             });
         }
-        groupViewHolder[groupPosition].convertView.setBackgroundColor(Color.WHITE);
         return groupViewHolder[groupPosition].convertView;
     }
 
@@ -393,8 +393,9 @@ public class DeviceExpandableListAdapter extends BaseExpandableListAdapter {
                     groupViewHolder[groupPosition].ivQuad.setVisibility(View.INVISIBLE);
                     //DeviceListActivity.listComponents.get(groupPosition).numQuad = 1;
                 }
+                
 
-                childViewHolder[groupPosition].gridLayoutManager = new GridLayoutManager(mContext, DeviceListActivity.listComponents.get(groupPosition).numQuad, GridLayoutManager.HORIZONTAL, false);
+                 childViewHolder[groupPosition].gridLayoutManager = new GridLayoutManager(mContext, DeviceListActivity.listComponents.get(groupPosition).numQuad, GridLayoutManager.HORIZONTAL, false);
                 childViewHolder[groupPosition].recyclerViewChannels.setLayoutManager(childViewHolder[groupPosition].gridLayoutManager);
                 childViewHolder[groupPosition].mRecyclerAdapter = new ChannelRecyclerViewAdapter(mContext, groupViewHolder[groupPosition].mDevice, DeviceListActivity.listComponents.get(groupPosition).numQuad, childViewHolder[groupPosition], DeviceListActivity.listComponents.get(groupPosition));
                 childViewHolder[groupPosition].recyclerViewChannels.setAdapter(childViewHolder[groupPosition].mRecyclerAdapter);
@@ -532,6 +533,7 @@ public class DeviceExpandableListAdapter extends BaseExpandableListAdapter {
                         }
 
                         DeviceListActivity.listComponents.get(position).createComponents();
+
 
                         childViewHolder.gridLayoutManager = new GridLayoutManager(mContext, DeviceListActivity.listComponents.get(position).numQuad, GridLayoutManager.HORIZONTAL, false);
                         childViewHolder.recyclerViewChannels.setLayoutManager(childViewHolder.gridLayoutManager);
