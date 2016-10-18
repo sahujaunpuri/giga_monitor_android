@@ -122,40 +122,11 @@ public class DeviceExpandableListAdapter extends BaseExpandableListAdapter {
                 @Override
                 public void onClick(View v) {
 
+
                     Log.v("Rocali","Change numQuad 1");
 
                     DeviceListActivity.listComponents.get(groupPosition).numQuad = nextNumQuad(DeviceListActivity.listComponents.get(groupPosition).numQuad,groupViewHolder[groupPosition].mDevice.getChannelNumber());
                     DeviceListActivity.listComponents.get(groupPosition).lastNumQuad = DeviceListActivity.listComponents.get(groupPosition).numQuad;
-/*
-                    if (DeviceListActivity.listComponents.get(groupPosition).numQuad == 1) {
-                        DeviceListActivity.listComponents.get(groupPosition).numQuad = 2;
-                        DeviceListActivity.listComponents.get(groupPosition).lastNumQuad = 2;
-
-                    } else if (DeviceListActivity.listComponents.get(groupPosition).numQuad == 2) {
-
-                        if(groupViewHolder[groupPosition].mDevice.getChannelNumber() > 4) {
-                            DeviceListActivity.listComponents.get(groupPosition).numQuad = 3;
-                            DeviceListActivity.listComponents.get(groupPosition).lastNumQuad = 3;
-                        } else {
-                            DeviceListActivity.listComponents.get(groupPosition).numQuad = 1;
-                            DeviceListActivity.listComponents.get(groupPosition).lastNumQuad = 1;
-                        }
-
-                    } else if (DeviceListActivity.listComponents.get(groupPosition).numQuad == 3) {
-
-                        if(groupViewHolder[groupPosition].mDevice.getChannelNumber() > 9) {
-                            DeviceListActivity.listComponents.get(groupPosition).numQuad = 4;
-                            DeviceListActivity.listComponents.get(groupPosition).lastNumQuad = 4;
-                        } else {
-                            DeviceListActivity.listComponents.get(groupPosition).numQuad = 1;
-                            DeviceListActivity.listComponents.get(groupPosition).lastNumQuad = 1;
-                        }
-
-                    } else if (DeviceListActivity.listComponents.get(groupPosition).numQuad == 4) {
-                        DeviceListActivity.listComponents.get(groupPosition).numQuad = 1;
-                        DeviceListActivity.listComponents.get(groupPosition).lastNumQuad = 1;
-                    }
-*/
 
                     childViewHolder[groupPosition].gridLayoutManager = new GridLayoutManager(mContext, DeviceListActivity.listComponents.get(groupPosition).numQuad, GridLayoutManager.HORIZONTAL, false);
                     childViewHolder[groupPosition].recyclerViewChannels.setLayoutManager(childViewHolder[groupPosition].gridLayoutManager);
@@ -180,39 +151,6 @@ public class DeviceExpandableListAdapter extends BaseExpandableListAdapter {
 
                                 childViewHolder[groupPosition].lastFirstVisibleItem = currentFirstVisibleItem;
                                 childViewHolder[groupPosition].lastLastVisibleItem = currentLastVisibleItem;
-                                /*
-                                int totalQuads = 0;
-                                if (DeviceListActivity.listComponents.get(groupPosition).numQuad == 1) {
-                                    totalQuads = 1;
-                                } else if (DeviceListActivity.listComponents.get(groupPosition).numQuad == 2) {
-                                    totalQuads = 4;
-                                } else if (DeviceListActivity.listComponents.get(groupPosition).numQuad == 3) {
-                                    totalQuads = 9;
-                                } else if (DeviceListActivity.listComponents.get(groupPosition).numQuad == 4) {
-                                    totalQuads = 16;
-                                }
-                                final int currentLastVisibleItem = childViewHolder[groupPosition].gridLayoutManager.findLastVisibleItemPosition();
-                                final int currentFirstVisibleItem = childViewHolder[groupPosition].gridLayoutManager.findFirstVisibleItemPosition();
-                                Log.v("Rocali","2 CF "+currentFirstVisibleItem+" CL "+currentLastVisibleItem+"     LFV "+childViewHolder[groupPosition].lastFirstVisibleItem+"     LLV "+childViewHolder[groupPosition].lastLastVisibleItem);
-                                if (totalQuads > 1) {
-                                    if (currentLastVisibleItem % totalQuads == totalQuads - 1) {
-                                        childViewHolder[groupPosition].gridLayoutManager.smoothScrollToPosition(childViewHolder[groupPosition].recyclerViewChannels, null, currentLastVisibleItem);
-                                    } else if (currentFirstVisibleItem % totalQuads == 0) {
-                                        childViewHolder[groupPosition].gridLayoutManager.smoothScrollToPosition(childViewHolder[groupPosition].recyclerViewChannels, null, currentFirstVisibleItem);
-                                    } else if (currentLastVisibleItem == groupViewHolder[groupPosition].mDevice.getChannelNumber() - 1) {
-                                        childViewHolder[groupPosition].gridLayoutManager.smoothScrollToPosition(childViewHolder[groupPosition].recyclerViewChannels, null, currentLastVisibleItem);
-                                    } else {
-                                        childViewHolder[groupPosition].gridLayoutManager.smoothScrollToPosition(childViewHolder[groupPosition].recyclerViewChannels, null, currentFirstVisibleItem);
-                                    }
-                                } else if (totalQuads == 1) {
-                                    if (childViewHolder[groupPosition].lastFirstVisibleItem != currentFirstVisibleItem) {
-                                        childViewHolder[groupPosition].gridLayoutManager.smoothScrollToPosition(childViewHolder[groupPosition].recyclerViewChannels, null, currentFirstVisibleItem);
-                                    } else if (childViewHolder[groupPosition].lastLastVisibleItem != currentLastVisibleItem){
-                                        childViewHolder[groupPosition].gridLayoutManager.smoothScrollToPosition(childViewHolder[groupPosition].recyclerViewChannels, null, currentLastVisibleItem);
-                                    }
-                                }
-                                childViewHolder[groupPosition].lastFirstVisibleItem = currentFirstVisibleItem;
-                                childViewHolder[groupPosition].lastLastVisibleItem = currentLastVisibleItem;*/
                             }
                         }
                     });
@@ -220,7 +158,7 @@ public class DeviceExpandableListAdapter extends BaseExpandableListAdapter {
             });
         }
 
-        if(mContext.getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE) {
+        if(mContext.getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE && DeviceListActivity.previousGroup != -1) {
             groupViewHolder[groupPosition].convertView = mInflater.inflate(R.layout.blank_layout, parent, false);
         } else {
             groupViewHolder[groupPosition].convertView = mInflater.inflate(R.layout.expandable_list_view_row, parent, false);
@@ -242,6 +180,8 @@ public class DeviceExpandableListAdapter extends BaseExpandableListAdapter {
                 if(groupViewHolder[groupPosition].mDevice.getChannelNumber() > 1) {
                     groupViewHolder[groupPosition].ivQuad.setVisibility(View.VISIBLE);
                 }
+
+                //childViewHolder[groupPosition].recyclerViewChannels.getAdapter().notifyDataSetChanged();
             }
 
             groupViewHolder[groupPosition].ivMore.setOnClickListener(new View.OnClickListener() {
@@ -255,39 +195,9 @@ public class DeviceExpandableListAdapter extends BaseExpandableListAdapter {
                 @Override
                 public void onClick(View v) {
 
+
                     DeviceListActivity.listComponents.get(groupPosition).numQuad = nextNumQuad(DeviceListActivity.listComponents.get(groupPosition).numQuad,groupViewHolder[groupPosition].mDevice.getChannelNumber());
                     DeviceListActivity.listComponents.get(groupPosition).lastNumQuad = DeviceListActivity.listComponents.get(groupPosition).numQuad;
-                    /*
-
-                    if (DeviceListActivity.listComponents.get(groupPosition).numQuad == 1) {
-                        DeviceListActivity.listComponents.get(groupPosition).numQuad = 2;
-                        DeviceListActivity.listComponents.get(groupPosition).lastNumQuad = 2;
-
-                    } else if (DeviceListActivity.listComponents.get(groupPosition).numQuad == 2) {
-
-                        if(groupViewHolder[groupPosition].mDevice.getChannelNumber() > 4) {
-                            DeviceListActivity.listComponents.get(groupPosition).numQuad = 3;
-                            DeviceListActivity.listComponents.get(groupPosition).lastNumQuad = 3;
-                        } else {
-                            DeviceListActivity.listComponents.get(groupPosition).numQuad = 1;
-                            DeviceListActivity.listComponents.get(groupPosition).lastNumQuad = 1;
-                        }
-
-                    } else if (DeviceListActivity.listComponents.get(groupPosition).numQuad == 3) {
-
-                        if(groupViewHolder[groupPosition].mDevice.getChannelNumber() > 9) {
-                            DeviceListActivity.listComponents.get(groupPosition).numQuad = 4;
-                            DeviceListActivity.listComponents.get(groupPosition).lastNumQuad = 4;
-
-                        } else {
-                            DeviceListActivity.listComponents.get(groupPosition).numQuad = 1;
-                            DeviceListActivity.listComponents.get(groupPosition).lastNumQuad = 1;
-                        }
-
-                    } else if (DeviceListActivity.listComponents.get(groupPosition).numQuad == 4) {
-                        DeviceListActivity.listComponents.get(groupPosition).numQuad = 1;
-                        DeviceListActivity.listComponents.get(groupPosition).lastNumQuad = 1;
-                    }*/
 
                     Log.v("Rocali","Change numQuad "+DeviceListActivity.listComponents.get(groupPosition).numQuad);
                     //DeviceListActivity.listComponents.get(groupPosition).reOrderSurfaceViewComponents();
@@ -315,40 +225,6 @@ public class DeviceExpandableListAdapter extends BaseExpandableListAdapter {
 
                                 childViewHolder[groupPosition].lastFirstVisibleItem = currentFirstVisibleItem;
                                 childViewHolder[groupPosition].lastLastVisibleItem = currentLastVisibleItem;
-                                /*
-                                int totalQuads = 0;
-                                if (DeviceListActivity.listComponents.get(groupPosition).numQuad == 1) {
-                                    totalQuads = 1;
-                                } else if (DeviceListActivity.listComponents.get(groupPosition).numQuad == 2) {
-                                    totalQuads = 4;
-                                } else if (DeviceListActivity.listComponents.get(groupPosition).numQuad == 3) {
-                                    totalQuads = 9;
-                                } else if (DeviceListActivity.listComponents.get(groupPosition).numQuad == 4) {
-                                    totalQuads = 16;
-                                }
-                                final int currentLastVisibleItem = childViewHolder[groupPosition].gridLayoutManager.findLastVisibleItemPosition();
-                                final int currentFirstVisibleItem = childViewHolder[groupPosition].gridLayoutManager.findFirstVisibleItemPosition();
-                                Log.v("Rocali","3 CF "+currentFirstVisibleItem+" CL "+currentLastVisibleItem+"     LFV "+childViewHolder[groupPosition].lastFirstVisibleItem+"     LLV "+childViewHolder[groupPosition].lastLastVisibleItem);
-                                if (totalQuads > 1) {
-                                    if (currentLastVisibleItem % totalQuads == totalQuads - 1) {
-                                        childViewHolder[groupPosition].gridLayoutManager.smoothScrollToPosition(childViewHolder[groupPosition].recyclerViewChannels, null, currentLastVisibleItem);
-                                    } else if (currentFirstVisibleItem % totalQuads == 0) {
-                                        childViewHolder[groupPosition].gridLayoutManager.smoothScrollToPosition(childViewHolder[groupPosition].recyclerViewChannels, null, currentFirstVisibleItem);
-                                    } else if (currentLastVisibleItem == groupViewHolder[groupPosition].mDevice.getChannelNumber() - 1) {
-                                        childViewHolder[groupPosition].gridLayoutManager.smoothScrollToPosition(childViewHolder[groupPosition].recyclerViewChannels, null, currentLastVisibleItem);
-                                    } else {
-                                        childViewHolder[groupPosition].gridLayoutManager.smoothScrollToPosition(childViewHolder[groupPosition].recyclerViewChannels, null, currentFirstVisibleItem);
-                                    }
-                                } else if (totalQuads == 1) {
-                                    if (childViewHolder[groupPosition].lastFirstVisibleItem != currentFirstVisibleItem) {
-                                        childViewHolder[groupPosition].gridLayoutManager.smoothScrollToPosition(childViewHolder[groupPosition].recyclerViewChannels, null, currentFirstVisibleItem);
-                                    } else if (childViewHolder[groupPosition].lastLastVisibleItem != currentLastVisibleItem){
-                                        childViewHolder[groupPosition].gridLayoutManager.smoothScrollToPosition(childViewHolder[groupPosition].recyclerViewChannels, null, currentLastVisibleItem);
-                                    }
-                                }
-                                childViewHolder[groupPosition].lastFirstVisibleItem = currentFirstVisibleItem;
-                                childViewHolder[groupPosition].lastLastVisibleItem = currentLastVisibleItem;
-                                */
                             }
                         }
                     });
@@ -393,7 +269,7 @@ public class DeviceExpandableListAdapter extends BaseExpandableListAdapter {
                     groupViewHolder[groupPosition].ivQuad.setVisibility(View.INVISIBLE);
                     //DeviceListActivity.listComponents.get(groupPosition).numQuad = 1;
                 }
-                
+
 
                  childViewHolder[groupPosition].gridLayoutManager = new GridLayoutManager(mContext, DeviceListActivity.listComponents.get(groupPosition).numQuad, GridLayoutManager.HORIZONTAL, false);
                 childViewHolder[groupPosition].recyclerViewChannels.setLayoutManager(childViewHolder[groupPosition].gridLayoutManager);
@@ -417,40 +293,6 @@ public class DeviceExpandableListAdapter extends BaseExpandableListAdapter {
                             childViewHolder[groupPosition].gridLayoutManager.smoothScrollToPosition(childViewHolder[groupPosition].recyclerViewChannels, null, itemToScroll);
 
                             childViewHolder[groupPosition].lastFirstVisibleItem = currentFirstVisibleItem;
-                            childViewHolder[groupPosition].lastLastVisibleItem = currentLastVisibleItem;
-                            /*
-                            int totalQuads = 0;
-                            if (DeviceListActivity.listComponents.get(groupPosition).numQuad == 1) {
-                                totalQuads = 1;
-                            } else if (DeviceListActivity.listComponents.get(groupPosition).numQuad == 2) {
-                                totalQuads = 4;
-                            } else if (DeviceListActivity.listComponents.get(groupPosition).numQuad == 3) {
-                                totalQuads = 9;
-                            } else if (DeviceListActivity.listComponents.get(groupPosition).numQuad == 4) {
-                                totalQuads = 16;
-                            }
-                            final int currentLastVisibleItem = childViewHolder[groupPosition].gridLayoutManager.findLastVisibleItemPosition();
-                            final int currentFirstVisibleItem = childViewHolder[groupPosition].gridLayoutManager.findFirstVisibleItemPosition();
-                            Log.v("Rocali","2 CF "+currentFirstVisibleItem+" CL "+currentLastVisibleItem+"     LFV "+childViewHolder[groupPosition].lastFirstVisibleItem+"     LLV "+childViewHolder[groupPosition].lastLastVisibleItem);
-                            if (totalQuads > 1) {
-                                if (currentLastVisibleItem % totalQuads == totalQuads - 1) {
-                                    childViewHolder[groupPosition].gridLayoutManager.smoothScrollToPosition(childViewHolder[groupPosition].recyclerViewChannels, null, currentLastVisibleItem);
-                                } else if (currentFirstVisibleItem % totalQuads == 0) {
-                                    childViewHolder[groupPosition].gridLayoutManager.smoothScrollToPosition(childViewHolder[groupPosition].recyclerViewChannels, null, currentFirstVisibleItem);
-                                } else if (currentLastVisibleItem == groupViewHolder[groupPosition].mDevice.getChannelNumber() - 1) {
-                                    childViewHolder[groupPosition].gridLayoutManager.smoothScrollToPosition(childViewHolder[groupPosition].recyclerViewChannels, null, currentLastVisibleItem);
-                                } else {
-                                    childViewHolder[groupPosition].gridLayoutManager.smoothScrollToPosition(childViewHolder[groupPosition].recyclerViewChannels, null, currentFirstVisibleItem);
-                                }
-                            } else if (totalQuads == 1) {
-                                if (childViewHolder[groupPosition].lastFirstVisibleItem != currentFirstVisibleItem) {
-                                    childViewHolder[groupPosition].gridLayoutManager.smoothScrollToPosition(childViewHolder[groupPosition].recyclerViewChannels, null, currentFirstVisibleItem);
-                                } else if (childViewHolder[groupPosition].lastLastVisibleItem != currentLastVisibleItem){
-                                    childViewHolder[groupPosition].gridLayoutManager.smoothScrollToPosition(childViewHolder[groupPosition].recyclerViewChannels, null, currentLastVisibleItem);
-                                }
-                            }
-                            childViewHolder[groupPosition].lastFirstVisibleItem = currentFirstVisibleItem;
-                            childViewHolder[groupPosition].lastLastVisibleItem = currentLastVisibleItem;*/
                         }
                     }
                 });
@@ -558,42 +400,6 @@ public class DeviceExpandableListAdapter extends BaseExpandableListAdapter {
 
                                     childViewHolder.lastFirstVisibleItem = currentFirstVisibleItem;
                                     childViewHolder.lastLastVisibleItem = currentLastVisibleItem;
-                                    /*
-                                    int totalQuads = 0;
-                                    if (DeviceListActivity.listComponents.get(position).numQuad == 1) {
-                                        totalQuads = 1;
-                                    } else if (DeviceListActivity.listComponents.get(position).numQuad == 2) {
-                                        totalQuads = 4;
-                                    } else if (DeviceListActivity.listComponents.get(position).numQuad == 3) {
-                                        totalQuads = 9;
-                                    } else if (DeviceListActivity.listComponents.get(position).numQuad == 4) {
-                                        totalQuads = 16;
-                                    }
-
-
-                                    final int currentFirstVisibleItem = childViewHolder.gridLayoutManager.findFirstVisibleItemPosition();
-                                    final int currentLastVisibleItem = childViewHolder.gridLayoutManager.findLastVisibleItemPosition();
-                                    Log.v("Rocali","1 CF "+currentFirstVisibleItem+" CL "+currentLastVisibleItem+"     LFV "+childViewHolder.lastFirstVisibleItem+"     LLV "+childViewHolder.lastLastVisibleItem);
-
-                                    if (totalQuads > 1) {
-                                        if (currentLastVisibleItem % totalQuads == totalQuads - 1) {
-                                            childViewHolder.gridLayoutManager.smoothScrollToPosition(childViewHolder.recyclerViewChannels, null, currentLastVisibleItem);
-                                        } else if (currentFirstVisibleItem % totalQuads == 0) {
-                                            childViewHolder.gridLayoutManager.smoothScrollToPosition(childViewHolder.recyclerViewChannels, null, currentFirstVisibleItem);
-                                        } else if (currentLastVisibleItem == mDevice.getChannelNumber() - 1) {
-                                            childViewHolder.gridLayoutManager.smoothScrollToPosition(childViewHolder.recyclerViewChannels, null, currentLastVisibleItem);
-                                        } else {
-                                            childViewHolder.gridLayoutManager.smoothScrollToPosition(childViewHolder.recyclerViewChannels, null, currentFirstVisibleItem);
-                                        }
-                                    } else if (totalQuads == 1) {
-                                        if (childViewHolder.lastFirstVisibleItem != currentFirstVisibleItem) {
-                                            childViewHolder.gridLayoutManager.smoothScrollToPosition(childViewHolder.recyclerViewChannels, null, currentFirstVisibleItem);
-                                        } else if (childViewHolder.lastLastVisibleItem != currentLastVisibleItem) {
-                                            childViewHolder.gridLayoutManager.smoothScrollToPosition(childViewHolder.recyclerViewChannels, null, currentLastVisibleItem);
-                                        }
-                                    }
-                                    childViewHolder.lastFirstVisibleItem = currentFirstVisibleItem;
-                                    childViewHolder.lastLastVisibleItem = currentLastVisibleItem;*/
                                 }
                             }
                         });
@@ -604,7 +410,7 @@ public class DeviceExpandableListAdapter extends BaseExpandableListAdapter {
             }
 
             @Override
-            public void onLoginError(long loginID) {
+            public void onLoginError(final long loginID) {
                 ((DeviceListActivity) mContext).runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
@@ -612,7 +418,11 @@ public class DeviceExpandableListAdapter extends BaseExpandableListAdapter {
                         groupViewHolder.ivMore.setVisibility(View.INVISIBLE);
                         childViewHolder.recyclerViewChannels.setVisibility(View.GONE);
                         childViewHolder.tvMessage.setVisibility(View.VISIBLE);
-                        childViewHolder.tvMessage.setText("Erro ao conectar com o dispositivo.");
+                        if(loginID == -11301) {
+                            childViewHolder.tvMessage.setText("Erro ao fazer login com o dipositivo. Senha incorreta.");
+                        } else {
+                            childViewHolder.tvMessage.setText("Erro ao fazer login com o dipositivo.");
+                        }
                     }
                 });
             }

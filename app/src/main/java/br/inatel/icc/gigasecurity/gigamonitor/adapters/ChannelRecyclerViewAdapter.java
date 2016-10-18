@@ -96,8 +96,6 @@ public class ChannelRecyclerViewAdapter extends RecyclerView.Adapter<ChannelRecy
             parent.removeAllViews();
         }
 
-
-
         myViewHolder.frameLayout.addView(listComponent.surfaceViewComponents.get(position).mySurfaceView);
         myViewHolder.frameLayout.addView(listComponent.surfaceViewComponents.get(position).progressBar);
 
@@ -106,9 +104,6 @@ public class ChannelRecyclerViewAdapter extends RecyclerView.Adapter<ChannelRecy
         listComponent.changeSurfaceViewSize(listComponent.surfaceViewComponents.get(position), myViewHolder.frameLayout);
 
         startDeviceVideo(mDevice, listComponent.surfaceViewComponents.get(position));
-
-
-
 
         listComponent.surfaceViewComponents.get(position).mySurfaceView.setOnClickListener(new View.OnClickListener() {
             @Override

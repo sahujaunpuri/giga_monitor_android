@@ -1,5 +1,7 @@
 package br.inatel.icc.gigasecurity.gigamonitor.activities;
 
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
@@ -22,11 +24,14 @@ public class DeviceEditListActivity extends ActionBarActivity {
     private DeviceManager mDeviceManager;
 
     public static DragSortListView lv;
+    private boolean modified;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_edit_device_list);
+
+        this.modified = false;
 
         if(getIntent().getExtras() != null){
             mDevices = (ArrayList<Device>) getIntent().getExtras().getSerializable("devices");
@@ -72,6 +77,8 @@ public class DeviceEditListActivity extends ActionBarActivity {
 
                     mAdapter = new DeviceEditAdapter(DeviceEditListActivity.this, mDevices);
                     lv.setAdapter(mAdapter);
+
+                    modified = true;
                 }
             };
 
@@ -87,6 +94,8 @@ public class DeviceEditListActivity extends ActionBarActivity {
                     mAdapter = new DeviceEditAdapter(DeviceEditListActivity.this, mDevices);
 
                     lv.setAdapter(mAdapter);
+
+                    modified = true;
                 }
             };
 
@@ -125,10 +134,38 @@ public class DeviceEditListActivity extends ActionBarActivity {
         }
 
         if (id == android.R.id.home) {
-            finish();
+            if (modified) {
+                showBackConfirmation();
+            } else {
+                finish();
+            }
             return true;
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    private void showBackConfirmation() {
+        AlertDialog.Builder alert = new AlertDialog.Builder(this);
+        alert.setTitle("Atenção");
+        alert.setMessage("Existe alterações não salvas.");
+        alert.setPositiveButton("Salvar", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int which) {
+                mDeviceManager.saveDevices(DeviceEditListActivity.this, mDevices);
+
+                DeviceListActivity.mDevices = null;
+                DeviceListActivity.loadDevices();
+
+                startDeviceListActivity();
+            }
+            });
+        alert.setNegativeButton("Cancelar", new DialogInterface.OnClickListener() {
+            @Override
+             public void onClick(DialogInterface dialog, int which) {
+               dialog.dismiss();
+            }
+        });
+        alert.show();
     }
 }
