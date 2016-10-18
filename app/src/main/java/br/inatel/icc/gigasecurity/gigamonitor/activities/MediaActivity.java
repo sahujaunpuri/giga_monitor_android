@@ -9,6 +9,7 @@ import android.os.Environment;
 import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
 import android.view.View;
+import android.view.ViewConfiguration;
 import android.view.Window;
 import android.widget.GridView;
 import android.widget.ImageView;
@@ -42,6 +43,8 @@ public class MediaActivity extends ActionBarActivity {
         mAdapter = new MediaGridAdapter(MediaActivity.this);
 
         gvMedia.setAdapter(mAdapter);
+
+        gvMedia.setFriction(ViewConfiguration.getScrollFriction() * 10);
 
         ivImage.setOnClickListener(new View.OnClickListener() {
             @Override

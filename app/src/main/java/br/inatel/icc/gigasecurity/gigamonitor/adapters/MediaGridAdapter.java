@@ -18,8 +18,10 @@ import android.media.ThumbnailUtils;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.provider.Browser;
 import android.provider.MediaStore;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
@@ -46,6 +48,7 @@ import java.util.zip.CheckedOutputStream;
 
 import br.inatel.icc.gigasecurity.gigamonitor.R;
 import br.inatel.icc.gigasecurity.gigamonitor.activities.DeviceFormActivity;
+import br.inatel.icc.gigasecurity.gigamonitor.activities.DeviceListActivity;
 import br.inatel.icc.gigasecurity.gigamonitor.activities.MediaActivity;
 //import wseemann.media.FFmpegMediaMetadataRetriever;
 
@@ -63,7 +66,8 @@ public class MediaGridAdapter extends BaseAdapter {
 
     private ArrayList<Uri> mImageUris;
     private ArrayList<Uri> mVideoUris;
-    private ArrayList<Bitmap> mVideoBitmaps;
+    private ArrayList<Drawable> mVideoDrawables;
+    private ArrayList<Boolean> mVideoHasThumbnail;
 
     public long videoClickDownTime = 0;
     private boolean pictureMode;
@@ -76,7 +80,8 @@ public class MediaGridAdapter extends BaseAdapter {
 
         mImageUris = new ArrayList<Uri>();
         mVideoUris = new ArrayList<Uri>();
-        mVideoBitmaps = new ArrayList<Bitmap>();
+        mVideoDrawables = new ArrayList<Drawable>();
+        mVideoHasThumbnail = new ArrayList<Boolean>();
 
         getImgFiles();
         getVideoFiles();
@@ -108,7 +113,8 @@ public class MediaGridAdapter extends BaseAdapter {
 
                 //Aux Arrays
                 mVideoUris.add(null);
-                mVideoBitmaps.add(null);
+                mVideoDrawables.add(null);
+                mVideoHasThumbnail.add(false);
             }
         }
         Collections.sort(mVideoFiles, new Comparator<File>() {
@@ -245,29 +251,39 @@ public class MediaGridAdapter extends BaseAdapter {
 
         } else {
             final TextView fVideoView = videoView;
-            //fVideoView.setImageBitmap(blankBitmap);
-            fVideoView.setBackground(blankDrawable);
-            fVideoView.setText(mVideoFiles.get(position).getName());
+            if (mVideoHasThumbnail.get(position)) {
+                fVideoView.setText("");
+                fVideoView.setBackground(mVideoDrawables.get(position));
+            } else {
+                fVideoView.setBackground(blankDrawable);
+                fVideoView.setText(mVideoFiles.get(position).getName().substring(0, 19).replace("_", ":"));
+                fVideoView.setGravity(Gravity.CENTER_VERTICAL | Gravity.CENTER_HORIZONTAL);
 
-            new AsyncTask<Void, Void, Bitmap>() {
-                @Override
-                protected Bitmap doInBackground(Void... params) {
+                new AsyncTask<Void, Void, Drawable>() {
+                    @Override
+                    protected Drawable doInBackground(Void... params) {
 
 
-                    return getVideoBitmap(position);
-                }
-
-                @Override
-                protected void onPostExecute(Bitmap bitmap) {
-                    super.onPostExecute(bitmap);
-                    if (bitmap != null) {
-                        Drawable drawable = new BitmapDrawable(mContext.getResources(), bitmap);
-                        fVideoView.setText("");
-                        fVideoView.setBackground(drawable);
+                        return getVideoDrawable(position);
                     }
-                    //fVideoView.setImageBitmap(bitmap);
-                }
-            }.execute();
+
+                    @Override
+                    protected void onPostExecute(final Drawable drawable) {
+                        super.onPostExecute(drawable);
+                        if (drawable != null) {
+                            ((MediaActivity) mContext).runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    //Drawable drawable = new BitmapDrawable(mContext.getResources(), bitmap);
+                                    fVideoView.setText("");
+                                    fVideoView.setBackground(drawable);
+                                }
+                            });
+                        }
+                        //fVideoView.setImageBitmap(bitmap);
+                    }
+                }.execute();
+            }
 
             //Log.v("Rocali",mVideoFiles.get(position).getName());
 
@@ -316,49 +332,16 @@ public class MediaGridAdapter extends BaseAdapter {
         }
     }
 
-    public Bitmap getVideoBitmap(int position) {
-        if (mVideoBitmaps.get(position) == null) {
-            Bitmap thumb = ThumbnailUtils.createVideoThumbnail(mVideoFiles.get(position).getPath(), MediaStore.Images.Thumbnails.MINI_KIND);
-            if (thumb == null) {
-                /*
-                FFmpegMediaMetadataRetriever retriever = new  FFmpegMediaMetadataRetriever();
-                try {
-                    retriever.setDataSource("mnt/sdcard/video.mp4"); //file's path
-                    thumb = retriever.getFrameAtTime(100000,FFmpegMediaMetadataRetriever.OPTION_CLOSEST_SYNC );
-
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-                finally{
-                    retriever.release();
-                }
-
-                MediaMetadataRetriever retriever = new MediaMetadataRetriever();
-
-                try {
-                    retriever.setDataSource(mVideoFiles.get(position).getPath());
-
-                    thumb = retriever.getFrameAtTime((long)100000,MediaMetadataRetriever.OPTION_CLOSEST_SYNC);
-
-                } catch (IllegalArgumentException ex) {
-                    ex.printStackTrace();
-                } catch (RuntimeException ex) {
-                    ex.printStackTrace();
-                } finally {
-                    try {
-                        retriever.release();
-                    } catch (RuntimeException ex) {
-                        ex.printStackTrace();
-                    }
-                }*/
-
-
-                //Log.v("Rocali"," NO IMAGE"+mVideoFiles.get(position).getName());
-                //thumb = createBitmapToText(mVideoFiles.get(position).getName());
+    public Drawable getVideoDrawable(int position) {
+        if (mVideoDrawables.get(position) == null) {
+            Bitmap bitmap = ThumbnailUtils.createVideoThumbnail(mVideoFiles.get(position).getPath(), MediaStore.Images.Thumbnails.MINI_KIND);
+            if (bitmap != null) {
+                mVideoDrawables.add(position,new BitmapDrawable(mContext.getResources(), bitmap));
+                mVideoHasThumbnail.add(position,true);
             }
-            mVideoBitmaps.add(position,thumb);
+
         }
-        return mVideoBitmaps.get(position);
+        return mVideoDrawables.get(position);
     }
 
     public Uri getImageUri(int position) {
