@@ -98,6 +98,7 @@ public class DeviceExpandableListAdapter extends BaseExpandableListAdapter {
     public View getGroupView(final int groupPosition, final boolean isExpanded, View convertView, ViewGroup parent) {
 
         if(groupViewHolder[groupPosition] == null) {
+            Log.v("Rocalii","Initialize Group View "+groupPosition);
             groupViewHolder[groupPosition] = new GroupViewHolder();
 
             groupViewHolder[groupPosition].convertView = mInflater.inflate(R.layout.expandable_list_view_row, parent, false);
@@ -146,11 +147,12 @@ public class DeviceExpandableListAdapter extends BaseExpandableListAdapter {
                                 final int currentFirstVisibleItem = childViewHolder[groupPosition].gridLayoutManager.findFirstVisibleItemPosition();
                                 final int currentLastVisibleItem = childViewHolder[groupPosition].gridLayoutManager.findLastVisibleItemPosition();
 
-                                final int itemToScroll = mDeviceManager.scrollToItem(DeviceListActivity.listComponents.get(groupPosition).numQuad,groupViewHolder[groupPosition].mDevice.getChannelNumber(),currentFirstVisibleItem,currentLastVisibleItem,childViewHolder[groupPosition].lastFirstVisibleItem,childViewHolder[groupPosition].lastLastVisibleItem);
+                                final int itemToScroll = DeviceListActivity.listComponents.get(groupPosition).scrollToItem(currentFirstVisibleItem,currentLastVisibleItem);
+                                //final int itemToScroll = mDeviceManager.scrollToItem(DeviceListActivity.listComponents.get(groupPosition).numQuad,groupViewHolder[groupPosition].mDevice.getChannelNumber(),currentFirstVisibleItem,currentLastVisibleItem,childViewHolder[groupPosition].lastFirstVisibleItem,childViewHolder[groupPosition].lastLastVisibleItem);
                                 childViewHolder[groupPosition].gridLayoutManager.smoothScrollToPosition(childViewHolder[groupPosition].recyclerViewChannels, null, itemToScroll);
 
-                                childViewHolder[groupPosition].lastFirstVisibleItem = currentFirstVisibleItem;
-                                childViewHolder[groupPosition].lastLastVisibleItem = currentLastVisibleItem;
+                                //childViewHolder[groupPosition].lastFirstVisibleItem = currentFirstVisibleItem;
+                                //childViewHolder[groupPosition].lastLastVisibleItem = currentLastVisibleItem;
                             }
                         }
                     });
@@ -220,11 +222,12 @@ public class DeviceExpandableListAdapter extends BaseExpandableListAdapter {
                                 final int currentFirstVisibleItem = childViewHolder[groupPosition].gridLayoutManager.findFirstVisibleItemPosition();
                                 final int currentLastVisibleItem = childViewHolder[groupPosition].gridLayoutManager.findLastVisibleItemPosition();
 
-                                final int itemToScroll = mDeviceManager.scrollToItem(DeviceListActivity.listComponents.get(groupPosition).numQuad,groupViewHolder[groupPosition].mDevice.getChannelNumber(),currentFirstVisibleItem,currentLastVisibleItem,childViewHolder[groupPosition].lastFirstVisibleItem,childViewHolder[groupPosition].lastLastVisibleItem);
+                                final int itemToScroll = DeviceListActivity.listComponents.get(groupPosition).scrollToItem(currentFirstVisibleItem,currentLastVisibleItem);
+                                //final int itemToScroll = mDeviceManager.scrollToItem(DeviceListActivity.listComponents.get(groupPosition).numQuad,groupViewHolder[groupPosition].mDevice.getChannelNumber(),currentFirstVisibleItem,currentLastVisibleItem,childViewHolder[groupPosition].lastFirstVisibleItem,childViewHolder[groupPosition].lastLastVisibleItem);
                                 childViewHolder[groupPosition].gridLayoutManager.smoothScrollToPosition(childViewHolder[groupPosition].recyclerViewChannels, null, itemToScroll);
 
-                                childViewHolder[groupPosition].lastFirstVisibleItem = currentFirstVisibleItem;
-                                childViewHolder[groupPosition].lastLastVisibleItem = currentLastVisibleItem;
+                                //childViewHolder[groupPosition].lastFirstVisibleItem = currentFirstVisibleItem;
+                                //childViewHolder[groupPosition].lastLastVisibleItem = currentLastVisibleItem;
                             }
                         }
                     });
@@ -237,7 +240,10 @@ public class DeviceExpandableListAdapter extends BaseExpandableListAdapter {
     @Override
     public View getChildView(final int groupPosition, int childPosition, boolean isLastChild, View convertView, ViewGroup parent) {
         if(childViewHolder[groupPosition] == null) {
+            Log.v("Rocalii","Initialize Child View "+childPosition + " In Group "+groupPosition);
             childViewHolder[groupPosition] = new ChildViewHolder();
+
+            Log.v("Rocalii","Groupoposition"+groupPosition+"Last first visible item "+DeviceListActivity.listComponents.get(groupPosition).lastFirstVisibleItem);
 
             childViewHolder[groupPosition].convertView =  mInflater.inflate(R.layout.expandable_list_view_child, parent, false);
 
@@ -295,10 +301,11 @@ public class DeviceExpandableListAdapter extends BaseExpandableListAdapter {
                             final int currentFirstVisibleItem = childViewHolder[groupPosition].gridLayoutManager.findFirstVisibleItemPosition();
                             final int currentLastVisibleItem = childViewHolder[groupPosition].gridLayoutManager.findLastVisibleItemPosition();
 
-                            final int itemToScroll = mDeviceManager.scrollToItem(DeviceListActivity.listComponents.get(groupPosition).numQuad,groupViewHolder[groupPosition].mDevice.getChannelNumber(),currentFirstVisibleItem,currentLastVisibleItem,childViewHolder[groupPosition].lastFirstVisibleItem,childViewHolder[groupPosition].lastLastVisibleItem);
+                            final int itemToScroll = DeviceListActivity.listComponents.get(groupPosition).scrollToItem(currentFirstVisibleItem,currentLastVisibleItem);
+                            //final int itemToScroll = mDeviceManager.scrollToItem(DeviceListActivity.listComponents.get(groupPosition).numQuad,groupViewHolder[groupPosition].mDevice.getChannelNumber(),currentFirstVisibleItem,currentLastVisibleItem,childViewHolder[groupPosition].lastFirstVisibleItem,childViewHolder[groupPosition].lastLastVisibleItem);
                             childViewHolder[groupPosition].gridLayoutManager.smoothScrollToPosition(childViewHolder[groupPosition].recyclerViewChannels, null, itemToScroll);
 
-                            childViewHolder[groupPosition].lastFirstVisibleItem = currentFirstVisibleItem;
+                            //childViewHolder[groupPosition].lastFirstVisibleItem = currentFirstVisibleItem;
                         }
                     }
                 });
@@ -306,7 +313,9 @@ public class DeviceExpandableListAdapter extends BaseExpandableListAdapter {
             }
 
             setLayoutSize(groupPosition);
+            childViewHolder[groupPosition].gridLayoutManager.scrollToPosition(DeviceListActivity.listComponents.get(groupPosition).lastFirstVisibleItem);
         }
+
 
         return childViewHolder[groupPosition].convertView;
     }
@@ -336,6 +345,7 @@ public class DeviceExpandableListAdapter extends BaseExpandableListAdapter {
         public ImageView ivQuad;
         public ProgressBar progressBar;
         public View convertView;
+        //public int closedOnFirstVisibleItem = 0;
     }
 
     public class ChildViewHolder {
@@ -345,11 +355,11 @@ public class DeviceExpandableListAdapter extends BaseExpandableListAdapter {
         public ImageView ivHQ, ivPlayPause, ivSnapshot, ivSnapvideo;
         public TextView tvChnNumber, tvMessage;
         public ChannelRecyclerViewAdapter mRecyclerAdapter;
-        public int lastFirstVisiblePosition = 0;
+        //public int lastFirstVisiblePosition = 0;
 
         public  GridLayoutManager gridLayoutManager;
-        public int lastFirstVisibleItem = 0;
-        public int lastLastVisibleItem = 0;
+        //public int lastFirstVisibleItem = 0;
+        //public int lastLastVisibleItem = 0;
     }
 
     private void loginDevice(final Device mDevice, final GroupViewHolder groupViewHolder, final ChildViewHolder childViewHolder, final int position) {
@@ -363,53 +373,57 @@ public class DeviceExpandableListAdapter extends BaseExpandableListAdapter {
                     @Override
                     public void run() {
 
-                        childViewHolder.tvMessage.setVisibility(View.GONE);
-                        childViewHolder.recyclerViewChannels.setVisibility(View.VISIBLE);
-
-                        groupViewHolder.ivIndicator.setImageDrawable(mContext.getResources().getDrawable(R.drawable.ic_indicator_minus));
-                        groupViewHolder.ivMore.setVisibility(View.VISIBLE);
-                        groupViewHolder.progressBar.setVisibility(View.GONE);
-
-                        if (mDevice.getChannelNumber() > 1) {
-                            groupViewHolder.ivQuad.setVisibility(View.VISIBLE);
-                            DeviceListActivity.listComponents.get(position).numQuad = 2;
-                            DeviceListActivity.listComponents.get(position).lastNumQuad = 2;
+                        if (mDevice.getChannelNumber() == 0) { //Wrong Password
+                            childViewHolder.tvMessage.setText("Erro ao fazer login com o dipositivo.");
                         } else {
-                            groupViewHolder.ivQuad.setVisibility(View.INVISIBLE);
-                            DeviceListActivity.listComponents.get(position).numQuad = 1;
-                            DeviceListActivity.listComponents.get(position).lastNumQuad = 1;
-                        }
+                            childViewHolder.tvMessage.setVisibility(View.GONE);
+                            childViewHolder.recyclerViewChannels.setVisibility(View.VISIBLE);
 
-                        DeviceListActivity.listComponents.get(position).createComponents();
+                            groupViewHolder.ivIndicator.setImageDrawable(mContext.getResources().getDrawable(R.drawable.ic_indicator_minus));
+                            groupViewHolder.ivMore.setVisibility(View.VISIBLE);
+                            groupViewHolder.progressBar.setVisibility(View.GONE);
 
-
-                        childViewHolder.gridLayoutManager = new GridLayoutManager(mContext, DeviceListActivity.listComponents.get(position).numQuad, GridLayoutManager.HORIZONTAL, false);
-                        childViewHolder.recyclerViewChannels.setLayoutManager(childViewHolder.gridLayoutManager);
-                        childViewHolder.mRecyclerAdapter = new ChannelRecyclerViewAdapter(mContext, groupViewHolder.mDevice, DeviceListActivity.listComponents.get(position).numQuad, childViewHolder, DeviceListActivity.listComponents.get(position));
-                        childViewHolder.recyclerViewChannels.setAdapter(childViewHolder.mRecyclerAdapter);
-
-                        Log.v("Rocali","GOT HERE? 1");
-
-                        childViewHolder.recyclerViewChannels.setOnScrollListener(new RecyclerView.OnScrollListener()
-                        {
-
-                            @Override
-                            public void onScrollStateChanged(final RecyclerView recyclerView,final int newState) {
-                                super.onScrollStateChanged(recyclerView, newState);
-
-                                if(newState == 0) {
-                                    final int currentFirstVisibleItem = childViewHolder.gridLayoutManager.findFirstVisibleItemPosition();
-                                    final int currentLastVisibleItem = childViewHolder.gridLayoutManager.findLastVisibleItemPosition();
-
-                                    final int itemToScroll = mDeviceManager.scrollToItem(DeviceListActivity.listComponents.get(position).numQuad,mDevice.getChannelNumber(),currentFirstVisibleItem,currentLastVisibleItem,childViewHolder.lastFirstVisibleItem,childViewHolder.lastLastVisibleItem);
-                                    childViewHolder.gridLayoutManager.smoothScrollToPosition(childViewHolder.recyclerViewChannels, null, itemToScroll);
-
-                                    childViewHolder.lastFirstVisibleItem = currentFirstVisibleItem;
-                                    childViewHolder.lastLastVisibleItem = currentLastVisibleItem;
-                                }
+                            if (mDevice.getChannelNumber() > 1) {
+                                groupViewHolder.ivQuad.setVisibility(View.VISIBLE);
+                                DeviceListActivity.listComponents.get(position).numQuad = 2;
+                                DeviceListActivity.listComponents.get(position).lastNumQuad = 2;
+                            } else {
+                                groupViewHolder.ivQuad.setVisibility(View.INVISIBLE);
+                                DeviceListActivity.listComponents.get(position).numQuad = 1;
+                                DeviceListActivity.listComponents.get(position).lastNumQuad = 1;
                             }
-                        });
-                        connected = true;
+
+                            DeviceListActivity.listComponents.get(position).createComponents();
+
+
+                            childViewHolder.gridLayoutManager = new GridLayoutManager(mContext, DeviceListActivity.listComponents.get(position).numQuad, GridLayoutManager.HORIZONTAL, false);
+                            childViewHolder.recyclerViewChannels.setLayoutManager(childViewHolder.gridLayoutManager);
+                            childViewHolder.mRecyclerAdapter = new ChannelRecyclerViewAdapter(mContext, groupViewHolder.mDevice, DeviceListActivity.listComponents.get(position).numQuad, childViewHolder, DeviceListActivity.listComponents.get(position));
+                            childViewHolder.recyclerViewChannels.setAdapter(childViewHolder.mRecyclerAdapter);
+
+                            Log.v("Rocali", "GOT HERE? 1");
+
+                            childViewHolder.recyclerViewChannels.setOnScrollListener(new RecyclerView.OnScrollListener() {
+
+                                @Override
+                                public void onScrollStateChanged(final RecyclerView recyclerView, final int newState) {
+                                    super.onScrollStateChanged(recyclerView, newState);
+
+                                    if (newState == 0) {
+                                        final int currentFirstVisibleItem = childViewHolder.gridLayoutManager.findFirstVisibleItemPosition();
+                                        final int currentLastVisibleItem = childViewHolder.gridLayoutManager.findLastVisibleItemPosition();
+
+                                        //final int itemToScroll = mDeviceManager.scrollToItem(DeviceListActivity.listComponents.get(position).numQuad,mDevice.getChannelNumber(),currentFirstVisibleItem,currentLastVisibleItem,childViewHolder.lastFirstVisibleItem,childViewHolder.lastLastVisibleItem);
+                                        final int itemToScroll = DeviceListActivity.listComponents.get(position).scrollToItem(currentFirstVisibleItem, currentLastVisibleItem);
+                                        childViewHolder.gridLayoutManager.smoothScrollToPosition(childViewHolder.recyclerViewChannels, null, itemToScroll);
+
+                                        //childViewHolder.lastFirstVisibleItem = currentFirstVisibleItem;
+                                        //childViewHolder.lastLastVisibleItem = currentLastVisibleItem;
+                                    }
+                                }
+                            });
+                            connected = true;
+                        }
 
                     }
                 });
@@ -557,6 +571,7 @@ public class DeviceExpandableListAdapter extends BaseExpandableListAdapter {
     public void refreshAdapter() {
         init();
     }
+
 
 
 }

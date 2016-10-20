@@ -149,6 +149,8 @@ public class DevicePlaybackVideoActivity extends ActionBarActivity {
         mSurfaceView.init(this, mSurfaceViewID);
         mSurfaceView.setAudioCtrl(MyConfig.AudioState.OPENED);
 
+        Log.v("Rocali","GET WIDTH "+   " GET HEIGHT "+ mSurfaceView.getHeight());
+
         // Configure progress bar
         mSeekBar.setMax(mFileDataGiga.getTotalTime());
         mStartSecond = mFileDataGiga.getStartSecond();

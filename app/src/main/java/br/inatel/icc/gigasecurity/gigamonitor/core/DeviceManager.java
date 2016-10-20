@@ -1003,6 +1003,7 @@ public class DeviceManager {
         return channelOnRec+1;
     }
 
+    /*
     public int scrollToItem(int numQuad, int totalChannels, int currentFirstVisibleItem, int currentLastVisibleItem,int lastFirstVisibleItem, int lastLastVisibleItem) {
         int itemToScroll = 0;
         int totalQuads = 0;
@@ -1033,7 +1034,7 @@ public class DeviceManager {
             }
         }
         return itemToScroll;
-    }
+    }*/
 
 
 }

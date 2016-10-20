@@ -31,6 +31,9 @@ public class ListComponent {
     public Context mContext;
     public int numQuad, lastNumQuad, surfaceViewWidth, surfaceViewHeight;
     public Display mDisplay;
+    public int lastFirstVisibleItem;
+    public int lastLastVisibleItem;
+    public int lastFirstItemBeforeSelectChannel;
 
     private int[][] inverseMatrix = new int[][]{
             { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15 },
@@ -49,6 +52,8 @@ public class ListComponent {
 
         this.surfaceViewWidth = this.mDisplay.getWidth();
         this.surfaceViewHeight = this.mDisplay.getHeight()/3;
+        this.lastFirstVisibleItem = 0;
+        this.lastLastVisibleItem = 0;
     }
 
 
@@ -89,7 +94,7 @@ public class ListComponent {
 
             surfaceViewComponents.add(surfaceViewComponent);
         }
-        Log.v("Rocali","teste");
+        //Log.v("Rocali","teste");
     }
 
     public void changeSurfaceViewSize(SurfaceViewComponent surfaceViewComponent, FrameLayout frameLayout) {
@@ -120,9 +125,47 @@ public class ListComponent {
                 return svc1.mySurfaceViewOrderId - svc2.mySurfaceViewOrderId;
             }
         });
+        /*
         for (SurfaceViewComponent s : surfaceViewComponents) {
             Log.v("Rocali","Chanelno "+ s.mySurfaceViewChannelId+ " orderID "+s.mySurfaceViewOrderId);
-        }
+        }*/
     }
 
+    public int getChannelSelected(int gridPositionSelected) {
+        return inverseMatrix[numQuad-1][gridPositionSelected];
+    }
+
+    public int scrollToItem(int currentFirstVisibleItem, int currentLastVisibleItem) {
+        int itemToScroll = 0;
+        int totalQuads = 0;
+        if (numQuad == 1) {
+            totalQuads = 1;
+        } else if (numQuad == 2) {
+            totalQuads = 4;
+        } else if (numQuad == 3) {
+            totalQuads = 9;
+        } else if (numQuad == 4) {
+            totalQuads = 16;
+        }
+        if (totalQuads > 1) {
+            if (currentLastVisibleItem % totalQuads == totalQuads - 1) {
+                itemToScroll = currentLastVisibleItem;
+            } else if (currentFirstVisibleItem % totalQuads == 0) {
+                itemToScroll = currentFirstVisibleItem;
+            } else if (currentLastVisibleItem == mDevice.getChannelNumber() - 1) {
+                itemToScroll = currentLastVisibleItem;
+            } else {
+                itemToScroll = currentFirstVisibleItem;
+            }
+        } else if (totalQuads == 1) {
+            if (lastFirstVisibleItem != currentFirstVisibleItem) {
+                itemToScroll = currentFirstVisibleItem;
+            } else if (lastLastVisibleItem != currentLastVisibleItem){
+                itemToScroll = currentLastVisibleItem;
+            }
+        }
+        this.lastFirstVisibleItem = currentFirstVisibleItem;
+        this.lastLastVisibleItem = currentLastVisibleItem;
+        return itemToScroll;
+    }
 }

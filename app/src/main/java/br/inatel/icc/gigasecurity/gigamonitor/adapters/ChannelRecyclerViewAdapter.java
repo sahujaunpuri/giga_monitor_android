@@ -37,7 +37,7 @@ public class ChannelRecyclerViewAdapter extends RecyclerView.Adapter<ChannelRecy
 
     public Device mDevice;
     public Context mContext;
-    public static int numQuad, msvSelected = -1;
+    public static int numQuad, msvSelected = -1,positionSelected = -1;
     public DeviceManager mDeviceManager;
     public PlayState playState;
     public DeviceExpandableListAdapter.ChildViewHolder childViewHolder;
@@ -120,7 +120,7 @@ public class ChannelRecyclerViewAdapter extends RecyclerView.Adapter<ChannelRecy
                         listComponent.numQuad = 1;
 
                         GridLayoutManager lm = (GridLayoutManager) childViewHolder.recyclerViewChannels.getLayoutManager();
-                        childViewHolder.lastFirstVisiblePosition = lm.findFirstVisibleItemPosition();
+                        listComponent.lastFirstItemBeforeSelectChannel = lm.findFirstVisibleItemPosition();
                     }
 
                     //Rocali
@@ -154,29 +154,41 @@ public class ChannelRecyclerViewAdapter extends RecyclerView.Adapter<ChannelRecy
 
                     if(listComponent.numQuad == 1) {
                         childViewHolder.recyclerViewChannels.scrollToPosition(msvSelected);
+                        listComponent.lastFirstVisibleItem = msvSelected;
+                        listComponent.lastLastVisibleItem = msvSelected;
                     } else {
-                        childViewHolder.recyclerViewChannels.scrollToPosition(childViewHolder.lastFirstVisiblePosition);
+                        childViewHolder.recyclerViewChannels.scrollToPosition(listComponent.lastFirstItemBeforeSelectChannel);
+                        listComponent.lastFirstVisibleItem = listComponent.lastFirstItemBeforeSelectChannel;
+                        listComponent.lastLastVisibleItem = listComponent.lastFirstItemBeforeSelectChannel + listComponent.numQuad;
                     }
 
                 } else {
 
                     if (childViewHolder.layoutMenu.getVisibility() == View.GONE) {
 
-                        msvSelected = listComponent.surfaceViewComponents.get(position).mySurfaceViewChannelId;
+                        //msvSelected = listComponent.surfaceViewComponents.get(position).mySurfaceViewChannelId;
+                        msvSelected = listComponent.getChannelSelected(position);
+                        positionSelected = position;
+
+                        Log.v("Rocali","msvSELECTED "+msvSelected + " positionSelcted "+positionSelected);
+
+                        for (SurfaceViewComponent svc : listComponent.surfaceViewComponents){
+                            Log.v("Rocali"," SVID " + svc.mySurfaceViewID + " SVCID " + svc.mySurfaceViewChannelId + " SVOID " + svc.mySurfaceViewOrderId );
+                        }
 
                         myViewHolderSelected = myViewHolder;
 
-                        int channelPosition = msvSelected + 1;
+                        int channelPosition =msvSelected + 1;
 
                         childViewHolder.tvChnNumber.setText("Canal " + channelPosition);
 
-                        if (listComponent.surfaceViewComponents.get(msvSelected).chnInfo.nStream == 0) {
+                        if (listComponent.surfaceViewComponents.get(positionSelected).chnInfo.nStream == 0) {
                             childViewHolder.ivHQ.setImageDrawable(mContext.getResources().getDrawable(R.drawable.ic_hq_on));
                         } else {
                             childViewHolder.ivHQ.setImageDrawable(mContext.getResources().getDrawable(R.drawable.ic_hq_off));
                         }
 
-                        if (listComponent.surfaceViewComponents.get(msvSelected).isPlaying) {
+                        if (listComponent.surfaceViewComponents.get(positionSelected).isPlaying) {
                             childViewHolder.ivPlayPause.setImageDrawable(mContext.getResources().getDrawable(R.drawable.ic_pause));
                         } else {
                             childViewHolder.ivPlayPause.setImageDrawable(mContext.getResources().getDrawable(R.drawable.ic_play_off));
@@ -184,7 +196,7 @@ public class ChannelRecyclerViewAdapter extends RecyclerView.Adapter<ChannelRecy
 
                         //int recordState = listComponent.surfaceViewComponents.get(position).mySurfaceView.getRecordState();
 
-                        if (!listComponent.surfaceViewComponents.get(msvSelected).isREC()) {
+                        if (!listComponent.surfaceViewComponents.get(positionSelected).isREC()) {
                             childViewHolder.ivSnapvideo.setImageDrawable(mContext.getResources().getDrawable(R.drawable.ic_snapvideo));
                         } else {
                             childViewHolder.ivSnapvideo.setImageDrawable(mContext.getResources().getDrawable(R.drawable.ic_snapvideo_on));
@@ -226,14 +238,15 @@ public class ChannelRecyclerViewAdapter extends RecyclerView.Adapter<ChannelRecy
         childViewHolder.ivPlayPause.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
-                    if (listComponent.surfaceViewComponents.get(msvSelected).isPlaying) {
-                        listComponent.surfaceViewComponents.get(msvSelected).mySurfaceView.onPause();
-                        listComponent.surfaceViewComponents.get(msvSelected).isPlaying = false;
+                SurfaceViewComponent sv = listComponent.surfaceViewComponents.get(positionSelected);
+                Log.v("Rocali","PLAY CID "+sv.mySurfaceViewChannelId+ " VID "+sv.mySurfaceViewID+ " OID "+sv.mySurfaceViewOrderId);
+                    if (listComponent.surfaceViewComponents.get(positionSelected).isPlaying) {
+                        listComponent.surfaceViewComponents.get(positionSelected).mySurfaceView.onPause();
+                        listComponent.surfaceViewComponents.get(positionSelected).isPlaying = false;
                         childViewHolder.ivPlayPause.setImageDrawable(mContext.getResources().getDrawable(R.drawable.ic_play_off));
                     } else {
-                        listComponent.surfaceViewComponents.get(msvSelected).mySurfaceView.onPlay();
-                        listComponent.surfaceViewComponents.get(msvSelected).isPlaying = true;
+                        listComponent.surfaceViewComponents.get(positionSelected).mySurfaceView.onPlay();
+                        listComponent.surfaceViewComponents.get(positionSelected).isPlaying = true;
                         childViewHolder.ivPlayPause.setImageDrawable(mContext.getResources().getDrawable(R.drawable.ic_pause));
                     }
 
@@ -243,51 +256,58 @@ public class ChannelRecyclerViewAdapter extends RecyclerView.Adapter<ChannelRecy
         childViewHolder.ivHQ.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(msvSelected != -1) {
-                    if (listComponent.surfaceViewComponents.get(msvSelected).chnInfo.nStream == 1) {
-                        listComponent.surfaceViewComponents.get(msvSelected).chnInfo.nStream = 0;
-                        childViewHolder.ivHQ.setImageDrawable(mContext.getResources().getDrawable(R.drawable.ic_hq_on));
-                    } else {
-                        listComponent.surfaceViewComponents.get(msvSelected).chnInfo.nStream = 1;
-                        childViewHolder.ivHQ.setImageDrawable(mContext.getResources().getDrawable(R.drawable.ic_hq_off));
+                if (!listComponent.surfaceViewComponents.get(positionSelected).isREC()) {
+                    if (positionSelected != -1) {
+                        SurfaceViewComponent sv = listComponent.surfaceViewComponents.get(positionSelected);
+                        Log.v("Rocali","HD MSV  "+positionSelected+" - CID "+sv.mySurfaceViewChannelId+ " VID "+sv.mySurfaceViewID+ " OID "+sv.mySurfaceViewOrderId);
+                        if (listComponent.surfaceViewComponents.get(positionSelected).chnInfo.nStream == 1) {
+                            listComponent.surfaceViewComponents.get(positionSelected).chnInfo.nStream = 0;
+                            childViewHolder.ivHQ.setImageDrawable(mContext.getResources().getDrawable(R.drawable.ic_hq_on));
+                        } else {
+                            listComponent.surfaceViewComponents.get(positionSelected).chnInfo.nStream = 1;
+                            childViewHolder.ivHQ.setImageDrawable(mContext.getResources().getDrawable(R.drawable.ic_hq_off));
+                        }
+
+                        mDeviceManager.stopDeviceVideo2(listComponent.surfaceViewComponents.get(positionSelected).realPlayHandleID, listComponent.surfaceViewComponents.get(positionSelected).mySurfaceView, new DeviceManager.StopDeviceVideoListener() {
+                            @Override
+                            public void onSuccessStopDevice() {
+
+                                mDeviceManager.startDeviceVideo2(mDevice.getLoginID(), listComponent.surfaceViewComponents.get(positionSelected).mySurfaceViewID, listComponent.surfaceViewComponents.get(positionSelected).chnInfo, new DeviceManager.StartDeviceVideoListener() {
+                                    @Override
+                                    public void onSuccessStartDevice(final long handleID) {
+
+                                        handler.post(new Runnable() {
+                                            @Override
+                                            public void run() {
+                                                listComponent.surfaceViewComponents.get(positionSelected).mySurfaceView.onPlay();
+                                                listComponent.surfaceViewComponents.get(positionSelected).realPlayHandleID = handleID;
+                                                listComponent.surfaceViewComponents.get(positionSelected).isPlaying = true;
+                                                listComponent.surfaceViewComponents.get(positionSelected).progressBar.setVisibility(View.INVISIBLE);
+                                            }
+                                        });
+                                    }
+
+                                    @Override
+                                    public void onErrorStartDevice() {
+                                        ((DeviceListActivity) mContext).runOnUiThread(new Runnable() {
+                                            @Override
+                                            public void run() {
+                                                listComponent.surfaceViewComponents.get(positionSelected).progressBar.setVisibility(View.VISIBLE);
+                                                startDeviceVideo(mDevice, listComponent.surfaceViewComponents.get(positionSelected));
+                                            }
+                                        });
+                                    }
+                                });
+                            }
+
+                            @Override
+                            public void onErrorStopDevice() {
+                            }
+                        });
                     }
-
-                    mDeviceManager.stopDeviceVideo2(listComponent.surfaceViewComponents.get(msvSelected).realPlayHandleID, listComponent.surfaceViewComponents.get(msvSelected).mySurfaceView, new DeviceManager.StopDeviceVideoListener() {
-                        @Override
-                        public void onSuccessStopDevice() {
-
-                            mDeviceManager.startDeviceVideo2(mDevice.getLoginID(), listComponent.surfaceViewComponents.get(msvSelected).mySurfaceViewID, listComponent.surfaceViewComponents.get(msvSelected).chnInfo, new DeviceManager.StartDeviceVideoListener() {
-                                @Override
-                                public void onSuccessStartDevice(final long handleID) {
-
-                                    handler.post(new Runnable() {
-                                        @Override
-                                        public void run() {
-                                            listComponent.surfaceViewComponents.get(msvSelected).mySurfaceView.onPlay();
-                                            listComponent.surfaceViewComponents.get(msvSelected).realPlayHandleID = handleID;
-                                            listComponent.surfaceViewComponents.get(msvSelected).isPlaying = true;
-                                            listComponent.surfaceViewComponents.get(msvSelected).progressBar.setVisibility(View.INVISIBLE);
-                                        }
-                                    });
-                                }
-
-                                @Override
-                                public void onErrorStartDevice() {
-                                    ((DeviceListActivity) mContext).runOnUiThread(new Runnable() {
-                                        @Override
-                                        public void run() {
-                                            listComponent.surfaceViewComponents.get(msvSelected).progressBar.setVisibility(View.VISIBLE);
-                                            startDeviceVideo(mDevice, listComponent.surfaceViewComponents.get(msvSelected));
-                                        }
-                                    });
-                                }
-                            });
-                        }
-
-                        @Override
-                        public void onErrorStopDevice() {
-                        }
-                    });
+                } else {
+                    Toast.makeText(mContext, "Finalize a gravação para mudar para HD", Toast.LENGTH_LONG).show();
+                    // Toast.makeText(mContext, "Gravando no canal "+mDeviceManager.getChannelOnRec(), Toast.LENGTH_LONG).show();
                 }
             }
         });
@@ -295,7 +315,7 @@ public class ChannelRecyclerViewAdapter extends RecyclerView.Adapter<ChannelRecy
         childViewHolder.ivSnapshot.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                takeSnapshot(listComponent.surfaceViewComponents.get(msvSelected).mySurfaceView);
+                takeSnapshot(listComponent.surfaceViewComponents.get(positionSelected).mySurfaceView);
                 startAnimationBlink();
             }
         });
@@ -303,11 +323,11 @@ public class ChannelRecyclerViewAdapter extends RecyclerView.Adapter<ChannelRecy
         childViewHolder.ivSnapvideo.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (!listComponent.surfaceViewComponents.get(msvSelected).isREC()) {
-                    if (mDeviceManager.startSnapvideo(listComponent.surfaceViewComponents.get(msvSelected).mySurfaceView,msvSelected) != null) {
-                        Log.v("Rocali", "Start REC Channel " + msvSelected);
+                if (!listComponent.surfaceViewComponents.get(positionSelected).isREC()) {
+                    if (mDeviceManager.startSnapvideo(listComponent.surfaceViewComponents.get(positionSelected).mySurfaceView,positionSelected) != null) {
+                        Log.v("Rocali", "Start REC Channel " + positionSelected);
                         clickRecTime = System.currentTimeMillis();
-                        listComponent.surfaceViewComponents.get(msvSelected).setREC(true);
+                        listComponent.surfaceViewComponents.get(positionSelected).setREC(true);
                         childViewHolder.ivSnapvideo.setImageDrawable(mContext.getResources().getDrawable(R.drawable.ic_snapvideo_on));
                     } else {
                         //int channelPosition = listComponent.surfaceViewComponents.get(position).mySurfaceViewChannelId + 1;
@@ -316,13 +336,13 @@ public class ChannelRecyclerViewAdapter extends RecyclerView.Adapter<ChannelRecy
                 } else {
                     long duration = System.currentTimeMillis() - clickRecTime;
                     if (duration > 1000) {
-                        if (mDeviceManager.stopSnapvideo(listComponent.surfaceViewComponents.get(msvSelected).mySurfaceView, mContext) != null) {
-                            Log.v("Rocali", "Stop REC Channel " + msvSelected + " duration " + duration);
+                        if (mDeviceManager.stopSnapvideo(listComponent.surfaceViewComponents.get(positionSelected).mySurfaceView, mContext) != null) {
+                            Log.v("Rocali", "Stop REC Channel " + positionSelected + " duration " + duration);
                         } else {
                             Toast.makeText(mContext, "Não foi possível salvar o video", Toast.LENGTH_LONG).show();
                         }
                         childViewHolder.ivSnapvideo.setImageDrawable(mContext.getResources().getDrawable(R.drawable.ic_snapvideo));
-                        listComponent.surfaceViewComponents.get(msvSelected).setREC(false);
+                        listComponent.surfaceViewComponents.get(positionSelected).setREC(false);
                     }
 
                 }
