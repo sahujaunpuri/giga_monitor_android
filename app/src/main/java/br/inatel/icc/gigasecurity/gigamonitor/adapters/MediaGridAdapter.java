@@ -66,8 +66,12 @@ public class MediaGridAdapter extends BaseAdapter {
 
     private ArrayList<Uri> mImageUris;
     private ArrayList<Uri> mVideoUris;
+
+    private ArrayList<Drawable> mImgDrawables;
     private ArrayList<Drawable> mVideoDrawables;
-    private ArrayList<Boolean> mVideoHasThumbnail;
+
+    private ArrayList<Boolean> tridToGetImgThumbnail;
+    private ArrayList<Boolean> tridToGetVideoThumbnail;
 
     public long videoClickDownTime = 0;
     private boolean pictureMode;
@@ -80,8 +84,12 @@ public class MediaGridAdapter extends BaseAdapter {
 
         mImageUris = new ArrayList<Uri>();
         mVideoUris = new ArrayList<Uri>();
+
+        mImgDrawables = new ArrayList<Drawable>();
+        tridToGetImgThumbnail = new ArrayList<Boolean>();
+
         mVideoDrawables = new ArrayList<Drawable>();
-        mVideoHasThumbnail = new ArrayList<Boolean>();
+        tridToGetVideoThumbnail = new ArrayList<Boolean>();
 
         getImgFiles();
         getVideoFiles();
@@ -99,8 +107,18 @@ public class MediaGridAdapter extends BaseAdapter {
         for(int i =0; i<imgFiles.length; i++) {
             mImageFiles.add(imgFiles[i]);
             //Aux Array
-            this.mImageUris.add(null);
+
+            mImageUris.add(null);
+            mImgDrawables.add(null);
+            tridToGetImgThumbnail.add(false);
         }
+        Collections.sort(mImageFiles, new Comparator<File>() {
+            public int compare(File img1, File img2) {
+                Date dateimg1 = new Date(img1.lastModified());
+                Date dateimg2 = new Date(img2.lastModified());
+                return dateimg2.compareTo(dateimg1);
+            }
+        });
     }
 
     private void getVideoFiles() {
@@ -114,14 +132,14 @@ public class MediaGridAdapter extends BaseAdapter {
                 //Aux Arrays
                 mVideoUris.add(null);
                 mVideoDrawables.add(null);
-                mVideoHasThumbnail.add(false);
+                tridToGetVideoThumbnail.add(false);
             }
         }
         Collections.sort(mVideoFiles, new Comparator<File>() {
             public int compare(File video1, File video2) {
                 Date datevideo1 = new Date(video1.lastModified());
                 Date datevideo2 = new Date(video2.lastModified());
-                return datevideo1.compareTo(datevideo2);
+                return datevideo2.compareTo(datevideo1);
             }
         });
     }
@@ -183,32 +201,41 @@ public class MediaGridAdapter extends BaseAdapter {
         if(this.pictureMode) {
 
             final TextView fImageView = imageView;
-            fImageView.setBackground(blankDrawable);
-            fImageView.setText(mImageFiles.get(position).getName());
-            ///fImageView.setImageBitmap(blankBitmap);
+            if (mImgDrawables.get(position) != null) {
+                fImageView.setText("");
+                fImageView.setBackground(mImgDrawables.get(position));
+            } else {
+                fImageView.setBackground(blankDrawable);
+                fImageView.setText(mImageFiles.get(position).getName());
+                ///fImageView.setImageBitmap(blankBitmap);
 
-            new AsyncTask<Void, Void, Uri>() {
-                @Override
-                protected Uri doInBackground(Void... params) {
-                    return getImageUri(position);
-                }
+                if (!tridToGetImgThumbnail.get(position)) {
 
-                @Override
-                protected void onPostExecute(Uri uri) {
-                    super.onPostExecute(uri);
-                    Drawable drawable;
-                    try {
-                        InputStream inputStream = mContext.getContentResolver().openInputStream(uri);
-                        drawable = Drawable.createFromStream(inputStream, uri.toString() );
-                        fImageView.setText("");
-                        fImageView.setBackground(drawable);
-                    } catch (FileNotFoundException e) {
-                        e.printStackTrace();
-                    }
-                    //fImageView.setBackground();
-                    //fImageView.setImageURI(uri);
+                    new AsyncTask<Void, Void, Drawable>() {
+                        @Override
+                        protected Drawable doInBackground(Void... params) {
+                            return getImgDrawable(position);
+                        }
+
+                        @Override
+                        protected void onPostExecute(final Drawable drawable) {
+                            super.onPostExecute(drawable);
+
+                            if (drawable != null) {
+                                ((MediaActivity) mContext).runOnUiThread(new Runnable() {
+                                    @Override
+                                    public void run() {
+
+                                        fImageView.setText("");
+                                        fImageView.setBackground(drawable);
+                                    }
+                                });
+                            }
+
+                        }
+                    }.execute();
                 }
-            }.execute();
+            }
 
             fImageView.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -247,42 +274,45 @@ public class MediaGridAdapter extends BaseAdapter {
                     return true;
                 }
             });;
-            return imageView;
+            return fImageView;
 
         } else {
             final TextView fVideoView = videoView;
-            if (mVideoHasThumbnail.get(position)) {
+            if (mVideoDrawables.get(position) != null) {
                 fVideoView.setText("");
                 fVideoView.setBackground(mVideoDrawables.get(position));
-            } else {
+            }  else {
                 fVideoView.setBackground(blankDrawable);
                 fVideoView.setText(mVideoFiles.get(position).getName().substring(0, 19).replace("_", ":"));
                 fVideoView.setGravity(Gravity.CENTER_VERTICAL | Gravity.CENTER_HORIZONTAL);
 
-                new AsyncTask<Void, Void, Drawable>() {
-                    @Override
-                    protected Drawable doInBackground(Void... params) {
+                if (!tridToGetVideoThumbnail.get(position)) {
+
+                    new AsyncTask<Void, Void, Drawable>() {
+                        @Override
+                        protected Drawable doInBackground(Void... params) {
 
 
-                        return getVideoDrawable(position);
-                    }
-
-                    @Override
-                    protected void onPostExecute(final Drawable drawable) {
-                        super.onPostExecute(drawable);
-                        if (drawable != null) {
-                            ((MediaActivity) mContext).runOnUiThread(new Runnable() {
-                                @Override
-                                public void run() {
-                                    //Drawable drawable = new BitmapDrawable(mContext.getResources(), bitmap);
-                                    fVideoView.setText("");
-                                    fVideoView.setBackground(drawable);
-                                }
-                            });
+                            return getVideoDrawable(position);
                         }
-                        //fVideoView.setImageBitmap(bitmap);
-                    }
-                }.execute();
+
+                        @Override
+                        protected void onPostExecute(final Drawable drawable) {
+                            super.onPostExecute(drawable);
+                            if (drawable != null) {
+                                ((MediaActivity) mContext).runOnUiThread(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        //Drawable drawable = new BitmapDrawable(mContext.getResources(), bitmap);
+                                        fVideoView.setText("");
+                                        fVideoView.setBackground(drawable);
+                                    }
+                                });
+                            }
+                            //fVideoView.setImageBitmap(bitmap);
+                        }
+                    }.execute();
+                }
             }
 
             //Log.v("Rocali",mVideoFiles.get(position).getName());
@@ -332,13 +362,28 @@ public class MediaGridAdapter extends BaseAdapter {
         }
     }
 
+    public Drawable getImgDrawable(int position) {
+        if (mImgDrawables.get(position) == null) {
+            try {
+                Uri uri = getImageUri(position);
+                InputStream inputStream = mContext.getContentResolver().openInputStream(uri);
+                Drawable drawable = Drawable.createFromStream(inputStream, uri.toString());
+                mImgDrawables.add(position, drawable);
+            } catch (FileNotFoundException e) {
+                e.printStackTrace();
+            }
+            tridToGetImgThumbnail.add(position, true);
+        }
+        return mImgDrawables.get(position);
+    }
+
     public Drawable getVideoDrawable(int position) {
         if (mVideoDrawables.get(position) == null) {
             Bitmap bitmap = ThumbnailUtils.createVideoThumbnail(mVideoFiles.get(position).getPath(), MediaStore.Images.Thumbnails.MINI_KIND);
             if (bitmap != null) {
                 mVideoDrawables.add(position,new BitmapDrawable(mContext.getResources(), bitmap));
-                mVideoHasThumbnail.add(position,true);
             }
+            tridToGetVideoThumbnail.add(position,true);
 
         }
         return mVideoDrawables.get(position);

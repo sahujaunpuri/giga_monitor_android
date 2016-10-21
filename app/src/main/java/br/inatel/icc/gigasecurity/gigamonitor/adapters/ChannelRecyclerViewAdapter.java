@@ -338,6 +338,7 @@ public class ChannelRecyclerViewAdapter extends RecyclerView.Adapter<ChannelRecy
                     if (duration > 1000) {
                         if (mDeviceManager.stopSnapvideo(listComponent.surfaceViewComponents.get(positionSelected).mySurfaceView, mContext) != null) {
                             Log.v("Rocali", "Stop REC Channel " + positionSelected + " duration " + duration);
+                            Toast.makeText(mContext, "Gravação salva com sucesso", Toast.LENGTH_LONG).show();
                         } else {
                             Toast.makeText(mContext, "Não foi possível salvar o video", Toast.LENGTH_LONG).show();
                         }
