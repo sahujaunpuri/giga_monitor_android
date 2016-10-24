@@ -240,6 +240,7 @@ public class DeviceExpandableListAdapter extends BaseExpandableListAdapter {
     @Override
     public View getChildView(final int groupPosition, int childPosition, boolean isLastChild, View convertView, ViewGroup parent) {
         if(childViewHolder[groupPosition] == null) {
+
             Log.v("Rocalii","Initialize Child View "+childPosition + " In Group "+groupPosition);
             childViewHolder[groupPosition] = new ChildViewHolder();
 
@@ -274,7 +275,15 @@ public class DeviceExpandableListAdapter extends BaseExpandableListAdapter {
                 groupViewHolder[groupPosition].ivMore.setVisibility(View.VISIBLE);
                 groupViewHolder[groupPosition].progressBar.setVisibility(View.GONE);
 
-                if (groupViewHolder[groupPosition].mDevice.getChannelNumber() > 1) {
+                if (groupViewHolder[groupPosition].mDevice.getChannelNumber() == 0) { //Wrong Password
+                    childViewHolder[groupPosition].tvMessage.setText("Erro ao fazer login com o dipositivo.");
+                    
+                    childViewHolder[groupPosition].tvMessage.setVisibility(View.VISIBLE);
+                    childViewHolder[groupPosition].recyclerViewChannels.setVisibility(View.GONE);
+                    groupViewHolder[groupPosition].ivMore.setVisibility(View.GONE);
+                    groupViewHolder[groupPosition].progressBar.setVisibility(View.GONE);
+                }
+                else if (groupViewHolder[groupPosition].mDevice.getChannelNumber() > 1) {
                     groupViewHolder[groupPosition].ivQuad.setVisibility(View.VISIBLE);
                     //DeviceListActivity.listComponents.get(groupPosition).numQuad = DeviceListActivity.listComponents.get(groupPosition).lastNumQuad;
                 } else {
@@ -311,6 +320,8 @@ public class DeviceExpandableListAdapter extends BaseExpandableListAdapter {
                 });
 
             }
+
+
 
             setLayoutSize(groupPosition);
             childViewHolder[groupPosition].gridLayoutManager.scrollToPosition(DeviceListActivity.listComponents.get(groupPosition).lastFirstVisibleItem);
