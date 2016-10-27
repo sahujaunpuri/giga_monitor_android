@@ -207,7 +207,6 @@ public class MediaGridAdapter extends BaseAdapter {
             } else {
                 fImageView.setBackground(blankDrawable);
                 fImageView.setText(mImageFiles.get(position).getName());
-                ///fImageView.setImageBitmap(blankBitmap);
 
                 if (!tridToGetImgThumbnail.get(position)) {
 
@@ -309,14 +308,10 @@ public class MediaGridAdapter extends BaseAdapter {
                                     }
                                 });
                             }
-                            //fVideoView.setImageBitmap(bitmap);
                         }
                     }.execute();
                 }
             }
-
-            //Log.v("Rocali",mVideoFiles.get(position).getName());
-
 
             fVideoView.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -390,7 +385,6 @@ public class MediaGridAdapter extends BaseAdapter {
     }
 
     public Uri getImageUri(int position) {
-        Log.v("Rocali","getImageUri "+position);
         if (mImageUris.get(position) == null) {
             Uri uri = Uri.fromFile(mImageFiles.get(position));
             mImageUris.add(position,uri);
@@ -399,27 +393,11 @@ public class MediaGridAdapter extends BaseAdapter {
     }
 
     public Uri getVideoUri(int position) {
-        Log.v("Rocali","getVideoUri "+position);
         if (mVideoUris.get(position) == null) {
             Uri uri = Uri.fromFile(mVideoFiles.get(position));
             mVideoUris.add(position,uri);
         }
         return mVideoUris.get(position);
-    }
-
-    public Bitmap createBitmapToText(String text) {
-        text = text.substring(0,19);
-        text = text.replace("_",":");
-        Paint paint = new Paint(ANTI_ALIAS_FLAG);
-        paint.setTextSize(20);
-        paint.setColor(Color.BLACK);
-        paint.setTextAlign(Paint.Align.CENTER);
-        Bitmap image = Bitmap.createBitmap(200, 150, Bitmap.Config.ARGB_8888);
-        Canvas canvas = new Canvas(image);
-        int xPos = (canvas.getWidth() / 2);
-        int yPos = (int) ((canvas.getHeight() / 2) - ((paint.descent() + paint.ascent()) / 2));
-        canvas.drawText(text, xPos, yPos, paint);
-        return image;
     }
 
     private MediaPlayer.OnErrorListener mOnErrorListener = new MediaPlayer.OnErrorListener() {

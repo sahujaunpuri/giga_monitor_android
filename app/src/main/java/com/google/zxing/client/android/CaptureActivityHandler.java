@@ -106,8 +106,6 @@ public final class CaptureActivityHandler extends Handler {
       activity.setResult(Activity.RESULT_OK, (Intent) message.obj);
       activity.finish();
 
-      Log.v("Rocali","QR MESSAGE = "+message.obj.toString());
-
     } else if (message.what == R.id.launch_product_query) {
       String url = (String) message.obj;
 

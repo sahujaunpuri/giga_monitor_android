@@ -38,7 +38,7 @@ public class ListComponent {
     private int[][] inverseMatrix = new int[][]{
             { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15 },
             { 0, 2, 1, 3, 4, 6, 5, 7, 8, 10, 9, 11, 12, 14, 13, 15 },
-            { 0, 3, 6, 1, 4, 7, 2, 5, 8, 9, 12, 15, 10, 13, 11, 14 },//Rocali Correct here
+            { 0, 3, 6, 1, 4, 7, 2, 5, 8, 9, 12, 15, 10, 13, 11, 14 },
             { 0, 4, 8, 12, 1, 5, 9, 13, 2, 6, 10, 14, 3, 7, 11, 15 }
     };
 
@@ -71,15 +71,6 @@ public class ListComponent {
             surfaceViewComponent.mySurfaceView = new MySurfaceView(mContext, 0);
             surfaceViewComponent.mySurfaceView.init(mContext, surfaceViewComponent.mySurfaceViewID);
 
-            /*MySurfaceView.OnPlayStateListener a = new MySurfaceView.OnPlayStateListener() {
-                @Override
-                public void onPlayState(int i, int i1) {
-                    Log.d("PlayState", "Mysurfaceview: " + i + ", Status: " + i1);
-                }
-            };
-
-            surfaceViewComponent.mySurfaceView.setOnPlayStateListener(a);*/
-
             surfaceViewComponent.mySurfaceView.setLayoutParams(new FrameLayout.LayoutParams(surfaceViewWidth, surfaceViewHeight));
 
             //Create ChannelInfo
@@ -94,7 +85,6 @@ public class ListComponent {
 
             surfaceViewComponents.add(surfaceViewComponent);
         }
-        //Log.v("Rocali","teste");
     }
 
     public void changeSurfaceViewSize(SurfaceViewComponent surfaceViewComponent, FrameLayout frameLayout) {
@@ -125,10 +115,6 @@ public class ListComponent {
                 return svc1.mySurfaceViewOrderId - svc2.mySurfaceViewOrderId;
             }
         });
-        /*
-        for (SurfaceViewComponent s : surfaceViewComponents) {
-            Log.v("Rocali","Chanelno "+ s.mySurfaceViewChannelId+ " orderID "+s.mySurfaceViewOrderId);
-        }*/
     }
 
     public int getChannelSelected(int gridPositionSelected) {

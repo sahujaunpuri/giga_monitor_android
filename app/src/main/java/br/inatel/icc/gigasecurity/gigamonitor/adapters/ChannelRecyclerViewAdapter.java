@@ -87,8 +87,6 @@ public class ChannelRecyclerViewAdapter extends RecyclerView.Adapter<ChannelRecy
 
         listComponent.reOrderSurfaceViewComponents();
 
-        Log.v("Rocali", "ChannelAdapater Channelno "+ listComponent.surfaceViewComponents.get(position).mySurfaceViewChannelId + " For position "+position);
-
         myViewHolder.frameLayout.removeAllViews();
         ViewGroup parent = (ViewGroup) listComponent.surfaceViewComponents.get(position).mySurfaceView.getParent();
 
@@ -123,32 +121,11 @@ public class ChannelRecyclerViewAdapter extends RecyclerView.Adapter<ChannelRecy
                         listComponent.lastFirstItemBeforeSelectChannel = lm.findFirstVisibleItemPosition();
                     }
 
-                    //Rocali
                     childViewHolder.gridLayoutManager = new GridLayoutManager(mContext, listComponent.numQuad, GridLayoutManager.HORIZONTAL, false);
                     childViewHolder.recyclerViewChannels.setLayoutManager(childViewHolder.gridLayoutManager);
                     //childViewHolder.recyclerViewChannels.setLayoutManager(new GridLayoutManager(mContext, listComponent.numQuad, GridLayoutManager.HORIZONTAL, false));
                     childViewHolder.mRecyclerAdapter = new ChannelRecyclerViewAdapter(mContext, mDevice, listComponent.numQuad, childViewHolder, listComponent);
                     childViewHolder.recyclerViewChannels.setAdapter(childViewHolder.mRecyclerAdapter);
-
-                    /*
-                    childViewHolder.recyclerViewChannels.setOnScrollListener(new RecyclerView.OnScrollListener()
-                    {
-
-                        @Override
-                        public void onScrollStateChanged(final RecyclerView recyclerView,final int newState) {
-                            super.onScrollStateChanged(recyclerView, newState);
-                            if(newState == 0) {
-                                final int currentFirstVisibleItem = childViewHolder.gridLayoutManager.findFirstVisibleItemPosition();
-                                final int currentLastVisibleItem = childViewHolder.gridLayoutManager.findLastVisibleItemPosition();
-
-                                final int itemToScroll = mDeviceManager.scrollToItem(listComponent.numQuad,mDevice.getChannelNumber(),currentFirstVisibleItem,currentLastVisibleItem,childViewHolder.lastFirstVisibleItem,childViewHolder.lastLastVisibleItem);
-                                childViewHolder.gridLayoutManager.smoothScrollToPosition(childViewHolder.recyclerViewChannels, null, itemToScroll);
-
-                                childViewHolder.lastFirstVisibleItem = currentFirstVisibleItem;
-                                childViewHolder.lastLastVisibleItem = currentLastVisibleItem;
-                            }
-                        }
-                    });*/
 
                     listComponent.changeSurfaceViewSize(listComponent.surfaceViewComponents.get(msvSelected), myViewHolder.frameLayout);
 
@@ -165,16 +142,8 @@ public class ChannelRecyclerViewAdapter extends RecyclerView.Adapter<ChannelRecy
                 } else {
 
                     if (childViewHolder.layoutMenu.getVisibility() == View.GONE) {
-
-                        //msvSelected = listComponent.surfaceViewComponents.get(position).mySurfaceViewChannelId;
                         msvSelected = listComponent.getChannelSelected(position);
                         positionSelected = position;
-
-                        Log.v("Rocali","msvSELECTED "+msvSelected + " positionSelcted "+positionSelected);
-
-                       // for (SurfaceViewComponent svc : listComponent.surfaceViewComponents){
-                       //     Log.v("Rocali"," SVID " + svc.mySurfaceViewID + " SVCID " + svc.mySurfaceViewChannelId + " SVOID " + svc.mySurfaceViewOrderId );
-                        // }
 
                         myViewHolderSelected = myViewHolder;
 
@@ -193,8 +162,6 @@ public class ChannelRecyclerViewAdapter extends RecyclerView.Adapter<ChannelRecy
                         } else {
                             childViewHolder.ivPlayPause.setImageDrawable(mContext.getResources().getDrawable(R.drawable.ic_play_off));
                         }
-
-                        //int recordState = listComponent.surfaceViewComponents.get(position).mySurfaceView.getRecordState();
 
                         if (!listComponent.surfaceViewComponents.get(positionSelected).isREC()) {
                             childViewHolder.ivSnapvideo.setImageDrawable(mContext.getResources().getDrawable(R.drawable.ic_snapvideo));
@@ -238,8 +205,6 @@ public class ChannelRecyclerViewAdapter extends RecyclerView.Adapter<ChannelRecy
         childViewHolder.ivPlayPause.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                SurfaceViewComponent sv = listComponent.surfaceViewComponents.get(positionSelected);
-                Log.v("Rocali","PLAY CID "+sv.mySurfaceViewChannelId+ " VID "+sv.mySurfaceViewID+ " OID "+sv.mySurfaceViewOrderId);
                 if (listComponent.surfaceViewComponents.get(positionSelected).isPlaying) {
                     listComponent.surfaceViewComponents.get(positionSelected).mySurfaceView.onPause();
                     listComponent.surfaceViewComponents.get(positionSelected).isPlaying = false;
@@ -258,8 +223,6 @@ public class ChannelRecyclerViewAdapter extends RecyclerView.Adapter<ChannelRecy
             public void onClick(View v) {
                 if (!listComponent.surfaceViewComponents.get(positionSelected).isREC()) {
                     if (positionSelected != -1) {
-                        SurfaceViewComponent sv = listComponent.surfaceViewComponents.get(positionSelected);
-                        Log.v("Rocali","HD MSV  "+positionSelected+" - CID "+sv.mySurfaceViewChannelId+ " VID "+sv.mySurfaceViewID+ " OID "+sv.mySurfaceViewOrderId);
                         if (listComponent.surfaceViewComponents.get(positionSelected).chnInfo.nStream == 1) {
                             listComponent.surfaceViewComponents.get(positionSelected).chnInfo.nStream = 0;
                             childViewHolder.ivHQ.setImageDrawable(mContext.getResources().getDrawable(R.drawable.ic_hq_on));
@@ -324,20 +287,17 @@ public class ChannelRecyclerViewAdapter extends RecyclerView.Adapter<ChannelRecy
             @Override
             public void onClick(View v) {
                 if (!listComponent.surfaceViewComponents.get(positionSelected).isREC()) {
-                    if (mDeviceManager.startSnapvideo(listComponent.surfaceViewComponents.get(positionSelected).mySurfaceView,positionSelected) != null) {
-                        Log.v("Rocali", "Start REC Channel " + positionSelected);
+                    if (mDeviceManager.startSnapvideo(listComponent.surfaceViewComponents.get(positionSelected).mySurfaceView,msvSelected) != null) {
                         clickRecTime = System.currentTimeMillis();
                         listComponent.surfaceViewComponents.get(positionSelected).setREC(true);
                         childViewHolder.ivSnapvideo.setImageDrawable(mContext.getResources().getDrawable(R.drawable.ic_snapvideo_on));
                     } else {
-                        //int channelPosition = listComponent.surfaceViewComponents.get(position).mySurfaceViewChannelId + 1;
                         Toast.makeText(mContext, "Gravando no canal "+mDeviceManager.getChannelOnRec(), Toast.LENGTH_LONG).show();
                     }
                 } else {
                     long duration = System.currentTimeMillis() - clickRecTime;
                     if (duration > 1000) {
                         if (mDeviceManager.stopSnapvideo(listComponent.surfaceViewComponents.get(positionSelected).mySurfaceView, mContext) != null) {
-                            Log.v("Rocali", "Stop REC Channel " + positionSelected + " duration " + duration);
                             Toast.makeText(mContext, "Gravação salva com sucesso", Toast.LENGTH_LONG).show();
                         } else {
                             Toast.makeText(mContext, "Não foi possível salvar o video", Toast.LENGTH_LONG).show();
@@ -366,8 +326,6 @@ public class ChannelRecyclerViewAdapter extends RecyclerView.Adapter<ChannelRecy
             surfaceViewComponent.mySurfaceView.setOnPlayStateListener(new MySurfaceView.OnPlayStateListener() {
                 @Override
                 public void onPlayState(int i, int i1) {
-
-                    Log.d("Rocali", "Mysurfaceview: " + i + ", i1: " + i1);
 
                     if(i1 == 1) {
                         surfaceViewComponent.progressBar.setVisibility(View.INVISIBLE);

@@ -515,11 +515,7 @@ public class DeviceManager {
 
         File file = surfaceView.onStopRecord(true);
 
-        Log.v("Rocali"," Total Spacee "+file.getTotalSpace() + "  Free Space "+file.getFreeSpace() + " Usable Space "+file.getUsableSpace() +" Lengt "+ file.length());
-
         if (file.length() > 10000) {  //Save just if the video has more than 10kb
-            Log.v("Rocali","Save "+file.length());
-
             ContentValues values = new ContentValues();
 
             values.put(MediaStore.Video.Media.TITLE, file.getName());
