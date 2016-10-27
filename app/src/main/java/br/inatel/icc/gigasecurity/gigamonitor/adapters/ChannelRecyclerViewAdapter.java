@@ -172,9 +172,9 @@ public class ChannelRecyclerViewAdapter extends RecyclerView.Adapter<ChannelRecy
 
                         Log.v("Rocali","msvSELECTED "+msvSelected + " positionSelcted "+positionSelected);
 
-                        for (SurfaceViewComponent svc : listComponent.surfaceViewComponents){
-                            Log.v("Rocali"," SVID " + svc.mySurfaceViewID + " SVCID " + svc.mySurfaceViewChannelId + " SVOID " + svc.mySurfaceViewOrderId );
-                        }
+                       // for (SurfaceViewComponent svc : listComponent.surfaceViewComponents){
+                       //     Log.v("Rocali"," SVID " + svc.mySurfaceViewID + " SVCID " + svc.mySurfaceViewChannelId + " SVOID " + svc.mySurfaceViewOrderId );
+                        // }
 
                         myViewHolderSelected = myViewHolder;
 
@@ -240,15 +240,15 @@ public class ChannelRecyclerViewAdapter extends RecyclerView.Adapter<ChannelRecy
             public void onClick(View v) {
                 SurfaceViewComponent sv = listComponent.surfaceViewComponents.get(positionSelected);
                 Log.v("Rocali","PLAY CID "+sv.mySurfaceViewChannelId+ " VID "+sv.mySurfaceViewID+ " OID "+sv.mySurfaceViewOrderId);
-                    if (listComponent.surfaceViewComponents.get(positionSelected).isPlaying) {
-                        listComponent.surfaceViewComponents.get(positionSelected).mySurfaceView.onPause();
-                        listComponent.surfaceViewComponents.get(positionSelected).isPlaying = false;
-                        childViewHolder.ivPlayPause.setImageDrawable(mContext.getResources().getDrawable(R.drawable.ic_play_off));
-                    } else {
-                        listComponent.surfaceViewComponents.get(positionSelected).mySurfaceView.onPlay();
-                        listComponent.surfaceViewComponents.get(positionSelected).isPlaying = true;
-                        childViewHolder.ivPlayPause.setImageDrawable(mContext.getResources().getDrawable(R.drawable.ic_pause));
-                    }
+                if (listComponent.surfaceViewComponents.get(positionSelected).isPlaying) {
+                    listComponent.surfaceViewComponents.get(positionSelected).mySurfaceView.onPause();
+                    listComponent.surfaceViewComponents.get(positionSelected).isPlaying = false;
+                    childViewHolder.ivPlayPause.setImageDrawable(mContext.getResources().getDrawable(R.drawable.ic_play_off));
+                } else {
+                    listComponent.surfaceViewComponents.get(positionSelected).mySurfaceView.onPlay();
+                    listComponent.surfaceViewComponents.get(positionSelected).isPlaying = true;
+                    childViewHolder.ivPlayPause.setImageDrawable(mContext.getResources().getDrawable(R.drawable.ic_pause));
+                }
 
             }
         });
@@ -367,9 +367,9 @@ public class ChannelRecyclerViewAdapter extends RecyclerView.Adapter<ChannelRecy
                 @Override
                 public void onPlayState(int i, int i1) {
 
-                    Log.d("PlayState", "Mysurfaceview: " + i + ", i1: " + i1);
+                    Log.d("Rocali", "Mysurfaceview: " + i + ", i1: " + i1);
 
-                    if(i1 == 2 || i1 == 3) {
+                    if(i1 == 1) {
                         surfaceViewComponent.progressBar.setVisibility(View.INVISIBLE);
                     } else {
                         surfaceViewComponent.progressBar.setVisibility(View.VISIBLE);
@@ -407,6 +407,35 @@ public class ChannelRecyclerViewAdapter extends RecyclerView.Adapter<ChannelRecy
                 }
             });
 
+
+        } else {
+            surfaceViewComponent.progressBar.setVisibility(View.VISIBLE);
+            mDeviceManager.startDeviceVideo2(mDevice.getLoginID(), surfaceViewComponent.mySurfaceViewID, surfaceViewComponent.chnInfo, new DeviceManager.StartDeviceVideoListener() {
+                @Override
+                public void onSuccessStartDevice(final long handleID) {
+
+                    handler.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            surfaceViewComponent.mySurfaceView.onPlay();
+                            surfaceViewComponent.realPlayHandleID = handleID;
+                            surfaceViewComponent.isPlaying = true;
+                            surfaceViewComponent.progressBar.setVisibility(View.INVISIBLE);
+                        }
+                    });
+                }
+
+                @Override
+                public void onErrorStartDevice() {
+                    ((DeviceListActivity) mContext).runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            surfaceViewComponent.progressBar.setVisibility(View.VISIBLE);
+                            startDeviceVideo(mDevice, surfaceViewComponent);
+                        }
+                    });
+                }
+            });
 
         }
 

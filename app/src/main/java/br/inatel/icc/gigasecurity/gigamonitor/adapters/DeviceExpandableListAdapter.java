@@ -31,6 +31,7 @@ import br.inatel.icc.gigasecurity.gigamonitor.config.ConfigMenuActivity;
 import br.inatel.icc.gigasecurity.gigamonitor.core.DeviceManager;
 import br.inatel.icc.gigasecurity.gigamonitor.model.Device;
 import br.inatel.icc.gigasecurity.gigamonitor.model.LoginMethod;
+import br.inatel.icc.gigasecurity.gigamonitor.model.SurfaceViewComponent;
 
 /**
  * Created by filipecampos on 30/05/2016.
@@ -277,7 +278,7 @@ public class DeviceExpandableListAdapter extends BaseExpandableListAdapter {
 
                 if (groupViewHolder[groupPosition].mDevice.getChannelNumber() == 0) { //Wrong Password
                     childViewHolder[groupPosition].tvMessage.setText("Erro ao fazer login com o dipositivo.");
-                    
+
                     childViewHolder[groupPosition].tvMessage.setVisibility(View.VISIBLE);
                     childViewHolder[groupPosition].recyclerViewChannels.setVisibility(View.GONE);
                     groupViewHolder[groupPosition].ivMore.setVisibility(View.GONE);
@@ -297,6 +298,7 @@ public class DeviceExpandableListAdapter extends BaseExpandableListAdapter {
                 childViewHolder[groupPosition].mRecyclerAdapter = new ChannelRecyclerViewAdapter(mContext, groupViewHolder[groupPosition].mDevice, DeviceListActivity.listComponents.get(groupPosition).numQuad, childViewHolder[groupPosition], DeviceListActivity.listComponents.get(groupPosition));
                 childViewHolder[groupPosition].recyclerViewChannels.setAdapter(childViewHolder[groupPosition].mRecyclerAdapter);
 
+                //playChannels(groupPosition);
                 Log.v("Rocali","GOT HERE? 2");
 
                 childViewHolder[groupPosition].recyclerViewChannels.setOnScrollListener(new RecyclerView.OnScrollListener()
@@ -581,6 +583,38 @@ public class DeviceExpandableListAdapter extends BaseExpandableListAdapter {
 
     public void refreshAdapter() {
         init();
+    }
+
+    public void playChannels(int groupPosition) {
+        /*for (SurfaceViewComponent svc : DeviceListActivity.listComponents.get(groupPosition).surfaceViewComponents) {
+            if (!svc.isPlaying) {
+                svc.mySurfaceView.onPlay();
+                svc.isPlaying = true;
+            }
+        }*/
+    }
+
+    public void pauseChannels(int groupPosition) {
+        Log.v("Rocali","Pause Channels por Grid = "+DeviceListActivity.listComponents.get(groupPosition).numQuad);
+        for (SurfaceViewComponent svc : DeviceListActivity.listComponents.get(groupPosition).surfaceViewComponents) {
+            //if (svc.mySurfaceViewChannelId < DeviceListActivity.listComponents.get(groupPosition).numQuad) {
+                Log.v("Rocali","Lets stop "+svc.mySurfaceViewChannelId);
+                mDeviceManager.stopDeviceVideo2(svc.realPlayHandleID, svc.mySurfaceView, new DeviceManager.StopDeviceVideoListener() {
+                    @Override
+                    public void onSuccessStopDevice() {
+                        Log.v("Rocali", "onSuccessStopDevice");
+                    }
+
+                    @Override
+                    public void onErrorStopDevice() {
+                        Log.v("Rocali", "onErrorStopDevice");
+                    }
+                });
+            }
+            //mDeviceManager.stopDeviceVideo(mDevices.get(groupPosition).getLoginID(), svc.getMySurfaceView());
+            //svc.mySurfaceView.onPause();
+            //svc.isPlaying = false
+        //}
     }
 
 

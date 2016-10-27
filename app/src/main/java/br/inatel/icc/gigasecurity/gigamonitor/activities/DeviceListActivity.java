@@ -75,6 +75,8 @@ public class DeviceListActivity extends ActionBarActivity {
 
                     return false;
                 } else {
+                    mAdapter.pauseChannels(previousGroup);
+
                     mAdapter = new DeviceExpandableListAdapter(mContext, mDevices);
                     mExpandableListView.setAdapter(mAdapter);
 
