@@ -327,13 +327,11 @@ public class ChannelRecyclerViewAdapter extends RecyclerView.Adapter<ChannelRecy
                 @Override
                 public void onPlayState(int i, int i1) {
 
-                    if(i1 == 1) {
-                        surfaceViewComponent.progressBar.setVisibility(View.INVISIBLE);
+                    if(i1 == 2) {
+                        surfaceViewComponent.progressBar.setVisibility(View.GONE);
                     } else {
                         surfaceViewComponent.progressBar.setVisibility(View.VISIBLE);
                     }
-
-
 
                 }
             });
