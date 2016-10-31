@@ -20,12 +20,8 @@ public class SurfaceViewComponent implements Serializable {
     public boolean isPlaying = false;
     public boolean isHD = false;
 
-
-
     public int mySurfaceViewChannelId;
     public int mySurfaceViewOrderId;
-
-
 
     public boolean isREC = false;
 

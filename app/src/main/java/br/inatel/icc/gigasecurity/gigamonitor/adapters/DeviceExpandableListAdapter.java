@@ -458,7 +458,6 @@ public class DeviceExpandableListAdapter extends BaseExpandableListAdapter {
                         new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
-                                stopChannels(groupPosition);
                                 switch (which) {
                                     case 0:
 
@@ -541,6 +540,8 @@ public class DeviceExpandableListAdapter extends BaseExpandableListAdapter {
     }
 
     public void stopChannels(int groupPosition) {
+        DeviceListActivity.listComponents.get(groupPosition).handleVisibleChannels(false);
+        /*
         for (SurfaceViewComponent svc : DeviceListActivity.listComponents.get(groupPosition).surfaceViewComponents) {
             mDeviceManager.stopDeviceVideo2(svc.realPlayHandleID, svc.mySurfaceView, new DeviceManager.StopDeviceVideoListener() {
                 @Override
@@ -553,11 +554,12 @@ public class DeviceExpandableListAdapter extends BaseExpandableListAdapter {
                     Log.v("GIGA", "onErrorStopDevice");
                 }
             });
-        }
+        }*/
     }
 
     public void refreshVideo(int groupPosition) {
-        childViewHolder[groupPosition].mRecyclerAdapter.notifyDataSetChanged();
+        DeviceListActivity.listComponents.get(groupPosition).handleVisibleChannels(true);
+        //childViewHolder[groupPosition].mRecyclerAdapter.notifyDataSetChanged();
     }
 
 

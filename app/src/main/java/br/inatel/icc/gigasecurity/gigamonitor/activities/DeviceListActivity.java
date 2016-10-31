@@ -92,7 +92,15 @@ public class DeviceListActivity extends ActionBarActivity {
     @Override
     protected void onResume() {
         super.onResume();
+        Log.v("Rocali","onResume");
         if (previousGroup != -1) mAdapter.refreshVideo(previousGroup);
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        Log.v("Rocali","onPause");
+        if (previousGroup != -1) mAdapter.stopChannels(previousGroup);;
     }
 
     private void initComponents() {
@@ -150,11 +158,6 @@ public class DeviceListActivity extends ActionBarActivity {
 
     }
 
-    private void startInitialActivity() {
-        Intent i = new Intent(this, InitialActivity.class);
-        startActivity(i);
-    }
-
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = getMenuInflater();
@@ -166,7 +169,6 @@ public class DeviceListActivity extends ActionBarActivity {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
-
         switch (id){
             case (R.id.action_add):
                 startInitialActivity();
@@ -183,6 +185,12 @@ public class DeviceListActivity extends ActionBarActivity {
             default:
                 return super.onOptionsItemSelected(item);
         }
+    }
+
+    private void startInitialActivity() {
+        Intent i = new Intent(this, InitialActivity.class);
+
+        startActivity(i);
     }
 
     private void startMediaActivity() {
