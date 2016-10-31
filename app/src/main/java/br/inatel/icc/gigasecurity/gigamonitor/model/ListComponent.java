@@ -152,6 +152,31 @@ public class ListComponent {
         }
         this.lastFirstVisibleItem = currentFirstVisibleItem;
         this.lastLastVisibleItem = currentLastVisibleItem;
+
+        //this.handleVisibleChannels();
         return itemToScroll;
     }
+
+    /*
+    public void handleVisibleChannels(){
+        //Log.v("Rocali", "Visible from " + this.lastFirstVisibleItem + " to " + this.lastLastVisibleItem + " numQuad "+this.numQuad);
+        if (this.lastLastVisibleItem - this.lastFirstVisibleItem == this.numQuad*this.numQuad - 1) {
+            Log.v("Rocali", "Visible from " + this.lastFirstVisibleItem + " to " + this.lastLastVisibleItem);
+            for (SurfaceViewComponent svc : this.surfaceViewComponents) {
+                if (svc.mySurfaceViewChannelId >= this.lastFirstVisibleItem && svc.mySurfaceViewChannelId <= lastLastVisibleItem) {
+                    if (!svc.isPlaying) {
+                        Log.v("Rocali","Play "+svc.mySurfaceViewChannelId);
+                        svc.mySurfaceView.onPlay();
+                        svc.isPlaying = true;
+                    }
+                } else {
+                    if (svc.isPlaying) {
+                        Log.v("Rocali", "Pause " + svc.mySurfaceViewChannelId);
+                        svc.mySurfaceView.onPause();
+                        svc.isPlaying = false;
+                    }
+                }
+            }
+        }
+    }*/
 }

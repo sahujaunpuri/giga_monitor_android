@@ -113,7 +113,7 @@ public class DeviceExpandableListAdapter extends BaseExpandableListAdapter {
             groupViewHolder[groupPosition].ivMore.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    showMoreDialog(groupViewHolder[groupPosition]);
+                    showMoreDialog(groupViewHolder[groupPosition],groupPosition);
                 }
             });
 
@@ -180,7 +180,7 @@ public class DeviceExpandableListAdapter extends BaseExpandableListAdapter {
             groupViewHolder[groupPosition].ivMore.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    showMoreDialog(groupViewHolder[groupPosition]);
+                    showMoreDialog(groupViewHolder[groupPosition],groupPosition);
                 }
             });
 
@@ -450,7 +450,7 @@ public class DeviceExpandableListAdapter extends BaseExpandableListAdapter {
         });
     }
 
-    private void showMoreDialog(final GroupViewHolder groupViewHolder) {
+    private void showMoreDialog(final GroupViewHolder groupViewHolder, final int groupPosition) {
 
         AlertDialog.Builder builder = new AlertDialog.Builder(mContext);
         builder.setTitle("")
@@ -458,18 +458,11 @@ public class DeviceExpandableListAdapter extends BaseExpandableListAdapter {
                         new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
+                                stopChannels(groupPosition);
                                 switch (which) {
                                     case 0:
 
-                                        if (groupViewHolder.mDevice.getLoginID() != 0) {
-                                            Bundle extras = new Bundle();
-                                            extras.putSerializable("device", groupViewHolder.mDevice);
-
-                                            Intent intent = new Intent(mContext, ConfigMenuActivity.class);
-                                            intent.putExtras(extras);
-
-                                            mContext.startActivity(intent);
-                                        }
+                                        startSettingsActivity(groupViewHolder.mDevice);
 
                                         break;
                                     case 1:
@@ -486,6 +479,18 @@ public class DeviceExpandableListAdapter extends BaseExpandableListAdapter {
                         });
         builder.show();
 
+    }
+
+    private void startSettingsActivity(Device mDevice) {
+        if (mDevice.getLoginID() != 0) {
+            Bundle extras = new Bundle();
+            extras.putSerializable("device", mDevice);
+
+            Intent intent = new Intent(mContext, ConfigMenuActivity.class);
+            intent.putExtras(extras);
+
+            mContext.startActivity(intent);
+        }
     }
 
     private void startPlaybackActivity(Device mDevice) {
@@ -535,7 +540,7 @@ public class DeviceExpandableListAdapter extends BaseExpandableListAdapter {
         return nextNumQuad;
     }
 
-    public void pauseChannels(int groupPosition) {
+    public void stopChannels(int groupPosition) {
         for (SurfaceViewComponent svc : DeviceListActivity.listComponents.get(groupPosition).surfaceViewComponents) {
             mDeviceManager.stopDeviceVideo2(svc.realPlayHandleID, svc.mySurfaceView, new DeviceManager.StopDeviceVideoListener() {
                 @Override
@@ -549,6 +554,10 @@ public class DeviceExpandableListAdapter extends BaseExpandableListAdapter {
                 }
             });
         }
+    }
+
+    public void refreshVideo(int groupPosition) {
+        childViewHolder[groupPosition].mRecyclerAdapter.notifyDataSetChanged();
     }
 
 

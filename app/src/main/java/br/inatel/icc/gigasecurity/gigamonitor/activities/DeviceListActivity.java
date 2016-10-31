@@ -75,7 +75,7 @@ public class DeviceListActivity extends ActionBarActivity {
 
                     return false;
                 } else {
-                    mAdapter.pauseChannels(previousGroup);
+                    mAdapter.stopChannels(previousGroup);
 
                     mAdapter = new DeviceExpandableListAdapter(mContext, mDevices);
                     mExpandableListView.setAdapter(mAdapter);
@@ -87,6 +87,12 @@ public class DeviceListActivity extends ActionBarActivity {
 
             }
         });
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        if (previousGroup != -1) mAdapter.refreshVideo(previousGroup);
     }
 
     private void initComponents() {
