@@ -540,8 +540,8 @@ public class DeviceExpandableListAdapter extends BaseExpandableListAdapter {
     }
 
     public void stopChannels(int groupPosition) {
-        DeviceListActivity.listComponents.get(groupPosition).handleVisibleChannels(false);
-        /*
+        //DeviceListActivity.listComponents.get(groupPosition).handleChannels(false);
+
         for (SurfaceViewComponent svc : DeviceListActivity.listComponents.get(groupPosition).surfaceViewComponents) {
             mDeviceManager.stopDeviceVideo2(svc.realPlayHandleID, svc.mySurfaceView, new DeviceManager.StopDeviceVideoListener() {
                 @Override
@@ -554,12 +554,43 @@ public class DeviceExpandableListAdapter extends BaseExpandableListAdapter {
                     Log.v("GIGA", "onErrorStopDevice");
                 }
             });
-        }*/
+        }
     }
 
+    public void pauseChannels(int groupPosition) {
+        for (SurfaceViewComponent svc : DeviceListActivity.listComponents.get(groupPosition).surfaceViewComponents) {
+            if (svc.isPlaying && svc.connected) {
+
+                Log.v("Rocali", "Pause " + svc.mySurfaceViewChannelId + " PHID " + svc.realPlayHandleID);
+                svc.mySurfaceView.onPause();
+                svc.isPlaying = false;
+
+
+            }
+        }
+    }
+
+    public void playChannels(int groupPosition) {
+        for (SurfaceViewComponent svc : DeviceListActivity.listComponents.get(groupPosition).surfaceViewComponents) {
+            if (!svc.isPlaying && svc.connected) {
+
+                Log.v("Rocali", "Play " + svc.mySurfaceViewChannelId + " PHID " + svc.realPlayHandleID);
+                svc.mySurfaceView.onPlay();
+                svc.isPlaying = true;
+
+
+            }
+        }
+    }
     public void refreshVideo(int groupPosition) {
-        DeviceListActivity.listComponents.get(groupPosition).handleVisibleChannels(true);
-        //childViewHolder[groupPosition].mRecyclerAdapter.notifyDataSetChanged();
+        //DeviceListActivity.listComponents.get(groupPosition).handleChannels(true);
+        /*try {
+            childViewHolder[groupPosition].mRecyclerAdapter.notifyDataSetChanged();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }*/
+
+       // playChannels(groupPosition);
     }
 
 

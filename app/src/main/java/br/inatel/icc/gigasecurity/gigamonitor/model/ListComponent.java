@@ -20,6 +20,7 @@ import java.util.Comparator;
 import java.util.Date;
 
 import br.inatel.icc.gigasecurity.gigamonitor.activities.DeviceListActivity;
+import br.inatel.icc.gigasecurity.gigamonitor.core.DeviceManager;
 
 /**
  * Created by filipecampos on 02/05/2016.
@@ -38,7 +39,7 @@ public class ListComponent {
     private int[][] inverseMatrix = new int[][]{
             { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15 },
             { 0, 2, 1, 3, 4, 6, 5, 7, 8, 10, 9, 11, 12, 14, 13, 15 },
-            { 0, 3, 6, 1, 4, 7, 2, 5, 8, 9, 12, 15, 10, 13, 11, 14 },
+            { 0, 3, 6, 1, 4, 7, 2, 5, 8, 9, 12, 14, 10, 13, 15, 11 },
             { 0, 4, 8, 12, 1, 5, 9, 13, 2, 6, 10, 14, 3, 7, 11, 15 }
     };
 
@@ -153,35 +154,56 @@ public class ListComponent {
         this.lastFirstVisibleItem = currentFirstVisibleItem;
         this.lastLastVisibleItem = currentLastVisibleItem;
 
-        //this.handleVisibleChannels(true);
+        this.handleVisibleChannels();
         return itemToScroll;
     }
 
-
-    public void handleVisibleChannels(boolean playVisible){
-        //Log.v("Rocali", "Visible from " + this.lastFirstVisibleItem + " to " + this.lastLastVisibleItem + " numQuad "+this.numQuad);
-        if (this.lastLastVisibleItem - this.lastFirstVisibleItem == this.numQuad*this.numQuad - 1) {
+    public void handleVisibleChannels(){
+        DeviceManager mDeviceManager = DeviceManager.getInstance();
+        Log.v("Rocali", "Visible from " + this.lastFirstVisibleItem + " to " + this.lastLastVisibleItem + " numQuad "+this.numQuad);
+        if (this.lastLastVisibleItem - this.lastFirstVisibleItem == this.numQuad*this.numQuad - 1 || this.lastLastVisibleItem == this.surfaceViewComponents.size() - 1) {
             Log.v("Rocali", "Visible from " + this.lastFirstVisibleItem + " to " + this.lastLastVisibleItem);
-            for (SurfaceViewComponent svc : this.surfaceViewComponents) {
-                if (playVisible && svc.mySurfaceViewChannelId >= this.lastFirstVisibleItem && svc.mySurfaceViewChannelId <= lastLastVisibleItem) {
-                    if (!svc.isPlaying && svc.realPlayHandleID != 0) {
-
-                        Log.v("Rocali", "Play " + svc.mySurfaceViewChannelId + " PHID "+svc.realPlayHandleID);
+            for (final SurfaceViewComponent svc : this.surfaceViewComponents) {
+                if (svc.mySurfaceViewChannelId >= this.lastFirstVisibleItem && svc.mySurfaceViewChannelId <= lastLastVisibleItem) {
+                    if (!svc.isPlaying && svc.connected) {
+                        Log.v("Rocali","Play "+svc.mySurfaceViewChannelId);
                         svc.mySurfaceView.onPlay();
                         svc.isPlaying = true;
+                    } else if (!svc.connected) {
+                        mDeviceManager.startDeviceVideo2(mDevice.getLoginID(), svc.mySurfaceViewID,
+                                svc.chnInfo, new DeviceManager.StartDeviceVideoListener() {
+                                    @Override
+                                    public void onSuccessStartDevice(final long handleID) {
+                                       Log.v("Rocali","onSuccessStartDevice" + svc.mySurfaceViewChannelId);
+                                    }
 
+                                    @Override
+                                    public void onErrorStartDevice() {
+                                        Log.v("Rocali","onErrorStartDevice" + svc.mySurfaceViewChannelId);
+                                    }
+                                });
                     }
                 } else {
-                    if (svc.isPlaying && svc.realPlayHandleID != 0) {
-
-                        Log.v("Rocali", "Pause " + svc.mySurfaceViewChannelId + " PHID "+svc.realPlayHandleID);
+                    if (svc.isPlaying && svc.connected) {
+                        Log.v("Rocali", "Pause " + svc.mySurfaceViewChannelId);
                         svc.mySurfaceView.onPause();
                         svc.isPlaying = false;
+                    } else if (!svc.connected) {
+                        mDeviceManager.stopDeviceVideo2(svc.realPlayHandleID, svc.mySurfaceView, new DeviceManager.StopDeviceVideoListener() {
+                            @Override
+                            public void onSuccessStopDevice() {
+                                Log.v("Rocali", "onSuccessStopDevice" + svc.mySurfaceViewChannelId);
+                            }
 
-
+                            @Override
+                            public void onErrorStopDevice() {
+                                Log.v("Rocali", "onErrorStopDevice"  + svc.mySurfaceViewChannelId);
+                            }
+                        });
                     }
                 }
             }
         }
     }
+
 }

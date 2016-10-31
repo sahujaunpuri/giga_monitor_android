@@ -93,14 +93,15 @@ public class DeviceListActivity extends ActionBarActivity {
     protected void onResume() {
         super.onResume();
         Log.v("Rocali","onResume");
-        if (previousGroup != -1) mAdapter.refreshVideo(previousGroup);
+        if (previousGroup != -1) mAdapter.playChannels(previousGroup);
     }
 
     @Override
     protected void onPause() {
         super.onPause();
         Log.v("Rocali","onPause");
-        if (previousGroup != -1) mAdapter.stopChannels(previousGroup);;
+        //if (previousGroup != -1) mAdapter.stopChannels(previousGroup);
+        if (previousGroup != -1) mAdapter.pauseChannels(previousGroup);
     }
 
     private void initComponents() {

@@ -205,16 +205,17 @@ public class ChannelRecyclerViewAdapter extends RecyclerView.Adapter<ChannelRecy
         childViewHolder.ivPlayPause.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (listComponent.surfaceViewComponents.get(positionSelected).isPlaying) {
-                    listComponent.surfaceViewComponents.get(positionSelected).mySurfaceView.onPause();
-                    listComponent.surfaceViewComponents.get(positionSelected).isPlaying = false;
-                    childViewHolder.ivPlayPause.setImageDrawable(mContext.getResources().getDrawable(R.drawable.ic_play_off));
-                } else {
-                    listComponent.surfaceViewComponents.get(positionSelected).mySurfaceView.onPlay();
-                    listComponent.surfaceViewComponents.get(positionSelected).isPlaying = true;
-                    childViewHolder.ivPlayPause.setImageDrawable(mContext.getResources().getDrawable(R.drawable.ic_pause));
+                if (listComponent.surfaceViewComponents.get(positionSelected).connected) {
+                    if (listComponent.surfaceViewComponents.get(positionSelected).isPlaying) {
+                        listComponent.surfaceViewComponents.get(positionSelected).mySurfaceView.onPause();
+                        listComponent.surfaceViewComponents.get(positionSelected).isPlaying = false;
+                        childViewHolder.ivPlayPause.setImageDrawable(mContext.getResources().getDrawable(R.drawable.ic_play_off));
+                    } else {
+                        listComponent.surfaceViewComponents.get(positionSelected).mySurfaceView.onPlay();
+                        listComponent.surfaceViewComponents.get(positionSelected).isPlaying = true;
+                        childViewHolder.ivPlayPause.setImageDrawable(mContext.getResources().getDrawable(R.drawable.ic_pause));
+                    }
                 }
-
             }
         });
 
@@ -328,8 +329,10 @@ public class ChannelRecyclerViewAdapter extends RecyclerView.Adapter<ChannelRecy
                 public void onPlayState(int i, int i1) {
 
                     if(i1 == 2) {
+                        surfaceViewComponent.connected = true;
                         surfaceViewComponent.progressBar.setVisibility(View.GONE);
                     } else {
+                       // surfaceViewComponent.connected = false;
                         surfaceViewComponent.progressBar.setVisibility(View.VISIBLE);
                     }
 
