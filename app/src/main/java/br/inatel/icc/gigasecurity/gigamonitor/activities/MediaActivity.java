@@ -16,8 +16,6 @@ import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.Toast;
 
-import com.xm.MyConfig;
-import com.xm.NetSdk;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -37,14 +35,18 @@ public class MediaActivity extends ActionBarActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_media);
-
-        initComponents();
+        if(getIntent().getExtras() != null)
+            ivImageSelected = getIntent().getExtras().getBoolean("imageSelected");
 
         mAdapter = new MediaGridAdapter(MediaActivity.this);
+
+        initComponents();
 
         gvMedia.setAdapter(mAdapter);
 
         gvMedia.setFriction(ViewConfiguration.getScrollFriction() * 10);
+
+
 
         ivImage.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -78,6 +80,17 @@ public class MediaActivity extends ActionBarActivity {
         gvMedia = (GridView) findViewById(R.id.grid_view_media);
         ivImage = (ImageView) findViewById(R.id.iv_image);
         ivVideo = (ImageView) findViewById(R.id.iv_video);
+        if(ivImageSelected){
+            ivVideo.setImageDrawable(getResources().getDrawable(R.drawable.ic_video_off));
+            ivImage.setImageDrawable(getResources().getDrawable(R.drawable.ic_camera_on));
+            mAdapter.changeGridMode(true);
+            mAdapter.notifyDataSetChanged();
+        } else{
+            ivVideo.setImageDrawable(getResources().getDrawable(R.drawable.ic_video_on));
+            ivImage.setImageDrawable(getResources().getDrawable(R.drawable.ic_camera_off));
+            mAdapter.changeGridMode(false);
+            mAdapter.notifyDataSetChanged();
+        }
     }
 
 

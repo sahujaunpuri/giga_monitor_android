@@ -7,8 +7,10 @@ import android.os.Environment;
 import android.util.Log;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.Calendar;
 
 /**
@@ -40,6 +42,8 @@ public class BitmapUtil {
 
         return true;
     }
+
+
 
     public static boolean saveIntoExternalStorage(Context context, Bitmap bm) {
         final File directory = getAlbumStorageDir(context);

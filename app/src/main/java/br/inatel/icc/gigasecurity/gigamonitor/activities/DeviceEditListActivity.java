@@ -73,7 +73,7 @@ public class DeviceEditListActivity extends ActionBarActivity {
                     mDevices.remove(from);
                     mDevices.add(to, item);
 
-                    mDeviceManager.saveDevices(DeviceEditListActivity.this, mDevices);
+                    mDeviceManager.updateDevices(DeviceEditListActivity.this, mDevices);
 
                     mAdapter = new DeviceEditAdapter(DeviceEditListActivity.this, mDevices);
                     lv.setAdapter(mAdapter);
@@ -89,7 +89,7 @@ public class DeviceEditListActivity extends ActionBarActivity {
                 public void remove(int which) {
                     mDevices.remove(mAdapter.getItem(which));
 
-                    mDeviceManager.saveDevices(DeviceEditListActivity.this, mDevices);
+                    mDeviceManager.updateDevices(DeviceEditListActivity.this, mDevices);
 
                     mAdapter = new DeviceEditAdapter(DeviceEditListActivity.this, mDevices);
 
@@ -124,7 +124,7 @@ public class DeviceEditListActivity extends ActionBarActivity {
         int id = item.getItemId();
 
         if (id == R.id.action_finish) {
-            mDeviceManager.saveDevices(this, mDevices);
+            mDeviceManager.updateDevices(DeviceEditListActivity.this, mDevices);
 
             DeviceListActivity.mDevices = null;
             DeviceListActivity.loadDevices();
@@ -152,7 +152,7 @@ public class DeviceEditListActivity extends ActionBarActivity {
         alert.setPositiveButton("Salvar", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialogInterface, int which) {
-                mDeviceManager.saveDevices(DeviceEditListActivity.this, mDevices);
+                mDeviceManager.updateDevices(DeviceEditListActivity.this, mDevices);
 
                 DeviceListActivity.mDevices = null;
                 DeviceListActivity.loadDevices();

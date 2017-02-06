@@ -13,8 +13,6 @@ import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
-import com.xm.video.MySurfaceView;
-
 import java.util.ArrayList;
 
 import br.inatel.icc.gigasecurity.gigamonitor.R;

@@ -3,11 +3,13 @@ package br.inatel.icc.gigasecurity.gigamonitor.activities;
 import android.content.Intent;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
+import android.util.Log;
 
 import java.util.Timer;
 import java.util.TimerTask;
 
 import br.inatel.icc.gigasecurity.gigamonitor.R;
+import br.inatel.icc.gigasecurity.gigamonitor.core.DeviceManager;
 
 public class SplashScreenActivity extends ActionBarActivity {
 
@@ -21,6 +23,9 @@ public class SplashScreenActivity extends ActionBarActivity {
         } else if (getActionBar() != null ) {
             getActionBar().hide();
         }
+
+
+        DeviceManager.getInstance().init(this);
 
         new Timer().schedule(new TimerTask() {
 

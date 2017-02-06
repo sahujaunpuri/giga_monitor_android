@@ -43,8 +43,6 @@ public class DeviceListActivity extends ActionBarActivity {
             getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
             getSupportActionBar().hide();
 
-            //mAdapter.setClosedOnFirstVisibleItem(previousGroup);
-
             if(previousGroup != -1) {
                 mExpandableListView.scrollTo(previousGroup, 0);
             }
@@ -70,12 +68,15 @@ public class DeviceListActivity extends ActionBarActivity {
             @Override
             public boolean onGroupClick(ExpandableListView parent, View v, int groupPosition, long id) {
 
+                Log.d("LOGIN TRY", "getChildView: LOGIN: " + mDevices.get(groupPosition).getUsername() + ". Senha: " + mDevices.get(groupPosition).getPassword());
+
                 if (previousGroup == -1) {
                     previousGroup = groupPosition;
 
                     return false;
                 } else {
                     mAdapter.stopChannels(previousGroup);
+                    //mDeviceManager.logoutDevice(mDevices.get(previousGroup));
 
                     mAdapter = new DeviceExpandableListAdapter(mContext, mDevices);
                     mExpandableListView.setAdapter(mAdapter);
@@ -92,16 +93,13 @@ public class DeviceListActivity extends ActionBarActivity {
     @Override
     protected void onResume() {
         super.onResume();
-        Log.v("Rocali","onResume");
-        if (previousGroup != -1) mAdapter.playChannels(previousGroup);
+//        if (previousGroup != -1) mAdapter.playChannels(previousGroup);
     }
 
     @Override
     protected void onPause() {
         super.onPause();
-        Log.v("Rocali","onPause");
-        //if (previousGroup != -1) mAdapter.stopChannels(previousGroup);
-        if (previousGroup != -1) mAdapter.pauseChannels(previousGroup);
+//        if (previousGroup != -1) mAdapter.pauseChannels(previousGroup);
     }
 
     private void initComponents() {
@@ -117,9 +115,11 @@ public class DeviceListActivity extends ActionBarActivity {
 
     }
 
+
+
     public static void loadDevices() {
         if(mDevices == null) {
-            mDevices = mDeviceManager.loadDevices(mContext);
+            mDevices = mDeviceManager.getDevices();
 
             listComponents.clear();
 

@@ -2,17 +2,27 @@ package br.inatel.icc.gigasecurity.gigamonitor.util;
 
 import android.app.Activity;
 import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.Movie;
 import android.util.Log;
 import android.util.Patterns;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 
-import com.xm.javaclass.SDK_SYSTEM_TIME;
-
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.InputStream;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
+import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.Locale;
+
+import static java.text.DateFormat.getDateInstance;
+import static java.text.DateFormat.getTimeInstance;
 
 /**
  * Created by Denis Vilela on 04/09/2014.
@@ -140,27 +150,69 @@ public class Utils {
         }
     }
 
-    public static Date parseSDKTime(SDK_SYSTEM_TIME time) {
-        Calendar c = Calendar.getInstance();
-        c.set(Calendar.HOUR_OF_DAY, time.st_4_hour);
-        c.set(Calendar.MINUTE, time.st_5_minute);
-        c.set(Calendar.SECOND, time.st_6_second);
-        c.set(Calendar.DAY_OF_MONTH, time.st_2_day);
-        c.set(Calendar.MONTH, time.st_1_month);
-        c.set(Calendar.YEAR, time.st_0_year);
-        c.set(Calendar.DAY_OF_WEEK, time.st_3_wday);
-
-
-        Log.d("teste",String.valueOf(c.get(Calendar.HOUR_OF_DAY)));
-        Log.d("teste",String.valueOf(c.get(Calendar.MINUTE)));
-        Log.d("teste",String.valueOf(c.get(Calendar.SECOND)));
-        Log.d("teste",String.valueOf(c.get(Calendar.DAY_OF_MONTH)));
-        Log.d("teste",String.valueOf(c.get(Calendar.MONTH)));
-        Log.d("teste",String.valueOf(c.get(Calendar.YEAR)));
-        Log.d("teste",String.valueOf(c.get(Calendar.DAY_OF_WEEK)));
-
-        return c.getTime();
+    public static String currentDateTime() {
+        SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy HH_mm_ss", Locale.ENGLISH);
+        return sdf.format(new Date());
     }
+
+    public static boolean savePictureFile(String path){
+        BitmapFactory.Options options = new BitmapFactory.Options();
+        options.inJustDecodeBounds = false;
+        options.inPreferredConfig = Bitmap.Config.RGB_565;
+        options.inDither = true;
+        Bitmap bitmap = BitmapFactory.decodeFile(path);
+        File file = new File(path);
+        File imgPath = new File(path + File.separator + file.getName());
+        if (imgPath.exists()) {
+            Log.d("BITMAP", "saveFile: ERROR File exists");
+        } else {
+            try {
+                int bytesum = 0;
+                int byteread = 0;
+                File oldfile = new File(path);
+                if (oldfile.exists()) {
+                    InputStream inStream = new FileInputStream(path);
+                    FileOutputStream fs = new FileOutputStream(path + File.separator + file.getName());
+                    byte[] buffer = new byte[1444];
+                    while ((byteread = inStream.read(buffer)) != -1) {
+                        bytesum += byteread;
+                        System.out.println(bytesum);
+                        fs.write(buffer, 0, byteread);
+                    }
+                    fs.close();
+                    inStream.close();
+                }
+                return true;
+            } catch (Exception e) {
+                e.printStackTrace();
+                return false;
+            }
+        }
+        return false;
+    }
+
+
+//    public static Date parseSDKTime(SDK_SYSTEM_TIME time) {
+//        Calendar c = Calendar.getInstance();
+//        c.set(Calendar.HOUR_OF_DAY, time.st_4_hour);
+//        c.set(Calendar.MINUTE, time.st_5_minute);
+//        c.set(Calendar.SECOND, time.st_6_second);
+//        c.set(Calendar.DAY_OF_MONTH, time.st_2_day);
+//        c.set(Calendar.MONTH, time.st_1_month);
+//        c.set(Calendar.YEAR, time.st_0_year);
+//        c.set(Calendar.DAY_OF_WEEK, time.st_3_wday);
+//
+//
+//        Log.d("teste",String.valueOf(c.get(Calendar.HOUR_OF_DAY)));
+//        Log.d("teste",String.valueOf(c.get(Calendar.MINUTE)));
+//        Log.d("teste",String.valueOf(c.get(Calendar.SECOND)));
+//        Log.d("teste",String.valueOf(c.get(Calendar.DAY_OF_MONTH)));
+//        Log.d("teste",String.valueOf(c.get(Calendar.MONTH)));
+//        Log.d("teste",String.valueOf(c.get(Calendar.YEAR)));
+//        Log.d("teste",String.valueOf(c.get(Calendar.DAY_OF_WEEK)));
+//
+//        return c.getTime();
+//    }
 
     public static int[] parseIp(String host) {
         int[] frt = new int[4];

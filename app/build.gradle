@@ -29,7 +29,7 @@ dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
     compile 'com.android.support:support-v4:21.+'
     compile 'com.android.support:appcompat-v7:21.+'
-    compile files('libs/NetSdk.jar')
+    compile files('libs/LibFunSDK.jar')
     compile 'com.google.code.gson:gson:2.3.1'
     compile 'com.google.zxing:core:3.2.0'
     compile 'com.android.support:recyclerview-v7:21.+'

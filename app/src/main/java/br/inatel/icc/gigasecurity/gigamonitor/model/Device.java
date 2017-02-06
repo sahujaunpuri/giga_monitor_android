@@ -4,9 +4,12 @@ import android.media.AudioFormat;
 import android.util.Log;
 
 import com.google.gson.annotations.Expose;
-import com.xm.DevInfo;
-import com.xm.SearchDeviceInfo;
-import com.xm.audio.AudioParam;
+import com.lib.sdk.struct.SDBDeviceInfo;
+
+import com.basic.G;
+import com.lib.sdk.struct.SDBDeviceInfo;
+import com.lib.sdk.struct.SDK_CONFIG_NET_COMMON_V2;
+import com.lib.sdk.struct.SDK_ChannelNameConfigAll;
 
 import java.io.Serializable;
 import java.io.UnsupportedEncodingException;
@@ -14,13 +17,13 @@ import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Objects;
 
-import br.inatel.icc.gigasecurity.gigamonitor.config.cloud.CloudConfig;
-import br.inatel.icc.gigasecurity.gigamonitor.config.ddns.DDNSConfig;
-import br.inatel.icc.gigasecurity.gigamonitor.config.dhcp.DHCPConfig;
-import br.inatel.icc.gigasecurity.gigamonitor.config.dns.DNSConfig;
-import br.inatel.icc.gigasecurity.gigamonitor.config.ethernet.EthernetConfig;
-import br.inatel.icc.gigasecurity.gigamonitor.config.upnp.UpnpConfig;
-import br.inatel.icc.gigasecurity.gigamonitor.config.wifi.WifiConfig;
+//import br.inatel.icc.gigasecurity.gigamonitor.config.cloud.CloudConfig;
+//import br.inatel.icc.gigasecurity.gigamonitor.config.ddns.DDNSConfig;
+//import br.inatel.icc.gigasecurity.gigamonitor.config.dhcp.DHCPConfig;
+//import br.inatel.icc.gigasecurity.gigamonitor.config.dns.DNSConfig;
+//import br.inatel.icc.gigasecurity.gigamonitor.config.ethernet.EthernetConfig;
+//import br.inatel.icc.gigasecurity.gigamonitor.config.upnp.UpnpConfig;
+//import br.inatel.icc.gigasecurity.gigamonitor.config.wifi.WifiConfig;
 
 /**
  * Created by rinaldo.bueno on 29/08/2014.
@@ -42,16 +45,18 @@ public class Device implements Serializable {
     private String monMode = "TCP";
     private int tcpMaxConn = 10;
     private String dvrMac;
+    public SDK_ChannelNameConfigAll channel;
+    public boolean isLogged = false;
 
     @Expose private String ddnsDomain;
 
-    private EthernetConfig ethernetConfig;
-    private WifiConfig     wifiConfig;
-    private DNSConfig      dnsConfig;
-    private DDNSConfig     ddnsConfig;
-    private UpnpConfig     upnpConfig;
-    private CloudConfig    cloudConfig;
-    private DHCPConfig     dhcpConfig;
+    //private EthernetConfig ethernetConfig;
+//    private WifiConfig     wifiConfig;
+//    private DNSConfig      dnsConfig;
+//    private DDNSConfig     ddnsConfig;
+//    private UpnpConfig     upnpConfig;
+//    private CloudConfig    cloudConfig;
+//    private DHCPConfig     dhcpConfig;
 
     @Expose private String username;
     @Expose private String password;
@@ -59,7 +64,7 @@ public class Device implements Serializable {
     //DeviceInfo
     private String softwareVersion;
     private String hardwareVersion;
-    private int channelNumber;
+    private int channelNumber = 0;
     private int numberOfAlarmsIn;
     private int numberOfAlarmsOut;
     private String gigaCode;
@@ -75,6 +80,7 @@ public class Device implements Serializable {
 
     public Device() {
     }
+
     public Device(String hostname) {
         this.hostname = hostname;
     }
@@ -89,16 +95,44 @@ public class Device implements Serializable {
         this.serialNumber = serialNumber;
         this.tcpPort = tcpPort;
         this.gigaCode = gigaCode;
+        this.username = "admin";
+        this.password = "";
+    }
+
+    public Device(SDK_CONFIG_NET_COMMON_V2 comm) {
+        this.serialNumber = G.ToString(comm.st_14_sSn);
+        this.macAddress = G.ToString(comm.st_13_sMac);
+        this.hostname = G.ToString(comm.st_00_HostName);
+        this.ipAddress = comm.st_01_HostIP.getIp();
+        this.username = "admin";
+        this.password = "";
+        this.tcpPort = comm.st_05_TCPPort;
+    }
+
+    public void addDeviceInfo(SDBDeviceInfo devInfo){
+        this.macAddress = G.ToString(devInfo.st_0_Devmac);
+        this.serialNumber = this.macAddress;
+        this.hostname = G.ToString(devInfo.st_1_Devname);
+        this.ipAddress = G.ToString(devInfo.st_2_Devip);
+        this.username = G.ToString(devInfo.st_4_loginName);
+        if(this.username == null)
+            this.username = "admin";
+        this.password = G.ToString(devInfo.st_5_loginPsw);
+        if(this.password == null)
+            this.password = "";
+        this.tcpPort = devInfo.st_6_nDMZTcpPort;
+        this.channel = devInfo.getChannel();
+        this.channelNumber = devInfo.getChannel().nChnCount;
     }
 
 
-    public Device(SearchDeviceInfo searchDeviceInfo) {
+    /*public Device(SearchDeviceInfo searchDeviceInfo) {
         this.hostname = searchDeviceInfo.HostName;
         this.ipAddress = searchDeviceInfo.HostIP;
         this.submask = searchDeviceInfo.Submask;
         this.macAddress = searchDeviceInfo.sMac;
         this.gateway = searchDeviceInfo.Gateway;
-    }
+    }*/
 
     /*
    @property (strong, nonatomic, readonly) GSWiFiConfiguration *wiFiConfiguration;
@@ -111,7 +145,51 @@ public class Device implements Serializable {
    */
 
 
-    public void addDeviceInfo(DevInfo deviceInfo){
+    public SDBDeviceInfo getDeviceInfo() {
+        SDBDeviceInfo devInfo = new SDBDeviceInfo();
+
+        G.SetValue(devInfo.st_0_Devmac, this.macAddress);
+        if(this.hostname != null)
+            G.SetValue(devInfo.st_1_Devname, this.hostname);
+        if(this.ipAddress != null)
+            G.SetValue(devInfo.st_2_Devip, this.ipAddress);
+        G.SetValue(devInfo.st_4_loginName, this.username);
+        G.SetValue(devInfo.st_5_loginPsw, this.password);
+        //devInfo.st_6_nDMZTcpPort = this.tcpPort;
+        if(this.channel != null)
+            devInfo.setChannel(this.channel);
+
+        return devInfo;
+    }
+
+    public void setChannel(SDK_ChannelNameConfigAll channel) {
+        this.channel = channel;
+        this.channelNumber = channel.nChnCount;
+    }
+
+    @Override
+    public int hashCode() {
+        if ( null != this.serialNumber ) {
+            return (this.serialNumber + this.hostname).hashCode();
+        }
+
+        return super.hashCode();
+    }
+
+    public int getId() {
+        Log.d("DEVICE", "getId: PRINTHASH " + (this.serialNumber + this.hostname).hashCode());
+        return (this.serialNumber + this.hostname).hashCode();
+    }
+
+    public boolean hasLogin(){
+        return isLogged;
+    }
+
+    public void setLogin(boolean login){
+        isLogged = login;
+    }
+
+    /*public void addDeviceInfo(DevInfo deviceInfo){
         ipAddress = deviceInfo.Ip;
         macAddress = deviceInfo.Mac;
         //hostname = Arrays.toString(deviceInfo.DevName); //hostname = deviceInfo.DevName.toString();
@@ -130,10 +208,10 @@ public class Device implements Serializable {
         systemTime.set(Calendar.SECOND, deviceInfo.sysTime.second);
         setGigaCode();
         printDeviceInfo();
-    }
+    }*/
 
 
-    public DevInfo getDeviceInfo(){
+    /*public DevInfo getDeviceInfo(){
         DevInfo deviceInfo = new DevInfo();
 
         try {
@@ -159,7 +237,7 @@ public class Device implements Serializable {
         deviceInfo.Mac = macAddress;
 
         return deviceInfo;
-    }
+    }*/
 
 
     private void setGigaCode(){
@@ -389,55 +467,55 @@ public class Device implements Serializable {
         this.dvrMac = dvrMac;
     }
 
-    public EthernetConfig getEthernetConfig() {
-        if(ethernetConfig == null){
-            ethernetConfig = new EthernetConfig();
-        }
-        return ethernetConfig;
-    }
+//    public EthernetConfig getEthernetConfig() {
+//        if(ethernetConfig == null){
+//            ethernetConfig = new EthernetConfig();
+//        }
+//        return ethernetConfig;
+//    }
+//
+//    public void setEthernetConfig(EthernetConfig config) { this.ethernetConfig = config; }
+//
+//    public WifiConfig getWifiConfig() {
+//        if(wifiConfig == null){
+//            wifiConfig = new WifiConfig();
+//        }
+//        return wifiConfig;
+//    }
+//
+//    public DNSConfig getDNSConfig() {
+//        if(dnsConfig == null){
+//            dnsConfig = new DNSConfig();
+//        }
+//        return dnsConfig;
+//    }
+//
+//    public void setDNSConfig(DNSConfig dnsConfig) {
+//        this.dnsConfig = dnsConfig;
+//    }
+//
+//    public void setWifiConfig(WifiConfig wifiConfig) {
+//        this.wifiConfig = wifiConfig;
+//    }
+//
+//    public DDNSConfig getDdnsConfig() {
+//        if (ddnsConfig == null) {
+//            ddnsConfig = new DDNSConfig();
+//        }
+//        return ddnsConfig;
+//    }
+//
+//    public void setDdnsConfig(DDNSConfig ddnsConfig) {
+//        this.ddnsConfig = ddnsConfig;
+//    }
 
-    public void setEthernetConfig(EthernetConfig config) { this.ethernetConfig = config; }
-
-    public WifiConfig getWifiConfig() {
-        if(wifiConfig == null){
-            wifiConfig = new WifiConfig();
-        }
-        return wifiConfig;
-    }
-
-    public DNSConfig getDNSConfig() {
-        if(dnsConfig == null){
-            dnsConfig = new DNSConfig();
-        }
-        return dnsConfig;
-    }
-
-    public void setDNSConfig(DNSConfig dnsConfig) {
-        this.dnsConfig = dnsConfig;
-    }
-
-    public void setWifiConfig(WifiConfig wifiConfig) {
-        this.wifiConfig = wifiConfig;
-    }
-
-    public DDNSConfig getDdnsConfig() {
-        if (ddnsConfig == null) {
-            ddnsConfig = new DDNSConfig();
-        }
-        return ddnsConfig;
-    }
-
-    public void setDdnsConfig(DDNSConfig ddnsConfig) {
-        this.ddnsConfig = ddnsConfig;
-    }
-
-    public AudioParam getAudioParam() {
+    /*public AudioParam getAudioParam() {
         AudioParam ap = new AudioParam();
         ap.mFrequency = 8000;
         ap.mChannel = AudioFormat.CHANNEL_CONFIGURATION_MONO;
         ap.mSampBit = AudioFormat.ENCODING_PCM_16BIT;
         return ap;
-    }
+    }*/
 
     public void setVoiceHandle(long voiceHandle) {
         this.voiceHandle = voiceHandle;
@@ -474,30 +552,30 @@ public class Device implements Serializable {
         this.playbackHandle = playbackHandle;
     }
 
-    public UpnpConfig getUpnpConfig() {
-        if(upnpConfig == null){
-            upnpConfig = new UpnpConfig();
-        }
-        return upnpConfig;
-    }
-
-    public void setUpnpConfig(UpnpConfig upnpConfig) {
-        this.upnpConfig = upnpConfig;
-    }
-
-    public CloudConfig getCloudConfig() {
-        if(cloudConfig == null){
-            cloudConfig = new CloudConfig();
-        }
-        return cloudConfig;
-    }
-
-    public DHCPConfig getDhcpConfig() {
-        if(dhcpConfig == null){
-            dhcpConfig = new DHCPConfig();
-        }
-        return dhcpConfig;
-    }
+//    public UpnpConfig getUpnpConfig() {
+//        if(upnpConfig == null){
+//            upnpConfig = new UpnpConfig();
+//        }
+//        return upnpConfig;
+//    }
+//
+//    public void setUpnpConfig(UpnpConfig upnpConfig) {
+//        this.upnpConfig = upnpConfig;
+//    }
+//
+//    public CloudConfig getCloudConfig() {
+//        if(cloudConfig == null){
+//            cloudConfig = new CloudConfig();
+//        }
+//        return cloudConfig;
+//    }
+//
+//    public DHCPConfig getDhcpConfig() {
+//        if(dhcpConfig == null){
+//            dhcpConfig = new DHCPConfig();
+//        }
+//        return dhcpConfig;
+//    }
 
     public String getDomain() {
         return domain;

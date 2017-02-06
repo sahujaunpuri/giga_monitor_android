@@ -18,6 +18,7 @@ import android.media.ThumbnailUtils;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Environment;
 import android.provider.Browser;
 import android.provider.MediaStore;
 import android.util.Log;
@@ -33,9 +34,6 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.VideoView;
-
-import com.xm.MyConfig;
-import com.xm.NetSdk;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -74,6 +72,7 @@ public class MediaGridAdapter extends BaseAdapter {
     private ArrayList<Boolean> tridToGetVideoThumbnail;
 
     public long videoClickDownTime = 0;
+    private String path = Environment.getExternalStorageDirectory().getPath() + "/Giga Monitor";
     private boolean pictureMode;
 
     public static Drawable blankDrawable;
@@ -249,9 +248,8 @@ public class MediaGridAdapter extends BaseAdapter {
             fImageView.setOnLongClickListener(new View.OnLongClickListener() {
                 @Override
                 public boolean onLongClick(View v) {
-
                     AlertDialog.Builder builder = new AlertDialog.Builder(mContext);
-                    builder.setTitle(mContext.getResources().getString(R.string.label_action, true))
+                    builder.setTitle(mContext.getResources().getString(R.string.label_action))
                             .setItems(new CharSequence[]{"Deletar", "Cancelar"},
                                     new DialogInterface.OnClickListener() {
                                         @Override
@@ -261,6 +259,7 @@ public class MediaGridAdapter extends BaseAdapter {
                                                 mImageFiles.get(position).delete();
 
                                                 Intent intent = new Intent(mContext, MediaActivity.class);
+                                                intent.putExtra("imageSelected", true);
                                                 intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP);
                                                 mContext.startActivity(intent);
 
@@ -333,18 +332,22 @@ public class MediaGridAdapter extends BaseAdapter {
 
                     AlertDialog.Builder builder = new AlertDialog.Builder(mContext);
 
-                    builder.setTitle(mContext.getResources().getString(R.string.label_action, true))
+                    builder.setTitle(mContext.getResources().getString(R.string.label_action))
                             .setItems(new CharSequence[]{"Deletar", "Cancelar"},
                                     new DialogInterface.OnClickListener() {
                                         @Override
                                         public void onClick(DialogInterface dialog, int which) {
                                             if (which == 0) {
                                                 mVideoFiles.get(position).delete();
+                                                notifyDataSetChanged();
 
                                                 Intent intent = new Intent(mContext, MediaActivity.class);
                                                 intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                                                intent.putExtra("imageSelected", false);
 
                                                 mContext.startActivity(intent);
+
+
                                             }
                                         }
                                     });
