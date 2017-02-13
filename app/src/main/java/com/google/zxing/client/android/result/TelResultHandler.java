@@ -16,12 +16,13 @@
 
 package com.google.zxing.client.android.result;
 
-import br.inatel.icc.gigasecurity.gigamonitor.R;
+import android.app.Activity;
+import android.telephony.PhoneNumberUtils;
+
 import com.google.zxing.client.result.ParsedResult;
 import com.google.zxing.client.result.TelParsedResult;
 
-import android.app.Activity;
-import android.telephony.PhoneNumberUtils;
+import br.inatel.icc.gigasecurity.gigamonitor.R;
 
 /**
  * Offers relevant actions for telephone numbers.

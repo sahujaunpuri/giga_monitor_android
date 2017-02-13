@@ -16,12 +16,13 @@
 
 package com.google.zxing.client.android.result;
 
-import br.inatel.icc.gigasecurity.gigamonitor.R;
+import android.app.Activity;
+import android.telephony.PhoneNumberUtils;
+
 import com.google.zxing.client.result.ParsedResult;
 import com.google.zxing.client.result.SMSParsedResult;
 
-import android.app.Activity;
-import android.telephony.PhoneNumberUtils;
+import br.inatel.icc.gigasecurity.gigamonitor.R;
 
 /**
  * Handles SMS addresses, offering a choice of composing a new SMS or MMS message.

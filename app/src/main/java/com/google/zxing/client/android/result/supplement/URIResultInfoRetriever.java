@@ -18,13 +18,15 @@ package com.google.zxing.client.android.result.supplement;
 
 import android.content.Context;
 import android.widget.TextView;
+
 import com.google.zxing.client.android.HttpHelper;
-import br.inatel.icc.gigasecurity.gigamonitor.R;
 import com.google.zxing.client.result.URIParsedResult;
 
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
+
+import br.inatel.icc.gigasecurity.gigamonitor.R;
 
 final class URIResultInfoRetriever extends SupplementalInfoRetriever {
 

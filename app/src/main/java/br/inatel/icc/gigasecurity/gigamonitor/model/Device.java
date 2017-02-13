@@ -1,21 +1,13 @@
 package br.inatel.icc.gigasecurity.gigamonitor.model;
 
-import android.media.AudioFormat;
 import android.util.Log;
 
-import com.google.gson.annotations.Expose;
-import com.lib.sdk.struct.SDBDeviceInfo;
-
 import com.basic.G;
-import com.lib.sdk.struct.SDBDeviceInfo;
+import com.google.gson.annotations.Expose;
 import com.lib.sdk.struct.SDK_CONFIG_NET_COMMON_V2;
-import com.lib.sdk.struct.SDK_ChannelNameConfigAll;
 
 import java.io.Serializable;
-import java.io.UnsupportedEncodingException;
-import java.util.Arrays;
 import java.util.Calendar;
-import java.util.Objects;
 
 //import br.inatel.icc.gigasecurity.gigamonitor.config.cloud.CloudConfig;
 //import br.inatel.icc.gigasecurity.gigamonitor.config.ddns.DDNSConfig;

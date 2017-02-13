@@ -16,14 +16,15 @@
 
 package com.google.zxing.client.android.result;
 
+import android.app.Activity;
+
 import com.google.zxing.client.android.LocaleManager;
-import br.inatel.icc.gigasecurity.gigamonitor.R;
 import com.google.zxing.client.result.ParsedResult;
 import com.google.zxing.client.result.URIParsedResult;
 
-import android.app.Activity;
-
 import java.util.Locale;
+
+import br.inatel.icc.gigasecurity.gigamonitor.R;
 
 /**
  * Offers appropriate actions for URLS.

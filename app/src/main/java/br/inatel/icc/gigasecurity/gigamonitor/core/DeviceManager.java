@@ -7,32 +7,30 @@ import android.util.Log;
 
 import com.basic.G;
 import com.google.gson.annotations.Expose;
+import com.lib.EDEV_OPTERATE;
 import com.lib.EFUN_ATTR;
+import com.lib.EUIMSG;
+import com.lib.FunSDK;
 import com.lib.IFunSDKResult;
 import com.lib.MsgContent;
+import com.lib.SDKCONST;
 import com.lib.sdk.struct.H264_DVR_FILE_DATA;
 import com.lib.sdk.struct.H264_DVR_FINDINFO;
-
-
-import br.inatel.icc.gigasecurity.gigamonitor.activities.DeviceListActivity;
-import br.inatel.icc.gigasecurity.gigamonitor.listeners.*;
-import br.inatel.icc.gigasecurity.gigamonitor.R;
-
-import com.lib.FunSDK;
-import com.lib.EUIMSG;
 import com.lib.sdk.struct.SDK_CONFIG_NET_COMMON_V2;
-import com.lib.sdk.struct.SDK_ChannelNameConfigAll;
 
 import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedList;
 
+import br.inatel.icc.gigasecurity.gigamonitor.R;
+import br.inatel.icc.gigasecurity.gigamonitor.activities.DeviceListActivity;
+import br.inatel.icc.gigasecurity.gigamonitor.listeners.LoginDeviceListener;
+import br.inatel.icc.gigasecurity.gigamonitor.listeners.PlaybackSearchListener;
 import br.inatel.icc.gigasecurity.gigamonitor.model.Device;
-//import br.inatel.icc.gigasecurity.gigamonitor.model.FileDataGiga;
 import br.inatel.icc.gigasecurity.gigamonitor.model.SurfaceViewComponent;
 import br.inatel.icc.gigasecurity.gigamonitor.util.ComplexPreferences;
-import br.inatel.icc.gigasecurity.gigamonitor.util.Utils;
+
 //import br.inatel.icc.gigasecurity.gigamonitor.task.LoginDeviceAsyncTask;
 
 /**
@@ -55,7 +53,7 @@ public class DeviceManager implements IFunSDKResult{
     public int nSeq = 0;
 
     private final HashMap<Integer, Device> mLoggedDevices = new HashMap<Integer, Device>();
-    public LinkedList<SurfaceViewComponent> startList = new LinkedList<SurfaceViewComponent>();
+    private LinkedList<SurfaceViewComponent> startList = new LinkedList<SurfaceViewComponent>();
     public boolean startPlay = false;
 
 
@@ -84,7 +82,7 @@ public class DeviceManager implements IFunSDKResult{
 
         InitParam initparam = new InitParam();
 
-//        FunSDK.InitParamEx(0, G.ObjToBytes(initparam), "GIGA_", "", 0);
+//        FunSDK.InitEx(0, G.ObjToBytes(initparam), "GIGA_", "", 0);
 
         FunSDK.Init(0, G.ObjToBytes(initparam));
 
@@ -191,10 +189,6 @@ public class DeviceManager implements IFunSDKResult{
                 Log.d(TAG, "OnFunSDKResult: DEV_GET_CHN_NAME");
                 if (msg.arg1 >= 0) {
                     if (msgContent.pData != null && msgContent.pData.length > 0) {
-//                        SDK_ChannelNameConfigAll channel = new SDK_ChannelNameConfigAll();
-//                        G.BytesToObj(channel, msgContent.pData);
-//                        channel.nChnCount = msg.arg1;
-//                        mDevices.get(msgContent.seq).setChannel(channel);
                         mDevices.get(msgContent.seq).setChannelNumber(msg.arg1);
                         saveDevices(DeviceListActivity.mContext);
                         currentLoginListener.onLoginSuccess();
@@ -374,9 +368,11 @@ public class DeviceManager implements IFunSDKResult{
     }
 
     public void addToStart(SurfaceViewComponent surfaceViewComponent) {
-        startList.add(surfaceViewComponent);
-        if(!startPlay)
-            requestStart();
+        synchronized (startList) {
+            startList.add(surfaceViewComponent);
+            if (!startPlay)
+                requestStart();
+        }
     }
 
     public void requestStart(){
@@ -388,9 +384,25 @@ public class DeviceManager implements IFunSDKResult{
         }
     }
 
+    public void removeFromStartQueue(SurfaceViewComponent surfaceViewComponent){
+        synchronized (startList){
+            startList.remove(surfaceViewComponent);
+        }
+    }
+
+    public boolean isOnStartQueue(SurfaceViewComponent surfaceViewComponent){
+        synchronized (startList) {
+            return startList.contains(surfaceViewComponent);
+        }
+    }
+
     public void findPlaybackList(Device device, H264_DVR_FINDINFO info, PlaybackSearchListener listener){
         currentPlaybackSearchListener = listener;
         FunSDK.DevFindFile(getHandler(), device.getSerialNumber(), G.ObjToBytes(info), 64, 20000, device.getId());
+    }
+
+    public void remoteControl(Device device, int command){
+        FunSDK.DevOption(getHandler(), device.getSerialNumber(), EDEV_OPTERATE.EDOPT_DEV_CONTROL, null, 0, command, 0, 0, "", device.getId());
     }
 
     // TODO
@@ -402,114 +414,7 @@ public class DeviceManager implements IFunSDKResult{
         mNetSdk.H264DVRControlDVR(device.getLoginID(), 0, 2000);
     }*/
 
-    /*public ArrayList<FileDataGiga> findPlaybacks(long loginID, FindInfo findInfo) {
-        ArrayList<FileDataGiga> playbacks = new ArrayList<FileDataGiga>();
-
-        int filesFoundCount;
-
-        do {
-            com.xm.FileData[] fileData = new com.xm.FileData[64];
-
-            // Initiating each FileData
-            for (int i = 0; i < 64; i++) {
-                fileData[i] = new com.xm.FileData();
-            }
-
-            filesFoundCount = mNetSdk.FindFile(loginID, findInfo, fileData, 256, 5000);
-
-            for (int i = 0; i < filesFoundCount; i++) {
-                playbacks.add(new FileDataGiga(fileData[i]));
-            }
-
-            if (filesFoundCount == 64) {
-                findInfo.startTime.year = fileData[63].stEndTime.year;
-                findInfo.startTime.month = fileData[63].stEndTime.month;
-                findInfo.startTime.day = fileData[63].stEndTime.day;
-                findInfo.startTime.hour = fileData[63].stEndTime.hour;
-                findInfo.startTime.minute = fileData[63].stEndTime.minute;
-                findInfo.startTime.second = fileData[63].stEndTime.second;
-            }
-
-        } while (filesFoundCount == 64);
-
-
-        return playbacks;
-    }*/
-
-    /*public void playbackPlay(final Device device, final FileDataGiga fileDataGiga,
-                             final MySurfaceView sv, final int svID) {
-
-        final long playHandle = mNetSdk.PlayBackByName(svID,
-                device.getLoginID(), fileDataGiga.getSdkFileData(),device.getChannelNumber()-1);
-
-        Log.d(TAG, playHandle != 0 ? "Playback started!" : "Playback NOT started!");
-
-        device.setPlaybackHandle(playHandle);
-
-        sv.initData();
-        sv.onPlay();
-    }*/
-
-    /*public void playbackStop(final long playbackHandle, final MySurfaceView sv) {
-        if (mNetSdk.StopPlayBack(playbackHandle)) sv.onStop();
-    }*/
-
-    /*public void playbackResume(final long playbackHandle, final MySurfaceView sv) {
-        sv.onPlay();
-        mNetSdk.PlayBackControl(playbackHandle,
-                MyConfig.PlayBackAction.SDK_PLAY_BACK_CONTINUE, 0L);
-    }*/
-
-    /*public void playbackPause(final long playbackHandle, final MySurfaceView sv) {
-        sv.onPause();
-        mNetSdk.PlayBackControl(playbackHandle,
-                MyConfig.PlayBackAction.SDK_PLAY_BACK_PAUSE, 0L);
-    }*/
-
-    /*public boolean playbackFaster(long playbackHandle, MySurfaceView sv) {
-
-        if(sv.mplaystatus != MyConfig.PlayState.MPS_FAST) {
-            sv.onPause();
-            sv.onPlayBackFast();
-
-            return mNetSdk.PlayBackControl(playbackHandle, MyConfig.PlayBackAction.SDK_PLAY_BACK_FAST, 3);
-        }
-
-        return false;
-    }*/
-
-    /*public boolean playbackSlow(long playbackHandle, MySurfaceView sv) {
-
-        if(sv.mplaystatus != MyConfig.PlayState.MPS_SLOW) {
-            sv.onPause();
-            sv.onPlayBackSlow();
-
-            return mNetSdk.PlayBackControl(playbackHandle, MyConfig.PlayBackAction.SDK_PLAY_BACK_SLOW, 3);
-        }
-
-        return false;
-    }*/
-
-    /*public boolean setPlaybackProgress(final long playbackHandle, final int progress) {
-        return mNetSdk.PlayBackControl(playbackHandle, MyConfig.PlayBackAction.SDK_PLAY_BACK_SEEK_PERCENT,
-                progress);
-    }*/
-
-    /*public void setOnPlaybackCompleteListener(NetSdk.OnRPlayBackCompletedListener l) {
-        mNetSdk.setOnRPlayBackCompletedListener(l);
-    }*/
-
-    // Key => Device.voiceHandle
-    /*private HashMap<Long, VoiceIntercom> mVoiceSessions;
-
-    private Handler mVoiceHandler = new Handler() {
-        @Override
-        public void handleMessage(Message msg) {
-            Log.d(TAG, msg.toString());
-            super.handleMessage(msg);
-        }
-    };
-
+    /*
     public boolean startDeviceIntercom(Context context, Device device) {
         boolean started = false;
         if (mVoiceSessions.containsKey(device.getVoiceHandle())) {

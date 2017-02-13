@@ -16,12 +16,13 @@
 
 package com.google.zxing.client.android.result;
 
+import android.app.Activity;
+
 import com.google.zxing.Result;
-import br.inatel.icc.gigasecurity.gigamonitor.R;
 import com.google.zxing.client.result.ISBNParsedResult;
 import com.google.zxing.client.result.ParsedResult;
 
-import android.app.Activity;
+import br.inatel.icc.gigasecurity.gigamonitor.R;
 
 /**
  * Handles books encoded by their ISBN values.

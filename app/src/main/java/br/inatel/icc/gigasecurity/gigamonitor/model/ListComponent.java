@@ -7,7 +7,7 @@ import android.view.Gravity;
 import android.view.View;
 import android.widget.FrameLayout;
 import android.widget.LinearLayout;
-import android.widget.ProgressBar;
+import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -72,6 +72,11 @@ public class ListComponent {
 
         if (mContext.getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE) {
             surfaceViewHeight = (mDisplay.getHeight()) / numQuad;
+        }
+
+        if(surfaceViewComponent.isREC) {
+            surfaceViewComponent.stopRecord();
+            Toast.makeText(mContext, "Gravação finalizada.", Toast.LENGTH_SHORT);
         }
 
         FrameLayout.LayoutParams lpSurfaceView = new FrameLayout.LayoutParams(surfaceViewWidth, surfaceViewHeight, Gravity.CENTER_HORIZONTAL);

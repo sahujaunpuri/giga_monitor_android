@@ -2,8 +2,8 @@ package br.inatel.icc.gigasecurity.gigamonitor.activities;
 
 import android.app.Activity;
 import android.content.res.Configuration;
-import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
+import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -15,7 +15,6 @@ import android.widget.SeekBar;
 import android.widget.TextView;
 
 import br.inatel.icc.gigasecurity.gigamonitor.R;
-import br.inatel.icc.gigasecurity.gigamonitor.core.DeviceManager;
 import br.inatel.icc.gigasecurity.gigamonitor.listeners.PlaybackListener;
 import br.inatel.icc.gigasecurity.gigamonitor.model.Device;
 import br.inatel.icc.gigasecurity.gigamonitor.model.FileData;
@@ -93,7 +92,7 @@ public class DevicePlaybackVideoActivity extends ActionBarActivity {
                 @Override
                 public void onStartTrackingTouch(SeekBar seekBar) {
                     if(mSurfaceView.isConnected) {
-                        pause();
+//                        pause();
                         mSurfaceView.setVisibility(View.INVISIBLE);
                         mSurfaceView.isSeeking = true;
                     } else{

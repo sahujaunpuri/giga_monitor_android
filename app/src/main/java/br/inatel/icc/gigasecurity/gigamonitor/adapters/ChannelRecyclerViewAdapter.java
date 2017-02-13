@@ -21,6 +21,8 @@ import br.inatel.icc.gigasecurity.gigamonitor.model.Device;
 import br.inatel.icc.gigasecurity.gigamonitor.model.ListComponent;
 import br.inatel.icc.gigasecurity.gigamonitor.model.SurfaceViewComponent;
 
+import static br.inatel.icc.gigasecurity.gigamonitor.activities.DeviceListActivity.mContext;
+
 /**
  * Created by filipecampos on 28/04/2016.
  */
@@ -85,12 +87,17 @@ public class ChannelRecyclerViewAdapter extends RecyclerView.Adapter<ChannelRecy
         myViewHolder.frameLayout.addView(currentSurfaceView.progressBar);
         currentSurfaceView.progressBar.setVisibility(View.VISIBLE);
 
-        listComponent.changeSurfaceViewSize(currentSurfaceView, myViewHolder.frameLayout);
 
-        if(currentSurfaceView.isConnected)
+        //TODO entender tela verde
+        if(currentSurfaceView.isConnected && !currentSurfaceView.isPlaying) {
+            currentSurfaceView.onStop();
+            currentSurfaceView.onStartVideo();
+        }else if(currentSurfaceView.isConnected)
             currentSurfaceView.onStartVideo();
         else
             currentSurfaceView.onPlayLive();
+
+        listComponent.changeSurfaceViewSize(currentSurfaceView, myViewHolder.frameLayout);
 
         //TODO click listener pela GLView - onInterceptTouchEvent()
         currentSurfaceView.setOnClickListener(new View.OnClickListener() {
@@ -208,20 +215,22 @@ public class ChannelRecyclerViewAdapter extends RecyclerView.Adapter<ChannelRecy
             @Override
             public void onClick(View v) {
                 SurfaceViewComponent selectedSurfaceView = listComponent.surfaceViewComponents.get(positionSelected);
-                selectedSurfaceView.onStop();
-                selectedSurfaceView.progressBar.setVisibility(View.VISIBLE);
-                if (positionSelected != -1) {
+                if(selectedSurfaceView.isREC){
+                    Toast.makeText(mContext, "Finalize a gravação.", Toast.LENGTH_SHORT).show();
+                } else if (positionSelected != -1) {
+                    selectedSurfaceView.onStop();
+                    selectedSurfaceView.progressBar.setVisibility(View.VISIBLE);
                     if (!selectedSurfaceView.isHD()) {
                         selectedSurfaceView.setStreamType(0);
                         childViewHolder.ivHQ.setImageDrawable(mContext.getResources().getDrawable(R.drawable.ic_hq_on));
                         Log.d("HD", "onClick: HD ON");
-                    } else {
+                    } else if(positionSelected != -1){
                         selectedSurfaceView.setStreamType(1);
                         childViewHolder.ivHQ.setImageDrawable(mContext.getResources().getDrawable(R.drawable.ic_hq_off));
                         Log.d("HD", "onClick: HD OFF");
                     }
+                    selectedSurfaceView.onPlayLive();
                 }
-                selectedSurfaceView.onPlayLive();
             }
         });
 

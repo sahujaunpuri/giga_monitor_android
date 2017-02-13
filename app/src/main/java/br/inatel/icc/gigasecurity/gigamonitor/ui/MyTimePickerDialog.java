@@ -16,8 +16,6 @@
 
 package br.inatel.icc.gigasecurity.gigamonitor.ui;
 
-import java.util.Calendar;
-
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -27,6 +25,8 @@ import android.text.format.DateFormat;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.Window;
+
+import java.util.Calendar;
 
 import br.inatel.icc.gigasecurity.gigamonitor.R;
 

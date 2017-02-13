@@ -13,7 +13,6 @@ import java.util.ArrayList;
 import br.inatel.icc.gigasecurity.gigamonitor.R;
 import br.inatel.icc.gigasecurity.gigamonitor.core.DeviceManager;
 import br.inatel.icc.gigasecurity.gigamonitor.model.Device;
-import br.inatel.icc.gigasecurity.gigamonitor.model.LoginMethod;
 
 /*
  Created by filipecampos on 07/07/2015.

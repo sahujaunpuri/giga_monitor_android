@@ -15,8 +15,8 @@ import android.widget.TextView;
 import java.util.ArrayList;
 
 import br.inatel.icc.gigasecurity.gigamonitor.R;
-import br.inatel.icc.gigasecurity.gigamonitor.activities.DeviceFormActivity;
 import br.inatel.icc.gigasecurity.gigamonitor.activities.DeviceEditListActivity;
+import br.inatel.icc.gigasecurity.gigamonitor.activities.DeviceFormActivity;
 import br.inatel.icc.gigasecurity.gigamonitor.core.DeviceManager;
 import br.inatel.icc.gigasecurity.gigamonitor.model.Device;
 

@@ -12,13 +12,14 @@ import android.widget.Button;
 
 import br.inatel.icc.gigasecurity.gigamonitor.R;
 import br.inatel.icc.gigasecurity.gigamonitor.activities.DeviceListActivity;
+import br.inatel.icc.gigasecurity.gigamonitor.core.DeviceManager;
+import br.inatel.icc.gigasecurity.gigamonitor.model.Device;
+
 //import br.inatel.icc.gigasecurity.gigamonitor.config.ddns.DDNSConfigActivity;
 //import br.inatel.icc.gigasecurity.gigamonitor.config.dns.DNSConfigActivity;
 //import br.inatel.icc.gigasecurity.gigamonitor.config.ethernet.EthernetConfigActivity;
 //import br.inatel.icc.gigasecurity.gigamonitor.config.general.GeneralConfigActivity;
 //import br.inatel.icc.gigasecurity.gigamonitor.config.upnp.UpnpConfigActivity;
-import br.inatel.icc.gigasecurity.gigamonitor.core.DeviceManager;
-import br.inatel.icc.gigasecurity.gigamonitor.model.Device;
 
 public class ConfigMenuActivity extends ActionBarActivity implements OnClickListener {
     public static final String KEY_ARGS = "device";

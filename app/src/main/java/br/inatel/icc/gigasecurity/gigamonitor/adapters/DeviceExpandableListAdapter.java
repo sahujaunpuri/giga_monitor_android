@@ -21,18 +21,20 @@ import android.widget.TextView;
 
 import java.util.ArrayList;
 
-import br.inatel.icc.gigasecurity.gigamonitor.activities.DevicePlaybackActivity;
-import br.inatel.icc.gigasecurity.gigamonitor.listeners.*;
 import br.inatel.icc.gigasecurity.gigamonitor.R;
 import br.inatel.icc.gigasecurity.gigamonitor.activities.DeviceListActivity;
-//import br.inatel.icc.gigasecurity.gigamonitor.activities.DevicePlaybackActivity;
-//import br.inatel.icc.gigasecurity.gigamonitor.activities.DeviceRemoteControlActivity;
+import br.inatel.icc.gigasecurity.gigamonitor.activities.DevicePlaybackActivity;
+import br.inatel.icc.gigasecurity.gigamonitor.activities.DeviceRemoteControlActivity;
 import br.inatel.icc.gigasecurity.gigamonitor.config.ConfigMenuActivity;
 import br.inatel.icc.gigasecurity.gigamonitor.core.DeviceManager;
+import br.inatel.icc.gigasecurity.gigamonitor.listeners.LoginDeviceListener;
 import br.inatel.icc.gigasecurity.gigamonitor.model.Device;
 import br.inatel.icc.gigasecurity.gigamonitor.model.SurfaceViewComponent;
 
 import static android.support.v7.widget.RecyclerView.SCROLL_STATE_IDLE;
+
+//import br.inatel.icc.gigasecurity.gigamonitor.activities.DevicePlaybackActivity;
+//import br.inatel.icc.gigasecurity.gigamonitor.activities.DeviceRemoteControlActivity;
 
 /**
  * Created by filipecampos on 30/05/2016.
@@ -111,7 +113,7 @@ public class DeviceExpandableListAdapter extends BaseExpandableListAdapter {
         return groupView;
     }
 
-    public View.OnClickListener createMoreListener(final int groupPosition){
+    private View.OnClickListener createMoreListener(final int groupPosition){
         return new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -367,21 +369,18 @@ public class DeviceExpandableListAdapter extends BaseExpandableListAdapter {
 
         AlertDialog.Builder builder = new AlertDialog.Builder(mContext);
         builder.setTitle("")
-                .setItems(new CharSequence[]{"Configurações", "Controle Remoto", "Playback"},
+                .setItems(new CharSequence[]{/*"Configurações", */"Controle Remoto", "Playback"},
                         new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
                                 switch (which) {
-                                    case 0:
-
+/*                                    case 0:
                                         //startSettingsActivity(groupViewHolder.mDevice);
-
+                                        break;*/
+                                    case 0:
+                                        startDeviceRemoteControlActivity(groupViewHolder.mDevice);
                                         break;
                                     case 1:
-                                        //startDeviceRemoteControlActivity(groupViewHolder.mDevice);
-
-                                        break;
-                                    case 2:
                                         startPlaybackActivity(groupViewHolder.mDevice);
                                         break;
                                 }
@@ -414,15 +413,15 @@ public class DeviceExpandableListAdapter extends BaseExpandableListAdapter {
         mContext.startActivity(intent);
     }
 
-//    private void startDeviceRemoteControlActivity(Device mDevice) {
-//        Bundle extras = new Bundle();
-//        extras.putSerializable("device", mDevice);
-//
-//        Intent intent = new Intent(mContext, DeviceRemoteControlActivity.class);
-//        intent.putExtras(extras);
-//
-//        mContext.startActivity(intent);
-//    }
+    private void startDeviceRemoteControlActivity(Device mDevice) {
+        Bundle extras = new Bundle();
+        extras.putSerializable("device", mDevice);
+
+        Intent intent = new Intent(mContext, DeviceRemoteControlActivity.class);
+        intent.putExtras(extras);
+
+        mContext.startActivity(intent);
+    }
 
     public int nextNumQuad(int numQuad,int totalChannels) {
         int nextNumQuad = 1;

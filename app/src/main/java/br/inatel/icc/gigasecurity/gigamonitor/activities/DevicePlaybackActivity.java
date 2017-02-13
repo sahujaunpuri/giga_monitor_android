@@ -4,13 +4,12 @@ import android.app.Activity;
 import android.app.DatePickerDialog;
 import android.app.ProgressDialog;
 import android.content.Intent;
-import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
+import android.support.v7.app.ActionBarActivity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
-import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.LinearLayout;
 import android.widget.ListView;
@@ -21,21 +20,20 @@ import android.widget.Toast;
 import com.lib.SDKCONST;
 import com.lib.sdk.struct.H264_DVR_FILE_DATA;
 import com.lib.sdk.struct.H264_DVR_FINDINFO;
+import com.basic.G;
+
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 
 import br.inatel.icc.gigasecurity.gigamonitor.R;
 import br.inatel.icc.gigasecurity.gigamonitor.adapters.DevicePlaybacksAdapter;
 import br.inatel.icc.gigasecurity.gigamonitor.core.DeviceManager;
 import br.inatel.icc.gigasecurity.gigamonitor.listeners.PlaybackSearchListener;
 import br.inatel.icc.gigasecurity.gigamonitor.model.Device;
-
 import br.inatel.icc.gigasecurity.gigamonitor.model.FileData;
-import br.inatel.icc.gigasecurity.gigamonitor.model.SDKFileType;
 import br.inatel.icc.gigasecurity.gigamonitor.ui.DatePickerFragment;
-
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
 
 public class DevicePlaybackActivity extends ActionBarActivity
         implements AdapterView.OnItemClickListener{
@@ -168,7 +166,7 @@ public class DevicePlaybackActivity extends ActionBarActivity
                             @Override
                             public void run() {
                                 String msg = getResources().getString(R.string.label_no_records);
-                                Toast.makeText(DevicePlaybackActivity.this, msg, Toast.LENGTH_LONG).show();
+                                Toast.makeText(DevicePlaybackActivity.this, msg, Toast.LENGTH_SHORT).show();
                                 progressDialog.dismiss();
                             }
                         });

@@ -30,7 +30,6 @@ import br.inatel.icc.gigasecurity.gigamonitor.util.Utils;
 
 import static br.inatel.icc.gigasecurity.gigamonitor.activities.DeviceListActivity.mContext;
 import static br.inatel.icc.gigasecurity.gigamonitor.activities.DeviceListActivity.mDeviceManager;
-import static br.inatel.icc.gigasecurity.gigamonitor.activities.DeviceListActivity.mySurfaceViewID;
 
 /**
  * Created by filipecampos on 03/12/2015.
@@ -58,7 +57,7 @@ public class SurfaceViewComponent extends LinearLayout implements IFunSDKResult{
     public boolean isREC = false;
     public int playType = 0; //0 - live, 1 - playback live
     public boolean isSeeking = false;
-    public int lastProgress;
+    private int seekPercentage = 0;
 
     public SurfaceViewComponent(Context context){
         super(context);
@@ -101,11 +100,10 @@ public class SurfaceViewComponent extends LinearLayout implements IFunSDKResult{
     }
 
     public void onPlayLive() {
-        mDeviceManager.addToStart(this);
-
-//        mPlayerHandler = FunSDK.MediaRealPlay(mUserID, deviceSn, mySurfaceViewChannelId, streamType, mySurfaceView, 0);
-//        return mPlayerHandler;
-        //MediaRealPlay(userID, serial number/IP:port, channel, stream type, surfaceview, nSeq)
+        if(isConnected)
+            onResume();
+        else
+            mDeviceManager.addToStart(this);
     }
 
     public int onStartVideo(){
@@ -158,6 +156,7 @@ public class SurfaceViewComponent extends LinearLayout implements IFunSDKResult{
         if(mPlayerHandler != 0) {
             String path = Environment.getExternalStorageDirectory().getPath() + "/Movies/Giga Monitor/" + Utils.currentDateTime() + ".mp4";
             FunSDK.MediaStartRecord(mPlayerHandler, path, 0);
+            isREC = true;
         }
     }
 
@@ -177,9 +176,10 @@ public class SurfaceViewComponent extends LinearLayout implements IFunSDKResult{
         }
     }
 
-    public void seekByPos(int absTime){
+    public void seekByPos(int percentage){
         if (mPlayerHandler != 0) {
-            FunSDK.MediaSeekToPos(mPlayerHandler, absTime, 0);
+            seekPercentage = percentage;
+            FunSDK.MediaSeekToPos(mPlayerHandler, percentage, 0);
         }
     }
 
@@ -286,17 +286,18 @@ public class SurfaceViewComponent extends LinearLayout implements IFunSDKResult{
                 Log.i(TAG, "EUIMSG.START_PLAY");
                     if (msg.arg1 == 0) {
                         this.isConnected = true;
-                        if (mDeviceManager.startList.contains(this)) {
-                            mDeviceManager.startList.remove(this);
+                        if (mDeviceManager.isOnStartQueue(this)) {
+                            mDeviceManager.removeFromStartQueue(this);
                             mDeviceManager.requestStart();
                         }
 //                        if(surfaceDeleted)
 //                            onStop();
                         Log.i(TAG, "START SUCCESS");
                     } else {
-                        if (mDeviceManager.startList.contains(this))
-                            mDeviceManager.startList.remove(this);
-                        onPlayLive();
+//                        if (mDeviceManager.isOnStartQueue(this))
+//                            mDeviceManager.removeFromStartQueue(this);
+//                        onPlayLive();
+                        mDeviceManager.requestStart();
                         Log.i(TAG, "START FAILED");
                     }
             }
@@ -363,6 +364,7 @@ public class SurfaceViewComponent extends LinearLayout implements IFunSDKResult{
             case EUIMSG.STOP_SAVE_MEDIA_FILE: {
                 if(msg.arg1 == 0){
                     File file = new File(msgContent.str);
+                    isREC = false;
                     if(file.length() > 1000)
                         Toast.makeText(mContext, "Gravação finalizada", Toast.LENGTH_SHORT).show();
                     else{
@@ -383,9 +385,6 @@ public class SurfaceViewComponent extends LinearLayout implements IFunSDKResult{
                         currentPlaybackListener.onChangeProgress(progress);
                     else if(isSeeking){
                         currentPlaybackListener.onChangeProgress(progress);
-//                        lastProgress = progress;
-//                        if(Math.abs(lastProgress - progress) > 30)
-//                            currentPlaybackListener.onCompleteSeek();
                     }
                 }
             }
@@ -397,8 +396,11 @@ public class SurfaceViewComponent extends LinearLayout implements IFunSDKResult{
             }
             case EUIMSG.SEEK_TO_POS: {
                 if(msg.arg1 == 0){
-                    if(isSeeking && !isPlaying)
-                        onResume();
+                    seekPercentage = 0;
+//                    if(isSeeking && !isPlaying)
+//                        onResume();
+                } else{
+                    seekByPos(seekPercentage);
                 }
             }
             break;

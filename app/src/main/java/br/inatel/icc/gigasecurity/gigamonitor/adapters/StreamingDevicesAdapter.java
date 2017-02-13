@@ -8,9 +8,9 @@ import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.TextView;
 
-import br.inatel.icc.gigasecurity.gigamonitor.model.Device;
-
 import java.util.ArrayList;
+
+import br.inatel.icc.gigasecurity.gigamonitor.model.Device;
 
 /**
  * File: StreamingDevicesAdapter.java
