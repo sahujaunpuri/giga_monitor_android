@@ -49,8 +49,7 @@ public class Discovery extends Thread {
     WifiManager.MulticastLock mLock;
 
     public interface DiscoveryReceiver {
-//        void addAnnouncedServers(InetAddress[] host, int port[]);
-        public void onReceiveDevices(ArrayList<Device> devices);
+        void onReceiveDevices(ArrayList<Device> devices);
     }
 
     public Discovery(Context context, DiscoveryReceiver receiver) {

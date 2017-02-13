@@ -22,6 +22,7 @@ import java.util.ArrayList;
 import java.util.Locale;
 
 import br.inatel.icc.gigasecurity.gigamonitor.R;
+import br.inatel.icc.gigasecurity.gigamonitor.core.DeviceManager;
 import br.inatel.icc.gigasecurity.gigamonitor.core.Discovery;
 import br.inatel.icc.gigasecurity.gigamonitor.model.Device;
 
@@ -29,7 +30,6 @@ public class InitialActivity extends ActionBarActivity implements View.OnClickLi
 
     private ArrayList<Device> mDevices;
     private Discovery mDiscoveryThread;
-    private ProgressDialog mLoadingDialog;
     private ProgressBar pbInitial;
     private TextView tvDevicesFound, tvQrCode, tvNewDevice, tvAppVersion;
     private Context mContext;
@@ -61,7 +61,7 @@ public class InitialActivity extends ActionBarActivity implements View.OnClickLi
 
         try {
             String versionName = getPackageManager().getPackageInfo(getPackageName(), 0).versionName;
-            String text = getResources().getString(R.string.label_version, true);
+            String text = getResources().getString(R.string.label_version);
 
             tvAppVersion.setText(text + " " + versionName);
         } catch (PackageManager.NameNotFoundException e) {
@@ -117,7 +117,7 @@ public class InitialActivity extends ActionBarActivity implements View.OnClickLi
 
         mDiscoveryThread.start();
 
-        String text = getResources().getString(R.string.searching_dialog_messsage, true);
+        String text = getResources().getString(R.string.searching_dialog_messsage);
 
         tvDevicesFound.setText(text);
 

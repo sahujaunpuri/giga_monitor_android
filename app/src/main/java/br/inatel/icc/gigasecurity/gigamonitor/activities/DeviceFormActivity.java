@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.EditText;
@@ -27,6 +28,7 @@ public class DeviceFormActivity extends ActionBarActivity{
     EditText etPort;
     EditText etUsername;
     EditText etPassword;
+    String TAG = "DeviceForm";
 
     int editPosition = -1;
     DeviceManager deviceManager = DeviceManager.getInstance();
@@ -50,7 +52,7 @@ public class DeviceFormActivity extends ActionBarActivity{
             mDevice = new Device();
         }
 
-        arrayList = deviceManager.loadDevices(this);
+        arrayList = deviceManager.getDevices();
 
         checkEdit();
     }
@@ -95,17 +97,40 @@ public class DeviceFormActivity extends ActionBarActivity{
         boolean isHostnameFilled = !TextUtils.isEmpty(etName.getText().toString());
         boolean isPortFilled = !TextUtils.isEmpty(etPort.getText().toString());
         boolean isSerialNumberFilled = !TextUtils.isEmpty(etSerial.getText().toString());
+        boolean isIPFilled = !TextUtils.isEmpty(etIpAddress.getText().toString());
+        boolean isDNSFilled = !TextUtils.isEmpty(etDomain.getText().toString());
+        boolean isUsernameFilled = !TextUtils.isEmpty(etUsername.getText().toString());
+        boolean isPasswordFilled = !TextUtils.isEmpty(etPassword.getText().toString());
 
-        if (isHostnameFilled && (isPortFilled || isSerialNumberFilled)) {
+
+        if(isHostnameFilled && ((isPortFilled && (isIPFilled || isDNSFilled)) || isSerialNumberFilled)) {
             mDevice.setHostname(etName.getText().toString());
-            mDevice.setDomain(etDomain.getText().toString());
-            mDevice.setSerialNumber(etSerial.getText().toString());
-            mDevice.setIpAddress(etIpAddress.getText().toString());
-            if (!TextUtils.isEmpty(etPort.getText().toString())) {
+
+            String ip;
+            if(!isIPFilled)
+                ip = etDomain.getText().toString();
+            else
+                ip = etIpAddress.getText().toString();
+
+            mDevice.setIpAddress(ip);
+
+            if(isSerialNumberFilled)
+                mDevice.setSerialNumber(etSerial.getText().toString());
+            else
+                mDevice.setSerialNumber(ip + ":" + etPort.getText().toString());
+
+            if (!TextUtils.isEmpty(etPort.getText().toString()))
                 mDevice.setTCPPort(Integer.parseInt(etPort.getText().toString()));
-            }
-            mDevice.setUsername(etUsername.getText().toString());
-            mDevice.setPassword(etPassword.getText().toString());
+
+            if(isUsernameFilled)
+                mDevice.setUsername(etUsername.getText().toString());
+            else
+                mDevice.setUsername("admin");
+
+            if(isPasswordFilled)
+                mDevice.setPassword(etPassword.getText().toString());
+            else
+                mDevice.setPassword("");
 
             return true;
         }
@@ -136,11 +161,8 @@ public class DeviceFormActivity extends ActionBarActivity{
                 return true;
             case R.id.action_save:
                 if(save()) {
-                    arrayList.add(mDevice);
-                    DeviceManager.getInstance().saveDevices(this, arrayList);
+                    DeviceManager.getInstance().addDevice(this, mDevice);
                     DeviceListActivity.mDevices = null;
-                    //DeviceListActivity.listComponentOlds = new ArrayList<>();
-                    //NavUtils.navigateUpFromSameTask(this);
                     startDeviceListActivity();
 
                     finish();

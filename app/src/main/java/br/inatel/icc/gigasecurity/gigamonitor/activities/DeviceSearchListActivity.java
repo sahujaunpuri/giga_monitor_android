@@ -18,8 +18,6 @@ import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.Toast;
 
-import com.xm.NetSdk;
-
 import java.util.ArrayList;
 
 import br.inatel.icc.gigasecurity.gigamonitor.R;
@@ -54,7 +52,7 @@ public class DeviceSearchListActivity extends ActionBarActivity {
         if(getIntent().getExtras() != null){
             mDevices = (ArrayList<Device>) getIntent().getExtras().getSerializable("devicesSearch");
         } else {
-            mDevices = new ArrayList<>();
+            mDevices = new ArrayList<Device>();
         }
 
         mListView.setAdapter(new DeviceSearchAdapter(mContext, mDevices));
@@ -66,11 +64,18 @@ public class DeviceSearchListActivity extends ActionBarActivity {
                 mListView.setItemChecked(i, true);
                 view.setSelected(true);
 
-                String labelSetIP = getResources().getString(R.string.label_set_ip, true);
+                Bundle extras = new Bundle();
+                extras.putSerializable("device", mDevices.get(i));
+
+                Intent intent = new Intent(DeviceSearchListActivity.this, DeviceFormActivity.class);
+                intent.putExtras(extras);
+                startActivity(intent);
+
+                /*String labelSetIP = getResources().getString(R.string.label_set_ip);
 
                 AlertDialog.Builder builder = new AlertDialog.Builder(mContext);
-                builder.setTitle(getResources().getString(R.string.label_action, true))
-                        .setItems(new CharSequence[] { getResources().getString(R.string.label_add, true), labelSetIP },
+                builder.setTitle(getResources().getString(R.string.label_action))
+                        .setItems(new CharSequence[] { getResources().getString(R.string.label_add), labelSetIP },
                                 new DialogInterface.OnClickListener() {
                                     @Override
                                     public void onClick(DialogInterface dialog, int which) {
@@ -88,14 +93,14 @@ public class DeviceSearchListActivity extends ActionBarActivity {
                                         }
                                     }
                                 });
-                builder.show();
+                builder.show();*/
 
             }
         });
 
     }
 
-    private void showSetOverNetDialog(final int i, View view) {
+    /*private void showSetOverNetDialog(final int i, View view) {
         final Device device = mDevices.get(i);
         final LayoutInflater inflater = getLayoutInflater();
         final View viewDialog = inflater.inflate(R.layout.dialog_set_over_net, null);
@@ -110,7 +115,7 @@ public class DeviceSearchListActivity extends ActionBarActivity {
 
         AlertDialog.Builder builder = new AlertDialog.Builder(view.getContext());
 
-        String title = getResources().getString(R.string.label_set_configurations, true);
+        String title = getResources().getString(R.string.label_set_configurations);
 
         builder.setTitle(title);
         builder.setView(viewDialog)
@@ -128,10 +133,10 @@ public class DeviceSearchListActivity extends ActionBarActivity {
 
         mDialog = builder.create();
         mDialog.show();
-    }
+    }*/
 
 
-    private void setOverNetConfiguration(final Device device) {
+    /*private void setOverNetConfiguration(final Device device) {
         final EditText etUsername = (EditText) getDialog().findViewById(R.id.edit_text_set_over_net_ip_user_name);
         final EditText etPassword = (EditText) getDialog().findViewById(R.id.edit_text_set_over_net_ip_password);
         final EditText etIpAddress = (EditText) getDialog().findViewById(R.id.edit_text_set_over_net_ip_address);
@@ -170,7 +175,7 @@ public class DeviceSearchListActivity extends ActionBarActivity {
                         activity.runOnUiThread(new Runnable() {
                             @Override
                             public void run() {
-                                Log.w("Error SetConfigOverNet", " Error: " + NetSdk.getInstance().GetLastError());
+                                Log.w("Error SetConfigOverNet", " Error: ");
                                 progressDialog.dismiss();
 
                                 Toast.makeText(DeviceSearchListActivity.this, "Erro ao definir configurações.", Toast.LENGTH_LONG).show();
@@ -181,7 +186,7 @@ public class DeviceSearchListActivity extends ActionBarActivity {
                 }
         );
 
-    }
+    }*/
 
     public void searchDevices(){
         if (mDiscoveryThread == null) {
@@ -192,7 +197,7 @@ public class DeviceSearchListActivity extends ActionBarActivity {
 
         mDiscoveryThread.start();
 
-        String text = getResources().getString(R.string.searching_dialog_messsage, true);
+        String text = getResources().getString(R.string.searching_dialog_messsage);
 
         mLoadingDialog = ProgressDialog.show(mContext, "", text, true, true,
                 new DialogInterface.OnCancelListener() {

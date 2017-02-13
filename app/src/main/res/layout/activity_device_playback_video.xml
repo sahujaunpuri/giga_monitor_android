@@ -17,14 +17,28 @@
             android:layout_height="match_parent"
             android:orientation="vertical">
 
-            <com.xm.video.MySurfaceView
-                android:id="@+id/surface_view_test_1"
-                android:layout_width="fill_parent"
-                android:layout_height="240dp"
-                android:background="@android:color/transparent"
-                android:clickable="true"
-                android:focusable="true"
-                android:focusableInTouchMode="true" />
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="#000000">
+
+                <br.inatel.icc.gigasecurity.gigamonitor.model.SurfaceViewComponent
+                    android:id="@+id/surface_view_test_1"
+                    android:layout_width="fill_parent"
+                    android:layout_height="240dp"
+                    android:background="@android:color/transparent"
+                    android:clickable="true"
+                    android:focusable="true"
+                    android:focusableInTouchMode="true"/>
+                <ProgressBar
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_centerInParent="true"
+                    android:visibility="invisible"
+                    android:layout_gravity="center"
+                    android:id="@+id/pb_playback" />
+            </RelativeLayout>
+
 
             <SeekBar
                 android:id="@+id/seek_bar_playback"
@@ -46,6 +60,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_alignParentBottom="true"
+                android:paddingTop="25dp"
                 android:gravity="center"
                 android:orientation="horizontal">
 

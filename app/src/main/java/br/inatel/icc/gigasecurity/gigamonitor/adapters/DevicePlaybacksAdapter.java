@@ -8,7 +8,7 @@ import android.widget.BaseAdapter;
 import android.widget.TextView;
 
 import br.inatel.icc.gigasecurity.gigamonitor.R;
-import br.inatel.icc.gigasecurity.gigamonitor.model.FileDataGiga;
+import br.inatel.icc.gigasecurity.gigamonitor.model.FileData;
 import br.inatel.icc.gigasecurity.gigamonitor.util.Utils;
 
 import java.util.ArrayList;
@@ -25,23 +25,23 @@ import java.util.ArrayList;
  * prohibited without the written consent of the copyright owner.
  */
 public class DevicePlaybacksAdapter extends BaseAdapter {
-    private ArrayList<FileDataGiga> mFileDataGigaList;
+    private ArrayList<FileData> mFileDataList;
 
     private LayoutInflater mInflater;
 
-    public DevicePlaybacksAdapter(Context context, ArrayList<FileDataGiga> fileDataGigaList) {
+    public DevicePlaybacksAdapter(Context context, ArrayList<FileData> fileDataList) {
         mInflater = LayoutInflater.from(context);
-        mFileDataGigaList = fileDataGigaList;
+        mFileDataList = fileDataList;
     }
 
     @Override
     public int getCount() {
-        return mFileDataGigaList.size();
+        return mFileDataList.size();
     }
 
     @Override
-    public FileDataGiga getItem(int position) {
-        return mFileDataGigaList.get(position);
+    public FileData getItem(int position) {
+        return mFileDataList.get(position);
     }
 
     @Override
@@ -57,17 +57,26 @@ public class DevicePlaybacksAdapter extends BaseAdapter {
             view = mInflater.inflate(R.layout.list_view_cell_playback, parent, false);
         }
 
-        FileDataGiga fileDataGiga = getItem(position);
+        FileData fileData = getItem(position);
 
-        String startTime = String.format("%02d:%02d:%02d",
-                fileDataGiga.stBeginTime.hour,
-                fileDataGiga.stBeginTime.minute,
-                fileDataGiga.stBeginTime.second);
+//        String startTime = String.format("%02d:%02d:%02d",
+//                fileData.stBeginTime.hour,
+//                fileData.stBeginTime.minute,
+//                fileData.stBeginTime.second);
 
-        String videoType = Utils.getFileTypeName(fileDataGiga.filetype);
+        String startTime = mFileDataList.get(position).mFileBeginTime;
+        String endTime = mFileDataList.get(position).mFileEndTime;
+        String videoType = Utils.getFileTypeName(fileData.mFileType);
+        String videoQuality = "";
+        if(mFileDataList.get(position).getStreamType() == 0){
+            videoQuality = "HD";
+        } else
+            videoQuality = "SD";
 
-        ((TextView) view.findViewById(R.id.text1)).setText(startTime);
-        ((TextView) view.findViewById(R.id.text2)).setText(videoType);
+        ((TextView) view.findViewById(R.id.text_start_time)).setText(startTime);
+        ((TextView) view.findViewById(R.id.text_end_time)).setText(endTime);
+        ((TextView) view.findViewById(R.id.text_record_type)).setText(videoType);
+        ((TextView) view.findViewById(R.id.text_video_quality)).setText(videoQuality);
 
         return view;
     }

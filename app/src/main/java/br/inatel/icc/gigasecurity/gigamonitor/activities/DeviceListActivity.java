@@ -43,8 +43,6 @@ public class DeviceListActivity extends ActionBarActivity {
             getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
             getSupportActionBar().hide();
 
-            //mAdapter.setClosedOnFirstVisibleItem(previousGroup);
-
             if(previousGroup != -1) {
                 mExpandableListView.scrollTo(previousGroup, 0);
             }
@@ -76,6 +74,7 @@ public class DeviceListActivity extends ActionBarActivity {
                     return false;
                 } else {
                     mAdapter.stopChannels(previousGroup);
+                    mDeviceManager.logoutDevice(mDevices.get(previousGroup));
 
                     mAdapter = new DeviceExpandableListAdapter(mContext, mDevices);
                     mExpandableListView.setAdapter(mAdapter);
@@ -92,16 +91,13 @@ public class DeviceListActivity extends ActionBarActivity {
     @Override
     protected void onResume() {
         super.onResume();
-        Log.v("Rocali","onResume");
-        if (previousGroup != -1) mAdapter.playChannels(previousGroup);
+//        if (previousGroup != -1) mAdapter.playChannels(previousGroup);
     }
 
     @Override
     protected void onPause() {
         super.onPause();
-        Log.v("Rocali","onPause");
-        //if (previousGroup != -1) mAdapter.stopChannels(previousGroup);
-        if (previousGroup != -1) mAdapter.pauseChannels(previousGroup);
+//        if (previousGroup != -1) mAdapter.stopChannels(previousGroup);
     }
 
     private void initComponents() {
@@ -119,7 +115,7 @@ public class DeviceListActivity extends ActionBarActivity {
 
     public static void loadDevices() {
         if(mDevices == null) {
-            mDevices = mDeviceManager.loadDevices(mContext);
+            mDevices = mDeviceManager.getDevices();
 
             listComponents.clear();
 
@@ -129,34 +125,6 @@ public class DeviceListActivity extends ActionBarActivity {
                 listComponents.add(listComponent);
             }
         }
-    }
-
-    public static boolean hasGroupExpanded() {
-        boolean check = false;
-
-        for(int i = 0; i < mExpandableListView.getCount(); i++) {
-            if(mExpandableListView.isGroupExpanded(i)){
-                check = true;
-            }
-        }
-
-        return check;
-    }
-
-    public static void openItemList(int position){
-        mExpandableListView.expandGroup(position);
-    }
-
-    public static void closeList() {
-        /*mAdapter = new DeviceExpandableListAdapter(mContext, mDevices);
-        mExpandableListView.setAdapter(mAdapter);*/
-
-        for(int i = 0; i < mDevices.size(); i++) {
-            if(mExpandableListView.isGroupExpanded(i)){
-                mExpandableListView.collapseGroup(i);
-            }
-        }
-
     }
 
     @Override

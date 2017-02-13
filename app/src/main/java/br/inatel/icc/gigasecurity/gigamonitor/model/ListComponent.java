@@ -2,7 +2,6 @@ package br.inatel.icc.gigasecurity.gigamonitor.model;
 
 import android.content.Context;
 import android.content.res.Configuration;
-import android.util.Log;
 import android.view.Display;
 import android.view.Gravity;
 import android.view.View;
@@ -10,17 +9,11 @@ import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 
-import com.xm.ChnInfo;
-import com.xm.video.MySurfaceView;
-
-import java.io.File;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.Date;
 
 import br.inatel.icc.gigasecurity.gigamonitor.activities.DeviceListActivity;
-import br.inatel.icc.gigasecurity.gigamonitor.core.DeviceManager;
 
 /**
  * Created by filipecampos on 02/05/2016.
@@ -37,10 +30,10 @@ public class ListComponent {
     public int lastFirstItemBeforeSelectChannel;
 
     private int[][] inverseMatrix = new int[][]{
-            { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15 },
-            { 0, 2, 1, 3, 4, 6, 5, 7, 8, 10, 9, 11, 12, 14, 13, 15 },
-            { 0, 3, 6, 1, 4, 7, 2, 5, 8, 9, 12, 14, 10, 13, 15, 11 },
-            { 0, 4, 8, 12, 1, 5, 9, 13, 2, 6, 10, 14, 3, 7, 11, 15 }
+            {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15},
+            {0, 2, 1, 3, 4, 6, 5, 7, 8, 10, 9, 11, 12, 14, 13, 15},
+            {0, 3, 6, 1, 4, 7, 2, 5, 8, 9, 12, 14, 10, 13, 15, 11},
+            {0, 4, 8, 12, 1, 5, 9, 13, 2, 6, 10, 14, 3, 7, 11, 15}
     };
 
     public ListComponent(Device mDevice) {
@@ -52,7 +45,7 @@ public class ListComponent {
         this.mDisplay = ((DeviceListActivity) mContext).getWindowManager().getDefaultDisplay();
 
         this.surfaceViewWidth = this.mDisplay.getWidth();
-        this.surfaceViewHeight = this.mDisplay.getHeight()/3;
+        this.surfaceViewHeight = this.mDisplay.getHeight() / 3;
         this.lastFirstVisibleItem = 0;
         this.lastLastVisibleItem = 0;
     }
@@ -60,29 +53,14 @@ public class ListComponent {
 
     public void createComponents() {
 
-        for(int i = 0; i < mDevice.getChannelNumber(); i++) {
-            SurfaceViewComponent surfaceViewComponent = new SurfaceViewComponent();
+        for (int i = 0; i < mDevice.getChannelNumber(); i++) {
+            SurfaceViewComponent surfaceViewComponent = new SurfaceViewComponent(mContext);
 
             surfaceViewComponent.mySurfaceViewID = DeviceListActivity.mySurfaceViewID++;
 
             surfaceViewComponent.mySurfaceViewChannelId = i;
             surfaceViewComponent.mySurfaceViewOrderId = i;
-
-            //Create MySurfaceView
-            surfaceViewComponent.mySurfaceView = new MySurfaceView(mContext, 0);
-            surfaceViewComponent.mySurfaceView.init(mContext, surfaceViewComponent.mySurfaceViewID);
-
-            surfaceViewComponent.mySurfaceView.setLayoutParams(new FrameLayout.LayoutParams(surfaceViewWidth, surfaceViewHeight));
-
-            //Create ChannelInfo
-            surfaceViewComponent.chnInfo = new ChnInfo();
-            surfaceViewComponent.chnInfo.nStream = 1;
-
-            //Create ProgressBar
-            surfaceViewComponent.progressBar = new ProgressBar(mContext);
-            surfaceViewComponent.progressBar.setIndeterminate(false);
-            surfaceViewComponent.progressBar.setScrollBarStyle(View.SCROLLBARS_INSIDE_INSET);
-            surfaceViewComponent.progressBar.setLayoutParams(new FrameLayout.LayoutParams(surfaceViewWidth/4, surfaceViewWidth/4, Gravity.CENTER));
+            surfaceViewComponent.deviceSn = mDevice.getSerialNumber();
 
             surfaceViewComponents.add(surfaceViewComponent);
         }
@@ -92,23 +70,23 @@ public class ListComponent {
         surfaceViewWidth = (mDisplay.getWidth() / numQuad);
         surfaceViewHeight = ((mDisplay.getHeight() / 3) + 10) / numQuad;
 
-        if(mContext.getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE) {
+        if (mContext.getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE) {
             surfaceViewHeight = (mDisplay.getHeight()) / numQuad;
         }
 
         FrameLayout.LayoutParams lpSurfaceView = new FrameLayout.LayoutParams(surfaceViewWidth, surfaceViewHeight, Gravity.CENTER_HORIZONTAL);
         LinearLayout.LayoutParams lpFrameLayout = new LinearLayout.LayoutParams(surfaceViewWidth, surfaceViewHeight);
-        FrameLayout.LayoutParams lpProgressBar = new FrameLayout.LayoutParams(surfaceViewWidth/4, surfaceViewHeight/4, Gravity.CENTER);
+        FrameLayout.LayoutParams lpProgressBar = new FrameLayout.LayoutParams(surfaceViewWidth / 4, surfaceViewHeight / 4, Gravity.CENTER);
 
 
-        surfaceViewComponent.mySurfaceView.setLayoutParams(lpSurfaceView);
+        surfaceViewComponent.setLayoutParams(lpSurfaceView);
         frameLayout.setLayoutParams(lpFrameLayout);
         surfaceViewComponent.progressBar.setLayoutParams(lpProgressBar);
     }
 
     public void reOrderSurfaceViewComponents() {
         for (SurfaceViewComponent svc : surfaceViewComponents) {
-            svc.mySurfaceViewOrderId = inverseMatrix[numQuad-1][svc.mySurfaceViewChannelId];
+            svc.mySurfaceViewOrderId = inverseMatrix[numQuad - 1][svc.mySurfaceViewChannelId];
         }
 
         Collections.sort(surfaceViewComponents, new Comparator<SurfaceViewComponent>() {
@@ -119,7 +97,7 @@ public class ListComponent {
     }
 
     public int getChannelSelected(int gridPositionSelected) {
-        return inverseMatrix[numQuad-1][gridPositionSelected];
+        return inverseMatrix[numQuad - 1][gridPositionSelected];
     }
 
     public int scrollToItem(int currentFirstVisibleItem, int currentLastVisibleItem) {
@@ -147,7 +125,7 @@ public class ListComponent {
         } else if (totalQuads == 1) {
             if (lastFirstVisibleItem != currentFirstVisibleItem) {
                 itemToScroll = currentFirstVisibleItem;
-            } else if (lastLastVisibleItem != currentLastVisibleItem){
+            } else if (lastLastVisibleItem != currentLastVisibleItem) {
                 itemToScroll = currentLastVisibleItem;
             }
         }
@@ -158,51 +136,28 @@ public class ListComponent {
         return itemToScroll;
     }
 
-    public void handleVisibleChannels(){
-        DeviceManager mDeviceManager = DeviceManager.getInstance();
-        Log.v("Rocali", "Visible from " + this.lastFirstVisibleItem + " to " + this.lastLastVisibleItem + " numQuad "+this.numQuad);
-        if (this.lastLastVisibleItem - this.lastFirstVisibleItem == this.numQuad*this.numQuad - 1 || this.lastLastVisibleItem == this.surfaceViewComponents.size() - 1) {
-            Log.v("Rocali", "Visible from " + this.lastFirstVisibleItem + " to " + this.lastLastVisibleItem);
+    public void handleVisibleChannels() {
+        if (this.lastLastVisibleItem - this.lastFirstVisibleItem == this.numQuad * this.numQuad - 1 || this.lastLastVisibleItem == this.surfaceViewComponents.size() - 1) {
             for (final SurfaceViewComponent svc : this.surfaceViewComponents) {
                 if (svc.mySurfaceViewChannelId >= this.lastFirstVisibleItem && svc.mySurfaceViewChannelId <= lastLastVisibleItem) {
-                    if (!svc.isPlaying && svc.connected) {
-                        Log.v("Rocali","Play "+svc.mySurfaceViewChannelId);
-                        svc.mySurfaceView.onPlay();
-                        svc.isPlaying = true;
-                    } else if (!svc.connected) {
-                        mDeviceManager.startDeviceVideo2(mDevice.getLoginID(), svc.mySurfaceViewID,
-                                svc.chnInfo, new DeviceManager.StartDeviceVideoListener() {
-                                    @Override
-                                    public void onSuccessStartDevice(final long handleID) {
-                                       Log.v("Rocali","onSuccessStartDevice" + svc.mySurfaceViewChannelId);
-                                    }
-
-                                    @Override
-                                    public void onErrorStartDevice() {
-                                        Log.v("Rocali","onErrorStartDevice" + svc.mySurfaceViewChannelId);
-                                    }
-                                });
-                    }
+                    if (!svc.isPlaying /*&& svc.isConnected*/) {
+                        svc.progressBar.setVisibility(View.VISIBLE);
+                        svc.onStartVideo();
+                }
                 } else {
-                    if (svc.isPlaying && svc.connected) {
-                        Log.v("Rocali", "Pause " + svc.mySurfaceViewChannelId);
-                        svc.mySurfaceView.onPause();
-                        svc.isPlaying = false;
-                    } else if (!svc.connected) {
-                        mDeviceManager.stopDeviceVideo2(svc.realPlayHandleID, svc.mySurfaceView, new DeviceManager.StopDeviceVideoListener() {
-                            @Override
-                            public void onSuccessStopDevice() {
-                                Log.v("Rocali", "onSuccessStopDevice" + svc.mySurfaceViewChannelId);
-                            }
-
-                            @Override
-                            public void onErrorStopDevice() {
-                                Log.v("Rocali", "onErrorStopDevice"  + svc.mySurfaceViewChannelId);
-                            }
-                        });
+                    if (svc.isPlaying && svc.isConnected) {
+                        svc.onStop();
                     }
                 }
             }
+        }
+    }
+
+
+    public void stopChannels(int start){
+        for(int i = start; i <surfaceViewComponents.size(); i++){
+            if(surfaceViewComponents.get(i).isConnected)
+                surfaceViewComponents.get(i).onStop();
         }
     }
 

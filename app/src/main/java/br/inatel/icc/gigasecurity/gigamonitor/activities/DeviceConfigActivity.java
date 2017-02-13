@@ -75,13 +75,13 @@ public class DeviceConfigActivity extends ActionBarActivity {
     private void showRebootDialog() {
         AlertDialog.Builder builder = new AlertDialog.Builder(DeviceConfigActivity.this);
 
-        String text = getResources().getString(R.string.label_reboot_dialog, true);
-        String labelYes = getResources().getString(R.string.label_yes, true);
+        String text = getResources().getString(R.string.label_reboot_dialog);
+        String labelYes = getResources().getString(R.string.label_yes);
 
         builder.setMessage(text)
                 .setPositiveButton(labelYes, new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int id) {
-                        mDeviceManager.rebootDevice(mDevice);
+                        //mDeviceManager.rebootDevice(mDevice);
 
                         startDeviceListActivity();
                     }

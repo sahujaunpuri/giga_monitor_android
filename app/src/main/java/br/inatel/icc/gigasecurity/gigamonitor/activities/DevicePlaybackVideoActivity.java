@@ -10,75 +10,111 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.SeekBar;
 import android.widget.TextView;
 
 import br.inatel.icc.gigasecurity.gigamonitor.R;
 import br.inatel.icc.gigasecurity.gigamonitor.core.DeviceManager;
+import br.inatel.icc.gigasecurity.gigamonitor.listeners.PlaybackListener;
 import br.inatel.icc.gigasecurity.gigamonitor.model.Device;
-import br.inatel.icc.gigasecurity.gigamonitor.model.FileDataGiga;
-import com.xm.MyConfig;
-import com.xm.NetSdk;
-import com.xm.video.MySurfaceView;
+import br.inatel.icc.gigasecurity.gigamonitor.model.FileData;
+import br.inatel.icc.gigasecurity.gigamonitor.model.SurfaceViewComponent;
 
 public class DevicePlaybackVideoActivity extends ActionBarActivity {
 
-    private MySurfaceView mSurfaceView;
+    private SurfaceViewComponent mSurfaceView;
     private SeekBar mSeekBar;
+    private ProgressBar mProgressBar;
     private TextView mStatusTextView;
     private ImageView ivPlayPause, ivStop, ivForward, ivBackward;
+    private final String TAG = "playback";
+    private int currentBar;
 
-    private MySurfaceView.OnPlayBackPosListener mPlaybackPositionListener =
-            new MySurfaceView.OnPlayBackPosListener() {
+    private Device mDevice;
+    private FileData mFileData;
+    private Activity mActivity;
+
+    private int mStartSecond;
+    private int definedProgress;
+    private int currentProgress;
+    private boolean seekBackwards = false;
+
+    private PlaybackListener mPlaybackListener =
+            new PlaybackListener() {
+                @Override
+                public void onComplete() {
+                    stopButtonClick();
+                }
 
                 @Override
-                public void onPlayBackPos(int progress) {
-                    if (progress == -1) return;
-                    mSeekBar.setProgress(progress - mStartSecond);
+                public void onChangeProgress(int progress) {
+                    if(!mSurfaceView.isSeeking) {
+                        currentProgress = progress;
+                        mSeekBar.setProgress(progress);
+                    }else if(((progress*100)/(int)mFileData.getTotalTime()) == definedProgress){
+                        mSurfaceView.setVisibility(View.VISIBLE);
+                        mSurfaceView.isSeeking = false;
+                        mSurfaceView.currentPlaybackListener.onPlayState(2);
+                    }
+                    Log.d(TAG, "onChangeProgress: progress:" + (progress*100)/(int)mFileData.getTotalTime() + " definedProgress:" + definedProgress);
                 }
-            };
 
-    private NetSdk.OnRPlayBackCompletedListener mPlaybackCompleteListener =
-            new NetSdk.OnRPlayBackCompletedListener() {
                 @Override
-                public void onRPlayBackCompleted(long l, long l2, long l3, long l4) {
-                    mActivity.runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            stop();
-                            mSeekBar.setProgress(0);
-                        }
-                    });
+                public void onCompleteSeek(){
                 }
+
+                @Override
+                public void onPlayState(int state){
+                    if(state == 2 && !mSurfaceView.isSeeking){
+                        String text = getResources().getString(R.string.label_playing);
+                        updateStatusTextView(text);
+                        mActivity.runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                ivPlayPause.setImageDrawable(getResources().getDrawable(R.drawable.ic_pause_playback));
+                                mProgressBar.setVisibility(View.INVISIBLE);
+                            }
+                        });
+                    }
+                }
+
             };
 
     private SeekBar.OnSeekBarChangeListener mSeekBarChangeListener =
             new SeekBar.OnSeekBarChangeListener() {
                 @Override
                 public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-
+                    if(fromUser && (mSurfaceView.isConnected)){
+                        currentBar = progress;
+                    }
                 }
 
                 @Override
                 public void onStartTrackingTouch(SeekBar seekBar) {
-                    pause();
+                    if(mSurfaceView.isConnected) {
+                        pause();
+                        mSurfaceView.setVisibility(View.INVISIBLE);
+                        mSurfaceView.isSeeking = true;
+                    } else{
+                        play();
+                    }
                 }
 
                 @Override
                 public void onStopTrackingTouch(SeekBar seekBar) {
-                    setPlaybackProgress( (100*seekBar.getProgress()) / seekBar.getMax());
-                    resume();
+                    if(mSurfaceView.isConnected) {
+                        setPlaybackProgress(currentBar);
+                        updateStatusTextView("Buscando");
+                        mActivity.runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                mProgressBar.setVisibility(View.VISIBLE);
+                            }
+                        });
+                    }
                 }
             };
-
-    private Device mDevice;
-    private FileDataGiga mFileDataGiga;
-    private DeviceManager mManager;
-    private Activity mActivity;
-
-    private int mSurfaceViewID;
-    private boolean mPlaying, mPaused;
-    private int mStartSecond;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -94,10 +130,10 @@ public class DevicePlaybackVideoActivity extends ActionBarActivity {
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
 
         mActivity = this;
-        mManager = DeviceManager.getInstance();
 
         // Find views
-        mSurfaceView    = (MySurfaceView) findViewById(R.id.surface_view_test_1);
+        mSurfaceView    = (SurfaceViewComponent) findViewById(R.id.surface_view_test_1);
+        mProgressBar    = (ProgressBar) findViewById(R.id.pb_playback);
         mSeekBar        = (SeekBar) findViewById(R.id.seek_bar_playback);
         mStatusTextView = (TextView) findViewById(R.id.text_view_playback_status);
         ivPlayPause     = (ImageView) findViewById(R.id.iv_play_playback);
@@ -105,9 +141,14 @@ public class DevicePlaybackVideoActivity extends ActionBarActivity {
         ivForward       = (ImageView) findViewById(R.id.iv_forward_playback);
         ivBackward      = (ImageView) findViewById(R.id.iv_backward_playback);
 
+        ivPlayPause.setImageDrawable(getResources().getDrawable(R.drawable.ic_play_playback));
+
+        //botões desabilitados a pedido da giga, videos curtos estavam pulando muitos frames e encerrando a exibição
+        ivBackward.setVisibility(View.GONE);
+        ivForward.setVisibility(View.GONE);
+
         // Set listeners
-        mSurfaceView.setOnPlayBackPosListener(mPlaybackPositionListener);
-        mManager.setOnPlaybackCompleteListener(mPlaybackCompleteListener);
+        mSurfaceView.setCurrentPlaybackListener(mPlaybackListener);
         mSeekBar.setOnSeekBarChangeListener(mSeekBarChangeListener);
 
         ivPlayPause.setOnClickListener(new View.OnClickListener() {
@@ -124,42 +165,43 @@ public class DevicePlaybackVideoActivity extends ActionBarActivity {
             }
         });
 
-        ivForward.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                forwardButtonClick();
-            }
-        });
+//        ivForward.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                forwardButtonClick();
+//            }
+//        });
 
-        ivBackward.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                backwardButtonClick();
-            }
-        });
+//        ivBackward.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                backwardButtonClick();
+//            }
+//        });
 
         // Get data from previous activity
         Bundle extras = getIntent().getExtras();
         mDevice = (Device) extras.getSerializable("device");
-        mFileDataGiga = (FileDataGiga) extras.getSerializable("fileData");
+        mFileData = (FileData) extras.getSerializable("fileData");
+        mSurfaceView.deviceSn = mDevice.getSerialNumber();
+        mSurfaceView.playType = 1;
 
-        // Init MySurfaceView
-        mSurfaceViewID = DeviceListActivity.mySurfaceViewID++;
-
-        mSurfaceView.init(this, mSurfaceViewID);
-        mSurfaceView.setAudioCtrl(MyConfig.AudioState.OPENED);
+//        mSurfaceView.setAudioCtrl(MyConfig.AudioState.OPENED);
 
         // Configure progress bar
-        mSeekBar.setMax(mFileDataGiga.getTotalTime());
-        mStartSecond = mFileDataGiga.getStartSecond();
+        mSeekBar.setMax((int) mFileData.getTotalTime());
+        mStartSecond = (int) mFileData.getStartTime();
 
-        play();
+        Log.d(TAG, "onCreate totalTime: " + mFileData.getTotalTime());
+        Log.d(TAG, "onCreate startSecond: " + mStartSecond);
+
+
     }
 
     public void playButtonClick() {
-        if (mPaused) {
+        if (mSurfaceView.isConnected && !mSurfaceView.isPlaying()) {
             resume();
-        } else if (mPlaying) {
+        } else if (mSurfaceView.isPlaying()) {
             pause();
         } else {
             play();
@@ -167,56 +209,60 @@ public class DevicePlaybackVideoActivity extends ActionBarActivity {
     }
 
     public void stopButtonClick() {
-        if (mPlaying) {
+        if (mSurfaceView.isConnected) {
             stop();
             mSeekBar.setProgress(0);
         }
     }
 
-    public void backwardButtonClick() {
-        if(mManager.playbackSlow(mDevice.getPlaybackHandle(), mSurfaceView)){
-            Log.w("Playback Slow", "Success.");
+//    public void backwardButtonClick() {
+//        if(mManager.playbackSlow(mDevice.getPlaybackHandle(), mSurfaceView)){
+//            Log.w("Playback Slow", "Success.");
+//
+//            String text = getResources().getString(R.string.label_playing_slow);
+//
+//            updateStatusTextView(text);
+//        } else {
+//            Log.w("Playback Slow", "Error.");
+//        }
+//    }
 
-            String text = getResources().getString(R.string.label_playing_slow, true);
-
-            updateStatusTextView(text);
-        } else {
-            Log.w("Playback Slow", "Error.");
-        }
-    }
-
-    public void forwardButtonClick() {
-        if(mManager.playbackFaster(mDevice.getPlaybackHandle(), mSurfaceView)) {
-            Log.w("Playback Fast", "Success.");
-
-            String text = getResources().getString(R.string.label_playing_fast, true);
-
-            updateStatusTextView(text);
-        } else {
-            Log.w("Playback Fast", "Error.");
-        }
-    }
+//    public void forwardButtonClick() {
+//        if(mManager.playbackFaster(mDevice.getPlaybackHandle(), mSurfaceView)) {
+//            Log.w("Playback Fast", "Success.");
+//
+//            String text = getResources().getString(R.string.label_playing_fast);
+//
+//            updateStatusTextView(text);
+//        } else {
+//            Log.w("Playback Fast", "Error.");
+//        }
+//    }
 
     public void updateStatusTextView(final CharSequence statusText) {
-        mStatusTextView.setText(statusText);
+        mActivity.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                mStatusTextView.setText(statusText);
+            }
+        });
     }
 
     public void play() {
-        mManager.playbackPlay(mDevice, mFileDataGiga, mSurfaceView, mSurfaceViewID);
-        mPlaying = true;
-
-        String text = getResources().getString(R.string.label_playing, true);
-
+        String text = "Carregando vídeo";
         updateStatusTextView(text);
+        mSurfaceView.setVisibility(View.VISIBLE);
 
-        ivPlayPause.setImageDrawable(getResources().getDrawable(R.drawable.ic_pause_playback));
+        mProgressBar.setVisibility(View.VISIBLE);
+        mSurfaceView.progressBar.setVisibility(View.VISIBLE);
+        mSurfaceView.onPlayPlayback(mFileData.getFileData());
+        mSeekBar.setProgress(0);
     }
 
     public void resume() {
-        mManager.playbackResume(mDevice.getPlaybackHandle(), mSurfaceView);
-        mPaused = false;
+        mSurfaceView.onResume();
 
-        String text = getResources().getString(R.string.label_playing, true);
+        String text = getResources().getString(R.string.label_playing);
 
         updateStatusTextView(text);
 
@@ -224,34 +270,40 @@ public class DevicePlaybackVideoActivity extends ActionBarActivity {
     }
 
     public void stop() {
-        mManager.playbackStop(mDevice.getPlaybackHandle(), mSurfaceView);
-        mPlaying = false;
-        mPaused = false;
-
-        String text = getResources().getString(R.string.label_stopped, true);
+        mSurfaceView.onStop();
+        String text = getResources().getString(R.string.label_stopped);
+        mSurfaceView.setVisibility(View.INVISIBLE);
 
         updateStatusTextView(text);
 
-        ivPlayPause.setImageDrawable(getResources().getDrawable(R.drawable.ic_play_playback));
+
+        mActivity.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                ivPlayPause.setImageDrawable(getResources().getDrawable(R.drawable.ic_play_playback));
+            }
+        });
     }
 
     public void pause() {
-        mManager.playbackPause(mDevice.getPlaybackHandle(), mSurfaceView);
-        mPaused = true;
+        mSurfaceView.onPause();
 
-        String text = getResources().getString(R.string.label_paused, true);
-
+        String text = getResources().getString(R.string.label_paused);
         updateStatusTextView(text);
 
-        ivPlayPause.setImageDrawable(getResources().getDrawable(R.drawable.ic_play_playback));
+        mActivity.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                ivPlayPause.setImageDrawable(getResources().getDrawable(R.drawable.ic_play_playback));
+            }
+        });
+
     }
 
-    public void setPlaybackProgress(int percentProgress) {
-        if(mManager.setPlaybackProgress(mDevice.getPlaybackHandle(), percentProgress)) {
-            Log.w("Set Playback Progress", "Success.");
-        } else {
-            Log.w("Set Playback Progress", "Error");
-        }
+    public void setPlaybackProgress(int progress) {
+        Log.d(TAG, "setPlaybackProgress: SEEKING TO: " + (progress*100)/(int)mFileData.getTotalTime());
+        definedProgress = (progress*100)/(int)mFileData.getTotalTime();
+        mSurfaceView.seekByPos(definedProgress);
     }
 
     @Override
@@ -274,6 +326,7 @@ public class DevicePlaybackVideoActivity extends ActionBarActivity {
 
         switch (id) {
             case android.R.id.home:
+                mSurfaceView.onStop();
                 finish();
                 return true;
             default:

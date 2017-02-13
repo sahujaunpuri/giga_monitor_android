@@ -1,546 +1,246 @@
 package br.inatel.icc.gigasecurity.gigamonitor.core;
 
-import android.content.ContentValues;
 import android.content.Context;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.os.Environment;
-import android.os.Handler;
 import android.os.Message;
-import android.provider.MediaStore;
 import android.util.Log;
 
 import com.basic.G;
 import com.google.gson.annotations.Expose;
-import com.xm.ChnInfo;
-import com.xm.DevInfo;
-import com.xm.FindInfo;
-import com.xm.MyConfig;
-import com.xm.NetSdk;
-import com.xm.SDK_AllAlarmIn;
-import com.xm.SDK_AllAlarmOut;
-import com.xm.SearchDeviceInfo;
-import com.xm.audio.VoiceIntercom;
-import com.xm.javaclass.SDK_CONFIG_NET_COMMON_V3;
-import com.xm.javaclass.SDK_LogList;
-import com.xm.javaclass.SDK_LogSearchCondition;
-import com.xm.video.MySurfaceView;
+import com.lib.EFUN_ATTR;
+import com.lib.IFunSDKResult;
+import com.lib.MsgContent;
+import com.lib.sdk.struct.H264_DVR_FILE_DATA;
+import com.lib.sdk.struct.H264_DVR_FINDINFO;
+
+
+import br.inatel.icc.gigasecurity.gigamonitor.activities.DeviceListActivity;
+import br.inatel.icc.gigasecurity.gigamonitor.listeners.*;
+import br.inatel.icc.gigasecurity.gigamonitor.R;
+
+import com.lib.FunSDK;
+import com.lib.EUIMSG;
+import com.lib.sdk.struct.SDK_CONFIG_NET_COMMON_V2;
+import com.lib.sdk.struct.SDK_ChannelNameConfigAll;
 
 import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedList;
 
-import br.inatel.icc.gigasecurity.gigamonitor.R;
 import br.inatel.icc.gigasecurity.gigamonitor.model.Device;
-import br.inatel.icc.gigasecurity.gigamonitor.model.FileDataGiga;
-import br.inatel.icc.gigasecurity.gigamonitor.model.LoginMethod;
-import br.inatel.icc.gigasecurity.gigamonitor.task.LoginDeviceAsyncTask;
-import br.inatel.icc.gigasecurity.gigamonitor.util.BitmapUtil;
+//import br.inatel.icc.gigasecurity.gigamonitor.model.FileDataGiga;
+import br.inatel.icc.gigasecurity.gigamonitor.model.SurfaceViewComponent;
 import br.inatel.icc.gigasecurity.gigamonitor.util.ComplexPreferences;
 import br.inatel.icc.gigasecurity.gigamonitor.util.Utils;
+//import br.inatel.icc.gigasecurity.gigamonitor.task.LoginDeviceAsyncTask;
 
 /**
  * Created by rinaldo.bueno on 29/08/2014.
  */
-public class DeviceManager {
+public class DeviceManager implements IFunSDKResult{
+    private static final String APP_UUID = "e29c9d4ac9fa41fab19413885818ca54";
+    private static final String APP_KEY = "d55b6614829f4d1c84d3ab2a9193234b";
+    private static final String APP_SECRET = "7a58fdbc242b4f6ba95652b7a3502b91";
+    private static final int APP_MOVECARD = 8;
+    private static final String SERVER_IP = "200.98.128.50";
+    private static final int SERVER_PORT = 8000;
+//    private static final String SERVER_IP = "223.4.33.127;54.84.132.236;112.124.0.188";
+//    private static final int SERVER_PORT = 15010; // 更新版本的服务器端口
+
 
     private static String TAG = DeviceManager.class.getSimpleName();
-    private NetSdk mNetSdk = null;
+    private static DeviceManager mInstance = null;
+    private int mFunUserHandler;
+    public int nSeq = 0;
 
-    private final HashMap<Long, Device> mLoggedDevices = new HashMap<Long, Device>();
+    private final HashMap<Integer, Device> mLoggedDevices = new HashMap<Integer, Device>();
+    public LinkedList<SurfaceViewComponent> startList = new LinkedList<SurfaceViewComponent>();
+    public boolean startPlay = false;
 
-    private int channelOnRec;
+
+    public boolean channelOnRec;
+    private ArrayList<Device> mDevices = new ArrayList<Device>();
+    private ArrayList<Device> mLanDevices = new ArrayList<Device>();
+    private LoginDeviceListener currentLoginListener;
+    private PlaybackSearchListener currentPlaybackSearchListener;
 
 
     private DeviceManager() {
-
-        NetSdk.H264DVRUserData(1000,"200.98.128.50");
-        NetSdk.DevInit();
-
-        mNetSdk = NetSdk.getInstance(1000, "200.98.128.50:8000"); //Parameters are meant to login with "GIGA_" prefix
-
-        mNetSdk.setOnDisConnectListener(new NetSdk.OnDisConnectListener() {
-            @Override
-            public void onDisConnect(int i, long loginId, byte[] bytes, long l2) {
-                Log.d(TAG, String.format("Device loginId: %s Disconnected.", loginId));
-
-                synchronized (mLoggedDevices) {
-                    mLoggedDevices.remove(loginId);
-                }
-
-                Log.d(TAG, String.valueOf(mLoggedDevices.size()));
-            }
-        });
-
-        mVoiceSessions = new HashMap<Long, VoiceIntercom>();
-
-        channelOnRec = -1;  //No channel on rec
     }
 
-    public void loginDevice(final Device device, final LoginMethod lm, final LoginDeviceInterface loginDeviceInterface) {
 
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
+    public static synchronized DeviceManager getInstance() {
+        if (mInstance == null) {
+            mInstance = new DeviceManager();
+        }
+        return mInstance;
+    }
 
-                long frt;
+    public void init(Context context){
+        int result;
+        Log.d(TAG, "DeviceManager: INIT");
 
-                switch (lm) {
-                    case TRY_ALL: default:
-                        frt = tryLoginAll(device, loginDeviceInterface);
-                        break;
-                    case LAN:
-                        loginDeviceInterface.onLoginLAN();
-                        frt = loginLAN(device);
-                        break;
-                    case CLOUD:
-                        loginDeviceInterface.onLoginCloud();
-                        frt = loginCloud(device);
-                        break;
-                }
 
-                if(frt == 0) {
-                    loginDeviceInterface.onLoginError(frt);
+        InitParam initparam = new InitParam();
+
+//        FunSDK.InitParamEx(0, G.ObjToBytes(initparam), "GIGA_", "", 0);
+
+        FunSDK.Init(0, G.ObjToBytes(initparam));
+
+        FunSDK.MyInitNetSDK();
+        String defaultPath = getMediaPath(context) + File.separator + context.getPackageName() + File.separator;
+        FunSDK.SetFunStrAttr(EFUN_ATTR.APP_PATH, defaultPath);
+
+        FunSDK.SysInitAsAPModle("ConfigPath/ap.txt");
+
+        FunSDK.SysInitNet(SERVER_IP, SERVER_PORT);
+
+        FunSDK.SysInitLocal(defaultPath + "DBFile.db");
+
+        FunSDK.XMCloundPlatformInit(APP_UUID, APP_KEY, APP_SECRET, APP_MOVECARD);
+        mFunUserHandler = FunSDK.RegUser(this);
+        FunSDK.SetFunIntAttr(EFUN_ATTR.FUN_MSG_HANDLE, mFunUserHandler);
+
+        loadSavedData(context);
+
+    }
+
+    @Override
+    public int OnFunSDKResult(Message msg, MsgContent msgContent){
+        Log.d(TAG, "msg.what : " + msg.what);
+        Log.d(TAG, "msg.arg1 : " + msg.arg1);
+        Log.d(TAG, "msg.arg2 : " + msg.arg2);
+        if (null != msgContent) {
+            Log.d(TAG, "msgContent.sender : " + msgContent.sender);
+            Log.d(TAG, "msgContent.seq : " + msgContent.seq);
+            Log.d(TAG, "msgContent.str : " + msgContent.str);
+            Log.d(TAG, "msgContent.arg3 : " + msgContent.arg3);
+            Log.d(TAG, "msgContent.pData : " + msgContent.pData);
+        }
+        switch (msg.what) {
+            case EUIMSG.DEV_SEARCH_DEVICES:
+            {
+                int length = msg.arg2;
+                if (length > 0) {
+                    SDK_CONFIG_NET_COMMON_V2[] searchResult = new SDK_CONFIG_NET_COMMON_V2[length];
+                    for (int i = 0; i < searchResult.length; i++) {
+                        searchResult[i] = new SDK_CONFIG_NET_COMMON_V2();
+                    }
+                    G.BytesToObj(searchResult, msgContent.pData);
+
+                    updateLanDeviceList(searchResult);
                 } else {
-                    loginDeviceInterface.onLoginSuccess(frt);
+                    updateLanDeviceList(null);
                 }
-
             }
-        }).start();
-
-    }
-
-    public interface LoginDeviceInterface {
-        void onLoginSuccess(long loginID);
-        void onLoginError(long loginID);
-
-        void onLoginCloud();
-        void onLoginLAN();
-        void onLoginDDNS();
-    }
-
-    public long loginOnDevice(final Device device, LoginMethod lm) {
-        long frt;
-
-        switch (lm) {
-            case TRY_ALL: default:
-                //frt = tryLoginAll(device);
-                frt = 0;
-                break;
-            case LAN:
-                frt = loginLAN(device);
-                break;
-            case CLOUD:
-                frt = loginCloud(device);
-                break;
-        }
-
-        return frt;
-    }
-
-    private long tryLoginAll(Device device, final LoginDeviceInterface loginDeviceInterface) {
-        long loginRet;
-
-        if (!mLoggedDevices.containsValue(device)) {
-
-            if(device.getIpAddress() != "") {
-                loginDeviceInterface.onLoginLAN();
-                loginRet = loginLAN(device);
-            } else {
-                loginRet = 0;
+            break;
+            case EUIMSG.DEV_LOGIN:
+            {
+                Device device = null;
+                if(msgContent.seq != 0) {
+                    device = findDeviceById(msgContent.seq);
+                }
+                if(msg.arg1 == 0) {
+                    Log.d(TAG, "OnFunSDKResult: Login SUCCESS");
+                    device.isLogged = true;
+                    putLoggedDevice(device);
+                    if(device.getChannelNumber()>0)
+                        currentLoginListener.onLoginSuccess();
+                    else
+                        FunSDK.DevGetConfigByJson(getHandler(), device.getSerialNumber(), "SystemInfo", 4096, -1, 10000, device.getId());
+                }
+                else {
+                    FunSDK.DevLogin(getHandler(), device.getSerialNumber(), device.getUsername(), device.getPassword(), device.getId());
+                    Log.d(TAG, "OnFunSDKResult: Login ERROR");
+                }
             }
+            break;
+            case EUIMSG.SYS_GET_DEV_STATE:
+            {
+                Device device = null;
+                if(!msgContent.str.equals("0")) {
+                    device = findDeviceBySN(msgContent.str);
+                }
+                if(msg.arg1>0){
+                    if(device != null)
+                        FunSDK.DevLogin(getHandler(), device.getSerialNumber(), device.getUsername(), device.getPassword(), device.getId());
+                    Log.d(TAG, "OnFunSDKResult: Device ONLINE");
+                } else {
+                    Log.d(TAG, "OnFunSDKResult: Device OFFLINE");
+                    currentLoginListener.onLoginError(msg.arg1, device);
 
-            if (loginRet == 0 && device.getDdnsDomain() != "") {
-                loginDeviceInterface.onLoginDDNS();
-                loginRet = loginDDNSnUNPnP(device);
+                }
             }
-
-            if (loginRet == 0) {
-                loginDeviceInterface.onLoginCloud();
-                loginRet = loginCloud(device);
+            break;
+            case EUIMSG.DEV_GET_JSON:
+            {
+                if(msg.arg1 >= 0){
+                    Device device = findDeviceById(msgContent.seq);
+                    FunSDK.DevGetChnName(getHandler(), device.getSerialNumber(), device.getUsername(), device.getPassword(), nSeq);
+                    Log.d(TAG, "OnFunSDKResult: GETCONFIGJSON SUCCESS");
+                } else{
+                    Device device = findDeviceById(msgContent.seq);
+                    FunSDK.DevGetConfigByJson(getHandler(), device.getSerialNumber(), "SystemInfo", 4096, -1, 15000, device.getId());
+                    Log.d(TAG, "OnFunSDKResult: GETCONFIGJSON ERROR");
+                }
             }
-
-            if (loginRet != 0) {
-                putLoggedDevice(device);
+            break;
+            case EUIMSG.DEV_GET_CHN_NAME:
+            {
+                Log.d(TAG, "OnFunSDKResult: DEV_GET_CHN_NAME");
+                if (msg.arg1 >= 0) {
+                    if (msgContent.pData != null && msgContent.pData.length > 0) {
+//                        SDK_ChannelNameConfigAll channel = new SDK_ChannelNameConfigAll();
+//                        G.BytesToObj(channel, msgContent.pData);
+//                        channel.nChnCount = msg.arg1;
+//                        mDevices.get(msgContent.seq).setChannel(channel);
+                        mDevices.get(msgContent.seq).setChannelNumber(msg.arg1);
+                        saveDevices(DeviceListActivity.mContext);
+                        currentLoginListener.onLoginSuccess();
+                    }
+                }
             }
-        } else {
-            loginRet = device.getLoginID();
-        }
+            break;
+            case EUIMSG.DEV_FIND_FILE:
+            {
+                Log.d(TAG, "OnFunSDKResult: DEV_FIND_FILE");
+                Device device = findDeviceById(msgContent.seq);
+                int fileNum = msg.arg1;
+                if (fileNum < 0) {
+                    Log.d(TAG, "OnFunSDKResult: NENHUM ARQUIVO ENCONTRADO");
+                    currentPlaybackSearchListener.onEmptyListFound();
+                } else {
+                    H264_DVR_FILE_DATA files[] = new H264_DVR_FILE_DATA[msg.arg1];
+                    for (int i = 0; i < files.length; i++) {
+                        files[i] = new H264_DVR_FILE_DATA();
+                    }
+                    G.BytesToObj(files, msgContent.pData);
+                    currentPlaybackSearchListener.onFindList(files);
 
-        return loginRet;
-    }
-
-    private void putLoggedDevice(Device device) {
-        long login = device.getLoginID();
-
-        synchronized (mLoggedDevices) {
-            mLoggedDevices.put(login, device);
-        }
-    }
-
-    private void removeLoggedDevice(Device device) {
-        long login = device.getLoginID();
-
-        synchronized (mLoggedDevices) {
-            mLoggedDevices.remove(login);
-        }
-    }
-
-    public void testPTZ(Device device) throws Exception {
-        mNetSdk.PTZControl(device.getLoginID(), 0, MyConfig.PTZ_ControlType.ZOOM_OUT, false, 4L, 0L, 0L);
-    }
-
-    public void rebootDevice(Device device) {
-        mNetSdk.H264DVRControlDVR(device.getLoginID(), 0, 2000);
-    }
-
-    private long loginLAN(Device device) {
-        DevInfo deviceInfo = device.getDeviceInfo();
-
-        Log.d("Login", "Attempting to login via LAN ");
-
-        deviceInfo.Socketstyle = MyConfig.SocketStyle.TCPSOCKET;
-
-        int [] error = new int[1];
-
-        long loginid = mNetSdk.onLoginDev(0, deviceInfo, error, MyConfig.SocketStyle.TCPSOCKET);
-
-        if (loginid == 0) {
-            Log.d("Login", "FAILED to login via LAN. LoginID: " + loginid + " - Error: " + error);
-
-            if (error[0] != -11301) {
-                return 0;
-            } else {
-                return Long.valueOf(error[0]);
-            }
-
-
-        }
-
-        device.addDeviceInfo(deviceInfo);
-        device.setLoginID(loginid);
-
-        Log.d("Login", "SUCCESS to login via LAN.");
-
-        return loginid;
-    }
-
-    private long loginDDNSnUNPnP(Device device) {
-        Log.d("Login", "Attempting to login via loginDDNS and UNPnP.");
-
-        if(LoginDeviceAsyncTask.mProgressDialog != null) {
-            String text = "Connecting via DDNS.";
-
-            LoginDeviceAsyncTask.changeProgressDialogMsg(text);
-        }
-
-        DevInfo deviceInfo = device.getDeviceInfo();
-
-        String ip = deviceInfo.Ip;
-
-        deviceInfo.Ip = device.getDomain();
-        deviceInfo.Socketstyle = MyConfig.SocketStyle.TCPSOCKET;
-
-        int [] error = new int[1];
-
-        long loginid = mNetSdk.onLoginDev(0, deviceInfo, error, MyConfig.SocketStyle.TCPSOCKET);
-
-        deviceInfo.Ip = ip;
-
-        if (loginid == 0) {
-            Log.d("Login", "FAILED to login via loginDDNS and UNPnP. LoginID: " + loginid);
-
-            if (error[0] != -11301) {
-                return 0;
-            } else {
-                return Long.valueOf(error[0]);
-            }
-        }
-
-        device.addDeviceInfo(deviceInfo);
-        device.setLoginID(loginid);
-
-        Log.d("Login", "SUCCESS to login via loginDDNS and UNPnP.");
-
-        return loginid;
-    }
-
-    private long loginCloud(Device device) {
-        if(device.getSerialNumber().equals("")) {
-            return 0;
-        }
-
-        DevInfo deviceInfo = device.getDeviceInfo();
-
-        Log.d("Login", "Attempting to login via Cloud ");
-
-        String ip = deviceInfo.Ip;
-
-        deviceInfo.Ip = deviceInfo.SerialNumber;
-        deviceInfo.Socketstyle = MyConfig.SocketStyle.NATSOCKET;
-
-        int [] error = new int[1];
-
-        long loginid = mNetSdk.onLoginDev(0, deviceInfo, error, MyConfig.SocketStyle.NATSOCKET);
-
-        deviceInfo.Ip = ip;
-
-        if (loginid == 0) {
-            Log.d("Login", "FAILED to login via Cloud. LoginID: " + loginid);
-
-            device.setLoginID(loginid);
-
-            if (error[0] != -11301) {
-                return 0;
-            } else {
-                return Long.valueOf(error[0]);
-            }
-        }
-
-        device.addDeviceInfo(deviceInfo);
-        device.setLoginID(loginid);
-
-        Log.d("Login", "SUCCESS to login via Cloud.");
-        return loginid;
-    }
-
-    public void logout(final Device device, final LogoutInterface logoutInterface) throws Exception {
-
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                final long loginId = device.getLoginID();
-                final long success = mNetSdk.onDevLogout(loginId);
-
-                removeLoggedDevice(device);
-
-                device.setLoginID(0);
-
-                logoutInterface.onFinishLogout(success);
-            }
-        }).start();
-
-    }
-
-    public interface LogoutInterface {
-        void onFinishLogout(long logoutHandle);
-    }
-//    public String getAccessInfo(Device device){
-//
-//    }
-
-    public ArrayList<Device> searchDevices() {
-        SearchDeviceInfo[] searchDeviceInfos = new SearchDeviceInfo[100];
-
-        final int result = mNetSdk.SearchDevice(searchDeviceInfos, 100, 8000, false);
-
-        ArrayList<Device> list = new ArrayList<Device>();
-
-        for (int i = 0; i < result; i++) {
-            list.add(new Device(searchDeviceInfos[i]));
-        }
-
-        return list;
-    }
-
-    public <T> T getConfig(Long loginId, long key, T config) throws Exception {
-        boolean b = mNetSdk.H264DVRGetDevConfig(loginId, key, -1, config, 1000);
-        if (!b) {
-
-            Log.d(TAG, String.format("Unable to get configuration. loginId: %d key: %d object: %s", loginId, key, config.getClass().getSimpleName()));
-            return null;
-        }
-        return config;
-    }
-
-    public long getLastError() {
-        return mNetSdk.GetLastError();
-    }
-
-    public <T> boolean setConfig(Long loginId, long key, T config) throws Exception {
-        boolean b = NetSdk.getInstance().H264DVRSetDevConfig(loginId, key, -1, config, 1000);
-
-        if (!b) {
-            Log.d(TAG, String.format("Unable to set configuration. loginId: %s key: %s object: %s", loginId, key, config.getClass().getSimpleName()));
-            Log.w("ERRO:", "ERRO: " + getLastError());
-        }
-
-        return b;
-    }
-
-
-
-/*
-    public Object getConfig2(long loginID, int key, Object object) {
-        boolean bret;
-        int bufsize = com.basic.G.Sizeof(object);
-        if(bufsize <= 0)
-            return null;
-        byte[] buf = new byte[bufsize];
-        bret = mNetSdk.H264DVRGetDevConfig2(loginID, key, -1,buf,5000);
-        if(bret)
-            return com.basic.G.BytesToObj(object, buf);
-        else {
-            Log.d(TAG, "error:" + mNetSdk.GetLastError());
-            return null;
-        }
-    }*/
-
-    public <T> boolean getConfig2(long loginId, long key, T config) {
-        boolean bret = false;
-
-        int buffSize = G.Sizeof(config);
-
-        if (buffSize <= 0)
-            return false;
-
-        byte[] buf = new byte[buffSize];
-
-        bret = mNetSdk.H264DVRGetDevConfig2(loginId, key, -1, buf, 5000, 5000);
-
-        if (bret) {
-            G.BytesToObj(config, buf);
-            return true;
-        } else {
-            Log.d(TAG, "error: " + mNetSdk.GetLastError());
-            return false;
-        }
-    }
-
-    public <T> boolean setConfig2(long loginId, int key, T config) {
-        boolean bret;
-
-        bret = mNetSdk.H264DVRSetDevConfig2(loginId, key, -1, G.ObjToBytes(config), 5000, 5000);
-
-        if (!bret) {
-            Log.d(TAG, "error:" + mNetSdk.GetLastError());
-        }
-
-        return bret;
-    }
-
-    public int changePassword(long loginId, String oldPassword,
-                              String newPassword) {
-
-        byte[] oldBuff = new byte[32];
-
-       /*if (!mNetSdk.getDevPwd(loginId, MyConfig.SdkConfigType.E_SDK_CONFIG_USER, -1, oldBuff, 1000, 1000)) {
-            return MyConfig.ModifyPwd.USER_NOT_EXIST;
-        }*/
-
-        final long param2 = 8L;
-        final int channelId = -1;
-        final int timeout = 5000;
-
-        return mNetSdk.setDevPwd(loginId, param2, channelId, newPassword.getBytes(), oldPassword.getBytes(),
-                MyConfig.SdkConfigType.E_SDK_CONFIG_USER, timeout);
-
-        /*return mNetSdk.setDevPwd(loginId, MyConfig.SdkConfigType.E_SDK_CONFIG_USER, channelId, newPassword.getBytes(), oldPassword.getBytes(),
-                timeout, timeout);*/
-    }
-
-    public Bitmap takeSnapshot(Device device, int channelNumber) {
-        Bitmap bm = null;
-
-        byte[] buffer = new byte[1024 * 250];
-        int[] pPicLen = new int[1];
-        boolean bret = mNetSdk.H264DVRCatchPicInBuffer(device.getLoginID(), channelNumber,
-                buffer, 0, pPicLen);
-        if (bret) {
-            bm = BitmapFactory.decodeByteArray(buffer, 0, pPicLen[0]);
-        }
-
-        return bm;
-    }
-
-    public File takeSnapshot(Context context, MySurfaceView surfaceView) {
-        final String path = BitmapUtil.getAlbumStorageDir(context).getPath();
-        final File pictureFile = surfaceView.OnCapture(context, path);
-
-        if (pictureFile == null) {
-            return null;
-        }
-
-        Bitmap image = BitmapFactory.decodeFile(pictureFile.getPath());
-
-        try {
-
-            FileOutputStream fos = new FileOutputStream(pictureFile);
-
-            image.compress(Bitmap.CompressFormat.PNG, 90, fos);
-
-            fos.flush();
-            fos.close();
-
-        } catch (FileNotFoundException e) {
-            Log.w("Error take SNAPSHOT:", "File not found: " + e.getMessage());
-        } catch (IOException e) {
-            Log.d("Error take SNAPSHOT:", "Error accessing file: " + e.getMessage());
-        }
-
-        return pictureFile;
-    }
-
-    public File startSnapvideo(MySurfaceView surfaceView,int channel) {
-        if (channelOnRec != -1) { //Cannot record more than one video at the same time
-            return null;
-
-        } else {
-            channelOnRec = channel;
-
-            File mediaStorageDir = new File(Environment.getExternalStorageDirectory().getAbsolutePath()
-                    + "/Movies/Giga Monitor/");
-
-            //Create the storage directory if it does not exist.
-            if (!mediaStorageDir.exists()) {
-                if (!mediaStorageDir.mkdirs()) {
-                    return null;
                 }
             }
 
-            surfaceView.initRecord(mediaStorageDir.getAbsolutePath());
-
-            mediaStorageDir = surfaceView.onStartRecord();
-
-            return mediaStorageDir;
         }
+        return 0;
     }
 
-    public File stopSnapvideo(final MySurfaceView surfaceView, Context context) {
-
-        channelOnRec = -1;
-
-        File file = surfaceView.onStopRecord(true);
-
-        if (file.length() > 10000) {  //Save just if the video has more than 10kb
-            ContentValues values = new ContentValues();
-
-            values.put(MediaStore.Video.Media.TITLE, file.getName());
-            values.put(MediaStore.Video.Media.MIME_TYPE, "video/mp4");
-            values.put(MediaStore.Video.Media.DATA, file.getAbsolutePath());
-
-            context.getContentResolver().insert(MediaStore.Video.Media.EXTERNAL_CONTENT_URI, values);
-
-            return file;
-        } else {
-            return null;
-        }
+    public void loadSavedData(Context context){
+        mDevices = loadDevices(context);
     }
 
-    public boolean cleanDevices(Context context) {
-        return saveDevices(context, new ArrayList<Device>());
+    public void addDevice(Context context, Device device) {
+        mDevices.add(device);
+        saveDevices(context);
     }
 
-    public boolean saveDevices(Context context, ArrayList<Device> devices) {
+    private boolean saveDevices(Context context) {
         ComplexPreferences cp = new ComplexPreferences(context, context.getString(R.string.sheredpreference_list), Context.MODE_PRIVATE);
-        cp.putObject("DeviceList", new DeviceList(devices));
+        cp.putObject("DeviceList", new DeviceList(mDevices));
         return cp.commit();
     }
 
-    public ArrayList<Device> loadDevices(Context context) {
+    private ArrayList<Device> loadDevices(Context context) {
         ComplexPreferences cp = new ComplexPreferences(context, context.getString(R.string.sheredpreference_list), Context.MODE_PRIVATE);
         DeviceList deviceList = cp.getObject("DeviceList", DeviceList.class);
         if (deviceList == null || deviceList.getList() == null) {
@@ -549,7 +249,160 @@ public class DeviceManager {
         return deviceList.getList();
     }
 
-    public ArrayList<FileDataGiga> findPlaybacks(long loginID, FindInfo findInfo) {
+    public ArrayList<Device> getDevices(){
+        return mDevices;
+    }
+
+    public void updateDevices(Context context, ArrayList<Device> devices){
+        mDevices = devices;
+        saveDevices(context);
+    }
+
+    public int getHandler(){
+        return mFunUserHandler;
+    }
+
+    public void loginDevice(final Device device, final LoginDeviceListener loginDeviceListener) {
+        currentLoginListener = loginDeviceListener;
+        FunSDK.SysGetDevState(getHandler(), device.getSerialNumber(), device.getId());
+    }
+
+    private void putLoggedDevice(Device device) {
+        synchronized (mLoggedDevices) {
+            mLoggedDevices.put(device.getId(), device);
+        }
+    }
+
+    private void removeLoggedDevice(Device device) {
+        synchronized (mLoggedDevices) {
+            mLoggedDevices.remove(device.getId());
+            device.isLogged = false;
+        }
+    }
+
+    public boolean logoutDevice(Device device){
+        removeLoggedDevice(device);
+        return (FunSDK.DevLogout(getHandler(), device.getSerialNumber(), device.getId()) == 0);
+    }
+
+    public int changePassword(Device device, String newPassword) {
+        return FunSDK.DevSetLocalPwd(device.getSerialNumber(), device.getUsername(), newPassword);
+    }
+
+    public boolean searchDevices() {
+        int result = FunSDK.DevSearchDevice(getHandler(), 10000, 0);
+        return (result == 0);
+    }
+
+    private void updateLanDeviceList(SDK_CONFIG_NET_COMMON_V2[] searchResult) {
+        mLanDevices.clear();
+
+        if (searchResult != null) {
+            for (SDK_CONFIG_NET_COMMON_V2 com : searchResult) {
+                addLanDevice(com);
+            }
+        }
+    }
+
+    private Device addLanDevice(SDK_CONFIG_NET_COMMON_V2 comm) {
+        Device device = null;
+        synchronized (mLanDevices) {
+            String devSn = G.ToString(comm.st_14_sSn);
+
+            if (null != devSn) {
+                if (findLanDevice(devSn) == null) {
+                    device = new Device(comm);
+                    mLanDevices.add(device);
+                }
+            }
+        }
+        return device;
+    }
+
+    public Device findLanDevice(String devSn) {
+        for (Device device : mLanDevices) {
+            if (devSn.equals(device.getSerialNumber())) {
+                return device;
+            }
+        }
+        return null;
+    }
+
+    public Device findDeviceBySN(String devSn){
+        //devSn = devSn.substring(8);
+        Log.d(TAG, "findDeviceBySN: procurando " + devSn);
+        for(Device device : mDevices){
+            if(devSn.equals(device.getSerialNumber()))
+                return device;
+        }
+        Log.d(TAG, "findDeviceBySN: DEVICE NOT FOUND");
+        return null;
+    }
+
+    public Device findDeviceById(int devId){
+        Log.d(TAG, "findDeviceById: procurando " + devId);
+        for(Device device : mDevices){
+            if(device.getId() == devId)
+                return device;
+        }
+        Log.d(TAG, "findDeviceById: DEVICE NOT FOUND");
+        return null;
+    }
+
+    public ArrayList<Device> getLanDevices(){
+        return mLanDevices;
+    }
+
+    public static String getMediaPath(Context context) {
+        String path = "";
+        File dirFile = null;
+        String exStorageState = Environment.getExternalStorageState();
+        if (exStorageState == null || exStorageState.equals(Environment.MEDIA_MOUNTED)
+                || exStorageState.equals(Environment.MEDIA_MOUNTED_READ_ONLY)) {
+            dirFile = Environment.getExternalStorageDirectory();
+        } else {
+            dirFile = context.getExternalFilesDir(null);
+        }
+
+        if (dirFile == null) {
+            dirFile = context.getFilesDir();
+        } else {
+            path = dirFile.getAbsolutePath();
+        }
+
+        return path == null ? "" : path;
+    }
+
+    public void addToStart(SurfaceViewComponent surfaceViewComponent) {
+        startList.add(surfaceViewComponent);
+        if(!startPlay)
+            requestStart();
+    }
+
+    public void requestStart(){
+        if(!startList.isEmpty()){
+            startPlay = true;
+            startList.getFirst().onStartVideo();
+        } else{
+            startPlay = false;
+        }
+    }
+
+    public void findPlaybackList(Device device, H264_DVR_FINDINFO info, PlaybackSearchListener listener){
+        currentPlaybackSearchListener = listener;
+        FunSDK.DevFindFile(getHandler(), device.getSerialNumber(), G.ObjToBytes(info), 64, 20000, device.getId());
+    }
+
+    // TODO
+    /*public void testPTZ(Device device) throws Exception {
+        mNetSdk.PTZControl(device.getLoginID(), 0, MyConfig.PTZ_ControlType.ZOOM_OUT, false, 4L, 0L, 0L);
+    }*/
+
+    /*public void rebootDevice(Device device) {
+        mNetSdk.H264DVRControlDVR(device.getLoginID(), 0, 2000);
+    }*/
+
+    /*public ArrayList<FileDataGiga> findPlaybacks(long loginID, FindInfo findInfo) {
         ArrayList<FileDataGiga> playbacks = new ArrayList<FileDataGiga>();
 
         int filesFoundCount;
@@ -581,9 +434,9 @@ public class DeviceManager {
 
 
         return playbacks;
-    }
+    }*/
 
-    public void playbackPlay(final Device device, final FileDataGiga fileDataGiga,
+    /*public void playbackPlay(final Device device, final FileDataGiga fileDataGiga,
                              final MySurfaceView sv, final int svID) {
 
         final long playHandle = mNetSdk.PlayBackByName(svID,
@@ -595,25 +448,25 @@ public class DeviceManager {
 
         sv.initData();
         sv.onPlay();
-    }
+    }*/
 
-    public void playbackStop(final long playbackHandle, final MySurfaceView sv) {
+    /*public void playbackStop(final long playbackHandle, final MySurfaceView sv) {
         if (mNetSdk.StopPlayBack(playbackHandle)) sv.onStop();
-    }
+    }*/
 
-    public void playbackResume(final long playbackHandle, final MySurfaceView sv) {
+    /*public void playbackResume(final long playbackHandle, final MySurfaceView sv) {
         sv.onPlay();
         mNetSdk.PlayBackControl(playbackHandle,
                 MyConfig.PlayBackAction.SDK_PLAY_BACK_CONTINUE, 0L);
-    }
+    }*/
 
-    public void playbackPause(final long playbackHandle, final MySurfaceView sv) {
+    /*public void playbackPause(final long playbackHandle, final MySurfaceView sv) {
         sv.onPause();
         mNetSdk.PlayBackControl(playbackHandle,
                 MyConfig.PlayBackAction.SDK_PLAY_BACK_PAUSE, 0L);
-    }
+    }*/
 
-    public boolean playbackFaster(long playbackHandle, MySurfaceView sv) {
+    /*public boolean playbackFaster(long playbackHandle, MySurfaceView sv) {
 
         if(sv.mplaystatus != MyConfig.PlayState.MPS_FAST) {
             sv.onPause();
@@ -623,9 +476,9 @@ public class DeviceManager {
         }
 
         return false;
-    }
+    }*/
 
-    public boolean playbackSlow(long playbackHandle, MySurfaceView sv) {
+    /*public boolean playbackSlow(long playbackHandle, MySurfaceView sv) {
 
         if(sv.mplaystatus != MyConfig.PlayState.MPS_SLOW) {
             sv.onPause();
@@ -635,19 +488,19 @@ public class DeviceManager {
         }
 
         return false;
-    }
+    }*/
 
-    public boolean setPlaybackProgress(final long playbackHandle, final int progress) {
+    /*public boolean setPlaybackProgress(final long playbackHandle, final int progress) {
         return mNetSdk.PlayBackControl(playbackHandle, MyConfig.PlayBackAction.SDK_PLAY_BACK_SEEK_PERCENT,
                 progress);
-    }
+    }*/
 
-    public void setOnPlaybackCompleteListener(NetSdk.OnRPlayBackCompletedListener l) {
+    /*public void setOnPlaybackCompleteListener(NetSdk.OnRPlayBackCompletedListener l) {
         mNetSdk.setOnRPlayBackCompletedListener(l);
-    }
+    }*/
 
     // Key => Device.voiceHandle
-    private HashMap<Long, VoiceIntercom> mVoiceSessions;
+    /*private HashMap<Long, VoiceIntercom> mVoiceSessions;
 
     private Handler mVoiceHandler = new Handler() {
         @Override
@@ -694,142 +547,9 @@ public class DeviceManager {
         }
 
         return stopped;
-    }
+    }*/
 
-    public void startDeviceVideo(final long loginID, final MySurfaceView sv,
-                                 final int surfaceViewID, final ChnInfo ci) {
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                final long handleID = mNetSdk.onRealPlay(surfaceViewID, loginID, ci);
-
-                if (mNetSdk.setDataCallback(handleID) != 0) {
-                    // TODO Should we call success listener?
-                    sv.initData();
-                } else {
-                    // TODO Call error listener?
-                }
-            }
-        }).start();
-    }
-
-    public void startDeviceVideo2(final long loginID, final int surfaceViewID,
-                                     final ChnInfo ci, final StartDeviceVideoListener startDeviceVideoListener) {
-
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-
-                try {
-                    Thread.sleep(500);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-
-                final long handleID = mNetSdk.onRealPlay(surfaceViewID, loginID, ci);
-
-                if (mNetSdk.setDataCallback(handleID) != 0) {
-                    startDeviceVideoListener.onSuccessStartDevice(handleID);
-                } else {
-                    startDeviceVideoListener.onErrorStartDevice();
-                }
-
-            }
-        }).start();
-    }
-
-    public interface StartDeviceVideoListener {
-        void onSuccessStartDevice(long handleID);
-
-        void onErrorStartDevice();
-    }
-
-    public void changeChannel(final long handleID, final long loginID, final int surfaceViewID,
-                                  final ChnInfo ci, final MySurfaceView sv, final changeChannelInterface mChangeChannelInterface) {
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-
-                sv.onStop();
-
-                stopDeviceVideo(handleID, sv);
-
-                mNetSdk.onStopRealPlay(handleID);
-
-                try {
-                    Thread.sleep(100);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-
-                long newHandleID = mNetSdk.onRealPlay(surfaceViewID, loginID, ci);
-
-                if (mNetSdk.setDataCallback(newHandleID) != 0) {
-                    mChangeChannelInterface.onSuccessChangeChannel(newHandleID);
-                } else {
-                    mChangeChannelInterface.onErrorChangeChannel();
-                }
-
-            }
-        }).start();
-    }
-
-    public interface changeChannelInterface {
-        void onSuccessChangeChannel(long handleID);
-
-        void onErrorChangeChannel();
-    }
-
-    public void stopDeviceVideo(final long handleID, final MySurfaceView sv) {
-        mNetSdk.onStopRealPlay(handleID);
-        sv.onStop();
-    }
-
-    public void stopDeviceVideo2(final long handleID, final MySurfaceView sv, final StopDeviceVideoListener stopDeviceVideoListener) {
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-
-                try {
-                    mNetSdk.onStopRealPlay(handleID);
-                    sv.onStop();
-
-                    Thread.sleep(1000);
-
-                    stopDeviceVideoListener.onSuccessStopDevice();
-                }catch (Exception e) {
-                    stopDeviceVideoListener.onErrorStopDevice();
-                }
-
-            }
-        }).start();
-    }
-
-    public interface StopDeviceVideoListener {
-        void onSuccessStopDevice();
-
-        void onErrorStopDevice();
-    }
-
-    public void pauseDeviceVideo(final MySurfaceView sv) {
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                sv.onPause();
-            }
-        }).start();
-    }
-
-    public void playDeviceVideo(final MySurfaceView sv) {
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                sv.onPlay();
-            }
-        }).start();
-    }
-
-    public void setDeviceAudioEnabled(MySurfaceView sv, boolean enabled) {
+    /*public void setDeviceAudioEnabled(MySurfaceView sv, boolean enabled) {
         if (enabled) {
             sv.setAudioCtrl(MyConfig.AudioState.OPENED);
         } else {
@@ -903,10 +623,10 @@ public class DeviceManager {
         }
 
         return logList;
-    }
+    }*/
 
 
-    public void setConfigOverNet(final Device device, final String username, final String password, final String ipAddress,
+    /*public void setConfigOverNet(final Device device, final String username, final String password, final String ipAddress,
                                  final String gateway, final String mask, final String mac, final setConfigOverNetInterface configOverNetInterface){
 
         new Thread(new Runnable() {
@@ -962,22 +682,15 @@ public class DeviceManager {
         void onSetConfigOverNetSuccess();
 
         void onSetConfigOverNetError();
-    }
+    }*/
 
-    public boolean remoteControl(long loginID, int keyboardValue) {
+    /*public boolean remoteControl(long loginID, int keyboardValue) {
         return mNetSdk.H264DVRClickKey(loginID, keyboardValue, MyConfig.NetKeyBoardState.SDK_NET_KEYBOARD_KEYDOWN);
-    }
+    }*/
 
-
-    private static class LazySingleton {
-        private static final DeviceManager DEVICE_HANDLER_INSTANCE = new DeviceManager();
-    }
-
-    public static DeviceManager getInstance() {
-        return LazySingleton.DEVICE_HANDLER_INSTANCE;
-    }
 
     //Class used to Persistence the list of Devices
+
     public class DeviceList {
         @Expose
         public ArrayList<Device> list = new ArrayList<Device>();
@@ -994,43 +707,5 @@ public class DeviceManager {
             this.list = list;
         }
     }
-
-    public int getChannelOnRec() {
-        return channelOnRec+1;
-    }
-
-    /*
-    public int scrollToItem(int numQuad, int totalChannels, int currentFirstVisibleItem, int currentLastVisibleItem,int lastFirstVisibleItem, int lastLastVisibleItem) {
-        int itemToScroll = 0;
-        int totalQuads = 0;
-        if (numQuad == 1) {
-            totalQuads = 1;
-        } else if (numQuad == 2) {
-            totalQuads = 4;
-        } else if (numQuad == 3) {
-            totalQuads = 9;
-        } else if (numQuad == 4) {
-            totalQuads = 16;
-        }
-        if (totalQuads > 1) {
-            if (currentLastVisibleItem % totalQuads == totalQuads - 1) {
-                itemToScroll = currentLastVisibleItem;
-            } else if (currentFirstVisibleItem % totalQuads == 0) {
-                itemToScroll = currentFirstVisibleItem;
-            } else if (currentLastVisibleItem == totalChannels - 1) {
-                itemToScroll = currentLastVisibleItem;
-            } else {
-                itemToScroll = currentFirstVisibleItem;
-            }
-        } else if (totalQuads == 1) {
-            if (lastFirstVisibleItem != currentFirstVisibleItem) {
-                itemToScroll = currentFirstVisibleItem;
-            } else if (lastLastVisibleItem != currentLastVisibleItem){
-                itemToScroll = currentLastVisibleItem;
-            }
-        }
-        return itemToScroll;
-    }*/
-
 
 }

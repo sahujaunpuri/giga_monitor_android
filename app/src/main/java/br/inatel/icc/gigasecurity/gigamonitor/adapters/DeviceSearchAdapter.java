@@ -15,8 +15,8 @@ import br.inatel.icc.gigasecurity.gigamonitor.core.DeviceManager;
 import br.inatel.icc.gigasecurity.gigamonitor.model.Device;
 import br.inatel.icc.gigasecurity.gigamonitor.model.LoginMethod;
 
-/**
- * Created by filipecampos on 07/07/2015.
+/*
+ Created by filipecampos on 07/07/2015.
  */
 public class DeviceSearchAdapter extends BaseAdapter {
 
@@ -70,7 +70,8 @@ public class DeviceSearchAdapter extends BaseAdapter {
             itemHolder.tvIpAddress.setText(mDevices.get(position).getIpAddress());
             itemHolder.tvMacAddress.setText(mDevices.get(position).getMacAddress());
 
-            mDeviceManager.loginOnDevice(mDevices.get(position), LoginMethod.LAN);
+            /**LOGIN ON LAN?**/
+            //mDeviceManager.loginOnDevice(mDevices.get(position), LoginMethod.LAN);
 
             if (mDevices.get(position).getChannelNumber() > 1) {
                 itemHolder.ivImg.setImageDrawable(mContext.getResources().getDrawable(R.drawable.img_dvr));

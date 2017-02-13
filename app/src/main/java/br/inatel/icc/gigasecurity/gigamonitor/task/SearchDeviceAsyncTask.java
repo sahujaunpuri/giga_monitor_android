@@ -34,15 +34,14 @@ public class SearchDeviceAsyncTask extends AsyncTask<Void, Void, ArrayList<Devic
 
     @Override
     protected ArrayList<Device> doInBackground(Void... voids) {
-        mDevices = DeviceManager.getInstance().searchDevices();
+        DeviceManager.getInstance().searchDevices();
 
-        return mDevices;
+        return DeviceManager.getInstance().getLanDevices();
     }
 
     @Override
     protected void onPreExecute() {
-
-        mProgressDialog = ProgressDialog.show(mDeviceSearchListActivity, "", mContext.getResources().getString(R.string.searching_dialog_messsage, true));
+        mProgressDialog = ProgressDialog.show(mDeviceSearchListActivity, "", mContext.getResources().getString(R.string.searching_dialog_messsage));
         super.onPreExecute();
     }
 

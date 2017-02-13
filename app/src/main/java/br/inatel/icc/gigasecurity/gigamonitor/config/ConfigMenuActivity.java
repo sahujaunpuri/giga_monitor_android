@@ -12,11 +12,11 @@ import android.widget.Button;
 
 import br.inatel.icc.gigasecurity.gigamonitor.R;
 import br.inatel.icc.gigasecurity.gigamonitor.activities.DeviceListActivity;
-import br.inatel.icc.gigasecurity.gigamonitor.config.ddns.DDNSConfigActivity;
-import br.inatel.icc.gigasecurity.gigamonitor.config.dns.DNSConfigActivity;
-import br.inatel.icc.gigasecurity.gigamonitor.config.ethernet.EthernetConfigActivity;
-import br.inatel.icc.gigasecurity.gigamonitor.config.general.GeneralConfigActivity;
-import br.inatel.icc.gigasecurity.gigamonitor.config.upnp.UpnpConfigActivity;
+//import br.inatel.icc.gigasecurity.gigamonitor.config.ddns.DDNSConfigActivity;
+//import br.inatel.icc.gigasecurity.gigamonitor.config.dns.DNSConfigActivity;
+//import br.inatel.icc.gigasecurity.gigamonitor.config.ethernet.EthernetConfigActivity;
+//import br.inatel.icc.gigasecurity.gigamonitor.config.general.GeneralConfigActivity;
+//import br.inatel.icc.gigasecurity.gigamonitor.config.upnp.UpnpConfigActivity;
 import br.inatel.icc.gigasecurity.gigamonitor.core.DeviceManager;
 import br.inatel.icc.gigasecurity.gigamonitor.model.Device;
 
@@ -96,31 +96,31 @@ public class ConfigMenuActivity extends ActionBarActivity implements OnClickList
                 intent = new Intent(this, WifiSearchActivity.class);
                 break;*/
             case R.id.button_general_config:
-                intent = new Intent(this, GeneralConfigActivity.class);
+                //intent = new Intent(this, GeneralConfigActivity.class);
                 break;
             case R.id.button_ethernet_config:
-                intent = new Intent(this, EthernetConfigActivity.class);
+                //intent = new Intent(this, EthernetConfigActivity.class);
                 break;
            /* case R.id.button_cloud_config:
                 intent = new Intent(this, CloudConfigActivity.class);
                 break;*/
             case R.id.button_dns_config:
-                intent = new Intent(this, DNSConfigActivity.class);
+                //intent = new Intent(this, DNSConfigActivity.class);
                 break;
             /*case R.id.button_dhcp_config:
                 intent = new Intent(this, DHCPConfigActivity.class);
                 break;*/
             case R.id.button_ddns_config:
-                intent = new Intent(this, DDNSConfigActivity.class);
+                //intent = new Intent(this, DDNSConfigActivity.class);
                 break;
             case R.id.button_upnp_config:
-                intent = new Intent(this, UpnpConfigActivity.class);
+                //intent = new Intent(this, UpnpConfigActivity.class);
                 break;
             /*case R.id.button_password_config:
                 intent = new Intent(this, PasswordConfigActivity.class);
                 break;*/
             case R.id.button_reboot_device:
-                showRebootDialog();
+                //showRebootDialog();
                 break;
             default:
                 break;
@@ -139,13 +139,13 @@ public class ConfigMenuActivity extends ActionBarActivity implements OnClickList
     private void showRebootDialog() {
         AlertDialog.Builder builder = new AlertDialog.Builder(ConfigMenuActivity.this);
 
-        String text = getResources().getString(R.string.label_reboot_dialog, true);
-        String labelYes = getResources().getString(R.string.label_yes, true);
+        String text = getResources().getString(R.string.label_reboot_dialog);
+        String labelYes = getResources().getString(R.string.label_yes);
 
         builder.setMessage(text)
                 .setPositiveButton(labelYes, new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int id) {
-                        mDeviceManager.rebootDevice(mDevice);
+                        //mDeviceManager.rebootDevice(mDevice);
 
                         startDeviceListActivity();
                     }
