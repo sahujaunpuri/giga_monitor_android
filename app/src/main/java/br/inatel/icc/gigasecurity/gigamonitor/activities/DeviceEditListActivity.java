@@ -124,13 +124,19 @@ public class DeviceEditListActivity extends ActionBarActivity {
         int id = item.getItemId();
 
         if (id == R.id.action_finish) {
-            mDeviceManager.updateDevices(DeviceEditListActivity.this, mDevices);
+            if(!modified)
+                finish();
+            else {
+                mDeviceManager.updateDevices(DeviceEditListActivity.this, mDevices);
 
-            DeviceListActivity.mDevices = null;
-            DeviceListActivity.loadDevices();
+                DeviceListActivity.mDevices = null;
+                mDeviceManager.loadSavedData(DeviceListActivity.mContext);
+                DeviceListActivity.loadDevices();
 
-            startDeviceListActivity();
+                startDeviceListActivity();
+            }
             return true;
+
         }
 
         if (id == android.R.id.home) {

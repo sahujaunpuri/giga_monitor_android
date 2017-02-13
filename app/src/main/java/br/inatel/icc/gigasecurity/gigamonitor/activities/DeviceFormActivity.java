@@ -99,6 +99,8 @@ public class DeviceFormActivity extends ActionBarActivity{
         boolean isSerialNumberFilled = !TextUtils.isEmpty(etSerial.getText().toString());
         boolean isIPFilled = !TextUtils.isEmpty(etIpAddress.getText().toString());
         boolean isDNSFilled = !TextUtils.isEmpty(etDomain.getText().toString());
+        boolean isUsernameFilled = !TextUtils.isEmpty(etUsername.getText().toString());
+        boolean isPasswordFilled = !TextUtils.isEmpty(etPassword.getText().toString());
 
 
         if(isHostnameFilled && ((isPortFilled && (isIPFilled || isDNSFilled)) || isSerialNumberFilled)) {
@@ -109,6 +111,7 @@ public class DeviceFormActivity extends ActionBarActivity{
                 ip = etDomain.getText().toString();
             else
                 ip = etIpAddress.getText().toString();
+
             mDevice.setIpAddress(ip);
 
             if(isSerialNumberFilled)
@@ -116,12 +119,18 @@ public class DeviceFormActivity extends ActionBarActivity{
             else
                 mDevice.setSerialNumber(ip + ":" + etPort.getText().toString());
 
-            if (!TextUtils.isEmpty(etPort.getText().toString())) {
+            if (!TextUtils.isEmpty(etPort.getText().toString()))
                 mDevice.setTCPPort(Integer.parseInt(etPort.getText().toString()));
-            }
 
-            mDevice.setUsername(etUsername.getText().toString());
-            mDevice.setPassword(etPassword.getText().toString());
+            if(isUsernameFilled)
+                mDevice.setUsername(etUsername.getText().toString());
+            else
+                mDevice.setUsername("admin");
+
+            if(isPasswordFilled)
+                mDevice.setPassword(etPassword.getText().toString());
+            else
+                mDevice.setPassword("");
 
             return true;
         }

@@ -117,7 +117,7 @@ public class DeviceRecyclerViewAdapter extends RecyclerView.Adapter<DeviceRecycl
 
     private void loginDevice(final Device mDevice, final MyViewHolder myViewHolder, final int position) {
 
-        /*mDeviceManager.loginDevice(mDevice, LoginMethod.TRY_ALL, new DeviceManager.LoginDeviceInterface() {
+        /*mDeviceManager.loginDevice(mDevice, LoginMethod.TRY_ALL, new DeviceManager.LoginDeviceListener() {
             @Override
             public void onLoginSuccess(long loginID) {
 

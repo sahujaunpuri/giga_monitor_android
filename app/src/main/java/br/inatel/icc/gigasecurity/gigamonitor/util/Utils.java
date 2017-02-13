@@ -10,12 +10,16 @@ import android.util.Patterns;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 
+import com.lib.SDKCONST;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
@@ -112,27 +116,27 @@ public class Utils {
 
     public static String getFileTypeName(int type) {
         switch (type) {
-            case 0:
-                return "Record All"; // MyConfig.FileType.SDK_RECORD_ALL
-            case 1:
-                return "Record Alarm"; // MyConfig.FileType.SDK_RECORD_ALARM
-            case 2:
-                return "Record Detect"; // MyConfig.FileType.SDK_RECORD_DETECT
-            case 3:
-                return "Record Regular"; // MyConfig.FileType.SDK_RECORD_REGULAR
-            case 4:
-                return "Record Manual"; // MyConfig.FileType.SDK_RECORD_MANUAL
-            case 10:
+            case SDKCONST.FileType.SDK_RECORD_ALL:
+                return "Record All";
+            case SDKCONST.FileType.SDK_RECORD_ALARM:
+                return "Record Alarm";
+            case SDKCONST.FileType.SDK_RECORD_DETECT:
+                return "Record Detect";
+            case SDKCONST.FileType.SDK_RECORD_REGULAR:
+                return "Record Regular";
+            case SDKCONST.FileType.SDK_RECORD_MANUAL:
+                return "Record Manual";
+            case SDKCONST.FileType.SDK_PIC_ALL:
                 return "Pic All"; // MyConfig.FileType.SDK_PIC_ALL
-            case 11:
+            case SDKCONST.FileType.SDK_PIC_ALARM:
                 return "Pic Alarm"; // MyConfig.FileType.SDK_PIC_ALARM
-            case 12:
+            case SDKCONST.FileType.SDK_PIC_DETECT:
                 return "Pic Detect"; // MyConfig.FileType.SDK_PIC_DETECT
-            case 13:
+            case SDKCONST.FileType.SDK_PIC_REGULAR:
                 return "Pic Regular"; // MyConfig.FileType.SDK_PIC_REGULAR
-            case 14:
+            case SDKCONST.FileType.SDK_PIC_MANUAL:
                 return "Pic Manual"; // MyConfig.FileType.SDK_PIC_MANUAL
-            case 15:
+            case SDKCONST.FileType.SDK_TYPE_NUM:
                 return "Type Num"; // MyConfig.FileType.SDK_TYPE_NUM
         }
 
@@ -191,28 +195,46 @@ public class Utils {
         return false;
     }
 
+    public static int getIntFileType(String fileName) {
+        int fileType = 0;
+        if (fileName.endsWith(".h264")) {
+            int pos = fileName.indexOf('[');
+            if (pos > 0 && pos < fileName.length()) {
+                String type = fileName.substring(pos + 1, pos + 2);
+                if (type.equals("A"))
+                    fileType = SDKCONST.VidoFileType.VI_DETECT;
+                else if (type.equals("M"))
+                    fileType = SDKCONST.VidoFileType.VI_MANUAL;
+                else if (type.equals("R"))
+                    fileType = SDKCONST.VidoFileType.VI_MANUAL;
+                else if (type.equals("H"))
+                    fileType = SDKCONST.VidoFileType.VI_REGULAR;
+                else if (type.equals("K"))
+                    fileType = SDKCONST.VidoFileType.VI_KEY;
+            }
+        } else if (fileName.endsWith(".jpg")) {
+            int pos = fileName.indexOf('[');
+            if (pos > 0 && pos < fileName.length()) {
+                String type = fileName.substring(pos + 1, pos + 2);
+                if (type.equals("A"))
+                    fileType = SDKCONST.PicFileType.PIC_DETECT;
+                else if (type.equals("M"))
+                    fileType = SDKCONST.PicFileType.PIC_MANUAL;
+                else if (type.equals("R"))
+                    fileType = SDKCONST.PicFileType.PIC_MANUAL;
+                else if (type.equals("H"))
+                    fileType = SDKCONST.PicFileType.PIC_REGULAR;
+                else if (type.equals("K"))
+                    fileType = SDKCONST.PicFileType.PIC_KEY;
+                else if (type.equals("B"))
+                    fileType = SDKCONST.PicFileType.PIC_BURST_SHOOT;
+                else if (type.equals("L"))
+                    fileType = SDKCONST.PicFileType.PIC_TIME_LAPSE;
+            }
+        }
 
-//    public static Date parseSDKTime(SDK_SYSTEM_TIME time) {
-//        Calendar c = Calendar.getInstance();
-//        c.set(Calendar.HOUR_OF_DAY, time.st_4_hour);
-//        c.set(Calendar.MINUTE, time.st_5_minute);
-//        c.set(Calendar.SECOND, time.st_6_second);
-//        c.set(Calendar.DAY_OF_MONTH, time.st_2_day);
-//        c.set(Calendar.MONTH, time.st_1_month);
-//        c.set(Calendar.YEAR, time.st_0_year);
-//        c.set(Calendar.DAY_OF_WEEK, time.st_3_wday);
-//
-//
-//        Log.d("teste",String.valueOf(c.get(Calendar.HOUR_OF_DAY)));
-//        Log.d("teste",String.valueOf(c.get(Calendar.MINUTE)));
-//        Log.d("teste",String.valueOf(c.get(Calendar.SECOND)));
-//        Log.d("teste",String.valueOf(c.get(Calendar.DAY_OF_MONTH)));
-//        Log.d("teste",String.valueOf(c.get(Calendar.MONTH)));
-//        Log.d("teste",String.valueOf(c.get(Calendar.YEAR)));
-//        Log.d("teste",String.valueOf(c.get(Calendar.DAY_OF_WEEK)));
-//
-//        return c.getTime();
-//    }
+        return fileType;
+    }
 
     public static int[] parseIp(String host) {
         int[] frt = new int[4];
@@ -231,4 +253,48 @@ public class Utils {
         frt[3] = ip[3];
         return frt;
     }
+
+    public static String getGigaPassword(String input){
+        String hash = md5(input);
+        char[] output = new char[8];
+        for (int i=0; i<=7; i++) {
+            output[i] = (char) ((hash.charAt((2 * i)) + hash.charAt((2 * i + 1))) % 62);
+            if ((output[i] >= 0) && (output[i] <= 9)) {
+                output[i] += 48;
+            } else {
+                if ((output[i] >= 10) && (output[i] <= 35)) {
+                    output[i] += 55;
+                } else {
+                    output[i] += 61;
+                }
+            }
+        }
+        Log.d("CRIPTO", "getGigaPassword: " + output.toString());
+        return output.toString();
+    }
+
+    public static final String md5(final String s) {
+        final String MD5 = "MD5";
+        try {
+            // Create MD5 Hash
+            MessageDigest digest = java.security.MessageDigest.getInstance(MD5);
+            digest.update(s.getBytes());
+            byte messageDigest[] = digest.digest();
+
+            // Create Hex String
+            StringBuilder hexString = new StringBuilder();
+            for (byte aMessageDigest : messageDigest) {
+                String h = Integer.toHexString(0xFF & aMessageDigest);
+                while (h.length() < 2)
+                    h = "0" + h;
+                hexString.append(h);
+            }
+            return hexString.toString().substring(0, 16);
+
+        } catch (NoSuchAlgorithmException e) {
+            e.printStackTrace();
+        }
+        return "";
+    }
+
 }

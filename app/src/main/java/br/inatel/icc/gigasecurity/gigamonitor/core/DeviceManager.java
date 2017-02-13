@@ -1,19 +1,18 @@
 package br.inatel.icc.gigasecurity.gigamonitor.core;
 
-import android.content.ContentValues;
 import android.content.Context;
 import android.os.Environment;
 import android.os.Message;
 import android.util.Log;
-import android.provider.MediaStore;
-import android.view.Surface;
 
 import com.basic.G;
 import com.google.gson.annotations.Expose;
 import com.lib.EFUN_ATTR;
 import com.lib.IFunSDKResult;
 import com.lib.MsgContent;
-import com.lib.sdk.struct.SDBDeviceInfo;
+import com.lib.sdk.struct.H264_DVR_FILE_DATA;
+import com.lib.sdk.struct.H264_DVR_FINDINFO;
+
 
 import br.inatel.icc.gigasecurity.gigamonitor.activities.DeviceListActivity;
 import br.inatel.icc.gigasecurity.gigamonitor.listeners.*;
@@ -25,20 +24,15 @@ import com.lib.sdk.struct.SDK_CONFIG_NET_COMMON_V2;
 import com.lib.sdk.struct.SDK_ChannelNameConfigAll;
 
 import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedList;
-import java.util.Map;
 
 import br.inatel.icc.gigasecurity.gigamonitor.model.Device;
 //import br.inatel.icc.gigasecurity.gigamonitor.model.FileDataGiga;
-import br.inatel.icc.gigasecurity.gigamonitor.model.LoginMethod;
 import br.inatel.icc.gigasecurity.gigamonitor.model.SurfaceViewComponent;
-import br.inatel.icc.gigasecurity.gigamonitor.util.BitmapUtil;
 import br.inatel.icc.gigasecurity.gigamonitor.util.ComplexPreferences;
+import br.inatel.icc.gigasecurity.gigamonitor.util.Utils;
 //import br.inatel.icc.gigasecurity.gigamonitor.task.LoginDeviceAsyncTask;
 
 /**
@@ -49,10 +43,10 @@ public class DeviceManager implements IFunSDKResult{
     private static final String APP_KEY = "d55b6614829f4d1c84d3ab2a9193234b";
     private static final String APP_SECRET = "7a58fdbc242b4f6ba95652b7a3502b91";
     private static final int APP_MOVECARD = 8;
-//    private static final String SERVER_IP = "200.98.128.50";
-//    private static final int SERVER_PORT = 8000;
-    private static final String SERVER_IP = "223.4.33.127;54.84.132.236;112.124.0.188";
-    private static final int SERVER_PORT = 15010; // 更新版本的服务器端口
+    private static final String SERVER_IP = "200.98.128.50";
+    private static final int SERVER_PORT = 8000;
+//    private static final String SERVER_IP = "223.4.33.127;54.84.132.236;112.124.0.188";
+//    private static final int SERVER_PORT = 15010; // 更新版本的服务器端口
 
 
     private static String TAG = DeviceManager.class.getSimpleName();
@@ -68,7 +62,8 @@ public class DeviceManager implements IFunSDKResult{
     public boolean channelOnRec;
     private ArrayList<Device> mDevices = new ArrayList<Device>();
     private ArrayList<Device> mLanDevices = new ArrayList<Device>();
-    private LoginDeviceInterface currentInterface;
+    private LoginDeviceListener currentLoginListener;
+    private PlaybackSearchListener currentPlaybackSearchListener;
 
 
     private DeviceManager() {
@@ -89,7 +84,7 @@ public class DeviceManager implements IFunSDKResult{
 
         InitParam initparam = new InitParam();
 
-//        FunSDK.InitEx(0, G.ObjToBytes(initparam), /*CUSTOM PASSWORD*/, /*CUSTOM SERVER ADDRESS*/, /*CUSTOM PORT*/);
+//        FunSDK.InitParamEx(0, G.ObjToBytes(initparam), "GIGA_", "", 0);
 
         FunSDK.Init(0, G.ObjToBytes(initparam));
 
@@ -109,27 +104,6 @@ public class DeviceManager implements IFunSDKResult{
 
         loadSavedData(context);
 
-        teste();
-    }
-
-    private void teste(){
-//        Device device = new Device();
-//        device.setHostname("teste");
-//        device.setSerialNumber("07c1454a72ef1c5b");
-//        device.setIpAddress("07c1454a72ef1c5b");
-//        device.setUsername("admin");
-//        device.setPassword("");
-//        device.setMacAddress("07c1454a72ef1c5b");
-        //device.setChannelNumber(4);
-
-//        device.setSerialNumber("2ced13a121185528");
-//        device.setIpAddress("2ced13a121185528");
-//        device.setUsername("admin");
-//        device.setPassword("");
-//        device.setMacAddress("2ced13a121185528");
-//        device.setChannelNumber(1);
-
-//        mDevices.add(device);
     }
 
     @Override
@@ -172,7 +146,7 @@ public class DeviceManager implements IFunSDKResult{
                     device.isLogged = true;
                     putLoggedDevice(device);
                     if(device.getChannelNumber()>0)
-                        currentInterface.onLoginSuccess();
+                        currentLoginListener.onLoginSuccess();
                     else
                         FunSDK.DevGetConfigByJson(getHandler(), device.getSerialNumber(), "SystemInfo", 4096, -1, 10000, device.getId());
                 }
@@ -194,6 +168,8 @@ public class DeviceManager implements IFunSDKResult{
                     Log.d(TAG, "OnFunSDKResult: Device ONLINE");
                 } else {
                     Log.d(TAG, "OnFunSDKResult: Device OFFLINE");
+                    currentLoginListener.onLoginError(msg.arg1, device);
+
                 }
             }
             break;
@@ -212,26 +188,44 @@ public class DeviceManager implements IFunSDKResult{
             break;
             case EUIMSG.DEV_GET_CHN_NAME:
             {
-                Log.d(TAG, "OnFunSDKResult: ongetchnname");
+                Log.d(TAG, "OnFunSDKResult: DEV_GET_CHN_NAME");
                 if (msg.arg1 >= 0) {
                     if (msgContent.pData != null && msgContent.pData.length > 0) {
-                        SDK_ChannelNameConfigAll channel = new SDK_ChannelNameConfigAll();
-                        G.BytesToObj(channel, msgContent.pData);
-                        channel.nChnCount = msg.arg1;
-                        mDevices.get(msgContent.seq).setChannel(channel);
+//                        SDK_ChannelNameConfigAll channel = new SDK_ChannelNameConfigAll();
+//                        G.BytesToObj(channel, msgContent.pData);
+//                        channel.nChnCount = msg.arg1;
+//                        mDevices.get(msgContent.seq).setChannel(channel);
                         mDevices.get(msgContent.seq).setChannelNumber(msg.arg1);
                         saveDevices(DeviceListActivity.mContext);
-                        currentInterface.onLoginSuccess();
+                        currentLoginListener.onLoginSuccess();
                     }
                 }
             }
             break;
+            case EUIMSG.DEV_FIND_FILE:
+            {
+                Log.d(TAG, "OnFunSDKResult: DEV_FIND_FILE");
+                Device device = findDeviceById(msgContent.seq);
+                int fileNum = msg.arg1;
+                if (fileNum < 0) {
+                    Log.d(TAG, "OnFunSDKResult: NENHUM ARQUIVO ENCONTRADO");
+                    currentPlaybackSearchListener.onEmptyListFound();
+                } else {
+                    H264_DVR_FILE_DATA files[] = new H264_DVR_FILE_DATA[msg.arg1];
+                    for (int i = 0; i < files.length; i++) {
+                        files[i] = new H264_DVR_FILE_DATA();
+                    }
+                    G.BytesToObj(files, msgContent.pData);
+                    currentPlaybackSearchListener.onFindList(files);
+
+                }
+            }
 
         }
         return 0;
     }
 
-    private void loadSavedData(Context context){
+    public void loadSavedData(Context context){
         mDevices = loadDevices(context);
     }
 
@@ -268,10 +262,9 @@ public class DeviceManager implements IFunSDKResult{
         return mFunUserHandler;
     }
 
-    public void loginDevice(final Device device, final LoginDeviceInterface loginDeviceInterface) {
-        currentInterface = loginDeviceInterface;
+    public void loginDevice(final Device device, final LoginDeviceListener loginDeviceListener) {
+        currentLoginListener = loginDeviceListener;
         FunSDK.SysGetDevState(getHandler(), device.getSerialNumber(), device.getId());
-//        FunSDK.DevLogin(getHandler(), device.getSerialNumber(), device.getUsername(), device.getPassword(), device.getId());
     }
 
     private void putLoggedDevice(Device device) {
@@ -393,6 +386,11 @@ public class DeviceManager implements IFunSDKResult{
         } else{
             startPlay = false;
         }
+    }
+
+    public void findPlaybackList(Device device, H264_DVR_FINDINFO info, PlaybackSearchListener listener){
+        currentPlaybackSearchListener = listener;
+        FunSDK.DevFindFile(getHandler(), device.getSerialNumber(), G.ObjToBytes(info), 64, 20000, device.getId());
     }
 
     // TODO

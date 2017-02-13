@@ -87,7 +87,7 @@ public class ChannelRecyclerViewAdapter extends RecyclerView.Adapter<ChannelRecy
 
         listComponent.changeSurfaceViewSize(currentSurfaceView, myViewHolder.frameLayout);
 
-        if(currentSurfaceView.connected)
+        if(currentSurfaceView.isConnected)
             currentSurfaceView.onStartVideo();
         else
             currentSurfaceView.onPlayLive();
@@ -191,8 +191,8 @@ public class ChannelRecyclerViewAdapter extends RecyclerView.Adapter<ChannelRecy
             @Override
             public void onClick(View v) {
                 SurfaceViewComponent selectedSurfaceView = listComponent.surfaceViewComponents.get(positionSelected);
-                //TODO verificaçao de connected necessaria? /
-                if (selectedSurfaceView.connected) {
+                //TODO verificaçao de isConnected necessaria? /
+                if (selectedSurfaceView.isConnected) {
                     if (selectedSurfaceView.isPlaying) {
                         selectedSurfaceView.onPause();
                         childViewHolder.ivPlayPause.setImageDrawable(mContext.getResources().getDrawable(R.drawable.ic_play_off));

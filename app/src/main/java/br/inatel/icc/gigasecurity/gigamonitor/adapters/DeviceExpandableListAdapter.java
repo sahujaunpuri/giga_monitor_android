@@ -7,9 +7,7 @@ import android.content.Intent;
 import android.content.res.Configuration;
 import android.os.Bundle;
 import android.support.v7.widget.GridLayoutManager;
-import android.support.v7.widget.LinearLayoutCompat;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.Display;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -23,6 +21,7 @@ import android.widget.TextView;
 
 import java.util.ArrayList;
 
+import br.inatel.icc.gigasecurity.gigamonitor.activities.DevicePlaybackActivity;
 import br.inatel.icc.gigasecurity.gigamonitor.listeners.*;
 import br.inatel.icc.gigasecurity.gigamonitor.R;
 import br.inatel.icc.gigasecurity.gigamonitor.activities.DeviceListActivity;
@@ -31,7 +30,6 @@ import br.inatel.icc.gigasecurity.gigamonitor.activities.DeviceListActivity;
 import br.inatel.icc.gigasecurity.gigamonitor.config.ConfigMenuActivity;
 import br.inatel.icc.gigasecurity.gigamonitor.core.DeviceManager;
 import br.inatel.icc.gigasecurity.gigamonitor.model.Device;
-import br.inatel.icc.gigasecurity.gigamonitor.model.LoginMethod;
 import br.inatel.icc.gigasecurity.gigamonitor.model.SurfaceViewComponent;
 
 import static android.support.v7.widget.RecyclerView.SCROLL_STATE_IDLE;
@@ -130,7 +128,7 @@ public class DeviceExpandableListAdapter extends BaseExpandableListAdapter {
                 DeviceListActivity.listComponents.get(groupPosition).numQuad = nextNumQuad(DeviceListActivity.listComponents.get(groupPosition).numQuad,groupViewHolder[groupPosition].mDevice.getChannelNumber());
                 DeviceListActivity.listComponents.get(groupPosition).lastNumQuad = DeviceListActivity.listComponents.get(groupPosition).numQuad;
                 if(DeviceListActivity.listComponents.get(groupPosition).numQuad == 1)
-                    DeviceListActivity.listComponents.get(groupPosition).stopChannels();
+                    DeviceListActivity.listComponents.get(groupPosition).stopChannels(1);
 
 
                 childViewHolder[groupPosition].gridLayoutManager = new GridLayoutManager(mContext, DeviceListActivity.listComponents.get(groupPosition).numQuad, GridLayoutManager.HORIZONTAL, false);
@@ -300,7 +298,7 @@ public class DeviceExpandableListAdapter extends BaseExpandableListAdapter {
 
     private void loginDevice(final Device mDevice, final GroupViewHolder groupViewHolder, final ChildViewHolder childViewHolder, final int position) {
 
-        mDeviceManager.loginDevice(mDevice, new LoginDeviceInterface() {
+        mDeviceManager.loginDevice(mDevice, new LoginDeviceListener() {
             @Override
             public void onLoginSuccess() {
 
@@ -352,11 +350,7 @@ public class DeviceExpandableListAdapter extends BaseExpandableListAdapter {
                             groupViewHolder.ivMore.setVisibility(View.INVISIBLE);
                             childViewHolder.recyclerViewChannels.setVisibility(View.GONE);
                             childViewHolder.tvMessage.setVisibility(View.VISIBLE);
-                            if (error == -11301) {
-                                childViewHolder.tvMessage.setText("Erro ao fazer login com o dipositivo. Senha incorreta.");
-                            } else {
-                                childViewHolder.tvMessage.setText("Erro ao fazer login com o dipositivo.");
-                            }
+                            childViewHolder.tvMessage.setText("Dispositivo offline.");
                         }
                     });
                 }
@@ -388,7 +382,7 @@ public class DeviceExpandableListAdapter extends BaseExpandableListAdapter {
 
                                         break;
                                     case 2:
-//                                        startPlaybackActivity(groupViewHolder.mDevice);
+                                        startPlaybackActivity(groupViewHolder.mDevice);
                                         break;
                                 }
 
@@ -410,15 +404,15 @@ public class DeviceExpandableListAdapter extends BaseExpandableListAdapter {
         }
     }
 
-//    private void startPlaybackActivity(Device mDevice) {
-//        Bundle extras = new Bundle();
-//        extras.putSerializable("device", mDevice);
-//
-//        Intent intent = new Intent(mContext, DevicePlaybackActivity.class);
-//        intent.putExtras(extras);
-//
-//        mContext.startActivity(intent);
-//    }
+    private void startPlaybackActivity(Device mDevice) {
+        Bundle extras = new Bundle();
+        extras.putSerializable("device", mDevice);
+
+        Intent intent = new Intent(mContext, DevicePlaybackActivity.class);
+        intent.putExtras(extras);
+
+        mContext.startActivity(intent);
+    }
 
 //    private void startDeviceRemoteControlActivity(Device mDevice) {
 //        Bundle extras = new Bundle();
@@ -458,27 +452,15 @@ public class DeviceExpandableListAdapter extends BaseExpandableListAdapter {
     }
 
     public void stopChannels(int groupPosition) {
-//        DeviceListActivity.listComponents.get(groupPosition).handleChannels(false);
-
         for (SurfaceViewComponent svc : DeviceListActivity.listComponents.get(groupPosition).surfaceViewComponents) {
-            svc.onStop();
-            /*mDeviceManager.stopDeviceVideo2(svc.realPlayHandleID, svc.mySurfaceView, new DeviceManager.StopDeviceVideoListener() {
-                @Override
-                public void onSuccessStopDevice() {
-                    Log.v("GIGA", "onSuccessStopDevice");
-                }
-
-                @Override
-                public void onErrorStopDevice() {
-                    Log.v("GIGA", "onErrorStopDevice");
-                }
-            });*/
+            if(svc.isConnected)
+                svc.onStop();
         }
     }
 
     public void pauseChannels(int groupPosition) {
         for (SurfaceViewComponent svc : DeviceListActivity.listComponents.get(groupPosition).surfaceViewComponents) {
-            if (svc.isPlaying && svc.connected) {
+            if (svc.isPlaying && svc.isConnected) {
                 svc.onPause();
             }
         }
@@ -486,7 +468,7 @@ public class DeviceExpandableListAdapter extends BaseExpandableListAdapter {
 
     public void playChannels(int groupPosition) {
         for (SurfaceViewComponent svc : DeviceListActivity.listComponents.get(groupPosition).surfaceViewComponents) {
-            if (!svc.isPlaying && svc.connected) {
+            if (!svc.isPlaying && svc.isConnected) {
                 svc.onPlayLive();
             }
         }

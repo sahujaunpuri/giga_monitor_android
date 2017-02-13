@@ -45,19 +45,10 @@ public class Device implements Serializable {
     private String monMode = "TCP";
     private int tcpMaxConn = 10;
     private String dvrMac;
-    public SDK_ChannelNameConfigAll channel;
+//    public SDK_ChannelNameConfigAll channel;
     public boolean isLogged = false;
 
     @Expose private String ddnsDomain;
-
-    //private EthernetConfig ethernetConfig;
-//    private WifiConfig     wifiConfig;
-//    private DNSConfig      dnsConfig;
-//    private DDNSConfig     ddnsConfig;
-//    private UpnpConfig     upnpConfig;
-//    private CloudConfig    cloudConfig;
-//    private DHCPConfig     dhcpConfig;
-
     @Expose private String username;
     @Expose private String password;
 
@@ -109,31 +100,6 @@ public class Device implements Serializable {
         this.tcpPort = comm.st_05_TCPPort;
     }
 
-    public void addDeviceInfo(SDBDeviceInfo devInfo){
-        this.macAddress = G.ToString(devInfo.st_0_Devmac);
-        this.serialNumber = this.macAddress;
-        this.hostname = G.ToString(devInfo.st_1_Devname);
-        this.ipAddress = G.ToString(devInfo.st_2_Devip);
-        this.username = G.ToString(devInfo.st_4_loginName);
-        if(this.username == null)
-            this.username = "admin";
-        this.password = G.ToString(devInfo.st_5_loginPsw);
-        if(this.password == null)
-            this.password = "";
-        this.tcpPort = devInfo.st_6_nDMZTcpPort;
-        this.channel = devInfo.getChannel();
-        this.channelNumber = devInfo.getChannel().nChnCount;
-    }
-
-
-    /*public Device(SearchDeviceInfo searchDeviceInfo) {
-        this.hostname = searchDeviceInfo.HostName;
-        this.ipAddress = searchDeviceInfo.HostIP;
-        this.submask = searchDeviceInfo.Submask;
-        this.macAddress = searchDeviceInfo.sMac;
-        this.gateway = searchDeviceInfo.Gateway;
-    }*/
-
     /*
    @property (strong, nonatomic, readonly) GSWiFiConfiguration *wiFiConfiguration;
 
@@ -145,27 +111,10 @@ public class Device implements Serializable {
    */
 
 
-    public SDBDeviceInfo getDeviceInfo() {
-        SDBDeviceInfo devInfo = new SDBDeviceInfo();
-
-        G.SetValue(devInfo.st_0_Devmac, this.macAddress);
-        if(this.hostname != null)
-            G.SetValue(devInfo.st_1_Devname, this.hostname);
-        if(this.ipAddress != null)
-            G.SetValue(devInfo.st_2_Devip, this.ipAddress);
-        G.SetValue(devInfo.st_4_loginName, this.username);
-        G.SetValue(devInfo.st_5_loginPsw, this.password);
-        //devInfo.st_6_nDMZTcpPort = this.tcpPort;
-        if(this.channel != null)
-            devInfo.setChannel(this.channel);
-
-        return devInfo;
-    }
-
-    public void setChannel(SDK_ChannelNameConfigAll channel) {
-        this.channel = channel;
-        this.channelNumber = channel.nChnCount;
-    }
+//    public void setChannel(SDK_ChannelNameConfigAll channel) {
+//        this.channel = channel;
+//        this.channelNumber = channel.nChnCount;
+//    }
 
     @Override
     public int hashCode() {
@@ -189,60 +138,6 @@ public class Device implements Serializable {
         isLogged = login;
     }
 
-    /*public void addDeviceInfo(DevInfo deviceInfo){
-        ipAddress = deviceInfo.Ip;
-        macAddress = deviceInfo.Mac;
-        //hostname = Arrays.toString(deviceInfo.DevName); //hostname = deviceInfo.DevName.toString();
-        softwareVersion = deviceInfo.SoftWareVersion;
-        hardwareVersion = deviceInfo.HardWareVersion;
-        channelNumber = deviceInfo.ChanNum + deviceInfo.DigChannel;
-        numberOfAlarmsIn = deviceInfo.AlarmInPortNum;
-        numberOfAlarmsOut = deviceInfo.AlarmOutPortNum;
-        systemTime = Calendar.getInstance();
-        systemTime.set(Calendar.YEAR, deviceInfo.sysTime.year);
-        systemTime.set(Calendar.MONTH, deviceInfo.sysTime.month);
-        systemTime.set(Calendar.DAY_OF_MONTH, deviceInfo.sysTime.day);
-        systemTime.set(Calendar.DAY_OF_WEEK, deviceInfo.sysTime.wday);
-        systemTime.set(Calendar.HOUR_OF_DAY, deviceInfo.sysTime.hour);
-        systemTime.set(Calendar.MINUTE, deviceInfo.sysTime.minute);
-        systemTime.set(Calendar.SECOND, deviceInfo.sysTime.second);
-        setGigaCode();
-        printDeviceInfo();
-    }*/
-
-
-    /*public DevInfo getDeviceInfo(){
-        DevInfo deviceInfo = new DevInfo();
-
-        try {
-
-            if (username == null) {
-                username = "admin";
-            }
-
-            deviceInfo.UserName = username.getBytes("GBK");
-        } catch (UnsupportedEncodingException e) {
-            e.printStackTrace();
-        }
-
-        deviceInfo.Ip = ipAddress;
-        deviceInfo.TCPPort = tcpPort;
-        deviceInfo.SerialNumber = serialNumber;
-        deviceInfo.PassWord = password;
-        deviceInfo.SoftWareVersion = softwareVersion;
-        deviceInfo.HardWareVersion = hardwareVersion;
-        deviceInfo.ChanNum = channelNumber;
-        deviceInfo.AlarmInPortNum = numberOfAlarmsIn;
-        deviceInfo.AlarmOutPortNum = numberOfAlarmsOut;
-        deviceInfo.Mac = macAddress;
-
-        return deviceInfo;
-    }*/
-
-
-    private void setGigaCode(){
-
-    }
 
    public void printDeviceInfo(){
 

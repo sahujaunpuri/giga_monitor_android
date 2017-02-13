@@ -68,15 +68,13 @@ public class DeviceListActivity extends ActionBarActivity {
             @Override
             public boolean onGroupClick(ExpandableListView parent, View v, int groupPosition, long id) {
 
-                Log.d("LOGIN TRY", "getChildView: LOGIN: " + mDevices.get(groupPosition).getUsername() + ". Senha: " + mDevices.get(groupPosition).getPassword());
-
                 if (previousGroup == -1) {
                     previousGroup = groupPosition;
 
                     return false;
                 } else {
                     mAdapter.stopChannels(previousGroup);
-                    //mDeviceManager.logoutDevice(mDevices.get(previousGroup));
+                    mDeviceManager.logoutDevice(mDevices.get(previousGroup));
 
                     mAdapter = new DeviceExpandableListAdapter(mContext, mDevices);
                     mExpandableListView.setAdapter(mAdapter);
@@ -99,7 +97,7 @@ public class DeviceListActivity extends ActionBarActivity {
     @Override
     protected void onPause() {
         super.onPause();
-//        if (previousGroup != -1) mAdapter.pauseChannels(previousGroup);
+//        if (previousGroup != -1) mAdapter.stopChannels(previousGroup);
     }
 
     private void initComponents() {
@@ -115,8 +113,6 @@ public class DeviceListActivity extends ActionBarActivity {
 
     }
 
-
-
     public static void loadDevices() {
         if(mDevices == null) {
             mDevices = mDeviceManager.getDevices();
@@ -129,34 +125,6 @@ public class DeviceListActivity extends ActionBarActivity {
                 listComponents.add(listComponent);
             }
         }
-    }
-
-    public static boolean hasGroupExpanded() {
-        boolean check = false;
-
-        for(int i = 0; i < mExpandableListView.getCount(); i++) {
-            if(mExpandableListView.isGroupExpanded(i)){
-                check = true;
-            }
-        }
-
-        return check;
-    }
-
-    public static void openItemList(int position){
-        mExpandableListView.expandGroup(position);
-    }
-
-    public static void closeList() {
-        /*mAdapter = new DeviceExpandableListAdapter(mContext, mDevices);
-        mExpandableListView.setAdapter(mAdapter);*/
-
-        for(int i = 0; i < mDevices.size(); i++) {
-            if(mExpandableListView.isGroupExpanded(i)){
-                mExpandableListView.collapseGroup(i);
-            }
-        }
-
     }
 
     @Override

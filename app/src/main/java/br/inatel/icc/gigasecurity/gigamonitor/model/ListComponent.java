@@ -2,7 +2,6 @@ package br.inatel.icc.gigasecurity.gigamonitor.model;
 
 import android.content.Context;
 import android.content.res.Configuration;
-import android.util.Log;
 import android.view.Display;
 import android.view.Gravity;
 import android.view.View;
@@ -10,15 +9,11 @@ import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.Date;
 
 import br.inatel.icc.gigasecurity.gigamonitor.activities.DeviceListActivity;
-import br.inatel.icc.gigasecurity.gigamonitor.core.DeviceManager;
-import br.inatel.icc.gigasecurity.gigamonitor.listeners.LoginDeviceInterface;
 
 /**
  * Created by filipecampos on 02/05/2016.
@@ -66,12 +61,6 @@ public class ListComponent {
             surfaceViewComponent.mySurfaceViewChannelId = i;
             surfaceViewComponent.mySurfaceViewOrderId = i;
             surfaceViewComponent.deviceSn = mDevice.getSerialNumber();
-
-            //Create ProgressBar
-            surfaceViewComponent.progressBar = new ProgressBar(mContext);
-            surfaceViewComponent.progressBar.setIndeterminate(true);
-            surfaceViewComponent.progressBar.setScrollBarStyle(View.SCROLLBARS_INSIDE_INSET);
-            surfaceViewComponent.progressBar.setLayoutParams(new FrameLayout.LayoutParams(surfaceViewWidth / 4, surfaceViewWidth / 4, Gravity.CENTER));
 
             surfaceViewComponents.add(surfaceViewComponent);
         }
@@ -151,12 +140,12 @@ public class ListComponent {
         if (this.lastLastVisibleItem - this.lastFirstVisibleItem == this.numQuad * this.numQuad - 1 || this.lastLastVisibleItem == this.surfaceViewComponents.size() - 1) {
             for (final SurfaceViewComponent svc : this.surfaceViewComponents) {
                 if (svc.mySurfaceViewChannelId >= this.lastFirstVisibleItem && svc.mySurfaceViewChannelId <= lastLastVisibleItem) {
-                    if (!svc.isPlaying /*&& svc.connected*/) {
+                    if (!svc.isPlaying /*&& svc.isConnected*/) {
                         svc.progressBar.setVisibility(View.VISIBLE);
                         svc.onStartVideo();
                 }
                 } else {
-                    if (svc.isPlaying && svc.connected) {
+                    if (svc.isPlaying && svc.isConnected) {
                         svc.onStop();
                     }
                 }
@@ -165,9 +154,9 @@ public class ListComponent {
     }
 
 
-    public void stopChannels(){
-        for(int i = 1; i <surfaceViewComponents.size(); i++){
-            if(surfaceViewComponents.get(i).connected)
+    public void stopChannels(int start){
+        for(int i = start; i <surfaceViewComponents.size(); i++){
+            if(surfaceViewComponents.get(i).isConnected)
                 surfaceViewComponents.get(i).onStop();
         }
     }

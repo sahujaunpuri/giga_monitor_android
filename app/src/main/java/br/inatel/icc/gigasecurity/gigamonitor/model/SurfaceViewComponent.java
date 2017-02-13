@@ -1,38 +1,36 @@
 package br.inatel.icc.gigasecurity.gigamonitor.model;
 
-import android.content.ContentValues;
 import android.content.Context;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.media.MediaPlayer;
 import android.opengl.GLSurfaceView;
 import android.os.Environment;
 import android.os.Message;
-import android.provider.MediaStore;
+import android.util.AttributeSet;
 import android.util.Log;
-import android.view.MotionEvent;
-import android.view.ScaleGestureDetector;
+import android.view.Gravity;
+import android.view.View;
+import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.Toast;
 
+import com.basic.G;
 import com.lib.EUIMSG;
 import com.lib.FunSDK;
 import com.lib.IFunSDKResult;
 import com.lib.MsgContent;
+import com.lib.sdk.struct.H264_DVR_FILE_DATA;
 import com.video.opengl.GLSurfaceView20;
 
 import java.io.File;
-import java.io.FileOutputStream;
-import java.io.Serializable;
+import java.text.SimpleDateFormat;
+import java.util.Locale;
 
-import br.inatel.icc.gigasecurity.gigamonitor.R;
-import br.inatel.icc.gigasecurity.gigamonitor.core.DeviceManager;
-import br.inatel.icc.gigasecurity.gigamonitor.util.BitmapUtil;
+import br.inatel.icc.gigasecurity.gigamonitor.listeners.PlaybackListener;
 import br.inatel.icc.gigasecurity.gigamonitor.util.Utils;
 
 import static br.inatel.icc.gigasecurity.gigamonitor.activities.DeviceListActivity.mContext;
 import static br.inatel.icc.gigasecurity.gigamonitor.activities.DeviceListActivity.mDeviceManager;
+import static br.inatel.icc.gigasecurity.gigamonitor.activities.DeviceListActivity.mySurfaceViewID;
 
 /**
  * Created by filipecampos on 03/12/2015.
@@ -51,12 +49,16 @@ public class SurfaceViewComponent extends LinearLayout implements IFunSDKResult{
     private int mUserID = -1;
     public int mySurfaceViewChannelId;
     public int mySurfaceViewOrderId;
+    public PlaybackListener currentPlaybackListener;
 
     // state variables
     private int streamType = 1;  //HD:0, SD:1
-    public boolean connected = false;
+    public boolean isConnected = false;
     public boolean isPlaying = false;
     public boolean isREC = false;
+    public int playType = 0; //0 - live, 1 - playback live
+    public boolean isSeeking = false;
+    public int lastProgress;
 
     public SurfaceViewComponent(Context context){
         super(context);
@@ -72,6 +74,30 @@ public class SurfaceViewComponent extends LinearLayout implements IFunSDKResult{
             mySurfaceView.setLayoutParams(lp);
             this.addView(mySurfaceView);
         }
+        progressBar = new ProgressBar(mContext);
+        progressBar.setIndeterminate(true);
+        progressBar.setScrollBarStyle(View.SCROLLBARS_INSIDE_INSET);
+        progressBar.setLayoutParams(new FrameLayout.LayoutParams(mySurfaceView.getWidth()/4, mySurfaceView.getWidth()/4, Gravity.CENTER));
+    }
+
+    public SurfaceViewComponent(Context context, AttributeSet attrs){
+        super(context, attrs);
+        if(mUserID == -1){
+            mUserID = FunSDK.RegUser(this);
+        }
+        if(mySurfaceView == null){
+            mySurfaceView = new GLSurfaceView20(getContext());
+            mySurfaceView.setLongClickable(true);
+
+            LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(
+                    LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT);
+            mySurfaceView.setLayoutParams(lp);
+            this.addView(mySurfaceView);
+        }
+        progressBar = new ProgressBar(mContext);
+        progressBar.setIndeterminate(true);
+        progressBar.setScrollBarStyle(View.SCROLLBARS_INSIDE_INSET);
+        progressBar.setLayoutParams(new FrameLayout.LayoutParams(mySurfaceView.getWidth()/4, mySurfaceView.getWidth()/4, Gravity.CENTER));
     }
 
     public void onPlayLive() {
@@ -83,7 +109,7 @@ public class SurfaceViewComponent extends LinearLayout implements IFunSDKResult{
     }
 
     public int onStartVideo(){
-        mPlayerHandler = FunSDK.MediaRealPlay(mUserID, deviceSn, mySurfaceViewChannelId, streamType, mySurfaceView, 0);
+        mPlayerHandler = FunSDK.MediaRealPlay(mUserID, deviceSn, mySurfaceViewChannelId, streamType, mySurfaceView, mySurfaceViewID);
         return mPlayerHandler;
     }
 
@@ -111,7 +137,9 @@ public class SurfaceViewComponent extends LinearLayout implements IFunSDKResult{
     public void onStop(){
         if ( mPlayerHandler != 0 ) {
             FunSDK.MediaStop(mPlayerHandler);
-//            mPlayerHandler = 0;
+            mPlayerHandler = 0;
+            if(playType == 1)
+                isConnected = false;
         }
         isPlaying = false;
     }
@@ -139,6 +167,22 @@ public class SurfaceViewComponent extends LinearLayout implements IFunSDKResult{
         }
     }
 
+    public void onPlayPlayback(H264_DVR_FILE_DATA file){
+        mPlayerHandler = FunSDK.MediaNetRecordPlay(mUserID, deviceSn, G.ObjToBytes(file), mySurfaceView, 0);
+    }
+
+    public void seekByTime(int absTime) {
+        if (mPlayerHandler != 0) {
+            FunSDK.MediaSeekToTime(mPlayerHandler, 0, absTime, 0);
+        }
+    }
+
+    public void seekByPos(int absTime){
+        if (mPlayerHandler != 0) {
+            FunSDK.MediaSeekToPos(mPlayerHandler, absTime, 0);
+        }
+    }
+
     public GLSurfaceView getMySurfaceView() {
         return mySurfaceView;
     }
@@ -147,8 +191,6 @@ public class SurfaceViewComponent extends LinearLayout implements IFunSDKResult{
         this.mySurfaceView = mySurfaceView;
     }
 
-
-
     public ProgressBar getProgressBar() {
         return progressBar;
     }
@@ -156,7 +198,6 @@ public class SurfaceViewComponent extends LinearLayout implements IFunSDKResult{
     public void setProgressBar(ProgressBar progressBar) {
         this.progressBar = progressBar;
     }
-
 
     public int getMySurfaceViewID() {
         return mySurfaceViewID;
@@ -198,6 +239,20 @@ public class SurfaceViewComponent extends LinearLayout implements IFunSDKResult{
         this.mySurfaceViewChannelId = mySurfaceViewChannelId;
     }
 
+    public void setCurrentPlaybackListener(PlaybackListener listener){
+        this.currentPlaybackListener = listener;
+    }
+
+    private int parsePlayPosition(String str) {
+        try {
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.ENGLISH);
+            return (int)(sdf.parse(str).getTime()/1000);
+        } catch (Exception e) {
+
+        }
+        return 0;
+    }
+
 /*    @Override
     public boolean onTouchEvent(MotionEvent event) {
         return super.onTouchEvent(event);
@@ -229,26 +284,28 @@ public class SurfaceViewComponent extends LinearLayout implements IFunSDKResult{
         switch (msg.what) {
             case EUIMSG.START_PLAY: {
                 Log.i(TAG, "EUIMSG.START_PLAY");
-                if (msg.arg1 == 0) {
-                    this.connected = true;
-                    if(mDeviceManager.startList.contains(this)) {
-                        mDeviceManager.startList.remove(this);
-                        mDeviceManager.requestStart();
+                    if (msg.arg1 == 0) {
+                        this.isConnected = true;
+                        if (mDeviceManager.startList.contains(this)) {
+                            mDeviceManager.startList.remove(this);
+                            mDeviceManager.requestStart();
+                        }
+//                        if(surfaceDeleted)
+//                            onStop();
+                        Log.i(TAG, "START SUCCESS");
+                    } else {
+                        if (mDeviceManager.startList.contains(this))
+                            mDeviceManager.startList.remove(this);
+                        onPlayLive();
+                        Log.i(TAG, "START FAILED");
                     }
-                    Log.i(TAG, "START SUCCESS");
-                } else {
-                    if(mDeviceManager.startList.contains(this))
-                        mDeviceManager.startList.remove(this);
-                    onPlayLive();
-                    Log.i(TAG, "START FAILED");
-                }
             }
             break;
             case EUIMSG.STOP_PLAY: {
                 Log.i(TAG, "EUIMSG.STOP_PLAY");
                 if (msg.arg1 == 0) {
                     Log.i(TAG, "STOP SUCCESS");
-                    connected = false;
+                    isConnected = false;
                 } else {
                     Log.i(TAG, "STOP FAILED");
                 }
@@ -275,8 +332,12 @@ public class SurfaceViewComponent extends LinearLayout implements IFunSDKResult{
             case EUIMSG.ON_PLAY_BUFFER_END: {
                 Log.i(TAG, "EUIMSG.ON_PLAY_BUFFER_END");
                 if (msg.arg1 == 0) {
-                    this.progressBar.setVisibility(INVISIBLE);
                     this.isPlaying = true;
+                    if(playType == 0)
+                        this.progressBar.setVisibility(INVISIBLE);
+                    else if(playType == 1){
+                        currentPlaybackListener.onPlayState(2);
+                    }
                     Log.i(TAG, "PLAY BUFFER END");
                 }
             }
@@ -310,6 +371,34 @@ public class SurfaceViewComponent extends LinearLayout implements IFunSDKResult{
                     }
                 } else{
                     Toast.makeText(mContext, "Falha na gravação", Toast.LENGTH_SHORT).show();
+                }
+            }
+            break;
+            case EUIMSG.ON_PLAY_INFO: {
+                Log.d(TAG, "OnFunSDKResult: ON_PLAY_INFO");
+                if (playType == 1) {
+                    int progress = msg.arg2 - msg.arg1;
+                    Log.d(TAG, "OnFunSDKResult: PROGRESS " + progress);
+                    if(!isSeeking && progress > 0)
+                        currentPlaybackListener.onChangeProgress(progress);
+                    else if(isSeeking){
+                        currentPlaybackListener.onChangeProgress(progress);
+//                        lastProgress = progress;
+//                        if(Math.abs(lastProgress - progress) > 30)
+//                            currentPlaybackListener.onCompleteSeek();
+                    }
+                }
+            }
+            break;
+            case EUIMSG.ON_PLAY_END: {
+                if(playType == 1){
+                    currentPlaybackListener.onComplete();
+                }
+            }
+            case EUIMSG.SEEK_TO_POS: {
+                if(msg.arg1 == 0){
+                    if(isSeeking && !isPlaying)
+                        onResume();
                 }
             }
             break;
