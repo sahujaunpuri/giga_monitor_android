@@ -25,9 +25,11 @@ import java.util.LinkedList;
 
 import br.inatel.icc.gigasecurity.gigamonitor.R;
 import br.inatel.icc.gigasecurity.gigamonitor.activities.DeviceListActivity;
+import br.inatel.icc.gigasecurity.gigamonitor.adapters.DeviceExpandableListAdapter;
 import br.inatel.icc.gigasecurity.gigamonitor.listeners.LoginDeviceListener;
 import br.inatel.icc.gigasecurity.gigamonitor.listeners.PlaybackSearchListener;
 import br.inatel.icc.gigasecurity.gigamonitor.model.Device;
+import br.inatel.icc.gigasecurity.gigamonitor.model.ListComponent;
 import br.inatel.icc.gigasecurity.gigamonitor.model.SurfaceViewComponent;
 import br.inatel.icc.gigasecurity.gigamonitor.util.ComplexPreferences;
 
@@ -43,9 +45,6 @@ public class DeviceManager implements IFunSDKResult{
     private static final int APP_MOVECARD = 8;
     private static final String SERVER_IP = "200.98.128.50";
     private static final int SERVER_PORT = 8000;
-//    private static final String SERVER_IP = "223.4.33.127;54.84.132.236;112.124.0.188";
-//    private static final int SERVER_PORT = 15010; // 更新版本的服务器端口
-
 
     private static String TAG = DeviceManager.class.getSimpleName();
     private static DeviceManager mInstance = null;
@@ -56,23 +55,62 @@ public class DeviceManager implements IFunSDKResult{
     private LinkedList<SurfaceViewComponent> startList = new LinkedList<SurfaceViewComponent>();
     public boolean startPlay = false;
 
-
     public boolean channelOnRec;
     private ArrayList<Device> mDevices = new ArrayList<Device>();
     private ArrayList<Device> mLanDevices = new ArrayList<Device>();
     private LoginDeviceListener currentLoginListener;
     private PlaybackSearchListener currentPlaybackSearchListener;
 
+    private DeviceExpandableListAdapter expandableListAdapter;
+    private ArrayList<ListComponent> listComponents;
 
     private DeviceManager() {
     }
-
 
     public static synchronized DeviceManager getInstance() {
         if (mInstance == null) {
             mInstance = new DeviceManager();
         }
         return mInstance;
+    }
+
+    public int getHandler(){
+        return mFunUserHandler;
+    }
+
+    public DeviceExpandableListAdapter getExpandableListAdapter(Context context){
+        if(expandableListAdapter == null){
+            expandableListAdapter = new DeviceExpandableListAdapter(context, mDevices);
+        }
+        return expandableListAdapter;
+    }
+
+    public ArrayList<ListComponent> getListComponents(){
+        if(listComponents == null){
+            listComponents = new ArrayList<ListComponent>();
+            for(int i=0; i < mDevices.size(); i++) {
+                ListComponent listComponent = new ListComponent(mDevices.get(i));
+                listComponents.add(listComponent);
+            }
+        }
+        return listComponents;
+    }
+
+    public void updateListComponents(){
+        listComponents.clear();
+        for(int i=0; i < mDevices.size(); i++) {
+            ListComponent listComponent = new ListComponent(mDevices.get(i));
+            listComponents.add(listComponent);
+
+        }
+    }
+
+    public void removeFromExpandableList(ArrayList<Integer> itens){
+        for(Integer i : itens) {
+            listComponents.get(i).stopChannels(0);
+            expandableListAdapter.removeGroup(i);
+        }
+        updateListComponents();
     }
 
     public void init(Context context){
@@ -147,8 +185,10 @@ public class DeviceManager implements IFunSDKResult{
                         currentLoginListener.onLoginSuccess();
                     else
                         FunSDK.DevGetConfigByJson(getHandler(), device.getSerialNumber(), "SystemInfo", 4096, -1, 10000, device.getId());
-                }
-                else {
+                } else if(msg.arg1 == -11301){
+                    if(device != null)
+                        currentLoginListener.onLoginError(msg.arg1, device);
+                } else {
                     FunSDK.DevLogin(getHandler(), device.getSerialNumber(), device.getUsername(), device.getPassword(), device.getId());
                     Log.d(TAG, "OnFunSDKResult: Login ERROR");
                 }
@@ -166,7 +206,7 @@ public class DeviceManager implements IFunSDKResult{
                     Log.d(TAG, "OnFunSDKResult: Device ONLINE");
                 } else {
                     Log.d(TAG, "OnFunSDKResult: Device OFFLINE");
-                    currentLoginListener.onLoginError(msg.arg1, device);
+                    currentLoginListener.onLoginError(-1, device);
 
                 }
             }
@@ -252,9 +292,7 @@ public class DeviceManager implements IFunSDKResult{
         saveDevices(context);
     }
 
-    public int getHandler(){
-        return mFunUserHandler;
-    }
+
 
     public void loginDevice(final Device device, final LoginDeviceListener loginDeviceListener) {
         currentLoginListener = loginDeviceListener;

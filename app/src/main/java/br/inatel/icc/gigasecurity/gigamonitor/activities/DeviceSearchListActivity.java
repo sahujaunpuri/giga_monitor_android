@@ -65,6 +65,7 @@ public class DeviceSearchListActivity extends ActionBarActivity {
                 Intent intent = new Intent(DeviceSearchListActivity.this, DeviceFormActivity.class);
                 intent.putExtras(extras);
                 startActivity(intent);
+                finish();
 
                 /*String labelSetIP = getResources().getString(R.string.label_set_ip);
 

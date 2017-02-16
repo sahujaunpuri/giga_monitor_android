@@ -88,6 +88,7 @@ public class InitialActivity extends ActionBarActivity implements View.OnClickLi
 
             i.putExtras(extras);
             startActivity(i);
+            finish();
         }
 
     }

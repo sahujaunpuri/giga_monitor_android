@@ -157,12 +157,16 @@ public class DeviceFormActivity extends ActionBarActivity{
 
             case android.R.id.home:
                 finish();
+                Intent i = new Intent(this, InitialActivity.class);
+                startActivity(i);
                 return true;
             case R.id.action_save:
                 if(save()) {
                     DeviceManager.getInstance().addDevice(this, mDevice);
-                    DeviceListActivity.mDevices = null;
-                    startDeviceListActivity();
+                    DeviceManager.getInstance().updateListComponents();
+//                    DeviceListActivity.mDevices = null;
+//                    startDeviceListActivity();
+
 
                     finish();
 

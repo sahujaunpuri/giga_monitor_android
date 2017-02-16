@@ -2,6 +2,7 @@ package br.inatel.icc.gigasecurity.gigamonitor.model;
 
 import android.content.Context;
 import android.content.res.Configuration;
+import android.content.res.Resources;
 import android.view.Display;
 import android.view.Gravity;
 import android.view.View;
@@ -67,16 +68,11 @@ public class ListComponent {
     }
 
     public void changeSurfaceViewSize(SurfaceViewComponent surfaceViewComponent, FrameLayout frameLayout) {
-        surfaceViewWidth = (mDisplay.getWidth() / numQuad);
-        surfaceViewHeight = ((mDisplay.getHeight() / 3) + 10) / numQuad;
+        surfaceViewWidth = (Resources.getSystem().getDisplayMetrics().widthPixels / numQuad);
+        surfaceViewHeight = ((Resources.getSystem().getDisplayMetrics().heightPixels / 3) + 10) / numQuad;
 
         if (mContext.getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE) {
-            surfaceViewHeight = (mDisplay.getHeight()) / numQuad;
-        }
-
-        if(surfaceViewComponent.isREC) {
-            surfaceViewComponent.stopRecord();
-            Toast.makeText(mContext, "Gravação finalizada.", Toast.LENGTH_SHORT);
+            surfaceViewHeight = (Resources.getSystem().getDisplayMetrics().heightPixels) / numQuad;
         }
 
         FrameLayout.LayoutParams lpSurfaceView = new FrameLayout.LayoutParams(surfaceViewWidth, surfaceViewHeight, Gravity.CENTER_HORIZONTAL);
@@ -137,7 +133,7 @@ public class ListComponent {
         this.lastFirstVisibleItem = currentFirstVisibleItem;
         this.lastLastVisibleItem = currentLastVisibleItem;
 
-        this.handleVisibleChannels();
+//        this.handleVisibleChannels();
         return itemToScroll;
     }
 
@@ -148,7 +144,7 @@ public class ListComponent {
                     if (!svc.isPlaying /*&& svc.isConnected*/) {
                         svc.progressBar.setVisibility(View.VISIBLE);
                         svc.onStartVideo();
-                }
+                    }
                 } else {
                     if (svc.isPlaying && svc.isConnected) {
                         svc.onStop();
@@ -157,6 +153,7 @@ public class ListComponent {
             }
         }
     }
+
 
 
     public void stopChannels(int start){

@@ -22,6 +22,7 @@ public class DeviceEditListActivity extends ActionBarActivity {
     private DeviceEditAdapter mAdapter;
     private ArrayList<Device> mDevices;
     private DeviceManager mDeviceManager;
+    private ArrayList<Integer> itensRemoved = new ArrayList<Integer>();
 
     public static DragSortListView lv;
     private boolean modified;
@@ -95,6 +96,8 @@ public class DeviceEditListActivity extends ActionBarActivity {
 
                     lv.setAdapter(mAdapter);
 
+                    itensRemoved.add(which);
+
                     modified = true;
                 }
             };
@@ -131,7 +134,9 @@ public class DeviceEditListActivity extends ActionBarActivity {
 
                 DeviceListActivity.mDevices = null;
                 mDeviceManager.loadSavedData(DeviceListActivity.mContext);
-                DeviceListActivity.loadDevices();
+//                DeviceListActivity.loadDevices();
+//                mDeviceManager.updateListComponents();
+                mDeviceManager.removeFromExpandableList(itensRemoved);
 
                 startDeviceListActivity();
             }
@@ -161,7 +166,8 @@ public class DeviceEditListActivity extends ActionBarActivity {
                 mDeviceManager.updateDevices(DeviceEditListActivity.this, mDevices);
 
                 DeviceListActivity.mDevices = null;
-                DeviceListActivity.loadDevices();
+//                DeviceListActivity.loadDevices();
+                mDeviceManager.updateListComponents();
 
                 startDeviceListActivity();
             }

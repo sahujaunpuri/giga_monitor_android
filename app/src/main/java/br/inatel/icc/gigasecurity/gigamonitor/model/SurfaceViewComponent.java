@@ -6,7 +6,10 @@ import android.os.Environment;
 import android.os.Message;
 import android.util.AttributeSet;
 import android.util.Log;
+import android.view.GestureDetector;
 import android.view.Gravity;
+import android.view.MotionEvent;
+import android.view.ScaleGestureDetector;
 import android.view.View;
 import android.widget.FrameLayout;
 import android.widget.LinearLayout;
@@ -36,7 +39,7 @@ import static br.inatel.icc.gigasecurity.gigamonitor.activities.DeviceListActivi
  */
 public class SurfaceViewComponent extends LinearLayout implements IFunSDKResult{
 
-    private GLSurfaceView mySurfaceView;
+    public GLSurfaceView mySurfaceView;
     public ProgressBar progressBar;
     public String deviceSn;
 
@@ -49,6 +52,7 @@ public class SurfaceViewComponent extends LinearLayout implements IFunSDKResult{
     public int mySurfaceViewChannelId;
     public int mySurfaceViewOrderId;
     public PlaybackListener currentPlaybackListener;
+    public int recHandler;
 
     // state variables
     private int streamType = 1;  //HD:0, SD:1
@@ -58,6 +62,7 @@ public class SurfaceViewComponent extends LinearLayout implements IFunSDKResult{
     public int playType = 0; //0 - live, 1 - playback live
     public boolean isSeeking = false;
     private int seekPercentage = 0;
+    private ScaleGestureDetector mScaleGestureDetector;
 
     public SurfaceViewComponent(Context context){
         super(context);
@@ -107,7 +112,7 @@ public class SurfaceViewComponent extends LinearLayout implements IFunSDKResult{
     }
 
     public int onStartVideo(){
-        mPlayerHandler = FunSDK.MediaRealPlay(mUserID, deviceSn, mySurfaceViewChannelId, streamType, mySurfaceView, mySurfaceViewID);
+        mPlayerHandler = FunSDK.MediaRealPlay(mUserID, deviceSn, mySurfaceViewChannelId, streamType, mySurfaceView, mySurfaceViewOrderId);
         return mPlayerHandler;
     }
 
@@ -142,6 +147,13 @@ public class SurfaceViewComponent extends LinearLayout implements IFunSDKResult{
         isPlaying = false;
     }
 
+    public void restartVideo(){
+        if(isConnected){
+            onStop();
+            mPlayerHandler = FunSDK.MediaRealPlay(mUserID, deviceSn, mySurfaceViewChannelId, streamType, mySurfaceView, mySurfaceViewOrderId);
+        }
+    }
+
     public void takeSnapshot(){
         if(mPlayerHandler != 0){
             String path = Environment.getExternalStorageDirectory().getPath() + "/Pictures/Giga Monitor/" + Utils.currentDateTime();
@@ -156,13 +168,14 @@ public class SurfaceViewComponent extends LinearLayout implements IFunSDKResult{
         if(mPlayerHandler != 0) {
             String path = Environment.getExternalStorageDirectory().getPath() + "/Movies/Giga Monitor/" + Utils.currentDateTime() + ".mp4";
             FunSDK.MediaStartRecord(mPlayerHandler, path, 0);
+            recHandler = mPlayerHandler;
             isREC = true;
         }
     }
 
     public void stopRecord(){
         if(mPlayerHandler != 0) {
-            FunSDK.MediaStopRecord(mPlayerHandler, 0);
+            FunSDK.MediaStopRecord(recHandler, 0);
         }
     }
 
@@ -187,7 +200,7 @@ public class SurfaceViewComponent extends LinearLayout implements IFunSDKResult{
         return mySurfaceView;
     }
 
-    public void setMySurfaceView(final GLSurfaceView mySurfaceView) {
+    public void setMySurfaceView(final GLSurfaceView20 mySurfaceView) {
         this.mySurfaceView = mySurfaceView;
     }
 
@@ -253,21 +266,45 @@ public class SurfaceViewComponent extends LinearLayout implements IFunSDKResult{
         return 0;
     }
 
-/*    @Override
-    public boolean onTouchEvent(MotionEvent event) {
-        return super.onTouchEvent(event);
+
+
+//    @Override
+//    public boolean onTouchEvent(MotionEvent event) {
+//        boolean retVal = mScaleGestureDetector.onTouchEvent(event);
+//        retVal = mScaleGestureDetector.onTouchEvent(event) || retVal;
+//        return retVal || super.onTouchEvent(event);
+//    }
+
+
+
+//    @Override
+//    public boolean onInterceptTouchEvent(MotionEvent ev) {
+//        switch (ev.getAction()) {
+//            case MotionEvent.ACTION_MOVE:
+//            case MotionEvent.ACTION_DOWN:
+//            case MotionEvent.ACTION_CANCEL:
+//            case MotionEvent.ACTION_UP:
+//        }
+//        return super.onInterceptTouchEvent(ev);
+//    }
+
+    @Override
+    protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
+        super.onMeasure(widthMeasureSpec, heightMeasureSpec);
     }
 
     @Override
-    public boolean onInterceptTouchEvent(MotionEvent ev) {
-        switch (ev.getAction()) {
-            case MotionEvent.ACTION_MOVE:
-            case MotionEvent.ACTION_DOWN:
-            case MotionEvent.ACTION_CANCEL:
-            case MotionEvent.ACTION_UP:
+    protected void onDetachedFromWindow() {
+        super.onDetachedFromWindow();
+    }
+    @Override
+    protected void onAttachedToWindow() {
+        super.onAttachedToWindow();
+        if(this.isConnected) {
+            this.progressBar.setVisibility(VISIBLE);
+            this.onStartVideo();
         }
-        return super.onInterceptTouchEvent(ev);
-    }*/
+    }
 
     @Override
     public int OnFunSDKResult(Message msg, MsgContent msgContent) {
@@ -307,6 +344,7 @@ public class SurfaceViewComponent extends LinearLayout implements IFunSDKResult{
                 if (msg.arg1 == 0) {
                     Log.i(TAG, "STOP SUCCESS");
                     isConnected = false;
+
                 } else {
                     Log.i(TAG, "STOP FAILED");
                 }

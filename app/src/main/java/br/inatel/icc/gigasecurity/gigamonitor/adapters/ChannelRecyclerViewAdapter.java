@@ -69,6 +69,20 @@ public class ChannelRecyclerViewAdapter extends RecyclerView.Adapter<ChannelRecy
         return newMyViewHolder;
     }
 
+    @Override
+    public void onDetachedFromRecyclerView(RecyclerView recyclerView) {
+        super.onDetachedFromRecyclerView(recyclerView);
+    }
+
+    @Override
+    public void onViewRecycled(MyViewHolder holder) {
+        super.onViewRecycled(holder);
+    }
+
+    @Override
+    public void onViewDetachedFromWindow(MyViewHolder holder) {
+//        super.onViewDetachedFromWindow(holder);
+    }
 
     @Override
     public void onBindViewHolder(final ChannelRecyclerViewAdapter.MyViewHolder myViewHolder, final int position) {
@@ -83,19 +97,23 @@ public class ChannelRecyclerViewAdapter extends RecyclerView.Adapter<ChannelRecy
         if(parent != null) {
             parent.removeAllViews();
         }
+
         myViewHolder.frameLayout.addView(currentSurfaceView);
         myViewHolder.frameLayout.addView(currentSurfaceView.progressBar);
         currentSurfaceView.progressBar.setVisibility(View.VISIBLE);
 
+//        if(currentSurfaceView.isConnected && !currentSurfaceView.isPlaying) {
+//            currentSurfaceView.onStop();
+//            currentSurfaceView.onStartVideo();
+//        }else if(currentSurfaceView.isConnected)
+//            currentSurfaceView.onStartVideo();
+//        else
+//            currentSurfaceView.onPlayLive();
 
-        //TODO entender tela verde
-        if(currentSurfaceView.isConnected && !currentSurfaceView.isPlaying) {
-            currentSurfaceView.onStop();
-            currentSurfaceView.onStartVideo();
-        }else if(currentSurfaceView.isConnected)
-            currentSurfaceView.onStartVideo();
-        else
+        if(!currentSurfaceView.isConnected)
             currentSurfaceView.onPlayLive();
+
+
 
         listComponent.changeSurfaceViewSize(currentSurfaceView, myViewHolder.frameLayout);
 
@@ -115,11 +133,8 @@ public class ChannelRecyclerViewAdapter extends RecyclerView.Adapter<ChannelRecy
                         GridLayoutManager lm = (GridLayoutManager) childViewHolder.recyclerViewChannels.getLayoutManager();
                         listComponent.lastFirstItemBeforeSelectChannel = lm.findFirstVisibleItemPosition();
                     }
-
-                    childViewHolder.gridLayoutManager = new GridLayoutManager(mContext, listComponent.numQuad, GridLayoutManager.HORIZONTAL, false);
-                    childViewHolder.recyclerViewChannels.setLayoutManager(childViewHolder.gridLayoutManager);
-                    childViewHolder.mRecyclerAdapter = new ChannelRecyclerViewAdapter(mContext, mDevice, listComponent.numQuad, childViewHolder, listComponent);
-                    childViewHolder.recyclerViewChannels.setAdapter(childViewHolder.mRecyclerAdapter);
+                    childViewHolder.gridLayoutManager.setSpanCount(listComponent.numQuad);
+                    childViewHolder.mRecyclerAdapter.notifyDataSetChanged();
 
                     listComponent.changeSurfaceViewSize(listComponent.surfaceViewComponents.get(msvSelected), myViewHolder.frameLayout);
 
@@ -214,11 +229,12 @@ public class ChannelRecyclerViewAdapter extends RecyclerView.Adapter<ChannelRecy
         childViewHolder.ivHQ.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                SurfaceViewComponent selectedSurfaceView = listComponent.surfaceViewComponents.get(positionSelected);
+                final SurfaceViewComponent selectedSurfaceView = listComponent.surfaceViewComponents.get(positionSelected);
                 if(selectedSurfaceView.isREC){
                     Toast.makeText(mContext, "Finalize a gravação.", Toast.LENGTH_SHORT).show();
                 } else if (positionSelected != -1) {
-                    selectedSurfaceView.onStop();
+//                    selectedSurfaceView.onStop();
+
                     selectedSurfaceView.progressBar.setVisibility(View.VISIBLE);
                     if (!selectedSurfaceView.isHD()) {
                         selectedSurfaceView.setStreamType(0);
@@ -229,7 +245,9 @@ public class ChannelRecyclerViewAdapter extends RecyclerView.Adapter<ChannelRecy
                         childViewHolder.ivHQ.setImageDrawable(mContext.getResources().getDrawable(R.drawable.ic_hq_off));
                         Log.d("HD", "onClick: HD OFF");
                     }
-                    selectedSurfaceView.onPlayLive();
+                    selectedSurfaceView.restartVideo();
+
+
                 }
             }
         });
@@ -284,5 +302,6 @@ public class ChannelRecyclerViewAdapter extends RecyclerView.Adapter<ChannelRecy
             }
         }).start();
     }
+
 
 }
