@@ -17,6 +17,7 @@ import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import com.basic.G;
+import com.lib.ECONFIG;
 import com.lib.EUIMSG;
 import com.lib.FunSDK;
 import com.lib.IFunSDKResult;
@@ -28,6 +29,7 @@ import java.io.File;
 import java.text.SimpleDateFormat;
 import java.util.Locale;
 
+import br.inatel.icc.gigasecurity.gigamonitor.activities.DeviceListActivity;
 import br.inatel.icc.gigasecurity.gigamonitor.listeners.PlaybackListener;
 import br.inatel.icc.gigasecurity.gigamonitor.util.Utils;
 

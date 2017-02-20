@@ -56,8 +56,8 @@ public class ComplexPreferences {
         editor.putString(key, GSON.toJson(object));
     }
 
-    public boolean commit() {
-        return editor.commit();
+    public void apply() {
+        editor.apply();
     }
 
     public <T> T getObject(String key, Class<T> a) {

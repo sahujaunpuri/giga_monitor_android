@@ -9,6 +9,7 @@ import com.lib.sdk.struct.SDK_CONFIG_NET_COMMON_V2;
 import java.io.Serializable;
 import java.util.Calendar;
 
+
 //import br.inatel.icc.gigasecurity.gigamonitor.config.cloud.CloudConfig;
 //import br.inatel.icc.gigasecurity.gigamonitor.config.ddns.DDNSConfig;
 //import br.inatel.icc.gigasecurity.gigamonitor.config.dhcp.DHCPConfig;
@@ -37,7 +38,6 @@ public class Device implements Serializable {
     private String monMode = "TCP";
     private int tcpMaxConn = 10;
     private String dvrMac;
-//    public SDK_ChannelNameConfigAll channel;
     public boolean isLogged = false;
 
     @Expose private String ddnsDomain;
@@ -51,6 +51,18 @@ public class Device implements Serializable {
     private int numberOfAlarmsIn;
     private int numberOfAlarmsOut;
     private String gigaCode;
+    public int audioInChannel;
+    public int talkInChannel;
+    public int talkOutChannel;
+
+    //Config
+//    private EthernetConfig ethernetConfig;
+//    private WifiConfig     wifiConfig;
+//    private DNSConfig      dnsConfig;
+//    private DDNSConfig     ddnsConfig;
+//    private UpnpConfig     upnpConfig;
+//    private CloudConfig    cloudConfig;
+//    private DHCPConfig     dhcpConfig;
 
     private Calendar systemTime;
 
@@ -353,6 +365,7 @@ public class Device implements Serializable {
     public void setDvrMac(String dvrMac) {
         this.dvrMac = dvrMac;
     }
+
 
 //    public EthernetConfig getEthernetConfig() {
 //        if(ethernetConfig == null){

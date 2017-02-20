@@ -122,7 +122,7 @@
 //    private void openProgressDialog(Context context) {
 //        if (context != null) {
 //            mProgressDialog = ProgressDialog.show(context,
-//                    "", context.getResources().getString(R.string.wait_dialog_message, true));
+//                    "", context.getResources().getString(R.string.wait_dialog_message));
 //        }
 //    }
 //

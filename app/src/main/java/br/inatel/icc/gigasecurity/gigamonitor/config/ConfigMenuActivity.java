@@ -12,14 +12,9 @@ import android.widget.Button;
 
 import br.inatel.icc.gigasecurity.gigamonitor.R;
 import br.inatel.icc.gigasecurity.gigamonitor.activities.DeviceListActivity;
+import br.inatel.icc.gigasecurity.gigamonitor.config.general.GeneralConfigActivity;
 import br.inatel.icc.gigasecurity.gigamonitor.core.DeviceManager;
 import br.inatel.icc.gigasecurity.gigamonitor.model.Device;
-
-//import br.inatel.icc.gigasecurity.gigamonitor.config.ddns.DDNSConfigActivity;
-//import br.inatel.icc.gigasecurity.gigamonitor.config.dns.DNSConfigActivity;
-//import br.inatel.icc.gigasecurity.gigamonitor.config.ethernet.EthernetConfigActivity;
-//import br.inatel.icc.gigasecurity.gigamonitor.config.general.GeneralConfigActivity;
-//import br.inatel.icc.gigasecurity.gigamonitor.config.upnp.UpnpConfigActivity;
 
 public class ConfigMenuActivity extends ActionBarActivity implements OnClickListener {
     public static final String KEY_ARGS = "device";
@@ -47,7 +42,7 @@ public class ConfigMenuActivity extends ActionBarActivity implements OnClickList
     }
 
     private void findViews() {
-        //mWifiButton         = (Button) findViewById(R.id.button_wifi_config);
+//        mWifiButton         = (Button) findViewById(R.id.button_wifi_config);
         mGeneralButton      = (Button) findViewById(R.id.button_general_config);
         mEthernetButton     = (Button) findViewById(R.id.button_ethernet_config);
         //mCloudButton        = (Button) findViewById(R.id.button_cloud_config);
@@ -93,33 +88,33 @@ public class ConfigMenuActivity extends ActionBarActivity implements OnClickList
         Intent intent = null;
 
         switch (v.getId()) {
-            /*case R.id.button_wifi_config:
-                intent = new Intent(this, WifiSearchActivity.class);
-                break;*/
-            case R.id.button_general_config:
-                //intent = new Intent(this, GeneralConfigActivity.class);
-                break;
+//            case R.id.button_wifi_config:
+//                //intent = new Intent(this, WifiSearchActivity.class);
+//                break;
+//            case R.id.button_general_config:
+//                intent = new Intent(this, GeneralConfigActivity.class);
+//                break;
             case R.id.button_ethernet_config:
-                //intent = new Intent(this, EthernetConfigActivity.class);
+//                intent = new Intent(this, EthernetConfigActivity.class);
                 break;
-           /* case R.id.button_cloud_config:
-                intent = new Intent(this, CloudConfigActivity.class);
-                break;*/
+//            case R.id.button_cloud_config:
+//                //intent = new Intent(this, CloudConfigActivity.class);
+//                break;
             case R.id.button_dns_config:
-                //intent = new Intent(this, DNSConfigActivity.class);
+//                intent = new Intent(this, DNSConfigActivity.class);
                 break;
-            /*case R.id.button_dhcp_config:
-                intent = new Intent(this, DHCPConfigActivity.class);
-                break;*/
+//            case R.id.button_dhcp_config:
+//                //intent = new Intent(this, DHCPConfigActivity.class);
+//                break;
             case R.id.button_ddns_config:
-                //intent = new Intent(this, DDNSConfigActivity.class);
+//                intent = new Intent(this, DDNSConfigActivity.class);
                 break;
             case R.id.button_upnp_config:
                 //intent = new Intent(this, UpnpConfigActivity.class);
                 break;
-            /*case R.id.button_password_config:
-                intent = new Intent(this, PasswordConfigActivity.class);
-                break;*/
+//            case R.id.button_password_config:
+//                //intent = new Intent(this, PasswordConfigActivity.class);
+//                break;
             case R.id.button_reboot_device:
                 //showRebootDialog();
                 break;

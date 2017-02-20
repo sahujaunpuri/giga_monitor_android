@@ -77,7 +77,7 @@ public class DeviceListActivity extends ActionBarActivity {
         //if don't have any device registered, start InitialActivity.
         if(mDevices.size() == 0) {
             startInitialActivity();
-            finish();
+//            finish();
         }
 
         mExpandableListView.setOnGroupClickListener(new ExpandableListView.OnGroupClickListener() {

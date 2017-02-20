@@ -137,7 +137,7 @@
                 android:background="#ccced0"
                 />
 
-            <!-- <Button
+             <Button
                 style="?attr/actionButtonStyle"
                 android:gravity="start|center"
                 android:id="@+id/button_password_config"
@@ -152,7 +152,7 @@
                 android:layout_width="fill_parent"
                 android:layout_height="1dp"
                 android:background="#ccced0"
-                /> -->
+                />
 
             <Button
                 android:id="@+id/button_general_config"

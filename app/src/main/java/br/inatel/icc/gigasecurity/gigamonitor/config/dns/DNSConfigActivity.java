@@ -7,8 +7,6 @@
 //import android.widget.EditText;
 //import android.widget.Toast;
 //
-//import com.xm.javaclass.CONFIG_IPAddress;
-//
 //import br.inatel.icc.gigasecurity.gigamonitor.R;
 //import br.inatel.icc.gigasecurity.gigamonitor.config.ConfigAbstract;
 //import br.inatel.icc.gigasecurity.gigamonitor.core.DeviceManager;
@@ -51,7 +49,7 @@
 //               @Override
 //                public void onPreFinish(Boolean success) {
 //                    if(!success){
-//                        String labelUnableConfig = getResources().getString(R.string.label_unable_config, true);
+//                        String labelUnableConfig = getResources().getString(R.string.label_unable_config);
 //
 //                        Toast.makeText(getApplicationContext(), labelUnableConfig, Toast.LENGTH_SHORT).show();
 //                        finish();

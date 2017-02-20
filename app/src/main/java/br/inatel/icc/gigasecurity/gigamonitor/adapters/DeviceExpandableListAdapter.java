@@ -221,7 +221,6 @@ public class DeviceExpandableListAdapter extends BaseExpandableListAdapter {
 
             @Override
             public void onScrolled(RecyclerView recyclerView, int dx, int dy){
-                ChildViewHolder currentChildViewHolder = childViewHolder.get(groupPosition);
                 scrolled += dx;
                 super.onScrolled(recyclerView, dx, dy);
             }
@@ -365,18 +364,18 @@ public class DeviceExpandableListAdapter extends BaseExpandableListAdapter {
 
         AlertDialog.Builder builder = new AlertDialog.Builder(mContext);
         builder.setTitle("")
-                .setItems(new CharSequence[]{/*"Configurações", */"Controle Remoto", "Playback"},
+                .setItems(new CharSequence[]{"Configurações", "Controle Remoto", "Playback"},
                         new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
                                 switch (which) {
-/*                                    case 0:
-                                        //startSettingsActivity(groupViewHolder.mDevice);
-                                        break;*/
                                     case 0:
-                                        startDeviceRemoteControlActivity(groupViewHolder.mDevice);
+                                        startSettingsActivity(groupViewHolder.mDevice);
                                         break;
                                     case 1:
+                                        startDeviceRemoteControlActivity(groupViewHolder.mDevice);
+                                        break;
+                                    case 2:
                                         startPlaybackActivity(groupViewHolder.mDevice);
                                         break;
                                 }
@@ -387,7 +386,7 @@ public class DeviceExpandableListAdapter extends BaseExpandableListAdapter {
     }
 
     private void startSettingsActivity(Device mDevice) {
-        if (mDevice.getLoginID() != 0) {
+//        if (mDevice.getLoginID() != 0) {
             Bundle extras = new Bundle();
             extras.putSerializable("device", mDevice);
 
@@ -395,7 +394,7 @@ public class DeviceExpandableListAdapter extends BaseExpandableListAdapter {
             intent.putExtras(extras);
 
             mContext.startActivity(intent);
-        }
+//        }
     }
 
     private void startPlaybackActivity(Device mDevice) {
