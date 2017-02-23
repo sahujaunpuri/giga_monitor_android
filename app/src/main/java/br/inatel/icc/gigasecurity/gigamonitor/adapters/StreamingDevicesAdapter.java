@@ -67,7 +67,7 @@ public class StreamingDevicesAdapter extends BaseAdapter {
 
         TextView tv1 = (TextView) view.findViewById(android.R.id.text1);
         tv1.setTextColor(Color.BLACK);
-        tv1.setText(device.getHostname());
+        tv1.setText(device.deviceName);
 
         TextView tv2 = (TextView) view.findViewById(android.R.id.text2);
         tv1.setTextColor(Color.DKGRAY);

@@ -184,7 +184,7 @@ public class Discovery extends Thread {
                     if (netCommon.has("SslPort")) device.setSslPort(netCommon.getInt("SSLPort"));
                     if (netCommon.has("UDPPort")) device.setSslPort(netCommon.getInt("UDPPort"));
                     if (netCommon.has("MonMode")) device.setMonMode(netCommon.getString("MonMode"));
-                    if (netCommon.has("DvrMac")) device.setDvrMac(netCommon.getString("DvrMac"));
+                    if (netCommon.has("DvrMac")) device.setMacAddress(netCommon.getString("DvrMac"));
                     if (netCommon.has("SN")) device.setSerialNumber(netCommon.getString("SN"));
                     if (netCommon.has("MAC")) device.setMacAddress(netCommon.getString("MAC"));
 

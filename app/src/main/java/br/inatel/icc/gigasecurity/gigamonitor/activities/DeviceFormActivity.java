@@ -73,7 +73,7 @@ public class DeviceFormActivity extends ActionBarActivity{
     }
 
     private void setForm(Device device) {
-        etName.setText(device.getHostname());
+        etName.setText(device.deviceName);
         etSerial.setText(device.getSerialNumber());
         etIpAddress.setText(device.getIpAddress());
         etDomain.setText(device.getDomain());
@@ -103,7 +103,7 @@ public class DeviceFormActivity extends ActionBarActivity{
 
 
         if(isHostnameFilled && ((isPortFilled && (isIPFilled || isDNSFilled)) || isSerialNumberFilled)) {
-            mDevice.setHostname(etName.getText().toString());
+            mDevice.deviceName = etName.getText().toString();
 
             String ip;
             if(!isIPFilled)

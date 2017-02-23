@@ -64,7 +64,7 @@ public class DeviceEditAdapter extends BaseAdapter {
             ivDeleteDevice = (ImageView) convertView.findViewById(R.id.iv_delete_device);
         }
 
-        tvDeviceName.setText(mDevices.get(position).getHostname());
+        tvDeviceName.setText(mDevices.get(position).deviceName);
 
         ivDeleteDevice.setOnClickListener(new View.OnClickListener() {
             @Override

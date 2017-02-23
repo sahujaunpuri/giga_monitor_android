@@ -70,7 +70,7 @@ public class Utils {
         return number;
     }
 
-    private static int stringToHexIP( final String ip ) {
+    public static int stringToHexIP( final String ip ) {
 
         int retIP = 0x00000000;
         final String regex = "((2((5[0-5])|[0-4][0-9])|(1([0-9]{2}))|(0|([1-9][0-9]))|([0-9]))\\.){3}(2((5[0-5])|[0-4][0-9])|(1([0-9]{2}))|(0|([1-9][0-9]))|([0-9]))";
@@ -85,6 +85,33 @@ public class Utils {
         }
 
         return ( retIP & 0xFFFFFFFF );
+    }
+
+    public static String stringIpToHexString(String ip){
+        String[] parts = ip.split("\\.");
+        String hexIp = "0x";
+        int segment;
+        for(int i = 3; i >= 0; i--){
+            segment = Integer.parseInt(parts[i]);
+            if(segment < 16)
+                hexIp = hexIp.concat("0");
+            hexIp = hexIp.concat(Integer.toHexString(segment).toUpperCase());
+        }
+        return hexIp;
+    }
+
+    public static String reverseIp(String ip){
+        String[] segment = new String[4];
+        int j = 0;
+        for(int i = 0; i < 4; i++){
+            segment[i] = "";
+            while(ip.charAt(j) != '.'){
+                segment[i] += ip.charAt(j);
+            }
+            j++;
+        }
+
+        return segment[3] + "." + segment[2] + "." + segment[1] + "." + segment[0];
     }
 
     private static String hexIPToString( final int hexIP ) {

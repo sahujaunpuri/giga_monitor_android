@@ -216,4 +216,9 @@ public class DeviceListActivity extends ActionBarActivity {
         return expandedGroups == 0;
     }
 
+    public static void collapseGroup(int groupPosition){
+        mExpandableListView.collapseGroup(groupPosition);
+        previousGroup = -1;
+    }
+
 }

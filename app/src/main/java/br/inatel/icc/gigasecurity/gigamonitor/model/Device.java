@@ -6,17 +6,11 @@ import com.basic.G;
 import com.google.gson.annotations.Expose;
 import com.lib.sdk.struct.SDK_CONFIG_NET_COMMON_V2;
 
+import org.json.JSONObject;
+
 import java.io.Serializable;
 import java.util.Calendar;
 
-
-//import br.inatel.icc.gigasecurity.gigamonitor.config.cloud.CloudConfig;
-//import br.inatel.icc.gigasecurity.gigamonitor.config.ddns.DDNSConfig;
-//import br.inatel.icc.gigasecurity.gigamonitor.config.dhcp.DHCPConfig;
-//import br.inatel.icc.gigasecurity.gigamonitor.config.dns.DNSConfig;
-//import br.inatel.icc.gigasecurity.gigamonitor.config.ethernet.EthernetConfig;
-//import br.inatel.icc.gigasecurity.gigamonitor.config.upnp.UpnpConfig;
-//import br.inatel.icc.gigasecurity.gigamonitor.config.wifi.WifiConfig;
 
 /**
  * Created by rinaldo.bueno on 29/08/2014.
@@ -24,7 +18,10 @@ import java.util.Calendar;
 public class Device implements Serializable {
 
     //Expose as need by GSON to exclude fields which should not be saved in Device List and void circular reference
+    @Expose public String deviceName;
     @Expose public String hostname;
+
+    //CONFIG_IPAddress
     @Expose private String ipAddress;
     @Expose private String domain;
     @Expose private String submask;
@@ -35,40 +32,46 @@ public class Device implements Serializable {
     @Expose private int sslPort = 8443;
     @Expose private int tcpPort = 34567;
     @Expose private int udpPort = 34568;
-    private String monMode = "TCP";
-    private int tcpMaxConn = 10;
-    private String dvrMac;
-    public boolean isLogged = false;
+    @Expose private int maxBPS;
+    @Expose private int transferPlan;
+    @Expose private String monMode = "TCP";
+    @Expose private int tcpMaxConn = 10;
 
-    @Expose private String ddnsDomain;
+    //CONFIG DNS
+    private String primaryDNS;
+    private String secondaryDNS;
+
+    //CONFIG UPnP
+    private boolean upnpEnable;
+    private int HTTPPort;
+    private int MediaPort;
+    private int MobilePort;
+
+    //CONFIG DDNS
+    private boolean ddnsEnable;
+    private String ddnsDomain;
+    private String ddnsUserName;
+
+    public boolean isLogged = false;
     @Expose private String username;
     @Expose private String password;
 
     //DeviceInfo
+    private String gigaCode;
     private String softwareVersion;
     private String hardwareVersion;
-    private int channelNumber = 0;
-    private int numberOfAlarmsIn;
-    private int numberOfAlarmsOut;
-    private String gigaCode;
-    public int audioInChannel;
-    public int talkInChannel;
-    public int talkOutChannel;
-
-    //Config
-//    private EthernetConfig ethernetConfig;
-//    private WifiConfig     wifiConfig;
-//    private DNSConfig      dnsConfig;
-//    private DDNSConfig     ddnsConfig;
-//    private UpnpConfig     upnpConfig;
-//    private CloudConfig    cloudConfig;
-//    private DHCPConfig     dhcpConfig;
+    @Expose private int channelNumber = 0;
+    @Expose private int numberOfAlarmsIn;
+    @Expose private int numberOfAlarmsOut;
+    @Expose public int audioInChannel;
+    @Expose public int talkInChannel;
+    @Expose public int talkOutChannel;
 
     private Calendar systemTime;
 
     private long loginID;
     private int error;
-    private int transferPlan;
+
 
     private long voiceHandle = -1L;
     private long playbackHandle = -1L;
@@ -76,13 +79,13 @@ public class Device implements Serializable {
     public Device() {
     }
 
-    public Device(String hostname) {
-        this.hostname = hostname;
+    public Device(String deviceName) {
+        this.deviceName = deviceName;
     }
 
 
-    public Device(String hostname, String ipAddress, String submask, String macAddress, String gateway, String serialNumber, int tcpPort, String gigaCode) {
-        this.hostname = hostname;
+    public Device(String deviceName, String ipAddress, String submask, String macAddress, String gateway, String serialNumber, int tcpPort, String gigaCode) {
+        this.deviceName = deviceName;
         this.ipAddress = ipAddress;
         this.submask = submask;
         this.macAddress = macAddress;
@@ -130,8 +133,8 @@ public class Device implements Serializable {
     }
 
     public int getId() {
-        Log.d("DEVICE", "getId: PRINTHASH " + (this.serialNumber + this.hostname).hashCode());
-        return (this.serialNumber + this.hostname).hashCode();
+        Log.d("DEVICE", "getId: PRINTHASH " + (this.serialNumber + this.deviceName).hashCode());
+        return (this.serialNumber + this.deviceName).hashCode();
     }
 
     public boolean hasLogin(){
@@ -211,14 +214,6 @@ public class Device implements Serializable {
 
     public void setTCPPort(int port) {
         this.tcpPort = port;
-    }
-
-    public String getDdnsDomain() {
-        return ddnsDomain;
-    }
-
-    public void setDdnsDomain(String ddnsDomain) {
-        this.ddnsDomain = ddnsDomain;
     }
 
     public String getPassword() {
@@ -358,23 +353,103 @@ public class Device implements Serializable {
         this.transferPlan = transferPlan;
     }
 
-    public String getDvrMac() {
-        return dvrMac;
+    public int getMaxBPS(){
+        return this.maxBPS;
     }
 
-    public void setDvrMac(String dvrMac) {
-        this.dvrMac = dvrMac;
+    public void setMaxBPS(int maxBPS){
+        this.maxBPS = maxBPS;
     }
 
+    public void setPrimaryDNS(String primaryDNS){
+        this.primaryDNS = primaryDNS;
+    }
 
-//    public EthernetConfig getEthernetConfig() {
-//        if(ethernetConfig == null){
-//            ethernetConfig = new EthernetConfig();
-//        }
-//        return ethernetConfig;
+    public String getPrimaryDNS(){
+        return this.primaryDNS;
+    }
+
+    public void setSecondaryDNS(String secondaryDNS){
+        this.secondaryDNS = secondaryDNS;
+    }
+
+    public String getSecondaryDNS(){
+        return this.secondaryDNS;
+    }
+
+    public int getHTTPPort() {
+        return HTTPPort;
+    }
+
+    public void setHTTPPort(int HTTPPort) {
+        this.HTTPPort = HTTPPort;
+    }
+
+    public int getMediaPort() {
+        return MediaPort;
+    }
+
+    public void setMediaPort(int mediaPort) {
+        MediaPort = mediaPort;
+    }
+
+    public int getMobilePort() {
+        return MobilePort;
+    }
+
+    public void setMobilePort(int mobilePort) {
+        MobilePort = mobilePort;
+    }
+
+    public boolean isUpnpEnable() {
+        return upnpEnable;
+    }
+
+    public void setUpnpEnable(boolean upnpEnable) {
+        this.upnpEnable = upnpEnable;
+    }
+
+    public boolean isDdnsEnable() {
+        return ddnsEnable;
+    }
+
+    public void setDdnsEnable(boolean ddnsEnable) {
+        this.ddnsEnable = ddnsEnable;
+    }
+
+    public String getDdnsDomain() {
+        return ddnsDomain;
+    }
+
+    public void setDdnsDomain(String ddnsDomain) {
+        this.ddnsDomain = ddnsDomain;
+    }
+
+    public String getDdnsUserName() {
+        return ddnsUserName;
+    }
+
+    public void setDdnsUserName(String ddnsUserName) {
+        this.ddnsUserName = ddnsUserName;
+    }
+
+    //    public JSONObject getCurrentConfig(){
+//        return currentConfig;
 //    }
 //
-//    public void setEthernetConfig(EthernetConfig config) { this.ethernetConfig = config; }
+//    public void setCurrentConfig(JSONObject currentConfig){
+//        this.currentConfig = currentConfig;
+//    }
+
+
+//    public EthernetConfig getCurrentConfig() {
+//        if(currentConfig == null){
+//            currentConfig = new EthernetConfig();
+//        }
+//        return currentConfig;
+//    }
+//
+//    public void setCurrentConfig(EthernetConfig config) { this.currentConfig = config; }
 //
 //    public WifiConfig getWifiConfig() {
 //        if(wifiConfig == null){
@@ -441,7 +516,7 @@ public class Device implements Serializable {
 
     @Override
     public String toString() {
-        return hostname;
+        return deviceName;
     }
 
     public long getPlaybackHandle() {

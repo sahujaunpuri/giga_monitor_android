@@ -48,9 +48,8 @@ public class DeviceExpandableListAdapter extends BaseExpandableListAdapter {
     private DeviceManager mDeviceManager;
     private ArrayList<GroupViewHolder> groupViewHolder;
     private ArrayList<ChildViewHolder> childViewHolder;
-    private int scrolled = 0;
-    private int lastitem = 0;
-    private int firstItem = 0;
+    private int amountScrolled = 0;
+    private boolean scrolled = false;
 
     public DeviceExpandableListAdapter(Context mContext, ArrayList<Device> mDevices) {
         this.mContext        = mContext;
@@ -139,7 +138,7 @@ public class DeviceExpandableListAdapter extends BaseExpandableListAdapter {
         groupView.progressBar  = (ProgressBar) groupView.convertView.findViewById(R.id.pb_expandable_list);
         groupView.mDevice      = mDevices.get(groupPosition);
 
-        groupView.tvDeviceName.setText(groupView.mDevice.getHostname());
+        groupView.tvDeviceName.setText(groupView.mDevice.deviceName);
 
         groupViewHolder.add(groupView);
         return groupView;
@@ -208,21 +207,26 @@ public class DeviceExpandableListAdapter extends BaseExpandableListAdapter {
 
                 if(newState == SCROLL_STATE_IDLE) {
                     final int currentFirstVisibleItem = currentChildViewHolder.gridLayoutManager.findFirstVisibleItemPosition();
-                    if(Math.abs(scrolled) > 200) {
+                    Log.d("scroll", "onScrollStateChanged: " + amountScrolled);
+                    if(Math.abs(amountScrolled) > 200 && !scrolled) {
                         final int currentLastVisibleItem = currentChildViewHolder.gridLayoutManager.findLastVisibleItemPosition();
                         itemToScroll = DeviceListActivity.listComponents.get(groupPosition).scrollToItem(currentFirstVisibleItem,currentLastVisibleItem);
+                        scrolled = true;
                     }else{
+                        if(scrolled)
+                            scrolled = false;
                         itemToScroll = currentFirstVisibleItem;
                     }
                     currentChildViewHolder.gridLayoutManager.smoothScrollToPosition(currentChildViewHolder.recyclerViewChannels, null, itemToScroll);
-                    scrolled = 0;
+                    amountScrolled = 0;
                 }
             }
 
             @Override
             public void onScrolled(RecyclerView recyclerView, int dx, int dy){
-                scrolled += dx;
-                super.onScrolled(recyclerView, dx, dy);
+                if(!scrolled)
+                    amountScrolled += dx;
+//                super.onScrolled(recyclerView, dx, dy);
             }
         };
     }
@@ -388,7 +392,7 @@ public class DeviceExpandableListAdapter extends BaseExpandableListAdapter {
     private void startSettingsActivity(Device mDevice) {
 //        if (mDevice.getLoginID() != 0) {
             Bundle extras = new Bundle();
-            extras.putSerializable("device", mDevice);
+            extras.putSerializable("device", mDevice.getSerialNumber());
 
             Intent intent = new Intent(mContext, ConfigMenuActivity.class);
             intent.putExtras(extras);

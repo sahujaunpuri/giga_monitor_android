@@ -76,7 +76,7 @@ public class DeviceRecyclerViewAdapter extends RecyclerView.Adapter<DeviceRecycl
     public void onBindViewHolder(final DeviceRecyclerViewAdapter.MyViewHolder myViewHolder, int position) {
         final Device mDevice = mDevices.get(position);
 
-        myViewHolder.tvDeviceName.setText(mDevice.getHostname());
+        myViewHolder.tvDeviceName.setText(mDevice.deviceName);
 
         if(mDevice.getLoginID() == 0) {
             loginDevice(mDevice, myViewHolder, position);

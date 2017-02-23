@@ -1,12 +1,10 @@
 //package br.inatel.icc.gigasecurity.gigamonitor.config.ethernet;
 //
 //import com.basic.G;
-//import com.xm.MyConfig;
-//import com.xm.javaclass.SDK_CONFIG_NET_COMMON;
+//import com.lib.sdk.struct.CONFIG_IPAddress;
+//import com.lib.sdk.struct.SDK_CONFIG_NET_COMMON_V2;
 //
 //import java.io.Serializable;
-//
-//import br.inatel.icc.gigasecurity.gigamonitor.config.Config2Abstract;
 //
 ///**
 // * File: EthernetCommonConfig.java
@@ -19,14 +17,14 @@
 // * All rights are reserved. Reproduction in whole or part is
 // * prohibited without the written consent of the copyright owner.
 // */
-//public class EthernetConfig extends Config2Abstract<SDK_CONFIG_NET_COMMON> implements Serializable {
+//public class EthernetConfig extends SDK_CONFIG_NET_COMMON_V2 implements Serializable {
 //
 //    public static enum PortType { TCP_PORT, UDP_PORT, SSL_PORT }
 //
-//    private byte[] hostName;
-//    private com.xm.javaclass.CONFIG_IPAddress hostIP;
-//    private com.xm.javaclass.CONFIG_IPAddress submask;
-//    private com.xm.javaclass.CONFIG_IPAddress gateway;
+//    private String hostName;
+//    private CONFIG_IPAddress hostIP;
+//    private CONFIG_IPAddress submask;
+//    private CONFIG_IPAddress gateway;
 //    private int httpPort;
 //    private int tcpPort;
 //    private int sslPort;
@@ -36,22 +34,19 @@
 //    private int maxBps;
 //    private int transferPlan;
 //    private boolean useHSDownLoad;
-//    private byte[] mac;
+//    private String mac;
 //    private byte[] zarg0;
 //
-//    @Override
-//    public long getConfigKey() {
-//        return MyConfig.SdkConfigType.E_SDK_CONFIG_SYSNET;
+////    @Override
+////    public long getConfigKey() {
+////        return MyConfig.SdkConfigType.E_SDK_CONFIG_SYSNET;
+////    }
+//
+//    public Class<SDK_CONFIG_NET_COMMON_V2> getConfigType() {
+//        return SDK_CONFIG_NET_COMMON_V2.class;
 //    }
 //
-//    @Override
-//    public Class<SDK_CONFIG_NET_COMMON> getConfigType() {
-//        return SDK_CONFIG_NET_COMMON.class;
-//    }
-//
-//
-//    @Override
-//    public void fillFromNetSdkConfig(SDK_CONFIG_NET_COMMON config) {
+//    public void fillFromNetSdkConfig(SDK_CONFIG_NET_COMMON_V2 config) {
 //        this.hostName = config.st_00_HostName;
 //        this.hostIP = config.st_01_HostIP;
 //        this.submask = config.st_02_Submask;
@@ -64,13 +59,13 @@
 //        this.monMode = config.st_09_MonMode;
 //        this.maxBps = config.st_10_MaxBps;
 //        this.transferPlan = config.st_11_TransferPlan;
-//        this.useHSDownLoad = config.st_12_bUseHSDownLoad;
+//        this.useHSDownLoad = (config.st_12_bUseHSDownLoad != 0);
 //        this.mac = config.st_13_sMac;
-//        this.zarg0 = config.st_14_Zarg0;
+//        this.zarg0 = config.st_151_arg0;
 //    }
 //
-//    @Override
-//    public SDK_CONFIG_NET_COMMON getAsNetSdkConfig() {
+//    public SDK_CONFIG_NET_COMMON_V2 getAsNetSdkConfig() {
+//        SDK_CONFIG_NET_COMMON_V2 mConfig = new SDK_CONFIG_NET_COMMON_V2();
 //        mConfig.st_00_HostName = this.hostName;
 //        mConfig.st_01_HostIP = this.hostIP;
 //        mConfig.st_02_Submask = this.submask;
@@ -83,9 +78,9 @@
 //        mConfig.st_09_MonMode = this.monMode;
 //        mConfig.st_10_MaxBps = this.maxBps;
 //        mConfig.st_11_TransferPlan = this.transferPlan;
-//        mConfig.st_12_bUseHSDownLoad = this.useHSDownLoad;
+//        mConfig.st_12_bUseHSDownLoad = (byte) (this.useHSDownLoad ? 1 : 0);
 //        mConfig.st_13_sMac = this.mac;
-//        mConfig.st_14_Zarg0 = this.zarg0;
+//        mConfig.st_151_arg0 = this.zarg0;
 //        return mConfig;
 //    }
 //

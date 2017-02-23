@@ -64,7 +64,7 @@ public class DeviceSearchAdapter extends BaseAdapter {
             itemHolder.tvMacAddress     = (TextView) mView[position].findViewById(R.id.tv_search_mac_address);
             itemHolder.ivImg            = (ImageView) mView[position].findViewById(R.id.iv_device_image);
 
-            itemHolder.tvDeviceName.setText(mDevices.get(position).getHostname());
+            itemHolder.tvDeviceName.setText(mDevices.get(position).deviceName);
             itemHolder.tvSerialNumber.setText(mDevices.get(position).getSerialNumber());
             itemHolder.tvIpAddress.setText(mDevices.get(position).getIpAddress());
             itemHolder.tvMacAddress.setText(mDevices.get(position).getMacAddress());
