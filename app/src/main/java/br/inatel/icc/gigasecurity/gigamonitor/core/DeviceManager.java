@@ -167,7 +167,10 @@ public class DeviceManager implements IFunSDKResult{
                     else {
                         FunSDK.DevGetConfigByJson(getHandler(), device.getSerialNumber(), "SystemInfo", 4096, -1, 10000, device.getId());
                     }
-                } else if(msg.arg1 == -11301){
+                } else if(msg.arg1 == -11301) {
+                    if (device != null)
+                        currentLoginListener.onLoginError(msg.arg1, device);
+                } else if(msg.arg1 == -11307){
                     if(device != null)
                         currentLoginListener.onLoginError(msg.arg1, device);
                 } else {
@@ -210,7 +213,7 @@ public class DeviceManager implements IFunSDKResult{
                     switch(msgContent.str){
                         case "SystemInfo":{
                             setDeviceInfo(json, device);
-//                            currentLoginListener.onLoginSuccess();
+                            currentLoginListener.onLoginSuccess();
                         }
                         break;
                         case "NetWork.NetCommon":{

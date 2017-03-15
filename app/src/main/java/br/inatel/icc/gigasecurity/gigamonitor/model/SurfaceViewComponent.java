@@ -1,23 +1,21 @@
 package br.inatel.icc.gigasecurity.gigamonitor.model;
 
+import android.app.Activity;
 import android.content.Context;
 import android.opengl.GLSurfaceView;
 import android.os.Environment;
 import android.os.Message;
 import android.util.AttributeSet;
 import android.util.Log;
-import android.view.GestureDetector;
 import android.view.Gravity;
-import android.view.MotionEvent;
 import android.view.ScaleGestureDetector;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.FrameLayout;
-import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import com.basic.G;
-import com.lib.ECONFIG;
 import com.lib.EUIMSG;
 import com.lib.FunSDK;
 import com.lib.IFunSDKResult;
@@ -29,19 +27,17 @@ import java.io.File;
 import java.text.SimpleDateFormat;
 import java.util.Locale;
 
-import br.inatel.icc.gigasecurity.gigamonitor.activities.DeviceListActivity;
 import br.inatel.icc.gigasecurity.gigamonitor.listeners.PlaybackListener;
 import br.inatel.icc.gigasecurity.gigamonitor.util.Utils;
 
-import static br.inatel.icc.gigasecurity.gigamonitor.activities.DeviceListActivity.mContext;
 import static br.inatel.icc.gigasecurity.gigamonitor.activities.DeviceListActivity.mDeviceManager;
 
 /**
  * Created by filipecampos on 03/12/2015.
  */
-public class SurfaceViewComponent extends LinearLayout implements IFunSDKResult{
+public class SurfaceViewComponent extends FrameLayout implements IFunSDKResult{
 
-    public GLSurfaceView mySurfaceView;
+    public GLSurfaceView20 mySurfaceView;
     public ProgressBar progressBar;
     public String deviceSn;
 
@@ -64,46 +60,69 @@ public class SurfaceViewComponent extends LinearLayout implements IFunSDKResult{
     public int playType = 0; //0 - live, 1 - playback live
     public boolean isSeeking = false;
     private int seekPercentage = 0;
-    private ScaleGestureDetector mScaleGestureDetector;
+
+    FrameLayout.LayoutParams lp;
+    Context mContext;
+    Activity mActivity;
+
 
     public SurfaceViewComponent(Context context){
         super(context);
+        this.setLongClickable(true);
+
         if(mUserID == -1){
             mUserID = FunSDK.RegUser(this);
         }
+        init(context);
+    }
+
+
+
+    public SurfaceViewComponent(Context context, AttributeSet attrs){
+        super(context, attrs);
+
+        if(mUserID == -1){
+            mUserID = FunSDK.RegUser(this);
+        }
+        init(context);
+
+    }
+
+    public SurfaceViewComponent(Context context, AttributeSet attrs, int defStyle){
+        super(context, attrs, defStyle);
+
+        if(mUserID == -1){
+            mUserID = FunSDK.RegUser(this);
+        }
+        init(context);
+
+    }
+
+    private void init(Context context){
+        mContext = context;
+        mActivity = (Activity) context;
+        this.setLongClickable(true);
         if(mySurfaceView == null){
             mySurfaceView = new GLSurfaceView20(getContext());
-//            mySurfaceView.setLongClickable(true);
-
-            LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(
-                    LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT);
+            mySurfaceView.setRenderMode(GLSurfaceView.RENDERMODE_CONTINUOUSLY);
+            mySurfaceView.setLongClickable(true);
+            lp = new FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT, Gravity.CENTER);
             mySurfaceView.setLayoutParams(lp);
             this.addView(mySurfaceView);
+
         }
-        progressBar = new ProgressBar(mContext);
+        progressBar = new ProgressBar(context);
         progressBar.setIndeterminate(true);
         progressBar.setScrollBarStyle(View.SCROLLBARS_INSIDE_INSET);
         progressBar.setLayoutParams(new FrameLayout.LayoutParams(mySurfaceView.getWidth()/4, mySurfaceView.getWidth()/4, Gravity.CENTER));
     }
 
-    public SurfaceViewComponent(Context context, AttributeSet attrs){
-        super(context, attrs);
-        if(mUserID == -1){
-            mUserID = FunSDK.RegUser(this);
-        }
-        if(mySurfaceView == null){
-            mySurfaceView = new GLSurfaceView20(getContext());
-            mySurfaceView.setLongClickable(true);
 
-            LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(
-                    LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT);
-            mySurfaceView.setLayoutParams(lp);
-            this.addView(mySurfaceView);
-        }
-        progressBar = new ProgressBar(mContext);
-        progressBar.setIndeterminate(true);
-        progressBar.setScrollBarStyle(View.SCROLLBARS_INSIDE_INSET);
-        progressBar.setLayoutParams(new FrameLayout.LayoutParams(mySurfaceView.getWidth()/4, mySurfaceView.getWidth()/4, Gravity.CENTER));
+    public void setViewSize(int width, int height){
+        lp.width = width;
+        lp.height = height;
+        mySurfaceView.requestLayout();
+
     }
 
     public void onPlayLive() {
@@ -268,27 +287,46 @@ public class SurfaceViewComponent extends LinearLayout implements IFunSDKResult{
         return 0;
     }
 
-
-
 //    @Override
 //    public boolean onTouchEvent(MotionEvent event) {
-//        boolean retVal = mScaleGestureDetector.onTouchEvent(event);
-//        retVal = mScaleGestureDetector.onTouchEvent(event) || retVal;
-//        return retVal || super.onTouchEvent(event);
+//        mScaleDetector.onTouchEvent(event);
+//        if(isScaling) {
+//            return true;
+//        }
+//        final int action = event.getActionMasked();
+//        switch (action) {
+//            case MotionEvent.ACTION_MOVE: {
+////                    panImage(event.getX() - lastX, event.getY() - lastY);
+//                    lastX = event.getX();
+//                    lastY = event.getY();
+//                Log.d(TAG, "onTouchEvent: MOVE");
+//            }
+//            break;
+//            case MotionEvent.ACTION_DOWN: {
+//                lastX = event.getX();
+//                lastY = event.getY();
+//                Log.d(TAG, "onTouchEvent: DOWN, surface: " + mySurfaceViewChannelId);
+//            }
+//            break;
+//            case MotionEvent.ACTION_UP: {
+//                Log.d(TAG, "onTouchEvent: UP");
+//            }
+//            break;
+//            case MotionEvent.ACTION_CANCEL:{
+//                Log.d(TAG, "onTouchEvent: CANCEL");
+//                Log.d(TAG, "onTouchEvent: position " + event.getX() + " " + event.getY() + ", surface: " + mySurfaceViewChannelId);
+//            }
+//
+//        }
+//
+//        return true;
 //    }
-
-
 
 //    @Override
 //    public boolean onInterceptTouchEvent(MotionEvent ev) {
-//        switch (ev.getAction()) {
-//            case MotionEvent.ACTION_MOVE:
-//            case MotionEvent.ACTION_DOWN:
-//            case MotionEvent.ACTION_CANCEL:
-//            case MotionEvent.ACTION_UP:
-//        }
-//        return super.onInterceptTouchEvent(ev);
+//        return true;
 //    }
+
 
     @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
@@ -299,9 +337,12 @@ public class SurfaceViewComponent extends LinearLayout implements IFunSDKResult{
     protected void onDetachedFromWindow() {
         super.onDetachedFromWindow();
     }
+
     @Override
     protected void onAttachedToWindow() {
         super.onAttachedToWindow();
+        if(this.isConnected && !this.isPlaying())
+            this.onResume();
         if(this.isConnected) {
             this.progressBar.setVisibility(VISIBLE);
             this.onStartVideo();
@@ -329,13 +370,8 @@ public class SurfaceViewComponent extends LinearLayout implements IFunSDKResult{
                             mDeviceManager.removeFromStartQueue(this);
                             mDeviceManager.requestStart();
                         }
-//                        if(surfaceDeleted)
-//                            onStop();
                         Log.i(TAG, "START SUCCESS");
                     } else {
-//                        if (mDeviceManager.isOnStartQueue(this))
-//                            mDeviceManager.removeFromStartQueue(this);
-//                        onPlayLive();
                         mDeviceManager.requestStart();
                         Log.i(TAG, "START FAILED");
                     }

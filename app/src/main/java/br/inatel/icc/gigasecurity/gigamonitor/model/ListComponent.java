@@ -83,6 +83,7 @@ public class ListComponent {
         surfaceViewComponent.setLayoutParams(lpSurfaceView);
         frameLayout.setLayoutParams(lpFrameLayout);
         surfaceViewComponent.progressBar.setLayoutParams(lpProgressBar);
+        surfaceViewComponent.setViewSize(surfaceViewWidth, surfaceViewHeight);
     }
 
     public void reOrderSurfaceViewComponents() {
@@ -101,7 +102,7 @@ public class ListComponent {
         return inverseMatrix[numQuad - 1][gridPositionSelected];
     }
 
-    public int scrollToItem(int currentFirstVisibleItem, int currentLastVisibleItem) {
+    public int scrollToItem(int currentFirstVisibleItem, int currentLastVisibleItem, int amountScrolled) {
         int itemToScroll = 0;
         int totalQuads = 0;
         if (numQuad == 1) {
@@ -124,10 +125,21 @@ public class ListComponent {
                 itemToScroll = currentFirstVisibleItem;
             }
         } else if (totalQuads == 1) {
-            if (lastFirstVisibleItem != currentFirstVisibleItem) {
-                itemToScroll = currentFirstVisibleItem;
-            } else if (lastLastVisibleItem != currentLastVisibleItem) {
-                itemToScroll = currentLastVisibleItem;
+//            if (lastFirstVisibleItem != currentFirstVisibleItem) {
+//                itemToScroll = currentFirstVisibleItem;
+//            } else if (lastLastVisibleItem != currentLastVisibleItem) {
+//                itemToScroll = currentLastVisibleItem;
+//            }
+            if(amountScrolled > 0) {
+                if (amountScrolled > 150)
+                    itemToScroll = currentLastVisibleItem;
+                else
+                    itemToScroll = currentFirstVisibleItem;
+            }else {
+                if (amountScrolled < 150)
+                    itemToScroll = currentFirstVisibleItem;
+                else
+                    itemToScroll = currentLastVisibleItem;
             }
         }
         this.lastFirstVisibleItem = currentFirstVisibleItem;

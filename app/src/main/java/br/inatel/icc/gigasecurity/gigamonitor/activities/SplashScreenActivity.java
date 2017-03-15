@@ -1,8 +1,10 @@
 package br.inatel.icc.gigasecurity.gigamonitor.activities;
 
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
+import android.util.Log;
 
 import java.util.Timer;
 import java.util.TimerTask;

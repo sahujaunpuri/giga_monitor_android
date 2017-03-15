@@ -165,7 +165,8 @@ public class DeviceFormActivity extends ActionBarActivity{
                     DeviceManager.getInstance().addDevice(this, mDevice);
                     DeviceManager.getInstance().updateListComponents();
 //                    DeviceListActivity.mDevices = null;
-//                    startDeviceListActivity();
+                    DeviceManager.getInstance().getExpandableListAdapter(DeviceListActivity.mContext).notifyDataSetChanged();
+                    startDeviceListActivity();
 
 
                     finish();
