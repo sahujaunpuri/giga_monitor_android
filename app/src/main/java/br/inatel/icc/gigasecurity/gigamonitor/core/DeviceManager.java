@@ -573,8 +573,6 @@ public class DeviceManager implements IFunSDKResult{
         } catch (JSONException e) {
             e.printStackTrace();
         }
-        Log.d(TAG, "rebootDevice: " + reboot.toString());
-
         FunSDK.DevCmdGeneral(getHandler(), device.getSerialNumber(), 1450, "OPMachine", 2048, 10000, reboot.toString().getBytes(), -1, device.getId());
         logoutDevice(mDevices.get(DeviceListActivity.previousGroup));
         DeviceListActivity.collapseGroup(DeviceListActivity.previousGroup);
@@ -781,15 +779,9 @@ public class DeviceManager implements IFunSDKResult{
         FunSDK.DevOption(getHandler(), device.getSerialNumber(), EDEV_OPTERATE.EDOPT_DEV_CONTROL, null, 0, command, 0, 0, "", device.getId());
     }
 
+
+
     // TODO
-    /*public void testPTZ(Device device) throws Exception {
-        mNetSdk.PTZControl(device.getLoginID(), 0, MyConfig.PTZ_ControlType.ZOOM_OUT, false, 4L, 0L, 0L);
-    }*/
-
-    /*public void rebootDevice(Device device) {
-        mNetSdk.H264DVRControlDVR(device.getLoginID(), 0, 2000);
-    }*/
-
     /*
     public boolean startDeviceIntercom(Context context, Device device) {
         boolean started = false;
@@ -912,7 +904,6 @@ public class DeviceManager implements IFunSDKResult{
 
 
     //Class used to Persistence the list of Devices
-
     public class DeviceList {
         @Expose
         public ArrayList<Device> list = new ArrayList<Device>();

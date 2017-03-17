@@ -7,7 +7,9 @@ import android.os.Environment;
 import android.os.Message;
 import android.util.AttributeSet;
 import android.util.Log;
+import android.view.GestureDetector;
 import android.view.Gravity;
+import android.view.MotionEvent;
 import android.view.ScaleGestureDetector;
 import android.view.View;
 import android.view.ViewGroup;
@@ -16,6 +18,7 @@ import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import com.basic.G;
+import com.lib.EPTZCMD;
 import com.lib.EUIMSG;
 import com.lib.FunSDK;
 import com.lib.IFunSDKResult;
@@ -27,6 +30,8 @@ import java.io.File;
 import java.text.SimpleDateFormat;
 import java.util.Locale;
 
+import br.inatel.icc.gigasecurity.gigamonitor.activities.DeviceListActivity;
+import br.inatel.icc.gigasecurity.gigamonitor.adapters.ChannelRecyclerViewAdapter;
 import br.inatel.icc.gigasecurity.gigamonitor.listeners.PlaybackListener;
 import br.inatel.icc.gigasecurity.gigamonitor.util.Utils;
 
@@ -43,12 +48,13 @@ public class SurfaceViewComponent extends FrameLayout implements IFunSDKResult{
 
     //IDs / Handlers
     String TAG = "SurfaceViewComp";
+    String TAG2 = "svcTOUCH";
     public int mPlayerHandler = 0;
     public int mySurfaceViewID;
     public long realPlayHandleID;
     private int mUserID = -1;
-    public int mySurfaceViewChannelId;
-    public int mySurfaceViewOrderId;
+    public int mySurfaceViewChannelId; //ordem original
+    public int mySurfaceViewOrderId;  //ordem modificada para grid
     public PlaybackListener currentPlaybackListener;
     public int recHandler;
 
@@ -60,11 +66,28 @@ public class SurfaceViewComponent extends FrameLayout implements IFunSDKResult{
     public int playType = 0; //0 - live, 1 - playback live
     public boolean isSeeking = false;
     private int seekPercentage = 0;
+    private float mScaleFactor = 1.F;
+    public boolean isScaling = false;
 
     FrameLayout.LayoutParams lp;
     Context mContext;
     Activity mActivity;
 
+    public ChannelRecyclerViewAdapter mRecyclerAdapter;
+
+    private ScaleGestureDetector mScaleDetector = new ScaleGestureDetector(DeviceListActivity.mContext, new ScaleListener());
+    private  GestureDetector mClickListener = new GestureDetector(DeviceListActivity.mContext, new SimpleGestureDetector());
+    private GLSurfaceView20.OnZoomListener mScaleListener = new GLSurfaceView20.OnZoomListener(){
+        @Override
+        public void onScale(float v, View view, MotionEvent motionEvent) {
+            Log.d(TAG2, "onScale: " + v);
+            mScaleFactor = v;
+        }
+
+        @Override
+        public void onBoundary(boolean b, boolean b1) {
+        }
+    };
 
     public SurfaceViewComponent(Context context){
         super(context);
@@ -98,6 +121,10 @@ public class SurfaceViewComponent extends FrameLayout implements IFunSDKResult{
 
     }
 
+    private SurfaceViewComponent surfaceViewComponent(){
+        return this;
+    }
+
     private void init(Context context){
         mContext = context;
         mActivity = (Activity) context;
@@ -106,6 +133,7 @@ public class SurfaceViewComponent extends FrameLayout implements IFunSDKResult{
             mySurfaceView = new GLSurfaceView20(getContext());
             mySurfaceView.setRenderMode(GLSurfaceView.RENDERMODE_CONTINUOUSLY);
             mySurfaceView.setLongClickable(true);
+            mySurfaceView.setOnZoomListener(mScaleListener);
             lp = new FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT, Gravity.CENTER);
             mySurfaceView.setLayoutParams(lp);
             this.addView(mySurfaceView);
@@ -287,45 +315,103 @@ public class SurfaceViewComponent extends FrameLayout implements IFunSDKResult{
         return 0;
     }
 
-//    @Override
-//    public boolean onTouchEvent(MotionEvent event) {
-//        mScaleDetector.onTouchEvent(event);
-//        if(isScaling) {
-//            return true;
-//        }
-//        final int action = event.getActionMasked();
-//        switch (action) {
-//            case MotionEvent.ACTION_MOVE: {
-////                    panImage(event.getX() - lastX, event.getY() - lastY);
-//                    lastX = event.getX();
-//                    lastY = event.getY();
-//                Log.d(TAG, "onTouchEvent: MOVE");
-//            }
-//            break;
-//            case MotionEvent.ACTION_DOWN: {
-//                lastX = event.getX();
-//                lastY = event.getY();
-//                Log.d(TAG, "onTouchEvent: DOWN, surface: " + mySurfaceViewChannelId);
-//            }
-//            break;
-//            case MotionEvent.ACTION_UP: {
-//                Log.d(TAG, "onTouchEvent: UP");
-//            }
-//            break;
-//            case MotionEvent.ACTION_CANCEL:{
-//                Log.d(TAG, "onTouchEvent: CANCEL");
-//                Log.d(TAG, "onTouchEvent: position " + event.getX() + " " + event.getY() + ", surface: " + mySurfaceViewChannelId);
-//            }
-//
-//        }
-//
-//        return true;
-//    }
+    public void ptzControl(int command){
+        //EPTZCMD
+        FunSDK.DevPTZControl(mPlayerHandler, deviceSn, mySurfaceViewChannelId, command, 0, 4, mySurfaceViewChannelId);
+    }
 
-//    @Override
-//    public boolean onInterceptTouchEvent(MotionEvent ev) {
-//        return true;
-//    }
+    private void interruptScroll(){
+        this.getParent().requestDisallowInterceptTouchEvent(true);
+        if(mRecyclerAdapter!=null)
+            mRecyclerAdapter.disableListScrolling();
+
+    }
+
+    private void resumeScroll(){
+        this.getParent().requestDisallowInterceptTouchEvent(false);
+        if(mRecyclerAdapter!=null)
+            mRecyclerAdapter.enableListScrolling();
+    }
+
+    @Override
+    public boolean onInterceptTouchEvent(MotionEvent ev) {
+        final int action = ev.getActionMasked();
+        if(mScaleFactor > 1.F)
+            interruptScroll();
+        if(mRecyclerAdapter != null)
+            mClickListener.onTouchEvent(ev);
+        mScaleDetector.onTouchEvent(ev);
+        if(isScaling)
+            return false;
+
+        switch (action) {
+            case MotionEvent.ACTION_MOVE: {
+                Log.d(TAG2, "onTouchEvent: MOVE");
+                if(mScaleFactor == 1.F){
+                    resumeScroll();
+                    return false;
+                }
+            }
+            break;
+            case MotionEvent.ACTION_DOWN: {
+                Log.d(TAG2, "onTouchEvent: DOWN, surface: " + mySurfaceViewChannelId);
+            }
+            break;
+            case MotionEvent.ACTION_UP: {
+                Log.d(TAG2, "onTouchEvent: UP");
+            }
+            break;
+            case MotionEvent.ACTION_CANCEL: {
+                Log.d(TAG2, "onTouchEvent: CANCEL");
+            }
+        }
+        return false;
+    }
+
+    private class ScaleListener extends ScaleGestureDetector.SimpleOnScaleGestureListener {
+        @Override
+        public boolean onScaleBegin(ScaleGestureDetector scaleGestureDetector) {
+            Log.d(TAG2, "onScaleBegin: ");
+            isScaling = true;
+            interruptScroll();
+            return true;
+        }
+
+        @Override
+        public void onScaleEnd(ScaleGestureDetector scaleGestureDetector){
+            Log.d(TAG2, "onScaleEnd: ");
+            resumeScroll();
+            isScaling = false;
+        }
+
+        @Override
+        public boolean onScale(ScaleGestureDetector scaleGestureDetector) {
+            return true;
+        }
+    }
+
+    private class SimpleGestureDetector extends GestureDetector.SimpleOnGestureListener{
+
+        @Override
+        public boolean onSingleTapConfirmed(MotionEvent motionEvent) {
+            //open menu
+            mRecyclerAdapter.openOverlayMenu(surfaceViewComponent(), surfaceViewComponent().mySurfaceViewChannelId);
+            Log.d(TAG2, "onSingleTapConfirmed: ");
+            resumeScroll();
+            return true;
+        }
+
+        @Override
+        public boolean onDoubleTap(MotionEvent motionEvent) {
+            //switch to quad 1
+            mRecyclerAdapter.singleQuad(surfaceViewComponent(), surfaceViewComponent().mySurfaceViewChannelId);
+            Log.d(TAG2, "onDoubleTap: ");
+            resumeScroll();
+            return true;
+        }
+    }
+
+
 
 
     @Override

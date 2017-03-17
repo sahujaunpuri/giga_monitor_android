@@ -221,4 +221,5 @@ public class DeviceListActivity extends ActionBarActivity {
         previousGroup = -1;
     }
 
+
 }

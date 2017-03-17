@@ -30,9 +30,9 @@ import br.inatel.icc.gigasecurity.gigamonitor.activities.DeviceRemoteControlActi
 import br.inatel.icc.gigasecurity.gigamonitor.config.ConfigMenuActivity;
 import br.inatel.icc.gigasecurity.gigamonitor.core.DeviceManager;
 import br.inatel.icc.gigasecurity.gigamonitor.listeners.LoginDeviceListener;
-import br.inatel.icc.gigasecurity.gigamonitor.listeners.RecyclerTouch;
 import br.inatel.icc.gigasecurity.gigamonitor.managers.CustomGridLayoutManager;
 import br.inatel.icc.gigasecurity.gigamonitor.model.Device;
+import br.inatel.icc.gigasecurity.gigamonitor.model.ListComponent;
 import br.inatel.icc.gigasecurity.gigamonitor.model.SurfaceViewComponent;
 
 import static android.support.v7.widget.RecyclerView.SCROLL_STATE_DRAGGING;
@@ -154,8 +154,6 @@ public class DeviceExpandableListAdapter extends BaseExpandableListAdapter {
         childViewHolder.recyclerViewChannels.setLayoutManager(childViewHolder.gridLayoutManager);
         childViewHolder.mRecyclerAdapter = new ChannelRecyclerViewAdapter(mContext, groupViewHolder.get(groupPosition).mDevice, DeviceListActivity.listComponents.get(groupPosition).numQuad, childViewHolder, DeviceListActivity.listComponents.get(groupPosition));
         childViewHolder.recyclerViewChannels.setAdapter(childViewHolder.mRecyclerAdapter);
-
-        childViewHolder.recyclerViewChannels.addOnItemTouchListener(new RecyclerTouch());
     }
 
     private void showExpanded(int groupPosition, GroupViewHolder groupViewHolder, ChildViewHolder childViewHolder) {
@@ -192,13 +190,15 @@ public class DeviceExpandableListAdapter extends BaseExpandableListAdapter {
         return new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                DeviceListActivity.listComponents.get(groupPosition).numQuad = nextNumQuad(DeviceListActivity.listComponents.get(groupPosition).numQuad,groupViewHolder.get(groupPosition).mDevice.getChannelNumber());
-                DeviceListActivity.listComponents.get(groupPosition).lastNumQuad = DeviceListActivity.listComponents.get(groupPosition).numQuad;
-                if(DeviceListActivity.listComponents.get(groupPosition).numQuad == 1)
-                    DeviceListActivity.listComponents.get(groupPosition).stopChannels(1);
+                ListComponent listComponent = DeviceListActivity.listComponents.get(groupPosition);
+                listComponent.numQuad = nextNumQuad(listComponent.numQuad, groupViewHolder.get(groupPosition).mDevice.getChannelNumber());
+                listComponent.lastNumQuad = listComponent.numQuad;
+                if(listComponent.numQuad == 1)
+                    listComponent.stopChannels(1);
 
                 childViewHolder.get(groupPosition).gridLayoutManager.setSpanCount(DeviceListActivity.listComponents.get(groupPosition).numQuad);
                 childViewHolder.get(groupPosition).mRecyclerAdapter.notifyDataSetChanged();
+                listComponent.resetScale();
             }
         };
     }
@@ -313,6 +313,7 @@ public class DeviceExpandableListAdapter extends BaseExpandableListAdapter {
 
         FrameLayout.LayoutParams lpRecyclerView = new FrameLayout.LayoutParams(viewWidth, viewHeight);
         childViewHolder.get(groupPosition).recyclerViewChannels.setLayoutParams(lpRecyclerView);
+        DeviceListActivity.listComponents.get(groupPosition).resetScale();
     }
 
     @Override

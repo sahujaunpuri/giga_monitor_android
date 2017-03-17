@@ -166,12 +166,16 @@ public class ListComponent {
         }
     }
 
-
-
     public void stopChannels(int start){
         for(int i = start; i <surfaceViewComponents.size(); i++){
             if(surfaceViewComponents.get(i).isConnected)
                 surfaceViewComponents.get(i).onStop();
+        }
+    }
+
+    public void resetScale(){
+        for(SurfaceViewComponent svc : surfaceViewComponents){
+            svc.mySurfaceView.resetScaleInfo();
         }
     }
 
