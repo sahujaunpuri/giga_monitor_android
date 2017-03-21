@@ -2,8 +2,7 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="vertical"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:layout_marginBottom="10dp"
+    android:layout_height="match_parent"
     android:gravity="center"
     android:layout_gravity="center"
     android:background="@drawable/background_with_shadow">
@@ -18,70 +17,102 @@
         <android.support.v7.widget.RecyclerView
             android:id="@+id/recycler_view_channels"
             android:layout_width="match_parent"
-            android:layout_height="200dp"
+            android:layout_height="match_parent"
             android:background="#000000"
-            android:layout_marginBottom="0dp"
             android:visibility="gone"
             android:gravity="center"
             android:layout_gravity="center"
             android:scrollbars="vertical" />
 
-
-        <LinearLayout
+        <RelativeLayout
             android:orientation="vertical"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:background="#FFFFFF"
-            android:alpha="0.7"
+            android:background="#66000000"
             android:id="@+id/layout_menu"
             android:visibility="gone"
             android:layout_gravity="center">
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_alignParentLeft="true"
+                android:orientation="vertical">
+                <ImageView
+                    android:layout_width="36dp"
+                    android:layout_height="50dp"
+                    android:src="@drawable/ic_volume_mute_white_36dp"
+                    android:id="@+id/iv_enable_receive_audio" />
+
+                <ImageView
+                    android:layout_width="36dp"
+                    android:layout_height="50dp"
+                    android:src="@drawable/ic_mic_off_white_36dp"
+                    android:id="@+id/iv_enable_send_audio"
+                    />
+            </LinearLayout>
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:textAppearance="?android:attr/textAppearanceLarge"
-                android:layout_gravity="center"
+                android:layout_alignParentTop="true"
+                android:layout_centerInParent="true"
                 android:text="Canal"
-                android:textColor="#000000"
+                android:textColor="#FFFFFF"
                 android:id="@+id/tv_channel_number_recycler" />
 
+            <ImageView
+                android:layout_width="36dp"
+                android:layout_height="36dp"
+                android:src="@drawable/ic_star_white_36dp"
+                android:id="@+id/iv_favorite_star"
+                android:layout_alignParentRight="true"
+                android:layout_marginTop="5dp"
+                android:layout_marginRight="5dp"/>
+
+            <ImageView
+                android:layout_width="36dp"
+                android:layout_height="36dp"
+                android:src="@drawable/ic_pause_white_36dp"
+                android:id="@+id/iv_play_pause"
+                android:scaleX="1.8"
+                android:scaleY="1.8"
+                android:layout_centerInParent="true"/>
+
+            <ImageView
+                android:layout_width="46dp"
+                android:layout_height="36dp"
+                android:src="@drawable/ic_hq_off"
+                android:id="@+id/iv_hq"
+                android:scaleX="1.5"
+                android:scaleY="1.5"
+                android:layout_alignParentBottom="true"
+                android:layout_alignParentLeft="true"/>
+
             <LinearLayout
-                android:orientation="horizontal"
-                android:layout_width="match_parent"
+                android:layout_width="wrap_content"
                 android:layout_height="match_parent"
-                android:gravity="center">
-
+                android:orientation="horizontal"
+                android:layout_alignParentBottom="true"
+                android:layout_alignParentRight="true">
                 <ImageView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:src="@drawable/ic_hq_off"
-                    android:layout_margin="5dp"
-                    android:id="@+id/iv_hq" />
-
+                    android:layout_width="50dp"
+                    android:layout_height="36dp"
+                    android:src="@drawable/ic_camera_alt_white_36dp"
+                    android:id="@+id/iv_snapshot"
+                    android:layout_gravity="bottom"/>
                 <ImageView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:src="@drawable/ic_pause"
-                    android:layout_margin="5dp"
-                    android:id="@+id/iv_play_pause" />
-
-                <ImageView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:src="@drawable/ic_snapshot_off"
-                    android:layout_margin="5dp"
-                    android:id="@+id/iv_snapshot" />
-
-                <ImageView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
+                    android:layout_width="50dp"
+                    android:layout_height="36dp"
+                    android:scaleX="1.4"
+                    android:scaleY="1.4"
                     android:src="@drawable/ic_snapvideo"
-                    android:layout_margin="5dp"
-                    android:id="@+id/iv_snapvideo" />
+                    android:id="@+id/iv_snapvideo"
+                    android:layout_gravity="bottom"/>
             </LinearLayout>
 
-        </LinearLayout>
+        </RelativeLayout>
 
 
     </FrameLayout>
@@ -96,5 +127,3 @@
 
 
 </LinearLayout>
-
-

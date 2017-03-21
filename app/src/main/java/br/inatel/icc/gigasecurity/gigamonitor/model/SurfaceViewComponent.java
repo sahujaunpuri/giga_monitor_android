@@ -68,6 +68,9 @@ public class SurfaceViewComponent extends FrameLayout implements IFunSDKResult{
     private int seekPercentage = 0;
     private float mScaleFactor = 1.F;
     public boolean isScaling = false;
+    public boolean isFavorite = false;
+    public boolean isSendAudioEnabled = false;
+    public boolean isReceiveAudioEnabled = false;
 
     FrameLayout.LayoutParams lp;
     Context mContext;
@@ -291,6 +294,14 @@ public class SurfaceViewComponent extends FrameLayout implements IFunSDKResult{
 
     public void setREC(boolean REC) {
         isREC = REC;
+    }
+
+    public boolean isFavorite() {
+        return isFavorite;
+    }
+
+    public void setFavorite(boolean favorite) {
+        isFavorite = favorite;
     }
 
     public int getMySurfaceViewChannelId() {

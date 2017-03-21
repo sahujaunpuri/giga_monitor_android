@@ -19,6 +19,7 @@ import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import java.util.ArrayList;
@@ -123,7 +124,10 @@ public class DeviceExpandableListAdapter extends BaseExpandableListAdapter {
         currentChildViewHolder.ivPlayPause          = (ImageView) currentChildViewHolder.convertView.findViewById(R.id.iv_play_pause);
         currentChildViewHolder.ivSnapshot           = (ImageView) currentChildViewHolder.convertView.findViewById(R.id.iv_snapshot);
         currentChildViewHolder.ivSnapvideo          = (ImageView) currentChildViewHolder.convertView.findViewById(R.id.iv_snapvideo);
-        currentChildViewHolder.layoutMenu           = (LinearLayout) currentChildViewHolder.convertView.findViewById(R.id.layout_menu);
+        currentChildViewHolder.ivFavorite           = (ImageView) currentChildViewHolder.convertView.findViewById(R.id.iv_favorite_star);
+        currentChildViewHolder.ivReceiveAudio       = (ImageView) currentChildViewHolder.convertView.findViewById(R.id.iv_enable_receive_audio);
+        currentChildViewHolder.ivSendAudio          = (ImageView) currentChildViewHolder.convertView.findViewById(R.id.iv_enable_send_audio);
+        currentChildViewHolder.layoutMenu           = (RelativeLayout) currentChildViewHolder.convertView.findViewById(R.id.layout_menu);
         currentChildViewHolder.tvChnNumber          = (TextView) currentChildViewHolder.convertView.findViewById(R.id.tv_channel_number_recycler);
 
         childViewHolder.add(currentChildViewHolder);
@@ -282,7 +286,7 @@ public class DeviceExpandableListAdapter extends BaseExpandableListAdapter {
     public void onGroupExpanded(int groupPosition){
         GroupViewHolder currentGroupViewHolder = groupViewHolder.get(groupPosition);
         currentGroupViewHolder.ivIndicator.setImageDrawable(mContext.getResources().getDrawable(R.drawable.ic_indicator_minus));
-        if(currentGroupViewHolder.mDevice.getChannelNumber() > 1) {
+        if(currentGroupViewHolder.mDevice.getChannelNumber() > 1 && currentGroupViewHolder.mDevice.isLogged) {
             currentGroupViewHolder.ivMore.setVisibility(View.VISIBLE);
             currentGroupViewHolder.ivQuad.setVisibility(View.VISIBLE);
         }
@@ -314,6 +318,8 @@ public class DeviceExpandableListAdapter extends BaseExpandableListAdapter {
         FrameLayout.LayoutParams lpRecyclerView = new FrameLayout.LayoutParams(viewWidth, viewHeight);
         childViewHolder.get(groupPosition).recyclerViewChannels.setLayoutParams(lpRecyclerView);
         DeviceListActivity.listComponents.get(groupPosition).resetScale();
+        childViewHolder.get(groupPosition).layoutMenu.getLayoutParams().height = viewHeight;
+        childViewHolder.get(groupPosition).layoutMenu.getLayoutParams().width = viewWidth;
     }
 
     @Override
@@ -328,6 +334,7 @@ public class DeviceExpandableListAdapter extends BaseExpandableListAdapter {
                 ((DeviceListActivity) mContext).runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
+                        mDevice.isLogged = true;
                         if(mDevice.getChannelNumber()>1){
                             DeviceListActivity.listComponents.get(position).numQuad = 2;
                             DeviceListActivity.listComponents.get(position).lastNumQuad = 2;
@@ -345,6 +352,7 @@ public class DeviceExpandableListAdapter extends BaseExpandableListAdapter {
                     ((DeviceListActivity) mContext).runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
+                            mDevice.isLogged = false;
                             groupViewHolder.ivQuad.setVisibility(View.INVISIBLE);
                             groupViewHolder.ivMore.setVisibility(View.INVISIBLE);
                             childViewHolder.recyclerViewChannels.setVisibility(View.GONE);
@@ -496,8 +504,8 @@ public class DeviceExpandableListAdapter extends BaseExpandableListAdapter {
     public class ChildViewHolder {
         public View convertView;
         public RecyclerView recyclerViewChannels;
-        public LinearLayout layoutMenu;
-        public ImageView ivHQ, ivPlayPause, ivSnapshot, ivSnapvideo;
+        public RelativeLayout layoutMenu;
+        public ImageView ivHQ, ivPlayPause, ivSnapshot, ivSnapvideo, ivFavorite, ivSendAudio, ivReceiveAudio;
         public TextView tvChnNumber, tvMessage;
         public ChannelRecyclerViewAdapter mRecyclerAdapter;
 

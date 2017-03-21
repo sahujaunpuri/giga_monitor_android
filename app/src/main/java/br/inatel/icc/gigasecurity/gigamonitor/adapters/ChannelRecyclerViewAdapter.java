@@ -1,6 +1,8 @@
 package br.inatel.icc.gigasecurity.gigamonitor.adapters;
 
 import android.content.Context;
+import android.graphics.Color;
+import android.graphics.PorterDuff;
 import android.os.Handler;
 import android.os.Looper;
 import android.support.v7.widget.GridLayoutManager;
@@ -214,10 +216,10 @@ public class ChannelRecyclerViewAdapter extends RecyclerView.Adapter<ChannelRecy
                 if (selectedSurfaceView.isConnected) {
                     if (selectedSurfaceView.isPlaying) {
                         selectedSurfaceView.onPause();
-                        childViewHolder.ivPlayPause.setImageDrawable(mContext.getResources().getDrawable(R.drawable.ic_play_off));
+                        childViewHolder.ivPlayPause.setImageDrawable(mContext.getResources().getDrawable(R.drawable.ic_play_arrow_white_36dp));
                     } else {
                         selectedSurfaceView.onResume();
-                        childViewHolder.ivPlayPause.setImageDrawable(mContext.getResources().getDrawable(R.drawable.ic_pause));
+                        childViewHolder.ivPlayPause.setImageDrawable(mContext.getResources().getDrawable(R.drawable.ic_pause_white_36dp));
                     }
                 }
             }
@@ -271,6 +273,51 @@ public class ChannelRecyclerViewAdapter extends RecyclerView.Adapter<ChannelRecy
                     listComponent.surfaceViewComponents.get(positionSelected).setREC(false);
                     listComponent.surfaceViewComponents.get(positionSelected).stopRecord();
                     childViewHolder.ivSnapvideo.setImageDrawable(mContext.getResources().getDrawable(R.drawable.ic_snapvideo));
+                }
+            }
+        });
+
+        childViewHolder.ivFavorite.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if(currentSurfaceView.isFavorite()){
+                    //unfavorite
+                    currentSurfaceView.isFavorite = false;
+                    childViewHolder.ivFavorite.clearColorFilter();
+                } else {
+                    //addfavorite
+                    currentSurfaceView.isFavorite = true;
+                    childViewHolder.ivFavorite.setColorFilter(Color.parseColor("#FFFF00"));
+                }
+            }
+        });
+
+        childViewHolder.ivSendAudio.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if(currentSurfaceView.isSendAudioEnabled){
+                    //disable
+                    currentSurfaceView.isSendAudioEnabled = false;
+                    childViewHolder.ivSendAudio.setImageDrawable(mContext.getResources().getDrawable(R.drawable.ic_mic_off_white_36dp));
+                } else{
+                    //enable
+                    currentSurfaceView.isSendAudioEnabled = true;
+                    childViewHolder.ivSendAudio.setImageDrawable(mContext.getResources().getDrawable(R.drawable.ic_mic_white_36dp));
+                }
+            }
+        });
+
+        childViewHolder.ivReceiveAudio.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if(currentSurfaceView.isReceiveAudioEnabled){
+                    //disable
+                    currentSurfaceView.isReceiveAudioEnabled = false;
+                    childViewHolder.ivReceiveAudio.setImageDrawable(mContext.getResources().getDrawable(R.drawable.ic_volume_mute_white_36dp));
+                }else {
+                    //enable
+                    currentSurfaceView.isReceiveAudioEnabled = true;
+                    childViewHolder.ivReceiveAudio.setImageDrawable(mContext.getResources().getDrawable(R.drawable.ic_volume_up_white_36dp));
                 }
             }
         });
@@ -339,6 +386,7 @@ public class ChannelRecyclerViewAdapter extends RecyclerView.Adapter<ChannelRecy
 
     public void openOverlayMenu(SurfaceViewComponent surfaceViewComponent, int channelPosition) {
         positionSelected = channelPosition;
+
         if (childViewHolder.layoutMenu.getVisibility() == View.GONE) {
 //            msvSelected = listComponent.getChannelSelected(channelPosition);
 //            positionSelected = position;
@@ -356,9 +404,9 @@ public class ChannelRecyclerViewAdapter extends RecyclerView.Adapter<ChannelRecy
             }
 
             if (surfaceViewComponent.isPlaying) {
-                childViewHolder.ivPlayPause.setImageDrawable(mContext.getResources().getDrawable(R.drawable.ic_pause));
+                childViewHolder.ivPlayPause.setImageDrawable(mContext.getResources().getDrawable(R.drawable.ic_pause_white_36dp));
             } else {
-                childViewHolder.ivPlayPause.setImageDrawable(mContext.getResources().getDrawable(R.drawable.ic_play_off));
+                childViewHolder.ivPlayPause.setImageDrawable(mContext.getResources().getDrawable(R.drawable.ic_play_arrow_white_36dp));
             }
 
             if (surfaceViewComponent.isREC()) {
@@ -366,6 +414,7 @@ public class ChannelRecyclerViewAdapter extends RecyclerView.Adapter<ChannelRecy
             } else {
                 childViewHolder.ivSnapvideo.setImageDrawable(mContext.getResources().getDrawable(R.drawable.ic_snapvideo));
             }
+
             childViewHolder.layoutMenu.setVisibility(View.VISIBLE);
 
         } else {
