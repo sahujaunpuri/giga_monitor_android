@@ -17,7 +17,6 @@ import android.view.ViewGroup;
 import android.widget.BaseExpandableListAdapter;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -39,8 +38,6 @@ import br.inatel.icc.gigasecurity.gigamonitor.model.SurfaceViewComponent;
 import static android.support.v7.widget.RecyclerView.SCROLL_STATE_DRAGGING;
 import static android.support.v7.widget.RecyclerView.SCROLL_STATE_IDLE;
 import static android.support.v7.widget.RecyclerView.SCROLL_STATE_SETTLING;
-
-//import br.inatel.icc.gigasecurity.gigamonitor.activities.DeviceRemoteControlActivity;
 
 /**
  * Created by filipecampos on 30/05/2016.

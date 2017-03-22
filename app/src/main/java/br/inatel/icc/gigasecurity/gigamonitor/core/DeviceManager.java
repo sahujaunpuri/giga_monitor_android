@@ -26,7 +26,6 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.LinkedList;
 
 import br.inatel.icc.gigasecurity.gigamonitor.R;
@@ -40,8 +39,6 @@ import br.inatel.icc.gigasecurity.gigamonitor.model.ListComponent;
 import br.inatel.icc.gigasecurity.gigamonitor.model.SurfaceViewComponent;
 import br.inatel.icc.gigasecurity.gigamonitor.util.ComplexPreferences;
 import br.inatel.icc.gigasecurity.gigamonitor.util.Utils;
-
-//import br.inatel.icc.gigasecurity.gigamonitor.task.LoginDeviceAsyncTask;
 
 /**
  * Created by rinaldo.bueno on 29/08/2014.
@@ -57,15 +54,13 @@ public class DeviceManager implements IFunSDKResult{
     private static String TAG = DeviceManager.class.getSimpleName();
     private static DeviceManager mInstance = null;
     private int mFunUserHandler;
-    public int nSeq = 0;
 
-    private final HashMap<Integer, Device> mLoggedDevices = new HashMap<Integer, Device>();
-    private LinkedList<SurfaceViewComponent> startList = new LinkedList<SurfaceViewComponent>();
-    public boolean startPlay = false;
-
-    public boolean channelOnRec;
+    public HashMap<String, ArrayList<Integer>> favoritesMap;
     private ArrayList<Device> mDevices = new ArrayList<Device>();
     private ArrayList<Device> mLanDevices = new ArrayList<Device>();
+    private final HashMap<Integer, Device> mLoggedDevices = new HashMap<Integer, Device>();
+    private LinkedList<SurfaceViewComponent> startList = new LinkedList<SurfaceViewComponent>();
+
 
     private LoginDeviceListener currentLoginListener;
     private PlaybackSearchListener currentPlaybackSearchListener;
@@ -75,6 +70,9 @@ public class DeviceManager implements IFunSDKResult{
 
     private DeviceExpandableListAdapter expandableListAdapter;
     private ArrayList<ListComponent> listComponents;
+
+    private boolean startPlay = false;
+    public boolean channelOnRec;
 
     private DeviceManager() {
     }
@@ -307,16 +305,20 @@ public class DeviceManager implements IFunSDKResult{
 
     public void loadSavedData(Context context){
         mDevices = loadDevices(context);
+        favoritesMap = new HashMap<String, ArrayList<Integer>>();
+        favoritesMap = loadFavorites(context);
     }
 
     public void addDevice(Context context, Device device) {
         mDevices.add(device);
-        saveDevices(context);
+        saveData(context);
     }
 
-    public void saveDevices(Context context) {
+    public void saveData(Context context) {
         ComplexPreferences cp = new ComplexPreferences(context, context.getString(R.string.sheredpreference_list), Context.MODE_PRIVATE);
         cp.putObject("DeviceList", new DeviceList(mDevices));
+        cp.putObject("FavoritesMap", favoritesMap);
+
         cp.apply();
     }
 
@@ -329,13 +331,29 @@ public class DeviceManager implements IFunSDKResult{
         return deviceList.getList();
     }
 
+    private HashMap<String, ArrayList<Integer>> loadFavorites(Context context) {
+        ComplexPreferences cp = new ComplexPreferences(context, context.getString(R.string.sheredpreference_list), Context.MODE_PRIVATE);
+        HashMap<String, ArrayList<Double>> hashMap = cp.getObject("FavoritesMap", HashMap.class);
+        if(hashMap != null)
+            for (HashMap.Entry<String, ArrayList<Double>> entry : hashMap.entrySet()){
+                ArrayList<Integer> arrayList = new ArrayList<Integer>();
+                for(Double i : entry.getValue()){
+                    arrayList.add(i.intValue());
+                }
+                favoritesMap.remove(entry.getKey());
+                favoritesMap.put(entry.getKey(), arrayList);
+            }
+
+        return favoritesMap;
+    }
+
     public ArrayList<Device> getDevices(){
         return mDevices;
     }
 
     public void updateDevices(Context context, ArrayList<Device> devices){
         mDevices = devices;
-        saveDevices(context);
+        saveData(context);
     }
 
     private void setDeviceInfo(JSONObject json, Device device) {
@@ -356,7 +374,7 @@ public class DeviceManager implements IFunSDKResult{
                 device.talkOutChannel = systemInfo.getInt("TalkOutChannel");
             if(systemInfo.has("VideoInChannel"))
                 device.setChannelNumber(systemInfo.getInt("VideoInChannel"));
-            saveDevices(DeviceListActivity.mContext);
+            saveData(DeviceListActivity.mContext);
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -779,6 +797,36 @@ public class DeviceManager implements IFunSDKResult{
         FunSDK.DevOption(getHandler(), device.getSerialNumber(), EDEV_OPTERATE.EDOPT_DEV_CONTROL, null, 0, command, 0, 0, "", device.getId());
     }
 
+    public boolean isFavorite(SurfaceViewComponent channel){
+        return favoritesMap.containsKey(channel.deviceSn) && favoritesMap.get(channel.deviceSn).contains(channel.mySurfaceViewChannelId);
+    }
+
+    public void addFavorite(Context context, SurfaceViewComponent channel){
+        Log.d(TAG, "addFavorite: channel " + channel.mySurfaceViewChannelId);
+        ArrayList<Integer> arrayList = new ArrayList<Integer>();
+        if(favoritesMap.containsKey(channel.deviceSn)){
+            arrayList = favoritesMap.get(channel.deviceSn);
+            favoritesMap.remove(channel.deviceSn);
+        }
+        arrayList.add(channel.mySurfaceViewChannelId);
+        favoritesMap.put(channel.deviceSn, arrayList);
+        channel.isFavorite = true;
+        saveData(context);
+    }
+
+    public void removeFavorite(Context context, SurfaceViewComponent channel){
+        Log.d(TAG, "removeFavorite: channel " + channel.mySurfaceViewChannelId);
+        if(isFavorite(channel)){
+            ArrayList<Integer> arrayList = favoritesMap.get(channel.deviceSn);
+            arrayList.remove(Integer.valueOf(channel.mySurfaceViewChannelId));
+            favoritesMap.remove(channel.deviceSn);
+            if(arrayList.size() > 0)
+                favoritesMap.put(channel.deviceSn, arrayList);
+        }
+        channel.isFavorite = false;
+        saveData(context);
+    }
+
 
 
     // TODO
@@ -896,10 +944,6 @@ public class DeviceManager implements IFunSDKResult{
         }
 
         return logList;
-    }*/
-
-    /*public boolean remoteControl(long loginID, int keyboardValue) {
-        return mNetSdk.H264DVRClickKey(loginID, keyboardValue, MyConfig.NetKeyBoardState.SDK_NET_KEYBOARD_KEYDOWN);
     }*/
 
 

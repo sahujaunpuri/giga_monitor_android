@@ -223,7 +223,11 @@
         <activity
             android:name=".activities.DeviceListActivity"
             android:hardwareAccelerated="true"
-            android:label="@string/title_activity_device_list3"></activity>
+            android:label="@string/title_activity_device_list3"/>
+        <activity
+            android:name=".activities.MyTimelineActivity"
+            android:hardwareAccelerated="true"
+            android:label="@string/title_activity_timeline"/>
     </application>
 
 </manifest>

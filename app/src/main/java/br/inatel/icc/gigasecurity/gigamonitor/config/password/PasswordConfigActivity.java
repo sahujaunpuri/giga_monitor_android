@@ -2,10 +2,8 @@ package br.inatel.icc.gigasecurity.gigamonitor.config.password;
 
 import android.app.Activity;
 import android.content.Context;
-import android.os.AsyncTask;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.EditText;
@@ -35,7 +33,7 @@ public class PasswordConfigActivity extends ActionBarActivity {
             int messageId = R.string.saved;
 
             Toast.makeText(getApplicationContext(), messageId, Toast.LENGTH_SHORT).show();
-            mManager.saveDevices(mContext);
+            mManager.saveData(mContext);
 
             finish();
         }
@@ -45,7 +43,7 @@ public class PasswordConfigActivity extends ActionBarActivity {
             int messageId = R.string.invalid_device_save;
 
             Toast.makeText(getApplicationContext(), messageId, Toast.LENGTH_SHORT).show();
-            mManager.saveDevices(mContext);
+            mManager.saveData(mContext);
 
         }
     };

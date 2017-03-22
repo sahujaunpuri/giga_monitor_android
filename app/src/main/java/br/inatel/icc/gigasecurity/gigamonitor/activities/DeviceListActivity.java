@@ -26,7 +26,6 @@ import br.inatel.icc.gigasecurity.gigamonitor.model.SurfaceViewComponent;
 public class DeviceListActivity extends ActionBarActivity {
 
     public static Context mContext;
-    public static RelativeLayout layoutMain;
     public static ExpandableListView mExpandableListView;
     public static DeviceExpandableListAdapter mAdapter;
     public static DeviceManager mDeviceManager;
@@ -40,15 +39,6 @@ public class DeviceListActivity extends ActionBarActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_device_list);
-
-//        if(getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE) {
-//            getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
-//            getSupportActionBar().hide();
-//
-//            if(previousGroup != -1) {
-//                mExpandableListView.scrollTo(previousGroup, 0);
-//            }
-//        }
 
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
 
@@ -129,7 +119,6 @@ public class DeviceListActivity extends ActionBarActivity {
         mExpandableListView = (ExpandableListView) findViewById(R.id.expandable_list_view2);
         mDeviceManager      = DeviceManager.getInstance();
         mContext            = DeviceListActivity.this;
-        layoutMain          = (RelativeLayout) findViewById(R.id.layout_main);
         mAdapter            = mDeviceManager.getExpandableListAdapter(mContext);
         listComponents      = mDeviceManager.getListComponents();
         mDevices            = mDeviceManager.getDevices();

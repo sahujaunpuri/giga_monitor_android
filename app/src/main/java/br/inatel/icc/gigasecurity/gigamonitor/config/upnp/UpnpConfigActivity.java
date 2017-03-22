@@ -37,7 +37,7 @@ public class UpnpConfigActivity extends ActionBarActivity {
         public void onSetConfig() {
             int messageId = R.string.saved;
             Toast.makeText(getApplicationContext(), messageId, Toast.LENGTH_SHORT).show();
-            mManager.saveDevices(mContext);
+            mManager.saveData(mContext);
 
             finish();
         }

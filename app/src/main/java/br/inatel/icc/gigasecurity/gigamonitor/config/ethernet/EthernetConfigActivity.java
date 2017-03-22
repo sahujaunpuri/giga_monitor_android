@@ -53,7 +53,7 @@ public class EthernetConfigActivity extends ActionBarActivity implements OnCheck
             int messageId = R.string.saved;
 
             Toast.makeText(getApplicationContext(), messageId, Toast.LENGTH_SHORT).show();
-            mManager.saveDevices(mContext);
+            mManager.saveData(mContext);
 
             finish();
         }
@@ -63,7 +63,7 @@ public class EthernetConfigActivity extends ActionBarActivity implements OnCheck
             int messageId = R.string.invalid_device_save;
 
             Toast.makeText(getApplicationContext(), messageId, Toast.LENGTH_SHORT).show();
-            mManager.saveDevices(mContext);
+            mManager.saveData(mContext);
 
             finish();
         }

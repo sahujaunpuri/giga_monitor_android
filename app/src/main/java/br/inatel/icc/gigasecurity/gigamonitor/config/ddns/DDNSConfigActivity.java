@@ -2,7 +2,6 @@ package br.inatel.icc.gigasecurity.gigamonitor.config.ddns;
 
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.ArrayAdapter;
@@ -11,9 +10,6 @@ import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.Toast;
-
-import com.basic.G;
-import com.lib.FunSDK;
 
 import br.inatel.icc.gigasecurity.gigamonitor.R;
 import br.inatel.icc.gigasecurity.gigamonitor.core.DeviceManager;
@@ -51,7 +47,7 @@ public class DDNSConfigActivity extends ActionBarActivity {
         public void onSetConfig() {
             int messageId = R.string.saved;
             Toast.makeText(getApplicationContext(), messageId, Toast.LENGTH_SHORT).show();
-            mManager.saveDevices(mContext);
+            mManager.saveData(mContext);
 
             finish();
         }

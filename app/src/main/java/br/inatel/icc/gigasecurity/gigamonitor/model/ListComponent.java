@@ -8,13 +8,13 @@ import android.view.Gravity;
 import android.view.View;
 import android.widget.FrameLayout;
 import android.widget.LinearLayout;
-import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 
 import br.inatel.icc.gigasecurity.gigamonitor.activities.DeviceListActivity;
+import br.inatel.icc.gigasecurity.gigamonitor.core.DeviceManager;
 
 /**
  * Created by filipecampos on 02/05/2016.
@@ -23,9 +23,9 @@ public class ListComponent {
 
     public ArrayList<SurfaceViewComponent> surfaceViewComponents;
     public Device mDevice;
+    public DeviceManager mDeviceManager;
     public Context mContext;
     public int numQuad, lastNumQuad, surfaceViewWidth, surfaceViewHeight;
-    public Display mDisplay;
     public int lastFirstVisibleItem;
     public int lastLastVisibleItem;
     public int lastFirstItemBeforeSelectChannel;
@@ -43,10 +43,8 @@ public class ListComponent {
         this.mContext = DeviceListActivity.mContext;
         this.numQuad = 1;
         this.lastNumQuad = 1;
-        this.mDisplay = ((DeviceListActivity) mContext).getWindowManager().getDefaultDisplay();
+        this.mDeviceManager = DeviceManager.getInstance();
 
-        this.surfaceViewWidth = this.mDisplay.getWidth();
-        this.surfaceViewHeight = this.mDisplay.getHeight() / 3;
         this.lastFirstVisibleItem = 0;
         this.lastLastVisibleItem = 0;
     }
@@ -63,13 +61,20 @@ public class ListComponent {
             surfaceViewComponent.mySurfaceViewOrderId = i;
             surfaceViewComponent.deviceSn = mDevice.getSerialNumber();
 
+            if(checkFavorite(i))
+                surfaceViewComponent.setFavorite(true);
+
             surfaceViewComponents.add(surfaceViewComponent);
         }
     }
 
+    public boolean checkFavorite(int channelNumber){
+        return mDeviceManager.favoritesMap.containsKey(mDevice.getSerialNumber()) && mDeviceManager.favoritesMap.get(mDevice.getSerialNumber()).contains(channelNumber);
+    }
+
     public void changeSurfaceViewSize(SurfaceViewComponent surfaceViewComponent, FrameLayout frameLayout) {
-        surfaceViewWidth = (Resources.getSystem().getDisplayMetrics().widthPixels / numQuad);
-        surfaceViewHeight = ((Resources.getSystem().getDisplayMetrics().heightPixels / 3) + 10) / numQuad;
+        int surfaceViewWidth = (Resources.getSystem().getDisplayMetrics().widthPixels / numQuad);
+        int surfaceViewHeight = ((Resources.getSystem().getDisplayMetrics().heightPixels / 3) + 10) / numQuad;
 
         if (mContext.getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE) {
             surfaceViewHeight = (Resources.getSystem().getDisplayMetrics().heightPixels) / numQuad;

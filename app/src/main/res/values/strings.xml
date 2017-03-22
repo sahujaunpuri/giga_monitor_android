@@ -273,6 +273,7 @@
     <string name="title_activity_device_chn_zoom">DeviceChnZoom</string>
     <string name="title_activity_device_list2">DeviceListActivity2</string>
     <string name="title_activity_device_list3">Meus Dispositivos</string>
+    <string name="title_activity_timeline">Minha Timeline</string>
 
 
 </resources>

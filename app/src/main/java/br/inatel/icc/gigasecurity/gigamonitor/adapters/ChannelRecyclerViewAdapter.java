@@ -1,15 +1,16 @@
 package br.inatel.icc.gigasecurity.gigamonitor.adapters;
 
 import android.content.Context;
+import android.content.res.Configuration;
+import android.content.res.Resources;
 import android.graphics.Color;
-import android.graphics.PorterDuff;
 import android.os.Handler;
 import android.os.Looper;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.LayoutInflater;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.Animation;
@@ -21,12 +22,10 @@ import android.widget.Toast;
 import br.inatel.icc.gigasecurity.gigamonitor.R;
 import br.inatel.icc.gigasecurity.gigamonitor.activities.DeviceListActivity;
 import br.inatel.icc.gigasecurity.gigamonitor.core.DeviceManager;
-import br.inatel.icc.gigasecurity.gigamonitor.managers.CustomGridLayoutManager;
 import br.inatel.icc.gigasecurity.gigamonitor.model.Device;
 import br.inatel.icc.gigasecurity.gigamonitor.model.ListComponent;
 import br.inatel.icc.gigasecurity.gigamonitor.model.SurfaceViewComponent;
 
-import static br.inatel.icc.gigasecurity.gigamonitor.activities.DeviceListActivity.mContext;
 
 /**
  * Created by filipecampos on 28/04/2016.
@@ -104,7 +103,6 @@ public class ChannelRecyclerViewAdapter extends RecyclerView.Adapter<ChannelRecy
             parent.removeAllViews();
         }
 
-
         myViewHolder.frameLayout.addView(currentSurfaceView);
         myViewHolder.frameLayout.addView(currentSurfaceView.progressBar);
 
@@ -115,104 +113,10 @@ public class ChannelRecyclerViewAdapter extends RecyclerView.Adapter<ChannelRecy
 
         listComponent.changeSurfaceViewSize(currentSurfaceView, myViewHolder.frameLayout);
 
-        //TODO click listener pela GLView - onInterceptTouchEvent()
-//        currentSurfaceView.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                clickTime = System.currentTimeMillis();
-//                if(clickTime - lastClickTime <= 300) {
-//                    doubleClick = true;
-//                    currentSurfaceView.progressBar.setVisibility(View.VISIBLE);
-//
-//                    if(listComponent.numQuad == 1) {
-//                        listComponent.numQuad = listComponent.lastNumQuad;
-//                    } else {
-//                        listComponent.numQuad = 1;
-//                        GridLayoutManager lm = (GridLayoutManager) childViewHolder.recyclerViewChannels.getLayoutManager();
-//                        listComponent.lastFirstItemBeforeSelectChannel = lm.findFirstVisibleItemPosition();
-//                    }
-//                    childViewHolder.gridLayoutManager.setSpanCount(listComponent.numQuad);
-//                    childViewHolder.mRecyclerAdapter.notifyDataSetChanged();
-//
-//                    listComponent.changeSurfaceViewSize(listComponent.surfaceViewComponents.get(msvSelected), myViewHolder.frameLayout);
-//
-//                    if(listComponent.numQuad == 1) {
-//                        Log.d("teste", "onClick: " + msvSelected);
-//                        childViewHolder.recyclerViewChannels.scrollToPosition(msvSelected);
-//                        listComponent.lastFirstVisibleItem = msvSelected;
-//                        listComponent.lastLastVisibleItem = msvSelected;
-//                    } else {
-//                        Log.d("teste", "onClick: " + listComponent.lastFirstItemBeforeSelectChannel);
-//                        childViewHolder.recyclerViewChannels.scrollToPosition(listComponent.lastFirstItemBeforeSelectChannel);
-//                        listComponent.lastFirstVisibleItem = listComponent.lastFirstItemBeforeSelectChannel;
-//                        listComponent.lastLastVisibleItem = listComponent.lastFirstItemBeforeSelectChannel + listComponent.numQuad;
-//                    }
-//
-//                } else {
-//                    if (childViewHolder.layoutMenu.getVisibility() == View.GONE) {
-//                        msvSelected = listComponent.getChannelSelected(position);
-//                        positionSelected = position;
-//                        SurfaceViewComponent selectedSurfaceView = listComponent.surfaceViewComponents.get(positionSelected);
-//
-//                        int channelPosition = msvSelected + 1;
-//
-//                        String title = "Canal " + channelPosition;
-//                        childViewHolder.tvChnNumber.setText(title);
-//
-//                        if (selectedSurfaceView.isHD()) {
-//                            childViewHolder.ivHQ.setImageDrawable(mContext.getResources().getDrawable(R.drawable.ic_hq_on));
-//                        } else {
-//                            childViewHolder.ivHQ.setImageDrawable(mContext.getResources().getDrawable(R.drawable.ic_hq_off));
-//                        }
-//
-//                        if (selectedSurfaceView.isPlaying) {
-//                            childViewHolder.ivPlayPause.setImageDrawable(mContext.getResources().getDrawable(R.drawable.ic_pause));
-//                        } else {
-//                            childViewHolder.ivPlayPause.setImageDrawable(mContext.getResources().getDrawable(R.drawable.ic_play_off));
-//                        }
-//
-//                        if (selectedSurfaceView.isREC()) {
-//                            childViewHolder.ivSnapvideo.setImageDrawable(mContext.getResources().getDrawable(R.drawable.ic_snapvideo_on));
-//                        } else {
-//                            childViewHolder.ivSnapvideo.setImageDrawable(mContext.getResources().getDrawable(R.drawable.ic_snapvideo));
-//                        }
-//
-//                        new Thread(new Runnable() {
-//                            @Override
-//                            public void run() {
-//                                try {
-//                                    Thread.sleep(200);
-//                                } catch (InterruptedException e) {
-//                                    e.printStackTrace();
-//                                }
-//                                ((DeviceListActivity) mContext).runOnUiThread(new Runnable() {
-//                                    @Override
-//                                    public void run() {
-//                                        if(!doubleClick) {
-//                                            childViewHolder.layoutMenu.setVisibility(View.VISIBLE);
-//                                        } else {
-//                                            doubleClick = false;
-//                                        }
-//                                    }
-//                                });
-//                            }
-//                        }).start();
-//
-//
-//                    } else {
-//                        childViewHolder.layoutMenu.setVisibility(View.GONE);
-//                    }
-//
-//                }
-//
-//                lastClickTime = clickTime;
-//            }
-//        });
-//
         childViewHolder.ivPlayPause.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                SurfaceViewComponent selectedSurfaceView = listComponent.surfaceViewComponents.get(positionSelected);
+                SurfaceViewComponent selectedSurfaceView = listComponent.surfaceViewComponents.get(listComponent.getChannelSelected(positionSelected));
                 if (selectedSurfaceView.isConnected) {
                     if (selectedSurfaceView.isPlaying) {
                         selectedSurfaceView.onPause();
@@ -228,12 +132,10 @@ public class ChannelRecyclerViewAdapter extends RecyclerView.Adapter<ChannelRecy
         childViewHolder.ivHQ.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                final SurfaceViewComponent selectedSurfaceView = listComponent.surfaceViewComponents.get(positionSelected);
+                final SurfaceViewComponent selectedSurfaceView = listComponent.surfaceViewComponents.get(listComponent.getChannelSelected(positionSelected));
                 if(selectedSurfaceView.isREC){
                     Toast.makeText(mContext, "Finalize a gravação.", Toast.LENGTH_SHORT).show();
                 } else if (positionSelected != -1) {
-//                    selectedSurfaceView.onStop();
-
                     selectedSurfaceView.progressBar.setVisibility(View.VISIBLE);
                     if (!selectedSurfaceView.isHD()) {
                         selectedSurfaceView.setStreamType(0);
@@ -245,8 +147,6 @@ public class ChannelRecyclerViewAdapter extends RecyclerView.Adapter<ChannelRecy
                         Log.d("HD", "onClick: HD OFF");
                     }
                     selectedSurfaceView.restartVideo();
-
-
                 }
             }
         });
@@ -254,24 +154,26 @@ public class ChannelRecyclerViewAdapter extends RecyclerView.Adapter<ChannelRecy
         childViewHolder.ivSnapshot.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                listComponent.surfaceViewComponents.get(positionSelected).takeSnapshot();
-                startAnimationBlink();
+                final SurfaceViewComponent selectedSurfaceView = listComponent.surfaceViewComponents.get(listComponent.getChannelSelected(positionSelected));
+                selectedSurfaceView.takeSnapshot();
+                startAnimationBlink(selectedSurfaceView);
             }
         });
 
         childViewHolder.ivSnapvideo.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(!listComponent.surfaceViewComponents.get(positionSelected).isPlaying) {
+                final SurfaceViewComponent selectedSurfaceView = listComponent.surfaceViewComponents.get(listComponent.getChannelSelected(positionSelected));
+                if(!selectedSurfaceView.isPlaying) {
                     Toast.makeText(mContext, "Vídeo pausado", Toast.LENGTH_SHORT).show();
-                } else if(!listComponent.surfaceViewComponents.get(positionSelected).isREC()){
-                    listComponent.surfaceViewComponents.get(positionSelected).setREC(true);
+                } else if(!selectedSurfaceView.isREC()){
+                    selectedSurfaceView.setREC(true);
                     mDeviceManager.channelOnRec = true;
-                    listComponent.surfaceViewComponents.get(positionSelected).startRecord();
+                    selectedSurfaceView.startRecord();
                     childViewHolder.ivSnapvideo.setImageDrawable(mContext.getResources().getDrawable(R.drawable.ic_snapvideo_on));
                 } else {
-                    listComponent.surfaceViewComponents.get(positionSelected).setREC(false);
-                    listComponent.surfaceViewComponents.get(positionSelected).stopRecord();
+                    selectedSurfaceView.setREC(false);
+                    selectedSurfaceView.stopRecord();
                     childViewHolder.ivSnapvideo.setImageDrawable(mContext.getResources().getDrawable(R.drawable.ic_snapvideo));
                 }
             }
@@ -280,13 +182,12 @@ public class ChannelRecyclerViewAdapter extends RecyclerView.Adapter<ChannelRecy
         childViewHolder.ivFavorite.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if(currentSurfaceView.isFavorite()){
-                    //unfavorite
-                    currentSurfaceView.isFavorite = false;
+                final SurfaceViewComponent selectedSurfaceView = listComponent.surfaceViewComponents.get(listComponent.getChannelSelected(positionSelected));
+                if(selectedSurfaceView.isFavorite()){
+                    mDeviceManager.removeFavorite(mContext, selectedSurfaceView);
                     childViewHolder.ivFavorite.clearColorFilter();
                 } else {
-                    //addfavorite
-                    currentSurfaceView.isFavorite = true;
+                    mDeviceManager.addFavorite(mContext, selectedSurfaceView);
                     childViewHolder.ivFavorite.setColorFilter(Color.parseColor("#FFFF00"));
                 }
             }
@@ -295,13 +196,14 @@ public class ChannelRecyclerViewAdapter extends RecyclerView.Adapter<ChannelRecy
         childViewHolder.ivSendAudio.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if(currentSurfaceView.isSendAudioEnabled){
+                final SurfaceViewComponent selectedSurfaceView = listComponent.surfaceViewComponents.get(listComponent.getChannelSelected(positionSelected));
+                if(selectedSurfaceView.isSendAudioEnabled){
                     //disable
-                    currentSurfaceView.isSendAudioEnabled = false;
+                    selectedSurfaceView.isSendAudioEnabled = false;
                     childViewHolder.ivSendAudio.setImageDrawable(mContext.getResources().getDrawable(R.drawable.ic_mic_off_white_36dp));
                 } else{
                     //enable
-                    currentSurfaceView.isSendAudioEnabled = true;
+                    selectedSurfaceView.isSendAudioEnabled = true;
                     childViewHolder.ivSendAudio.setImageDrawable(mContext.getResources().getDrawable(R.drawable.ic_mic_white_36dp));
                 }
             }
@@ -310,13 +212,14 @@ public class ChannelRecyclerViewAdapter extends RecyclerView.Adapter<ChannelRecy
         childViewHolder.ivReceiveAudio.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if(currentSurfaceView.isReceiveAudioEnabled){
+                final SurfaceViewComponent selectedSurfaceView = listComponent.surfaceViewComponents.get(listComponent.getChannelSelected(positionSelected));
+                if(selectedSurfaceView.isReceiveAudioEnabled){
                     //disable
-                    currentSurfaceView.isReceiveAudioEnabled = false;
+                    selectedSurfaceView.isReceiveAudioEnabled = false;
                     childViewHolder.ivReceiveAudio.setImageDrawable(mContext.getResources().getDrawable(R.drawable.ic_volume_mute_white_36dp));
                 }else {
                     //enable
-                    currentSurfaceView.isReceiveAudioEnabled = true;
+                    selectedSurfaceView.isReceiveAudioEnabled = true;
                     childViewHolder.ivReceiveAudio.setImageDrawable(mContext.getResources().getDrawable(R.drawable.ic_volume_up_white_36dp));
                 }
             }
@@ -329,20 +232,17 @@ public class ChannelRecyclerViewAdapter extends RecyclerView.Adapter<ChannelRecy
         return mDevice.getChannelNumber();
     }
 
-    private void startAnimationBlink() {
+    private void startAnimationBlink(final SurfaceViewComponent svc) {
         new Thread(new Runnable() {
             @Override
             public void run() {
-
                 final Animation mAnimationBlink = AnimationUtils.loadAnimation(mContext, R.anim.blink);
-
                 ((DeviceListActivity) mContext).runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        DeviceListActivity.layoutMain.startAnimation(mAnimationBlink);
+                        svc.startAnimation(mAnimationBlink);
                     }
                 });
-
             }
         }).start();
     }
@@ -415,12 +315,33 @@ public class ChannelRecyclerViewAdapter extends RecyclerView.Adapter<ChannelRecy
                 childViewHolder.ivSnapvideo.setImageDrawable(mContext.getResources().getDrawable(R.drawable.ic_snapvideo));
             }
 
+            if(!surfaceViewComponent.isFavorite()){
+                childViewHolder.ivFavorite.clearColorFilter();
+            } else {
+                childViewHolder.ivFavorite.setColorFilter(Color.parseColor("#FFFF00"));
+            }
+
+            if(!surfaceViewComponent.isSendAudioEnabled){
+                childViewHolder.ivSendAudio.setImageDrawable(mContext.getResources().getDrawable(R.drawable.ic_mic_off_white_36dp));
+            } else{
+                childViewHolder.ivSendAudio.setImageDrawable(mContext.getResources().getDrawable(R.drawable.ic_mic_white_36dp));
+            }
+
+            if(!surfaceViewComponent.isReceiveAudioEnabled){
+                childViewHolder.ivReceiveAudio.setImageDrawable(mContext.getResources().getDrawable(R.drawable.ic_volume_mute_white_36dp));
+            }else {
+                childViewHolder.ivReceiveAudio.setImageDrawable(mContext.getResources().getDrawable(R.drawable.ic_volume_up_white_36dp));
+            }
+
             childViewHolder.layoutMenu.setVisibility(View.VISIBLE);
 
         } else {
             childViewHolder.layoutMenu.setVisibility(View.GONE);
         }
     }
+
+
+
 
 
 
