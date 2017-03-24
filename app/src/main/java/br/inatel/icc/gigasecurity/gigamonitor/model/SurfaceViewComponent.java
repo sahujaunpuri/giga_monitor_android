@@ -14,7 +14,9 @@ import android.view.ScaleGestureDetector;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
+import android.widget.LinearLayout;
 import android.widget.ProgressBar;
+import android.widget.RelativeLayout;
 import android.widget.Toast;
 
 import com.basic.G;
@@ -30,17 +32,16 @@ import java.io.File;
 import java.text.SimpleDateFormat;
 import java.util.Locale;
 
-import br.inatel.icc.gigasecurity.gigamonitor.activities.DeviceListActivity;
 import br.inatel.icc.gigasecurity.gigamonitor.adapters.ChannelRecyclerViewAdapter;
+import br.inatel.icc.gigasecurity.gigamonitor.core.DeviceManager;
 import br.inatel.icc.gigasecurity.gigamonitor.listeners.PlaybackListener;
+import br.inatel.icc.gigasecurity.gigamonitor.ui.OverlayMenu;
 import br.inatel.icc.gigasecurity.gigamonitor.util.Utils;
-
-import static br.inatel.icc.gigasecurity.gigamonitor.activities.DeviceListActivity.mDeviceManager;
 
 /**
  * Created by filipecampos on 03/12/2015.
  */
-public class SurfaceViewComponent extends FrameLayout implements IFunSDKResult{
+public class SurfaceViewComponent extends RelativeLayout implements IFunSDKResult{
 
     public GLSurfaceView20 mySurfaceView;
     public ProgressBar progressBar;
@@ -50,7 +51,6 @@ public class SurfaceViewComponent extends FrameLayout implements IFunSDKResult{
     String TAG = "SurfaceViewComp";
     String TAG2 = "svcTOUCH";
     public int mPlayerHandler = 0;
-    public int mySurfaceViewID;
     public long realPlayHandleID;
     private int mUserID = -1;
     public int mySurfaceViewChannelId; //ordem original
@@ -72,14 +72,16 @@ public class SurfaceViewComponent extends FrameLayout implements IFunSDKResult{
     public boolean isSendAudioEnabled = false;
     public boolean isReceiveAudioEnabled = false;
 
-    FrameLayout.LayoutParams lp;
+    RelativeLayout.LayoutParams lp;
     Context mContext;
     Activity mActivity;
+    DeviceManager mDeviceManager;
+    OverlayMenu menu;
 
     public ChannelRecyclerViewAdapter mRecyclerAdapter;
 
-    private ScaleGestureDetector mScaleDetector = new ScaleGestureDetector(DeviceListActivity.mContext, new ScaleListener());
-    private  GestureDetector mClickListener = new GestureDetector(DeviceListActivity.mContext, new SimpleGestureDetector());
+    private ScaleGestureDetector mScaleDetector;
+    private  GestureDetector mClickListener;
     private GLSurfaceView20.OnZoomListener mScaleListener = new GLSurfaceView20.OnZoomListener(){
         @Override
         public void onScale(float v, View view, MotionEvent motionEvent) {
@@ -130,6 +132,7 @@ public class SurfaceViewComponent extends FrameLayout implements IFunSDKResult{
 
     private void init(Context context){
         mContext = context;
+        mDeviceManager = DeviceManager.getInstance();
         mActivity = (Activity) context;
         this.setLongClickable(true);
         if(mySurfaceView == null){
@@ -137,7 +140,8 @@ public class SurfaceViewComponent extends FrameLayout implements IFunSDKResult{
             mySurfaceView.setRenderMode(GLSurfaceView.RENDERMODE_CONTINUOUSLY);
             mySurfaceView.setLongClickable(true);
             mySurfaceView.setOnZoomListener(mScaleListener);
-            lp = new FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT, Gravity.CENTER);
+            lp = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT, RelativeLayout.LayoutParams.MATCH_PARENT);
+            lp.addRule(RelativeLayout.CENTER_IN_PARENT);
             mySurfaceView.setLayoutParams(lp);
             this.addView(mySurfaceView);
 
@@ -145,7 +149,20 @@ public class SurfaceViewComponent extends FrameLayout implements IFunSDKResult{
         progressBar = new ProgressBar(context);
         progressBar.setIndeterminate(true);
         progressBar.setScrollBarStyle(View.SCROLLBARS_INSIDE_INSET);
-        progressBar.setLayoutParams(new FrameLayout.LayoutParams(mySurfaceView.getWidth()/4, mySurfaceView.getWidth()/4, Gravity.CENTER));
+
+        RelativeLayout.LayoutParams pbParam = new RelativeLayout.LayoutParams(
+                RelativeLayout.LayoutParams.WRAP_CONTENT,
+                RelativeLayout.LayoutParams.WRAP_CONTENT);
+        pbParam.addRule(RelativeLayout.CENTER_IN_PARENT);
+        progressBar.setLayoutParams(pbParam);
+        this.addView(progressBar);
+
+//        menu = new OverlayMenu(context, this);
+//        this.addView(menu, new RelativeLayout.LayoutParams(400, 400));
+//        menu.setVisibility(VISIBLE);
+
+        mScaleDetector = new ScaleGestureDetector(context, new ScaleListener());
+        mClickListener = new GestureDetector(context, new SimpleGestureDetector());
     }
 
 
@@ -153,6 +170,13 @@ public class SurfaceViewComponent extends FrameLayout implements IFunSDKResult{
         lp.width = width;
         lp.height = height;
         mySurfaceView.requestLayout();
+        progressBar.getLayoutParams().height = height/4;
+        progressBar.getLayoutParams().width = width/4;
+        progressBar.requestLayout();
+
+//        menu.getLayoutParams().width = width;
+//        menu.getLayoutParams().height = height;
+//        menu.requestLayout();
 
     }
 
@@ -164,6 +188,7 @@ public class SurfaceViewComponent extends FrameLayout implements IFunSDKResult{
     }
 
     public int onStartVideo(){
+        this.isConnected = true;
         mPlayerHandler = FunSDK.MediaRealPlay(mUserID, deviceSn, mySurfaceViewChannelId, streamType, mySurfaceView, mySurfaceViewOrderId);
         return mPlayerHandler;
     }
@@ -262,14 +287,6 @@ public class SurfaceViewComponent extends FrameLayout implements IFunSDKResult{
 
     public void setProgressBar(ProgressBar progressBar) {
         this.progressBar = progressBar;
-    }
-
-    public int getMySurfaceViewID() {
-        return mySurfaceViewID;
-    }
-
-    public void setMySurfaceViewID(int mySurfaceViewID) {
-        this.mySurfaceViewID = mySurfaceViewID;
     }
 
     public long getRealPlayHandleID() {
@@ -406,7 +423,8 @@ public class SurfaceViewComponent extends FrameLayout implements IFunSDKResult{
         @Override
         public boolean onSingleTapConfirmed(MotionEvent motionEvent) {
             //open menu
-            mRecyclerAdapter.openOverlayMenu(surfaceViewComponent(), surfaceViewComponent().mySurfaceViewChannelId);
+//            mRecyclerAdapter.openOverlayMenu(surfaceViewComponent(), surfaceViewComponent().mySurfaceViewChannelId);
+            surfaceViewComponent().menu.setVisibility(VISIBLE);
             Log.d(TAG2, "onSingleTapConfirmed: ");
             resumeScroll();
             return true;

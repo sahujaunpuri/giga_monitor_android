@@ -15,6 +15,9 @@ import br.inatel.icc.gigasecurity.gigamonitor.listeners.ConfigListener;
 import br.inatel.icc.gigasecurity.gigamonitor.model.Device;
 import br.inatel.icc.gigasecurity.gigamonitor.util.Utils;
 
+import static br.inatel.icc.gigasecurity.gigamonitor.activities.DeviceListActivity.mContext;
+import static br.inatel.icc.gigasecurity.gigamonitor.activities.DeviceListActivity.mDeviceManager;
+
 public class UpnpConfigActivity extends ActionBarActivity {
 
     // Debug tag
@@ -35,9 +38,10 @@ public class UpnpConfigActivity extends ActionBarActivity {
 
         @Override
         public void onSetConfig() {
+            mDeviceManager.currentContext = mContext;
             int messageId = R.string.saved;
             Toast.makeText(getApplicationContext(), messageId, Toast.LENGTH_SHORT).show();
-            mManager.saveData(mContext);
+            mManager.saveData();
 
             finish();
         }

@@ -104,7 +104,6 @@ public class ChannelRecyclerViewAdapter extends RecyclerView.Adapter<ChannelRecy
         }
 
         myViewHolder.frameLayout.addView(currentSurfaceView);
-        myViewHolder.frameLayout.addView(currentSurfaceView.progressBar);
 
         currentSurfaceView.progressBar.setVisibility(View.VISIBLE);
 

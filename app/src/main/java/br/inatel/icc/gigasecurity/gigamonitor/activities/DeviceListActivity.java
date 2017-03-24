@@ -31,7 +31,6 @@ public class DeviceListActivity extends ActionBarActivity {
     public static DeviceManager mDeviceManager;
     public static ArrayList<Device> mDevices;
     public static int previousGroup = -1;
-    public static int mySurfaceViewID = 0;
     public static ArrayList<ListComponent> listComponents = new ArrayList<>();
     public static int expandedGroups = 0;
 
@@ -122,6 +121,7 @@ public class DeviceListActivity extends ActionBarActivity {
         mAdapter            = mDeviceManager.getExpandableListAdapter(mContext);
         listComponents      = mDeviceManager.getListComponents();
         mDevices            = mDeviceManager.getDevices();
+        mDeviceManager.currentContext = this;
         mAdapter.setDevices(mDevices);
 
 //        loadDevices();

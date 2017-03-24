@@ -8,6 +8,7 @@ import android.view.Gravity;
 import android.view.View;
 import android.widget.FrameLayout;
 import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -25,7 +26,7 @@ public class ListComponent {
     public Device mDevice;
     public DeviceManager mDeviceManager;
     public Context mContext;
-    public int numQuad, lastNumQuad, surfaceViewWidth, surfaceViewHeight;
+    public int numQuad, lastNumQuad;
     public int lastFirstVisibleItem;
     public int lastLastVisibleItem;
     public int lastFirstItemBeforeSelectChannel;
@@ -55,22 +56,18 @@ public class ListComponent {
         for (int i = 0; i < mDevice.getChannelNumber(); i++) {
             SurfaceViewComponent surfaceViewComponent = new SurfaceViewComponent(mContext);
 
-            surfaceViewComponent.mySurfaceViewID = DeviceListActivity.mySurfaceViewID++;
-
             surfaceViewComponent.mySurfaceViewChannelId = i;
             surfaceViewComponent.mySurfaceViewOrderId = i;
             surfaceViewComponent.deviceSn = mDevice.getSerialNumber();
 
-            if(checkFavorite(i))
+            if(mDeviceManager.isFavorite(mDevice.getSerialNumber(), i))
                 surfaceViewComponent.setFavorite(true);
 
             surfaceViewComponents.add(surfaceViewComponent);
         }
     }
 
-    public boolean checkFavorite(int channelNumber){
-        return mDeviceManager.favoritesMap.containsKey(mDevice.getSerialNumber()) && mDeviceManager.favoritesMap.get(mDevice.getSerialNumber()).contains(channelNumber);
-    }
+
 
     public void changeSurfaceViewSize(SurfaceViewComponent surfaceViewComponent, FrameLayout frameLayout) {
         int surfaceViewWidth = (Resources.getSystem().getDisplayMetrics().widthPixels / numQuad);
@@ -80,14 +77,22 @@ public class ListComponent {
             surfaceViewHeight = (Resources.getSystem().getDisplayMetrics().heightPixels) / numQuad;
         }
 
-        FrameLayout.LayoutParams lpSurfaceView = new FrameLayout.LayoutParams(surfaceViewWidth, surfaceViewHeight, Gravity.CENTER_HORIZONTAL);
+//        FrameLayout.LayoutParams lpSurfaceView = new FrameLayout.LayoutParams(surfaceViewWidth, surfaceViewHeight);
+
+        surfaceViewComponent.getLayoutParams().height = surfaceViewHeight;
+        surfaceViewComponent.getLayoutParams().width = surfaceViewWidth;
+        surfaceViewComponent.progressBar.getLayoutParams().height = surfaceViewHeight / 4;
+        surfaceViewComponent.progressBar.getLayoutParams().width = surfaceViewWidth / 4;
         LinearLayout.LayoutParams lpFrameLayout = new LinearLayout.LayoutParams(surfaceViewWidth, surfaceViewHeight);
-        FrameLayout.LayoutParams lpProgressBar = new FrameLayout.LayoutParams(surfaceViewWidth / 4, surfaceViewHeight / 4, Gravity.CENTER);
+//        FrameLayout.LayoutParams lpProgressBar = new FrameLayout.LayoutParams(surfaceViewWidth / 4, surfaceViewHeight / 4, Gravity.CENTER);
 
 
-        surfaceViewComponent.setLayoutParams(lpSurfaceView);
+
+        surfaceViewComponent.requestLayout();
+        surfaceViewComponent.progressBar.requestLayout();
         frameLayout.setLayoutParams(lpFrameLayout);
-        surfaceViewComponent.progressBar.setLayoutParams(lpProgressBar);
+//        surfaceViewComponent.setLayoutParams(lpSurfaceView);
+//        surfaceViewComponent.progressBar.setLayoutParams(lpProgressBar);
         surfaceViewComponent.setViewSize(surfaceViewWidth, surfaceViewHeight);
     }
 

@@ -327,7 +327,7 @@ public class DeviceExpandableListAdapter extends BaseExpandableListAdapter {
     private void loginDevice(final Device mDevice, final GroupViewHolder groupViewHolder, final ChildViewHolder childViewHolder, final int position) {
         mDeviceManager.loginDevice(mDevice, new LoginDeviceListener() {
             @Override
-            public void onLoginSuccess() {
+            public void onLoginSuccess(Device device) {
                 ((DeviceListActivity) mContext).runOnUiThread(new Runnable() {
                     @Override
                     public void run() {

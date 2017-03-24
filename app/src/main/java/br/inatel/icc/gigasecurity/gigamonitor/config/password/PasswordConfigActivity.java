@@ -15,6 +15,9 @@ import br.inatel.icc.gigasecurity.gigamonitor.listeners.ConfigListener;
 import br.inatel.icc.gigasecurity.gigamonitor.model.Device;
 import br.inatel.icc.gigasecurity.gigamonitor.util.Utils;
 
+import static br.inatel.icc.gigasecurity.gigamonitor.activities.DeviceListActivity.mContext;
+import static br.inatel.icc.gigasecurity.gigamonitor.activities.DeviceListActivity.mDeviceManager;
+
 public class PasswordConfigActivity extends ActionBarActivity {
 
     private Device mDevice;
@@ -30,10 +33,11 @@ public class PasswordConfigActivity extends ActionBarActivity {
 
         @Override
         public void onSetConfig() {
+            mDeviceManager.currentContext = mContext;
             int messageId = R.string.saved;
 
             Toast.makeText(getApplicationContext(), messageId, Toast.LENGTH_SHORT).show();
-            mManager.saveData(mContext);
+            mManager.saveData();
 
             finish();
         }
@@ -43,7 +47,7 @@ public class PasswordConfigActivity extends ActionBarActivity {
             int messageId = R.string.invalid_device_save;
 
             Toast.makeText(getApplicationContext(), messageId, Toast.LENGTH_SHORT).show();
-            mManager.saveData(mContext);
+            mManager.saveData();
 
         }
     };

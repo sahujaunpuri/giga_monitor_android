@@ -19,6 +19,9 @@ import br.inatel.icc.gigasecurity.gigamonitor.listeners.ConfigListener;
 import br.inatel.icc.gigasecurity.gigamonitor.model.Device;
 import br.inatel.icc.gigasecurity.gigamonitor.util.Utils;
 
+import static br.inatel.icc.gigasecurity.gigamonitor.activities.DeviceListActivity.mContext;
+import static br.inatel.icc.gigasecurity.gigamonitor.activities.DeviceListActivity.mDeviceManager;
+
 public class EthernetConfigActivity extends ActionBarActivity implements OnCheckedChangeListener {
 
     private final String TAG = EthernetConfigActivity.class.getSimpleName();
@@ -43,6 +46,7 @@ public class EthernetConfigActivity extends ActionBarActivity implements OnCheck
     private ConfigListener mListener = new ConfigListener() {
         @Override
         public void onReceivedConfig() {
+            mDeviceManager.currentContext = mContext;
             initData();
             initViews();
 
@@ -53,7 +57,7 @@ public class EthernetConfigActivity extends ActionBarActivity implements OnCheck
             int messageId = R.string.saved;
 
             Toast.makeText(getApplicationContext(), messageId, Toast.LENGTH_SHORT).show();
-            mManager.saveData(mContext);
+            mManager.saveData();
 
             finish();
         }
@@ -63,7 +67,7 @@ public class EthernetConfigActivity extends ActionBarActivity implements OnCheck
             int messageId = R.string.invalid_device_save;
 
             Toast.makeText(getApplicationContext(), messageId, Toast.LENGTH_SHORT).show();
-            mManager.saveData(mContext);
+            mManager.saveData();
 
             finish();
         }
@@ -138,6 +142,7 @@ public class EthernetConfigActivity extends ActionBarActivity implements OnCheck
     }
 
     private void initData() {
+        mDeviceManager.currentContext = mContext;
         mHostName = mDevice.getHostname();
         mHostIP = mDevice.getIpAddress();
         mSubmask = mDevice.getSubmask();
@@ -151,6 +156,7 @@ public class EthernetConfigActivity extends ActionBarActivity implements OnCheck
         mMaxBps = mDevice.getMaxBPS();
         mTransferPlan = mDevice.getTransferPlan();
         mMac = mDevice.getMacAddress();
+
 //        mHSDownloadEnabled = commonConfig.useHSDownload();
 //        mArg0 = commonConfig.getZarg0();
 

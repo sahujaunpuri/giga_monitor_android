@@ -18,6 +18,7 @@ import br.inatel.icc.gigasecurity.gigamonitor.model.Device;
 import br.inatel.icc.gigasecurity.gigamonitor.util.Utils;
 
 import static br.inatel.icc.gigasecurity.gigamonitor.activities.DeviceListActivity.mContext;
+import static br.inatel.icc.gigasecurity.gigamonitor.activities.DeviceListActivity.mDeviceManager;
 
 public class DDNSConfigActivity extends ActionBarActivity {
 
@@ -40,6 +41,7 @@ public class DDNSConfigActivity extends ActionBarActivity {
         @Override
         public void onReceivedConfig() {
             initData();
+            mDeviceManager.currentContext = mContext;
             initViews();
         }
 
@@ -47,7 +49,7 @@ public class DDNSConfigActivity extends ActionBarActivity {
         public void onSetConfig() {
             int messageId = R.string.saved;
             Toast.makeText(getApplicationContext(), messageId, Toast.LENGTH_SHORT).show();
-            mManager.saveData(mContext);
+            mManager.saveData();
 
             finish();
         }

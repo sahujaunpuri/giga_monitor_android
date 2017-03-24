@@ -52,7 +52,6 @@ public class Device implements Serializable {
     private String ddnsDomain;
     private String ddnsUserName;
 
-    public boolean isLogged = false;
     @Expose private String username;
     @Expose private String password;
 
@@ -67,11 +66,14 @@ public class Device implements Serializable {
     @Expose public int talkInChannel;
     @Expose public int talkOutChannel;
 
+    //State
+    public boolean isLogged = false;
+    public boolean isOnline = false;
+
     private Calendar systemTime;
 
     private long loginID;
     private int error;
-
 
     private long voiceHandle = -1L;
     private long playbackHandle = -1L;

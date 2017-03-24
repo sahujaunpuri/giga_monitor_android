@@ -58,8 +58,10 @@ public class DeviceManager implements IFunSDKResult{
     public HashMap<String, ArrayList<Integer>> favoritesMap;
     private ArrayList<Device> mDevices = new ArrayList<Device>();
     private ArrayList<Device> mLanDevices = new ArrayList<Device>();
+    public ArrayList<Device> mFavoriteDevices = new ArrayList<Device>();
     private final HashMap<Integer, Device> mLoggedDevices = new HashMap<Integer, Device>();
     private LinkedList<SurfaceViewComponent> startList = new LinkedList<SurfaceViewComponent>();
+    private ArrayList<LoginDeviceListener> loginList = new ArrayList<LoginDeviceListener>();
 
 
     private LoginDeviceListener currentLoginListener;
@@ -67,9 +69,11 @@ public class DeviceManager implements IFunSDKResult{
     private ConfigListener currentConfigListener;
     private JSONObject currentConfig, currentConfigA, currentConfigB;
     private JSONArray currentConfigArray;
+    public Context currentContext;
 
     private DeviceExpandableListAdapter expandableListAdapter;
     private ArrayList<ListComponent> listComponents;
+    public int favoriteChannels = 0;
 
     private boolean startPlay = false;
     public boolean channelOnRec;
@@ -114,6 +118,7 @@ public class DeviceManager implements IFunSDKResult{
         FunSDK.SetFunIntAttr(EFUN_ATTR.FUN_MSG_HANDLE, mFunUserHandler);
 
         loadSavedData(context);
+
 
     }
 
@@ -161,16 +166,19 @@ public class DeviceManager implements IFunSDKResult{
                     putLoggedDevice(device);
 
                     if(device.getChannelNumber()>0)
-                        currentLoginListener.onLoginSuccess();
+//                        currentLoginListener.onLoginSuccess();
+                        loginList.get(mDevices.indexOf(device)).onLoginSuccess(device);
                     else {
                         FunSDK.DevGetConfigByJson(getHandler(), device.getSerialNumber(), "SystemInfo", 4096, -1, 10000, device.getId());
                     }
-                } else if(msg.arg1 == -11301) {
+               } else if(msg.arg1 == -11301) {
                     if (device != null)
-                        currentLoginListener.onLoginError(msg.arg1, device);
+//                        currentLoginListener.onLoginError(msg.arg1, device);
+                        loginList.get(mDevices.indexOf(device)).onLoginError(msg.arg1, device);
                 } else if(msg.arg1 == -11307){
                     if(device != null)
-                        currentLoginListener.onLoginError(msg.arg1, device);
+//                        currentLoginListener.onLoginError(msg.arg1, device);
+                        loginList.get(mDevices.indexOf(device)).onLoginError(msg.arg1, device);
                 } else {
                     FunSDK.DevLogin(getHandler(), device.getSerialNumber(), device.getUsername(), device.getPassword(), device.getId());
                     Log.d(TAG, "OnFunSDKResult: Login ERROR");
@@ -183,14 +191,17 @@ public class DeviceManager implements IFunSDKResult{
                 if(!msgContent.str.equals("0")) {
                     device = findDeviceBySN(msgContent.str);
                 }
-                if(msg.arg1>0){
-                    if(device != null)
+                if(device != null) {
+                    if (msg.arg1 > 0) {
+                        Log.d(TAG, "OnFunSDKResult: Device ONLINE");
+                        device.isOnline = true;
                         FunSDK.DevLogin(getHandler(), device.getSerialNumber(), device.getUsername(), device.getPassword(), device.getId());
-                    Log.d(TAG, "OnFunSDKResult: Device ONLINE");
-                } else {
-                    Log.i(TAG, "OnFunSDKResult: Device OFFLINE");
-                    currentLoginListener.onLoginError(-1, device);
-
+                    } else {
+                        Log.i(TAG, "OnFunSDKResult: Device OFFLINE");
+                        device.isOnline = false;
+                        loginList.get(mDevices.indexOf(device)).onLoginError(-1, device);
+//                        currentLoginListener.onLoginError(-1, device);
+                    }
                 }
             }
             break;
@@ -211,7 +222,8 @@ public class DeviceManager implements IFunSDKResult{
                     switch(msgContent.str){
                         case "SystemInfo":{
                             setDeviceInfo(json, device);
-                            currentLoginListener.onLoginSuccess();
+//                            currentLoginListener.onLoginSuccess();
+                            loginList.get(mDevices.indexOf(device)).onLoginSuccess(device);
                         }
                         break;
                         case "NetWork.NetCommon":{
@@ -311,11 +323,11 @@ public class DeviceManager implements IFunSDKResult{
 
     public void addDevice(Context context, Device device) {
         mDevices.add(device);
-        saveData(context);
+        saveData();
     }
 
-    public void saveData(Context context) {
-        ComplexPreferences cp = new ComplexPreferences(context, context.getString(R.string.sheredpreference_list), Context.MODE_PRIVATE);
+    public void saveData() {
+        ComplexPreferences cp = new ComplexPreferences(currentContext, "SHARED_PREFERENCE_LIST", Context.MODE_PRIVATE);
         cp.putObject("DeviceList", new DeviceList(mDevices));
         cp.putObject("FavoritesMap", favoritesMap);
 
@@ -336,9 +348,11 @@ public class DeviceManager implements IFunSDKResult{
         HashMap<String, ArrayList<Double>> hashMap = cp.getObject("FavoritesMap", HashMap.class);
         if(hashMap != null)
             for (HashMap.Entry<String, ArrayList<Double>> entry : hashMap.entrySet()){
+                mFavoriteDevices.add(findDeviceBySN(entry.getKey()));
                 ArrayList<Integer> arrayList = new ArrayList<Integer>();
                 for(Double i : entry.getValue()){
                     arrayList.add(i.intValue());
+                    favoriteChannels++;
                 }
                 favoritesMap.remove(entry.getKey());
                 favoritesMap.put(entry.getKey(), arrayList);
@@ -353,7 +367,7 @@ public class DeviceManager implements IFunSDKResult{
 
     public void updateDevices(Context context, ArrayList<Device> devices){
         mDevices = devices;
-        saveData(context);
+        saveData();
     }
 
     private void setDeviceInfo(JSONObject json, Device device) {
@@ -374,7 +388,7 @@ public class DeviceManager implements IFunSDKResult{
                 device.talkOutChannel = systemInfo.getInt("TalkOutChannel");
             if(systemInfo.has("VideoInChannel"))
                 device.setChannelNumber(systemInfo.getInt("VideoInChannel"));
-            saveData(DeviceListActivity.mContext);
+            saveData();
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -632,7 +646,8 @@ public class DeviceManager implements IFunSDKResult{
     }
 
     public void loginDevice(final Device device, final LoginDeviceListener loginDeviceListener) {
-        currentLoginListener = loginDeviceListener;
+        loginList.add(mDevices.indexOf(device), loginDeviceListener);
+//        currentLoginListener = loginDeviceListener;
         FunSDK.SysGetDevState(getHandler(), device.getSerialNumber(), device.getId());
     }
 
@@ -797,8 +812,8 @@ public class DeviceManager implements IFunSDKResult{
         FunSDK.DevOption(getHandler(), device.getSerialNumber(), EDEV_OPTERATE.EDOPT_DEV_CONTROL, null, 0, command, 0, 0, "", device.getId());
     }
 
-    public boolean isFavorite(SurfaceViewComponent channel){
-        return favoritesMap.containsKey(channel.deviceSn) && favoritesMap.get(channel.deviceSn).contains(channel.mySurfaceViewChannelId);
+    public boolean isFavorite(String serialNumber, int channelNumber){
+        return favoritesMap.containsKey(serialNumber) && favoritesMap.get(serialNumber).contains(channelNumber);
     }
 
     public void addFavorite(Context context, SurfaceViewComponent channel){
@@ -811,12 +826,12 @@ public class DeviceManager implements IFunSDKResult{
         arrayList.add(channel.mySurfaceViewChannelId);
         favoritesMap.put(channel.deviceSn, arrayList);
         channel.isFavorite = true;
-        saveData(context);
+        saveData();
     }
 
     public void removeFavorite(Context context, SurfaceViewComponent channel){
         Log.d(TAG, "removeFavorite: channel " + channel.mySurfaceViewChannelId);
-        if(isFavorite(channel)){
+        if(isFavorite(channel.deviceSn, channel.mySurfaceViewChannelId)){
             ArrayList<Integer> arrayList = favoritesMap.get(channel.deviceSn);
             arrayList.remove(Integer.valueOf(channel.mySurfaceViewChannelId));
             favoritesMap.remove(channel.deviceSn);
@@ -824,7 +839,7 @@ public class DeviceManager implements IFunSDKResult{
                 favoritesMap.put(channel.deviceSn, arrayList);
         }
         channel.isFavorite = false;
-        saveData(context);
+        saveData();
     }
 
 
