@@ -72,11 +72,11 @@ public class SurfaceViewComponent extends RelativeLayout implements IFunSDKResul
     public boolean isSendAudioEnabled = false;
     public boolean isReceiveAudioEnabled = false;
 
-    RelativeLayout.LayoutParams lp;
-    Context mContext;
-    Activity mActivity;
-    DeviceManager mDeviceManager;
-    OverlayMenu menu;
+    private RelativeLayout.LayoutParams lp;
+    private Context mContext;
+    private Activity mActivity;
+    private DeviceManager mDeviceManager;
+    public OverlayMenu menu;
 
     public ChannelRecyclerViewAdapter mRecyclerAdapter;
 
@@ -144,12 +144,11 @@ public class SurfaceViewComponent extends RelativeLayout implements IFunSDKResul
             lp.addRule(RelativeLayout.CENTER_IN_PARENT);
             mySurfaceView.setLayoutParams(lp);
             this.addView(mySurfaceView);
-
         }
+
         progressBar = new ProgressBar(context);
         progressBar.setIndeterminate(true);
         progressBar.setScrollBarStyle(View.SCROLLBARS_INSIDE_INSET);
-
         RelativeLayout.LayoutParams pbParam = new RelativeLayout.LayoutParams(
                 RelativeLayout.LayoutParams.WRAP_CONTENT,
                 RelativeLayout.LayoutParams.WRAP_CONTENT);
@@ -157,9 +156,15 @@ public class SurfaceViewComponent extends RelativeLayout implements IFunSDKResul
         progressBar.setLayoutParams(pbParam);
         this.addView(progressBar);
 
-//        menu = new OverlayMenu(context, this);
-//        this.addView(menu, new RelativeLayout.LayoutParams(400, 400));
-//        menu.setVisibility(VISIBLE);
+
+        RelativeLayout.LayoutParams menuParam = new RelativeLayout.LayoutParams(
+                LayoutParams.MATCH_PARENT,
+                LayoutParams.MATCH_PARENT);
+        menuParam.addRule(RelativeLayout.CENTER_IN_PARENT);
+        menu = new OverlayMenu(context, this);
+        menu.setLayoutParams(menuParam);
+        this.addView(menu);
+        menu.setVisibility(GONE);
 
         mScaleDetector = new ScaleGestureDetector(context, new ScaleListener());
         mClickListener = new GestureDetector(context, new SimpleGestureDetector());
@@ -174,9 +179,9 @@ public class SurfaceViewComponent extends RelativeLayout implements IFunSDKResul
         progressBar.getLayoutParams().width = width/4;
         progressBar.requestLayout();
 
-//        menu.getLayoutParams().width = width;
-//        menu.getLayoutParams().height = height;
-//        menu.requestLayout();
+        menu.getLayoutParams().width = width;
+        menu.getLayoutParams().height = height;
+        menu.requestLayout();
 
     }
 
@@ -525,9 +530,10 @@ public class SurfaceViewComponent extends RelativeLayout implements IFunSDKResul
                 Log.i(TAG, "EUIMSG.ON_PLAY_BUFFER_END");
                 if (msg.arg1 == 0) {
                     this.isPlaying = true;
-                    if(playType == 0)
+                    if(playType == 0) {
                         this.progressBar.setVisibility(INVISIBLE);
-                    else if(playType == 1){
+                        menu.updateIcons();
+                    }else if(playType == 1){
                         currentPlaybackListener.onPlayState(2);
                     }
                     Log.i(TAG, "PLAY BUFFER END");

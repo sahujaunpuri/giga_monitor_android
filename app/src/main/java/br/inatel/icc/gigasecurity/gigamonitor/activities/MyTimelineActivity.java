@@ -121,6 +121,7 @@ public class MyTimelineActivity extends ActionBarActivity {
 
         surfaceViewComponent.setViewSize(surfaceViewWidth, surfaceViewHeight);
 
+        surfaceViewComponent.menu.updateIcons();
         favoritesViews.add(surfaceViewComponent);
     }
 

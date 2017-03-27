@@ -57,7 +57,10 @@ public class ListAdapter extends ArrayAdapter<SurfaceViewComponent> {
             v = inflater.inflate(R.layout.list_row, null);
             FrameLayout  layout = (FrameLayout) v.findViewById(R.id.frame_layout_list);
 
+//            v = inflater.inflate(R.layout.overlay_menu_layout, null);
+
             layout.addView(surfaceViewComponent);
+//            layout.addView(v);
 
             viewHolder = new ViewHolder();
             viewHolder.surfaceViewComponent = surfaceViewComponent;

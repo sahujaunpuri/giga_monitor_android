@@ -1,12 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#66000000"
-    android:id="@+id/layout_menu"
-    android:visibility="gone"
-    android:layout_gravity="center">
+    android:background="#66000000">
 
     <LinearLayout
         android:layout_width="wrap_content"
@@ -35,7 +31,7 @@
         android:layout_centerInParent="true"
         android:text="Canal"
         android:textColor="#FFFFFF"
-        android:id="@+id/tv_channel_number_recycler" />
+        android:id="@+id/tv_channel_title" />
 
     <ImageView
         android:layout_width="36dp"
@@ -51,8 +47,8 @@
         android:layout_height="36dp"
         android:src="@drawable/ic_pause_white_36dp"
         android:id="@+id/iv_play_pause"
-        android:scaleX="1.8"
-        android:scaleY="1.8"
+        android:scaleX="1.6"
+        android:scaleY="1.6"
         android:layout_centerInParent="true"/>
 
     <ImageView
