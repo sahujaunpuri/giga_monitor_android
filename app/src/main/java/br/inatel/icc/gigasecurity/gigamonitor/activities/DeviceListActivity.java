@@ -22,6 +22,7 @@ import br.inatel.icc.gigasecurity.gigamonitor.core.DeviceManager;
 import br.inatel.icc.gigasecurity.gigamonitor.model.Device;
 import br.inatel.icc.gigasecurity.gigamonitor.model.ListComponent;
 import br.inatel.icc.gigasecurity.gigamonitor.model.SurfaceViewComponent;
+import br.inatel.icc.gigasecurity.gigamonitor.util.MyExceptionHandler;
 
 public class DeviceListActivity extends ActionBarActivity {
 
@@ -39,6 +40,21 @@ public class DeviceListActivity extends ActionBarActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_device_list);
 
+        if(getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE) {
+            getWindow().clearFlags(WindowManager.LayoutParams.FLAG_FORCE_NOT_FULLSCREEN);
+            getWindow().addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
+//            getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
+            getSupportActionBar().hide();
+
+            if(previousGroup != -1) {
+//                mAdapter.onChangeOrientation(previousGroup);
+                mExpandableListView.scrollTo(previousGroup, 0);
+            }
+        } else{
+            getWindow().clearFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
+            getWindow().addFlags(WindowManager.LayoutParams.FLAG_FORCE_NOT_FULLSCREEN);
+        }
+
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
 
         getWindow().setFlags(
@@ -49,15 +65,9 @@ public class DeviceListActivity extends ActionBarActivity {
 
         initComponents();
 
-        if(getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE) {
-            getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
-            getSupportActionBar().hide();
+//        Thread.setDefaultUncaughtExceptionHandler(new MyExceptionHandler(this, DeviceListActivity.class));
 
-            if(previousGroup != -1) {
-                mAdapter.onChangeOrientation(previousGroup);
-                mExpandableListView.scrollTo(previousGroup, 0);
-            }
-        }
+
 
         if(previousGroup != -1) {
             mAdapter.onChangeOrientation(previousGroup);
@@ -73,25 +83,13 @@ public class DeviceListActivity extends ActionBarActivity {
             @Override
             public boolean onGroupClick(ExpandableListView parent, View v, int groupPosition, long id) {
 
-//                if(parent.isGroupExpanded(groupPosition)){
-//                    expandedGroups++;
-//                }else {
-//                    mAdapter.pauseChannels(groupPosition);
-//                    expandedGroups--;
-//                }
                 if (previousGroup == -1) {
                     previousGroup = groupPosition;
                     return false;
                 }else if(previousGroup == groupPosition){
-//                    mAdapter.pauseChannels(groupPosition);
                     previousGroup = -1;
                     return false;
                 }else {
-//                    mAdapter.stopChannels(previousGroup);
-//                    mDeviceManager.logoutDevice(mDevices.get(previousGroup));
-//                    mAdapter = new DeviceExpandableListAdapter(mContext, mDevices);
-//                    mExpandableListView.setAdapter(mAdapter);
-//                    mAdapter.pauseChannels(previousGroup); //depois de algumas trocas as views ficam verde
                     parent.collapseGroup(previousGroup);
                     parent.expandGroup(groupPosition);
                     previousGroup = groupPosition;
@@ -100,6 +98,8 @@ public class DeviceListActivity extends ActionBarActivity {
             }
         });
     }
+
+
 
     @Override
     protected void onResume() {
@@ -129,6 +129,7 @@ public class DeviceListActivity extends ActionBarActivity {
 //        mAdapter = new DeviceExpandableListAdapter(mContext, mDevices);
 
         mExpandableListView.setAdapter(mAdapter);
+        mAdapter.notifyDataSetChanged();
 //        if(mDevices == null) {
 //            mDevices = mDeviceManager.getDevices();
 //

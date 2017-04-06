@@ -11,12 +11,14 @@ import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.DisplayMetrics;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseExpandableListAdapter;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -34,6 +36,7 @@ import br.inatel.icc.gigasecurity.gigamonitor.managers.CustomGridLayoutManager;
 import br.inatel.icc.gigasecurity.gigamonitor.model.Device;
 import br.inatel.icc.gigasecurity.gigamonitor.model.ListComponent;
 import br.inatel.icc.gigasecurity.gigamonitor.model.SurfaceViewComponent;
+import br.inatel.icc.gigasecurity.gigamonitor.ui.OverlayMenu;
 
 import static android.support.v7.widget.RecyclerView.SCROLL_STATE_DRAGGING;
 import static android.support.v7.widget.RecyclerView.SCROLL_STATE_IDLE;
@@ -63,8 +66,8 @@ public class DeviceExpandableListAdapter extends BaseExpandableListAdapter {
     public void init() {
         this.mDeviceManager  = DeviceManager.getInstance();
         this.mInflater       = LayoutInflater.from(mContext);
-        this.groupViewHolder = new ArrayList<GroupViewHolder>();
-        this.childViewHolder = new ArrayList<ChildViewHolder>();
+        this.groupViewHolder = new ArrayList<GroupViewHolder>(mDevices.size());
+        this.childViewHolder = new ArrayList<ChildViewHolder>(mDevices.size());
     }
 
     public void setDevices(ArrayList<Device> devices){
@@ -74,6 +77,7 @@ public class DeviceExpandableListAdapter extends BaseExpandableListAdapter {
     public void removeGroup(int position){
         childViewHolder.remove(position);
         groupViewHolder.remove(position);
+        notifyDataSetChanged();
     }
 
     @Override
@@ -111,27 +115,6 @@ public class DeviceExpandableListAdapter extends BaseExpandableListAdapter {
         return false;
     }
 
-    private ChildViewHolder initChildViewHolder(ViewGroup parent){
-        ChildViewHolder currentChildViewHolder = new ChildViewHolder();
-        currentChildViewHolder.convertView =  mInflater.inflate(R.layout.expandable_list_view_child, parent, false);
-
-        currentChildViewHolder.recyclerViewChannels = (RecyclerView) currentChildViewHolder.convertView.findViewById(R.id.recycler_view_channels);
-        currentChildViewHolder.tvMessage            = (TextView) currentChildViewHolder.convertView.findViewById(R.id.tv_message_connecting);
-        currentChildViewHolder.ivHQ                 = (ImageView) currentChildViewHolder.convertView.findViewById(R.id.iv_hq);
-        currentChildViewHolder.ivPlayPause          = (ImageView) currentChildViewHolder.convertView.findViewById(R.id.iv_play_pause);
-        currentChildViewHolder.ivSnapshot           = (ImageView) currentChildViewHolder.convertView.findViewById(R.id.iv_snapshot);
-        currentChildViewHolder.ivSnapvideo          = (ImageView) currentChildViewHolder.convertView.findViewById(R.id.iv_snapvideo);
-        currentChildViewHolder.ivFavorite           = (ImageView) currentChildViewHolder.convertView.findViewById(R.id.iv_favorite_star);
-        currentChildViewHolder.ivReceiveAudio       = (ImageView) currentChildViewHolder.convertView.findViewById(R.id.iv_enable_receive_audio);
-        currentChildViewHolder.ivSendAudio          = (ImageView) currentChildViewHolder.convertView.findViewById(R.id.iv_enable_send_audio);
-        currentChildViewHolder.layoutMenu           = (RelativeLayout) currentChildViewHolder.convertView.findViewById(R.id.layout_menu);
-        currentChildViewHolder.tvChnNumber          = (TextView) currentChildViewHolder.convertView.findViewById(R.id.tv_channel_number_recycler);
-
-        childViewHolder.add(currentChildViewHolder);
-        return currentChildViewHolder;
-
-    }
-
     private GroupViewHolder initGroupViewHolder(final int groupPosition, ViewGroup parent){
         GroupViewHolder groupView = new GroupViewHolder();
 
@@ -150,16 +133,32 @@ public class DeviceExpandableListAdapter extends BaseExpandableListAdapter {
         return groupView;
     }
 
+    private ChildViewHolder initChildViewHolder(ViewGroup parent, int groupPosition){
+        ChildViewHolder currentChildViewHolder = new ChildViewHolder();
+
+        currentChildViewHolder.convertView          =   (ViewGroup) mInflater.inflate(R.layout.expandable_list_view_child, parent, false);
+        currentChildViewHolder.recyclerViewChannels =   (RecyclerView) currentChildViewHolder.convertView.findViewById(R.id.recycler_view_channels);
+        currentChildViewHolder.tvMessage            =   (TextView) currentChildViewHolder.convertView.findViewById(R.id.tv_message_connecting);
+        currentChildViewHolder.overlayMenu          =    new OverlayMenu(mContext);
+        currentChildViewHolder.overlayMenu.setVisibility(View.GONE);
+        currentChildViewHolder.convertView.addView(currentChildViewHolder.overlayMenu);
+        currentChildViewHolder.recyclerViewChannels.setVisibility(View.GONE);
+
+        childViewHolder.add(currentChildViewHolder);
+        return currentChildViewHolder;
+
+    }
+
     private void initGridRecycler(int groupPosition, ChildViewHolder childViewHolder){
         childViewHolder.gridLayoutManager = new CustomGridLayoutManager(mContext, DeviceListActivity.listComponents.get(groupPosition).numQuad, GridLayoutManager.HORIZONTAL, false);
         childViewHolder.recyclerViewChannels.setLayoutManager(childViewHolder.gridLayoutManager);
         childViewHolder.mRecyclerAdapter = new ChannelRecyclerViewAdapter(mContext, groupViewHolder.get(groupPosition).mDevice, DeviceListActivity.listComponents.get(groupPosition).numQuad, childViewHolder, DeviceListActivity.listComponents.get(groupPosition));
+//        childViewHolder.mRecyclerAdapter.setHasStableIds(true);
         childViewHolder.recyclerViewChannels.setAdapter(childViewHolder.mRecyclerAdapter);
     }
 
     private void showExpanded(int groupPosition, GroupViewHolder groupViewHolder, ChildViewHolder childViewHolder) {
         childViewHolder.tvMessage.setVisibility(View.GONE);
-        childViewHolder.recyclerViewChannels.setVisibility(View.VISIBLE);
 
         if (groupViewHolder.mDevice.getChannelNumber() <= 0) { //Wrong Password
             childViewHolder.tvMessage.setText("Nenhum canal encontrado.");
@@ -167,7 +166,8 @@ public class DeviceExpandableListAdapter extends BaseExpandableListAdapter {
             childViewHolder.recyclerViewChannels.setVisibility(View.GONE);
             groupViewHolder.ivMore.setVisibility(View.INVISIBLE);
         }
-        else if (groupViewHolder.mDevice.getChannelNumber() > 1) {
+        else if (groupViewHolder.mDevice.getChannelNumber() > 0 && groupViewHolder.mDevice.isLogged) {
+            childViewHolder.recyclerViewChannels.setVisibility(View.VISIBLE);
             groupViewHolder.ivQuad.setVisibility(View.VISIBLE);
             groupViewHolder.ivMore.setVisibility(View.VISIBLE);
         } else {
@@ -205,7 +205,6 @@ public class DeviceExpandableListAdapter extends BaseExpandableListAdapter {
     }
 
 
-
     private RecyclerView.OnScrollListener createOnScrollListener(final int groupPosition){
         return new RecyclerView.OnScrollListener()
         {
@@ -213,27 +212,21 @@ public class DeviceExpandableListAdapter extends BaseExpandableListAdapter {
             public void onScrollStateChanged(final RecyclerView recyclerView,final int newState) {
                 super.onScrollStateChanged(recyclerView, newState);
 
-                if(newState == SCROLL_STATE_DRAGGING){
-                    scrolled = true;
-                } else if(newState == SCROLL_STATE_IDLE) {
-                    scrolled = false;
+                if(newState == SCROLL_STATE_IDLE) {
                     ChildViewHolder currentChildViewHolder = childViewHolder.get(groupPosition);
                     final int itemToScroll;
                     final int currentFirstVisibleItem = currentChildViewHolder.gridLayoutManager.findFirstVisibleItemPosition();
                     final int currentLastVisibleItem = currentChildViewHolder.gridLayoutManager.findLastVisibleItemPosition();
                     itemToScroll = DeviceListActivity.listComponents.get(groupPosition).scrollToItem(currentFirstVisibleItem, currentLastVisibleItem, amountScrolled);
-
                     currentChildViewHolder.gridLayoutManager.smoothScrollToPosition(currentChildViewHolder.recyclerViewChannels, null, itemToScroll);
-
-                    amountScrolled = 0;
                 }
             }
 
-            @Override
-            public void onScrolled(RecyclerView recyclerView, int dx, int dy){
-                if(scrolled)
-                    amountScrolled += dx;
-            }
+//            @Override
+//            public void onScrolled(RecyclerView recyclerView, int dx, int dy){
+////                if(scrolled)
+////                    amountScrolled += dx;
+//            }
         };
     }
 
@@ -244,7 +237,7 @@ public class DeviceExpandableListAdapter extends BaseExpandableListAdapter {
             currentGroupViewHolder = groupViewHolder.get(groupPosition);
         if(currentGroupViewHolder == null) {
             currentGroupViewHolder = initGroupViewHolder(groupPosition, parent);
-            initChildViewHolder(parent);
+            initChildViewHolder(parent, groupPosition);
         }
         if(mContext.getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE && DeviceListActivity.previousGroup != -1) {
 //            currentGroupViewHolder.convertView = mInflater.inflate(R.layout.blank_layout, parent, false);
@@ -272,8 +265,9 @@ public class DeviceExpandableListAdapter extends BaseExpandableListAdapter {
             } else {
                 showExpanded(groupPosition, currentGroupViewHolder, currentChildViewHolder);
             }
-            setLayoutSize(groupPosition);
             currentChildViewHolder.gridLayoutManager.scrollToPosition(DeviceListActivity.listComponents.get(groupPosition).lastFirstVisibleItem);
+            setLayoutSize(groupPosition);
+
         }
 
         return currentChildViewHolder.convertView;
@@ -282,10 +276,12 @@ public class DeviceExpandableListAdapter extends BaseExpandableListAdapter {
     @Override
     public void onGroupExpanded(int groupPosition){
         GroupViewHolder currentGroupViewHolder = groupViewHolder.get(groupPosition);
+        ChildViewHolder currentChildViewHolder = childViewHolder.get(groupPosition);
         currentGroupViewHolder.ivIndicator.setImageDrawable(mContext.getResources().getDrawable(R.drawable.ic_indicator_minus));
         if(currentGroupViewHolder.mDevice.getChannelNumber() > 1 && currentGroupViewHolder.mDevice.isLogged) {
             currentGroupViewHolder.ivMore.setVisibility(View.VISIBLE);
             currentGroupViewHolder.ivQuad.setVisibility(View.VISIBLE);
+            currentChildViewHolder.recyclerViewChannels.setVisibility(View.VISIBLE);
         }
 
     }
@@ -293,10 +289,12 @@ public class DeviceExpandableListAdapter extends BaseExpandableListAdapter {
     @Override
     public void onGroupCollapsed(int groupPosition){
         GroupViewHolder currentGroupViewHolder = groupViewHolder.get(groupPosition);
+        ChildViewHolder currentChildViewHolder = childViewHolder.get(groupPosition);
         currentGroupViewHolder.ivMore.setVisibility(View.INVISIBLE);
         currentGroupViewHolder.ivIndicator.setImageDrawable(mContext.getResources().getDrawable(R.drawable.ic_indicator_plus));
         currentGroupViewHolder.ivQuad.setVisibility(View.INVISIBLE);
-
+        currentChildViewHolder.recyclerViewChannels.setVisibility(View.INVISIBLE);
+        onChangeOrientation(groupPosition);
     }
 
     private void setLayoutSize(int groupPosition) {
@@ -309,14 +307,17 @@ public class DeviceExpandableListAdapter extends BaseExpandableListAdapter {
             viewHeight = displayMetrics.heightPixels;
         } else{
             viewWidth = displayMetrics.widthPixels;
-            viewHeight = ((displayMetrics.heightPixels / 3) + 10);
+            viewHeight = ((displayMetrics.heightPixels / 3)+10);
         }
 
-        FrameLayout.LayoutParams lpRecyclerView = new FrameLayout.LayoutParams(viewWidth, viewHeight);
+        childViewHolder.get(groupPosition).overlayMenu.getLayoutParams().height = viewHeight;
+        childViewHolder.get(groupPosition).overlayMenu.getLayoutParams().width = viewWidth;
+        childViewHolder.get(groupPosition).overlayMenu.requestLayout();
+
+        FrameLayout.LayoutParams lpRecyclerView = new FrameLayout.LayoutParams(viewWidth, viewHeight, Gravity.CENTER);
+        childViewHolder.get(groupPosition).convertView.setLayoutParams(lpRecyclerView);
         childViewHolder.get(groupPosition).recyclerViewChannels.setLayoutParams(lpRecyclerView);
         DeviceListActivity.listComponents.get(groupPosition).resetScale();
-        childViewHolder.get(groupPosition).layoutMenu.getLayoutParams().height = viewHeight;
-        childViewHolder.get(groupPosition).layoutMenu.getLayoutParams().width = viewWidth;
     }
 
     @Override
@@ -377,6 +378,7 @@ public class DeviceExpandableListAdapter extends BaseExpandableListAdapter {
     public void onChangeOrientation(int groupPosition){
         childViewHolder.get(groupPosition).gridLayoutManager = new CustomGridLayoutManager(mContext, DeviceListActivity.listComponents.get(groupPosition).numQuad, GridLayoutManager.HORIZONTAL, false);
         childViewHolder.get(groupPosition).recyclerViewChannels.setLayoutManager(childViewHolder.get(groupPosition).gridLayoutManager);
+
     }
 
     private void showMoreDialog(final GroupViewHolder groupViewHolder, final int groupPosition) {
@@ -499,8 +501,9 @@ public class DeviceExpandableListAdapter extends BaseExpandableListAdapter {
     }
 
     public class ChildViewHolder {
-        public View convertView;
+        public ViewGroup convertView;
         public RecyclerView recyclerViewChannels;
+        public OverlayMenu overlayMenu;
         public RelativeLayout layoutMenu;
         public ImageView ivHQ, ivPlayPause, ivSnapshot, ivSnapvideo, ivFavorite, ivSendAudio, ivReceiveAudio;
         public TextView tvChnNumber, tvMessage;

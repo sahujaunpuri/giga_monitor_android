@@ -32,10 +32,9 @@ public class OverlayMenu extends RelativeLayout {
     public TextView ivTitle;
     public DeviceManager mDeviceManager;
 
-    public OverlayMenu(Context context, SurfaceViewComponent surfaceViewComponent) {
+    public OverlayMenu(Context context) {
         super(context);
         mContext = context;
-        this.surfaceViewComponent = surfaceViewComponent;
         init();
     }
 
@@ -65,16 +64,19 @@ public class OverlayMenu extends RelativeLayout {
         ivTitle              = (TextView)  findViewById(R.id.tv_channel_title);
 
         mDeviceManager = DeviceManager.getInstance();
-        updateIcons();
 
         setClickListeners();
+    }
+
+    public void setSurfaceViewComponent(SurfaceViewComponent surfaceViewComponent){
+        this.surfaceViewComponent = surfaceViewComponent;
     }
 
     public void updateIcons(){
 
         ivPlayPause.setVisibility(VISIBLE);
 
-        String title = "Canal " + surfaceViewComponent.getMySurfaceViewChannelId();
+        String title = "Canal " + (surfaceViewComponent.getMySurfaceViewChannelId() + 1);
         ivTitle.setText(title);
         if (surfaceViewComponent.isHD()) {
             ivHQ.setImageDrawable(mContext.getResources().getDrawable(R.drawable.ic_hq_on));
@@ -182,10 +184,11 @@ public class OverlayMenu extends RelativeLayout {
             @Override
             public void onClick(View view) {
                 if(surfaceViewComponent.isFavorite()){
-                    mDeviceManager.removeFavorite(mContext, surfaceViewComponent);
+//                    mDeviceManager.removeFavorite(mContext, surfaceViewComponent);
                     ivFavorite.clearColorFilter();
                 } else {
-                    mDeviceManager.addFavorite(mContext, surfaceViewComponent);
+                    surfaceViewComponent.setFluency1();
+//                    mDeviceManager.addFavorite(mContext, surfaceViewComponent);
                     ivFavorite.setColorFilter(Color.parseColor("#FFFF00"));
                 }
             }

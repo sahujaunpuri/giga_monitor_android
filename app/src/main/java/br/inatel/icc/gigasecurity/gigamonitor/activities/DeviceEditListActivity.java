@@ -60,6 +60,7 @@ public class DeviceEditListActivity extends ActionBarActivity {
         Intent i = new Intent(this, DeviceListActivity.class);
         i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP);
         startActivity(i);
+        finish();
     }
 
 
@@ -92,11 +93,13 @@ public class DeviceEditListActivity extends ActionBarActivity {
 
                     mDeviceManager.updateDevices(DeviceEditListActivity.this, mDevices);
 
-                    mAdapter = new DeviceEditAdapter(DeviceEditListActivity.this, mDevices);
+                    mAdapter.notifyDataSetChanged();
 
-                    lv.setAdapter(mAdapter);
+//                    mAdapter = new DeviceEditAdapter(DeviceEditListActivity.this, mDevices);
 
-                    itensRemoved.add(which);
+//                    lv.setAdapter(mAdapter);
+
+//                    itensRemoved.add(which);
 
                     modified = true;
                 }
@@ -136,7 +139,8 @@ public class DeviceEditListActivity extends ActionBarActivity {
                 mDeviceManager.loadSavedData(DeviceListActivity.mContext);
 //                DeviceListActivity.loadDevices();
 //                mDeviceManager.updateListComponents();
-                mDeviceManager.removeFromExpandableList(itensRemoved);
+//                mDeviceManager.removeFromExpandableList(itensRemoved);
+                mDeviceManager.getExpandableListAdapter(null).notifyDataSetChanged();
 
                 startDeviceListActivity();
             }

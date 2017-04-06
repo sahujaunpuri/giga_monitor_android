@@ -116,12 +116,12 @@ public class MyTimelineActivity extends ActionBarActivity {
             surfaceViewComponent.setFavorite(true);
 
 
-        int surfaceViewHeight = (int) ((Resources.getSystem().getDisplayMetrics().heightPixels / 3.5));
-        int surfaceViewWidth = (int) (surfaceViewHeight * 1.77777777778);
+//        int surfaceViewHeight = (int) ((Resources.getSystem().getDisplayMetrics().heightPixels / 3.5));
+//        int surfaceViewWidth = (int) (surfaceViewHeight * 1.77777777778);
+//
+//        surfaceViewComponent.setViewSize(surfaceViewWidth, surfaceViewHeight, 1);
 
-        surfaceViewComponent.setViewSize(surfaceViewWidth, surfaceViewHeight);
-
-        surfaceViewComponent.menu.updateIcons();
+//        surfaceViewComponent.menu.updateIcons();
         favoritesViews.add(surfaceViewComponent);
     }
 

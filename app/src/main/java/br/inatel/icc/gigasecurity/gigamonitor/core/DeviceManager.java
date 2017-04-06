@@ -1,6 +1,7 @@
 package br.inatel.icc.gigasecurity.gigamonitor.core;
 
 import android.content.Context;
+import android.content.res.Resources;
 import android.os.Environment;
 import android.os.Message;
 import android.util.Log;
@@ -16,6 +17,7 @@ import com.lib.MsgContent;
 import com.lib.sdk.struct.H264_DVR_FILE_DATA;
 import com.lib.sdk.struct.H264_DVR_FINDINFO;
 import com.lib.sdk.struct.SDK_CONFIG_NET_COMMON_V2;
+
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -61,7 +63,7 @@ public class DeviceManager implements IFunSDKResult{
     public ArrayList<Device> mFavoriteDevices = new ArrayList<Device>();
     private final HashMap<Integer, Device> mLoggedDevices = new HashMap<Integer, Device>();
     private LinkedList<SurfaceViewComponent> startList = new LinkedList<SurfaceViewComponent>();
-    private ArrayList<LoginDeviceListener> loginList = new ArrayList<LoginDeviceListener>();
+    private HashMap<Integer, LoginDeviceListener> loginList = new HashMap<Integer, LoginDeviceListener>();
 
 
     private LoginDeviceListener currentLoginListener;
@@ -77,6 +79,10 @@ public class DeviceManager implements IFunSDKResult{
 
     private boolean startPlay = false;
     public boolean channelOnRec;
+    private int stateCheckTry = 0;
+
+    public int screenWidth;
+    public int screenHeight;
 
     private DeviceManager() {
     }
@@ -100,8 +106,10 @@ public class DeviceManager implements IFunSDKResult{
         InitParam initparam = new InitParam();
 
 //        FunSDK.InitEx(0, G.ObjToBytes(initparam), "GIGA_", "", 0);
+        FunSDK.InitExV2(0, G.ObjToBytes(initparam), 4, "GIGA_", "cloudgiga.com.br", 8765);
+        FunSDK.SysSetServerIPPort("MI_SERVER", "cloudgiga.com.br", 80);
 
-        FunSDK.Init(0, G.ObjToBytes(initparam));
+//        FunSDK.Init(0, G.ObjToBytes(initparam));
 
         FunSDK.MyInitNetSDK();
         String defaultPath = getMediaPath(context) + File.separator + context.getPackageName() + File.separator;
@@ -118,6 +126,8 @@ public class DeviceManager implements IFunSDKResult{
         FunSDK.SetFunIntAttr(EFUN_ATTR.FUN_MSG_HANDLE, mFunUserHandler);
 
         loadSavedData(context);
+
+        getScreenSize();
 
 
     }
@@ -198,9 +208,15 @@ public class DeviceManager implements IFunSDKResult{
                         FunSDK.DevLogin(getHandler(), device.getSerialNumber(), device.getUsername(), device.getPassword(), device.getId());
                     } else {
                         Log.i(TAG, "OnFunSDKResult: Device OFFLINE");
-                        device.isOnline = false;
-                        loginList.get(mDevices.indexOf(device)).onLoginError(-1, device);
-//                        currentLoginListener.onLoginError(-1, device);
+
+                        if(stateCheckTry>2) {
+                            device.isOnline = false;
+                            loginList.get(mDevices.indexOf(device)).onLoginError(-1, device);
+                            stateCheckTry = 0;
+                        } else{
+                            FunSDK.SysGetDevState(getHandler(), device.getSerialNumber(), device.getId());
+                            stateCheckTry++;
+                        }
                     }
                 }
             }
@@ -210,7 +226,7 @@ public class DeviceManager implements IFunSDKResult{
                 if(msg.arg1 >= 0){
                     Log.d(TAG, "OnFunSDKResult: GETCONFIGJSON SUCCESS");
                     Device device = findDeviceById(msgContent.seq);
-                    String jsonText = G.ToString(msgContent.pData);
+                    String jsonText = G.ToStringJson(msgContent.pData);
                     Log.d(TAG, "EUIMSG.DEV_GET_JSON --> json: " + jsonText);
                     JSONObject json = null;
                     try {
@@ -315,6 +331,11 @@ public class DeviceManager implements IFunSDKResult{
         return 0;
     }
 
+    public void getScreenSize(){
+        screenWidth = Resources.getSystem().getDisplayMetrics().widthPixels;
+        screenHeight = Resources.getSystem().getDisplayMetrics().heightPixels;
+    }
+
     public void loadSavedData(Context context){
         mDevices = loadDevices(context);
         favoritesMap = new HashMap<String, ArrayList<Integer>>();
@@ -380,8 +401,8 @@ public class DeviceManager implements IFunSDKResult{
 
             if(systemInfo.has("AudioInChannel"))
                 device.audioInChannel = systemInfo.getInt("AudioInChannel");
-            if(systemInfo.has("SerialNo"))
-                device.setSerialNumber(systemInfo.getString("SerialNo"));
+//            if(systemInfo.has("SerialNo"))
+//                device.setSerialNumber(systemInfo.getString("SerialNo"));
             if(systemInfo.has("TalkInChannel"))
                 device.talkInChannel = systemInfo.getInt("TalkInChannel");
             if(systemInfo.has("TalkOutChannel"))
@@ -646,7 +667,8 @@ public class DeviceManager implements IFunSDKResult{
     }
 
     public void loginDevice(final Device device, final LoginDeviceListener loginDeviceListener) {
-        loginList.add(mDevices.indexOf(device), loginDeviceListener);
+        loginList.put(mDevices.indexOf(device), loginDeviceListener);
+//        loginList.add(mDevices.indexOf(device), loginDeviceListener);
 //        currentLoginListener = loginDeviceListener;
         FunSDK.SysGetDevState(getHandler(), device.getSerialNumber(), device.getId());
     }

@@ -2,6 +2,7 @@ package br.inatel.icc.gigasecurity.gigamonitor.model;
 
 import android.app.Activity;
 import android.content.Context;
+import android.graphics.Canvas;
 import android.opengl.GLSurfaceView;
 import android.os.Environment;
 import android.os.Message;
@@ -12,11 +13,8 @@ import android.view.Gravity;
 import android.view.MotionEvent;
 import android.view.ScaleGestureDetector;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.FrameLayout;
-import android.widget.LinearLayout;
 import android.widget.ProgressBar;
-import android.widget.RelativeLayout;
 import android.widget.Toast;
 
 import com.basic.G;
@@ -25,6 +23,7 @@ import com.lib.EUIMSG;
 import com.lib.FunSDK;
 import com.lib.IFunSDKResult;
 import com.lib.MsgContent;
+import com.lib.SDKCONST;
 import com.lib.sdk.struct.H264_DVR_FILE_DATA;
 import com.video.opengl.GLSurfaceView20;
 
@@ -32,16 +31,17 @@ import java.io.File;
 import java.text.SimpleDateFormat;
 import java.util.Locale;
 
+import br.inatel.icc.gigasecurity.gigamonitor.activities.DeviceListActivity;
 import br.inatel.icc.gigasecurity.gigamonitor.adapters.ChannelRecyclerViewAdapter;
 import br.inatel.icc.gigasecurity.gigamonitor.core.DeviceManager;
 import br.inatel.icc.gigasecurity.gigamonitor.listeners.PlaybackListener;
-import br.inatel.icc.gigasecurity.gigamonitor.ui.OverlayMenu;
+//import br.inatel.icc.gigasecurity.gigamonitor.ui.OverlayMenu;
 import br.inatel.icc.gigasecurity.gigamonitor.util.Utils;
 
 /**
  * Created by filipecampos on 03/12/2015.
  */
-public class SurfaceViewComponent extends RelativeLayout implements IFunSDKResult{
+public class SurfaceViewComponent extends FrameLayout implements IFunSDKResult{
 
     public GLSurfaceView20 mySurfaceView;
     public ProgressBar progressBar;
@@ -66,17 +66,16 @@ public class SurfaceViewComponent extends RelativeLayout implements IFunSDKResul
     public int playType = 0; //0 - live, 1 - playback live
     public boolean isSeeking = false;
     private int seekPercentage = 0;
-    private float mScaleFactor = 1.F;
+    public float mScaleFactor = 1.F;
     public boolean isScaling = false;
     public boolean isFavorite = false;
     public boolean isSendAudioEnabled = false;
     public boolean isReceiveAudioEnabled = false;
 
-    private RelativeLayout.LayoutParams lp;
+    private FrameLayout.LayoutParams lp;
     private Context mContext;
     private Activity mActivity;
     private DeviceManager mDeviceManager;
-    public OverlayMenu menu;
 
     public ChannelRecyclerViewAdapter mRecyclerAdapter;
 
@@ -91,6 +90,10 @@ public class SurfaceViewComponent extends RelativeLayout implements IFunSDKResul
 
         @Override
         public void onBoundary(boolean b, boolean b1) {
+        }
+
+        @Override
+        public void onTrans(float var1, float var2){
         }
     };
 
@@ -130,59 +133,53 @@ public class SurfaceViewComponent extends RelativeLayout implements IFunSDKResul
         return this;
     }
 
-    private void init(Context context){
+    private void init(final Context context){
         mContext = context;
         mDeviceManager = DeviceManager.getInstance();
         mActivity = (Activity) context;
         this.setLongClickable(true);
+
+
         if(mySurfaceView == null){
-            mySurfaceView = new GLSurfaceView20(getContext());
-            mySurfaceView.setRenderMode(GLSurfaceView.RENDERMODE_CONTINUOUSLY);
+
+            mySurfaceView = new GLSurfaceView20(mContext);
+//            mySurfaceView.setRenderMode(GLSurfaceView.RENDERMODE_CONTINUOUSLY);
             mySurfaceView.setLongClickable(true);
             mySurfaceView.setOnZoomListener(mScaleListener);
-            lp = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT, RelativeLayout.LayoutParams.MATCH_PARENT);
-            lp.addRule(RelativeLayout.CENTER_IN_PARENT);
+            lp = new FrameLayout.LayoutParams(FrameLayout.LayoutParams.MATCH_PARENT, FrameLayout.LayoutParams.MATCH_PARENT);
             mySurfaceView.setLayoutParams(lp);
-            this.addView(mySurfaceView);
+
+            surfaceViewComponent().addView(mySurfaceView);
+
         }
 
         progressBar = new ProgressBar(context);
         progressBar.setIndeterminate(true);
         progressBar.setScrollBarStyle(View.SCROLLBARS_INSIDE_INSET);
-        RelativeLayout.LayoutParams pbParam = new RelativeLayout.LayoutParams(
-                RelativeLayout.LayoutParams.WRAP_CONTENT,
-                RelativeLayout.LayoutParams.WRAP_CONTENT);
-        pbParam.addRule(RelativeLayout.CENTER_IN_PARENT);
+        FrameLayout.LayoutParams pbParam = new FrameLayout.LayoutParams(
+                LayoutParams.WRAP_CONTENT,
+                LayoutParams.WRAP_CONTENT, Gravity.CENTER);
         progressBar.setLayoutParams(pbParam);
         this.addView(progressBar);
-
-
-        RelativeLayout.LayoutParams menuParam = new RelativeLayout.LayoutParams(
-                LayoutParams.MATCH_PARENT,
-                LayoutParams.MATCH_PARENT);
-        menuParam.addRule(RelativeLayout.CENTER_IN_PARENT);
-        menu = new OverlayMenu(context, this);
-        menu.setLayoutParams(menuParam);
-        this.addView(menu);
-        menu.setVisibility(GONE);
 
         mScaleDetector = new ScaleGestureDetector(context, new ScaleListener());
         mClickListener = new GestureDetector(context, new SimpleGestureDetector());
     }
 
 
-    public void setViewSize(int width, int height){
-        lp.width = width;
-        lp.height = height;
-        mySurfaceView.requestLayout();
+    public void setViewSize(final int width, final int height, int numQuad){
+//        lp.width = width;
+//        lp.height = height;
+//        mySurfaceView.requestLayout();
         progressBar.getLayoutParams().height = height/4;
         progressBar.getLayoutParams().width = width/4;
-        progressBar.requestLayout();
+//        progressBar.requestLayout();
 
-        menu.getLayoutParams().width = width;
-        menu.getLayoutParams().height = height;
-        menu.requestLayout();
-
+        this.getLayoutParams().height = height;
+        this.getLayoutParams().width = width;
+//        this.getLayoutParams().height = ((mDeviceManager.screenHeight/3) + 10)/numQuad;
+//        this.getLayoutParams().width = mDeviceManager.screenWidth/numQuad;
+        this.requestLayout();
     }
 
     public void onPlayLive() {
@@ -195,6 +192,7 @@ public class SurfaceViewComponent extends RelativeLayout implements IFunSDKResul
     public int onStartVideo(){
         this.isConnected = true;
         mPlayerHandler = FunSDK.MediaRealPlay(mUserID, deviceSn, mySurfaceViewChannelId, streamType, mySurfaceView, mySurfaceViewOrderId);
+        FunSDK.MediaSetFluency(mPlayerHandler, SDKCONST.EDECODE_TYPE.EDECODE_REAL_TIME_STREAM0, 0);
         return mPlayerHandler;
     }
 
@@ -204,6 +202,19 @@ public class SurfaceViewComponent extends RelativeLayout implements IFunSDKResul
         else
             return false;
     }
+
+    public void setFluency1(){
+        FunSDK.MediaSetFluency(mPlayerHandler, SDKCONST.EDECODE_TYPE.EDECODE_REAL_TIME_STREAM0, 0);
+    }
+
+    public void setFluency2(){
+        FunSDK.MediaSetFluency(mPlayerHandler, SDKCONST.EDECODE_TYPE.EDECODE_REAL_TIME_STREAM3, 0);
+    }
+
+    public void setFluency3() {
+        FunSDK.MediaSetFluency(mPlayerHandler, SDKCONST.EDECODE_TYPE.EDECODE_FILE_STREAM, 0);
+    }
+
 
     public void setStreamType(int type){
         this.streamType = type;
@@ -361,6 +372,7 @@ public class SurfaceViewComponent extends RelativeLayout implements IFunSDKResul
     }
 
     private void resumeScroll(){
+        mySurfaceView.setRenderMode(GLSurfaceView.RENDERMODE_WHEN_DIRTY);
         this.getParent().requestDisallowInterceptTouchEvent(false);
         if(mRecyclerAdapter!=null)
             mRecyclerAdapter.enableListScrolling();
@@ -371,6 +383,7 @@ public class SurfaceViewComponent extends RelativeLayout implements IFunSDKResul
         final int action = ev.getActionMasked();
         if(mScaleFactor > 1.F)
             interruptScroll();
+        mySurfaceView.setRenderMode(GLSurfaceView.RENDERMODE_CONTINUOUSLY);
         if(mRecyclerAdapter != null)
             mClickListener.onTouchEvent(ev);
         mScaleDetector.onTouchEvent(ev);
@@ -428,8 +441,8 @@ public class SurfaceViewComponent extends RelativeLayout implements IFunSDKResul
         @Override
         public boolean onSingleTapConfirmed(MotionEvent motionEvent) {
             //open menu
-//            mRecyclerAdapter.openOverlayMenu(surfaceViewComponent(), surfaceViewComponent().mySurfaceViewChannelId);
-            surfaceViewComponent().menu.setVisibility(VISIBLE);
+            mRecyclerAdapter.openOverlayMenu(surfaceViewComponent(), surfaceViewComponent().mySurfaceViewChannelId);
+//            surfaceViewComponent().menu.setVisibility(VISIBLE);
             Log.d(TAG2, "onSingleTapConfirmed: ");
             resumeScroll();
             return true;
@@ -445,9 +458,6 @@ public class SurfaceViewComponent extends RelativeLayout implements IFunSDKResul
         }
     }
 
-
-
-
     @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
         super.onMeasure(widthMeasureSpec, heightMeasureSpec);
@@ -456,13 +466,32 @@ public class SurfaceViewComponent extends RelativeLayout implements IFunSDKResul
     @Override
     protected void onDetachedFromWindow() {
         super.onDetachedFromWindow();
+        onStop();
+//        this.removeAllViews();
+//        mySurfaceView = null;
+//        Log.d("rocali", "onDetachedFromWindow: "+mySurfaceViewChannelId);
     }
 
     @Override
     protected void onAttachedToWindow() {
         super.onAttachedToWindow();
-        if(this.isConnected && !this.isPlaying())
-            this.onResume();
+
+//        if(mySurfaceView == null) {
+//            Log.d("rocali", "onAttachedToWindow: "+mySurfaceViewChannelId + "null");
+//            mySurfaceView = new GLSurfaceView20(mContext);
+////            mySurfaceView.setRenderMode(GLSurfaceView.RENDERMODE_CONTINUOUSLY);
+//            mySurfaceView.setLongClickable(true);
+//            mySurfaceView.setOnZoomListener(mScaleListener);
+//            lp = new FrameLayout.LayoutParams(FrameLayout.LayoutParams.MATCH_PARENT, FrameLayout.LayoutParams.MATCH_PARENT);
+//            mySurfaceView.setLayoutParams(lp);
+//
+//            this.addView(mySurfaceView);
+//            this.progressBar.setVisibility(VISIBLE);
+//        }
+//        Log.d("rocali", "onAttachedToWindow: "+mySurfaceViewChannelId);
+
+//        if(this.isConnected && !this.isPlaying())
+//            this.onResume();
         if(this.isConnected) {
             this.progressBar.setVisibility(VISIBLE);
             this.onStartVideo();
@@ -532,7 +561,7 @@ public class SurfaceViewComponent extends RelativeLayout implements IFunSDKResul
                     this.isPlaying = true;
                     if(playType == 0) {
                         this.progressBar.setVisibility(INVISIBLE);
-                        menu.updateIcons();
+//                        menu.updateIcons();
                     }else if(playType == 1){
                         currentPlaybackListener.onPlayState(2);
                     }
@@ -574,10 +603,10 @@ public class SurfaceViewComponent extends RelativeLayout implements IFunSDKResul
             }
             break;
             case EUIMSG.ON_PLAY_INFO: {
-                Log.d(TAG, "OnFunSDKResult: ON_PLAY_INFO");
+//                Log.d(TAG, "OnFunSDKResult: ON_PLAY_INFO");
                 if (playType == 1) {
                     int progress = msg.arg2 - msg.arg1;
-                    Log.d(TAG, "OnFunSDKResult: PROGRESS " + progress);
+//                    Log.d(TAG, "OnFunSDKResult: PROGRESS " + progress);
                     if(!isSeeking && progress > 0)
                         currentPlaybackListener.onChangeProgress(progress);
                     else if(isSeeking){

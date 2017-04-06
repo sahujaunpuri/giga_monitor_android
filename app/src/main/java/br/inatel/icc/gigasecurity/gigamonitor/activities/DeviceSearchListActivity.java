@@ -231,6 +231,7 @@ public class DeviceSearchListActivity extends ActionBarActivity {
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.device_search, menu);
         return super.onCreateOptionsMenu(menu);
@@ -239,6 +240,10 @@ public class DeviceSearchListActivity extends ActionBarActivity {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
+
+        if(id == R.id.home){
+            finish();
+        }
 
         if (id == R.id.action_refresh) {
             searchDevices();

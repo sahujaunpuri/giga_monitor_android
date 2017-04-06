@@ -56,6 +56,12 @@ public class DeviceFormActivity extends ActionBarActivity{
         checkEdit();
     }
 
+    private void checkEdit() {
+        if(editPosition != -1){
+            arrayList.remove(editPosition);
+        }
+    }
+
     public void initForm() {
         etName      = (EditText)findViewById(R.id.edit_text_device_form_name);
         etSerial    = (EditText)findViewById(R.id.edit_text_device_form_serial);
@@ -66,19 +72,17 @@ public class DeviceFormActivity extends ActionBarActivity{
         etPassword  = (EditText)findViewById(R.id.edit_text_device_form_password);
     }
 
-    private void checkEdit() {
-        if(editPosition != -1){
-            arrayList.remove(editPosition);
-        }
-    }
-
     private void setForm(Device device) {
         etName.setText(device.deviceName);
         etSerial.setText(device.getSerialNumber());
         etIpAddress.setText(device.getIpAddress());
         etDomain.setText(device.getDomain());
         etPort.setText(String.valueOf(device.getTCPPort()));
+        if(etPort.getText().toString().isEmpty())
+            etPort.setText("34567");
         etUsername.setText(device.getUsername());
+        if(etUsername.getText().toString().isEmpty())
+            etUsername.setText("admin");
         etPassword.setText(device.getPassword());
     }
 
@@ -113,12 +117,14 @@ public class DeviceFormActivity extends ActionBarActivity{
 
             mDevice.setIpAddress(ip);
 
-            if(isSerialNumberFilled)
+            if(isSerialNumberFilled) {
                 mDevice.setSerialNumber(etSerial.getText().toString());
-            else
+                if(mDevice.getIpAddress().isEmpty())
+                    mDevice.setIpAddress(mDevice.getSerialNumber());
+            }else
                 mDevice.setSerialNumber(ip + ":" + etPort.getText().toString());
 
-            if (!TextUtils.isEmpty(etPort.getText().toString()))
+            if (isPortFilled)
                 mDevice.setTCPPort(Integer.parseInt(etPort.getText().toString()));
 
             if(isUsernameFilled)
@@ -157,15 +163,14 @@ public class DeviceFormActivity extends ActionBarActivity{
 
             case android.R.id.home:
                 finish();
-                Intent i = new Intent(this, InitialActivity.class);
-                startActivity(i);
                 return true;
             case R.id.action_save:
                 if(save()) {
-                    DeviceManager.getInstance().addDevice(this, mDevice);
-                    DeviceManager.getInstance().updateListComponents();
+                    deviceManager.addDevice(this, mDevice);
+                    deviceManager.updateListComponents();
 //                    DeviceListActivity.mDevices = null;
-                    DeviceManager.getInstance().getExpandableListAdapter(DeviceListActivity.mContext).notifyDataSetChanged();
+                    if(editPosition != -1)
+                        deviceManager.logoutDevice(mDevice);
                     startDeviceListActivity();
 
 

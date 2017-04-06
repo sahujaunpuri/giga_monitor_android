@@ -135,7 +135,6 @@ public class Device implements Serializable {
     }
 
     public int getId() {
-        Log.d("DEVICE", "getId: PRINTHASH " + (this.serialNumber + this.deviceName).hashCode());
         return (this.serialNumber + this.deviceName).hashCode();
     }
 

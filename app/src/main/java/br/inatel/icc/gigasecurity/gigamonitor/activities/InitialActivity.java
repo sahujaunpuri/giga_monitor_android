@@ -79,7 +79,6 @@ public class InitialActivity extends ActionBarActivity implements View.OnClickLi
     }
 
     private void startSearchActivity() {
-
         if(mDevices != null) {
             Intent i = new Intent(this, DeviceSearchListActivity.class);
 
@@ -88,7 +87,6 @@ public class InitialActivity extends ActionBarActivity implements View.OnClickLi
 
             i.putExtras(extras);
             startActivity(i);
-            finish();
         }
 
     }

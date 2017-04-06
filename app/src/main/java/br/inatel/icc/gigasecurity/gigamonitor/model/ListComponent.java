@@ -6,6 +6,7 @@ import android.content.res.Resources;
 import android.view.Display;
 import android.view.Gravity;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
@@ -63,37 +64,25 @@ public class ListComponent {
             if(mDeviceManager.isFavorite(mDevice.getSerialNumber(), i))
                 surfaceViewComponent.setFavorite(true);
 
+            surfaceViewComponent.setLayoutParams(new FrameLayout.LayoutParams(FrameLayout.LayoutParams.MATCH_PARENT, FrameLayout.LayoutParams.MATCH_PARENT));
+
             surfaceViewComponents.add(surfaceViewComponent);
         }
+
+        this.reOrderSurfaceViewComponents();
     }
 
 
 
-    public void changeSurfaceViewSize(SurfaceViewComponent surfaceViewComponent, FrameLayout frameLayout) {
-        int surfaceViewWidth = (Resources.getSystem().getDisplayMetrics().widthPixels / numQuad);
-        int surfaceViewHeight = ((Resources.getSystem().getDisplayMetrics().heightPixels / 3) + 10) / numQuad;
+    public void changeSurfaceViewSize(SurfaceViewComponent surfaceViewComponent) {
+        mDeviceManager.getScreenSize();
+        int surfaceViewWidth = (mDeviceManager.screenWidth / numQuad);
+        int surfaceViewHeight = ((mDeviceManager.screenHeight / 3) + 10) / numQuad;
 
         if (mContext.getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE) {
-            surfaceViewHeight = (Resources.getSystem().getDisplayMetrics().heightPixels) / numQuad;
+            surfaceViewHeight = (mDeviceManager.screenHeight) / numQuad;
         }
-
-//        FrameLayout.LayoutParams lpSurfaceView = new FrameLayout.LayoutParams(surfaceViewWidth, surfaceViewHeight);
-
-        surfaceViewComponent.getLayoutParams().height = surfaceViewHeight;
-        surfaceViewComponent.getLayoutParams().width = surfaceViewWidth;
-        surfaceViewComponent.progressBar.getLayoutParams().height = surfaceViewHeight / 4;
-        surfaceViewComponent.progressBar.getLayoutParams().width = surfaceViewWidth / 4;
-        LinearLayout.LayoutParams lpFrameLayout = new LinearLayout.LayoutParams(surfaceViewWidth, surfaceViewHeight);
-//        FrameLayout.LayoutParams lpProgressBar = new FrameLayout.LayoutParams(surfaceViewWidth / 4, surfaceViewHeight / 4, Gravity.CENTER);
-
-
-
-        surfaceViewComponent.requestLayout();
-        surfaceViewComponent.progressBar.requestLayout();
-        frameLayout.setLayoutParams(lpFrameLayout);
-//        surfaceViewComponent.setLayoutParams(lpSurfaceView);
-//        surfaceViewComponent.progressBar.setLayoutParams(lpProgressBar);
-        surfaceViewComponent.setViewSize(surfaceViewWidth, surfaceViewHeight);
+        surfaceViewComponent.setViewSize(surfaceViewWidth, surfaceViewHeight, numQuad);
     }
 
     public void reOrderSurfaceViewComponents() {
@@ -114,16 +103,7 @@ public class ListComponent {
 
     public int scrollToItem(int currentFirstVisibleItem, int currentLastVisibleItem, int amountScrolled) {
         int itemToScroll = 0;
-        int totalQuads = 0;
-        if (numQuad == 1) {
-            totalQuads = 1;
-        } else if (numQuad == 2) {
-            totalQuads = 4;
-        } else if (numQuad == 3) {
-            totalQuads = 9;
-        } else if (numQuad == 4) {
-            totalQuads = 16;
-        }
+        int totalQuads = numQuad*numQuad;
         if (totalQuads > 1) {
             if (currentLastVisibleItem % totalQuads == totalQuads - 1) {
                 itemToScroll = currentLastVisibleItem;
@@ -135,27 +115,16 @@ public class ListComponent {
                 itemToScroll = currentFirstVisibleItem;
             }
         } else if (totalQuads == 1) {
-//            if (lastFirstVisibleItem != currentFirstVisibleItem) {
-//                itemToScroll = currentFirstVisibleItem;
-//            } else if (lastLastVisibleItem != currentLastVisibleItem) {
-//                itemToScroll = currentLastVisibleItem;
-//            }
-            if(amountScrolled > 0) {
-                if (amountScrolled > 150)
-                    itemToScroll = currentLastVisibleItem;
-                else
-                    itemToScroll = currentFirstVisibleItem;
-            }else {
-                if (amountScrolled < 150)
-                    itemToScroll = currentFirstVisibleItem;
-                else
-                    itemToScroll = currentLastVisibleItem;
+            if (lastFirstVisibleItem != currentFirstVisibleItem) {
+                itemToScroll = currentFirstVisibleItem;
+            } else if (lastLastVisibleItem != currentLastVisibleItem){
+                itemToScroll = currentLastVisibleItem;
             }
         }
         this.lastFirstVisibleItem = currentFirstVisibleItem;
         this.lastLastVisibleItem = currentLastVisibleItem;
 
-//        this.handleVisibleChannels();
+        this.handleVisibleChannels();
         return itemToScroll;
     }
 
@@ -185,7 +154,8 @@ public class ListComponent {
 
     public void resetScale(){
         for(SurfaceViewComponent svc : surfaceViewComponents){
-            svc.mySurfaceView.resetScaleInfo();
+            if(svc.mScaleFactor > 1.F)
+                svc.mySurfaceView.resetScaleInfo();
         }
     }
 
