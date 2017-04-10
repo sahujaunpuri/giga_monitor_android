@@ -225,6 +225,7 @@
         <activity
             android:name=".activities.DeviceListActivity"
             android:hardwareAccelerated="true"
+            android:configChanges="orientation|keyboardHidden|screenSize"
             android:label="@string/title_activity_device_list3"/>
         <activity
             android:name=".activities.MyTimelineActivity"

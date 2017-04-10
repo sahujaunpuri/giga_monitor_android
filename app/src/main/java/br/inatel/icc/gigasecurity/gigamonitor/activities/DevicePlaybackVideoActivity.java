@@ -15,14 +15,17 @@ import android.widget.SeekBar;
 import android.widget.TextView;
 
 import br.inatel.icc.gigasecurity.gigamonitor.R;
+import br.inatel.icc.gigasecurity.gigamonitor.core.DeviceManager;
 import br.inatel.icc.gigasecurity.gigamonitor.listeners.PlaybackListener;
 import br.inatel.icc.gigasecurity.gigamonitor.model.Device;
 import br.inatel.icc.gigasecurity.gigamonitor.model.FileData;
-import br.inatel.icc.gigasecurity.gigamonitor.model.SurfaceViewComponent;
+import br.inatel.icc.gigasecurity.gigamonitor.model.SurfaceViewManager;
+import br.inatel.icc.gigasecurity.gigamonitor.ui.SurfaceViewComponent;
 
 public class DevicePlaybackVideoActivity extends ActionBarActivity {
 
     private SurfaceViewComponent mSurfaceView;
+    private SurfaceViewManager mSurfaceViewManager;
     private SeekBar mSeekBar;
     private ProgressBar mProgressBar;
     private TextView mStatusTextView;
@@ -54,7 +57,7 @@ public class DevicePlaybackVideoActivity extends ActionBarActivity {
                     }else if(((progress*100)/(int)mFileData.getTotalTime()) == definedProgress){
                         mSurfaceView.setVisibility(View.VISIBLE);
                         mSurfaceView.isSeeking = false;
-                        mSurfaceView.currentPlaybackListener.onPlayState(2);
+                        mSurfaceViewManager.currentPlaybackListener.onPlayState(2);
                     }
                     Log.d(TAG, "onChangeProgress: progress:" + (progress*100)/(int)mFileData.getTotalTime() + " definedProgress:" + definedProgress);
                 }
@@ -84,14 +87,14 @@ public class DevicePlaybackVideoActivity extends ActionBarActivity {
             new SeekBar.OnSeekBarChangeListener() {
                 @Override
                 public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-                    if(fromUser && (mSurfaceView.isConnected)){
+                    if(fromUser && (mSurfaceView.isConnected())){
                         currentBar = progress;
                     }
                 }
 
                 @Override
                 public void onStartTrackingTouch(SeekBar seekBar) {
-                    if(mSurfaceView.isConnected) {
+                    if(mSurfaceView.isConnected()) {
 //                        pause();
                         mSurfaceView.setVisibility(View.INVISIBLE);
                         mSurfaceView.isSeeking = true;
@@ -102,7 +105,7 @@ public class DevicePlaybackVideoActivity extends ActionBarActivity {
 
                 @Override
                 public void onStopTrackingTouch(SeekBar seekBar) {
-                    if(mSurfaceView.isConnected) {
+                    if(mSurfaceView.isConnected()) {
                         setPlaybackProgress(currentBar);
                         updateStatusTextView("Buscando");
                         mActivity.runOnUiThread(new Runnable() {
@@ -134,24 +137,32 @@ public class DevicePlaybackVideoActivity extends ActionBarActivity {
 
         mActivity = this;
 
+        // Get data from previous activity
+        Bundle extras = getIntent().getExtras();
+        mDevice = (Device) extras.getSerializable("device");
+        mFileData = (FileData) extras.getSerializable("fileData");
+        mSurfaceViewManager = DeviceManager.getInstance().findSurfaceViewManagerByDevice(mDevice);
+
         // Find views
-        mSurfaceView    = (SurfaceViewComponent) findViewById(R.id.surface_view_test_1);
-        mProgressBar    = (ProgressBar) findViewById(R.id.pb_playback);
-        mSeekBar        = (SeekBar) findViewById(R.id.seek_bar_playback);
-        mStatusTextView = (TextView) findViewById(R.id.text_view_playback_status);
-        ivPlayPause     = (ImageView) findViewById(R.id.iv_play_playback);
-        ivStop          = (ImageView) findViewById(R.id.iv_stop_playback);
-        ivForward       = (ImageView) findViewById(R.id.iv_forward_playback);
-        ivBackward      = (ImageView) findViewById(R.id.iv_backward_playback);
+        mSurfaceView                      = (SurfaceViewComponent) findViewById(R.id.surface_view_test_1);
+        mProgressBar                      = (ProgressBar) findViewById(R.id.pb_playback);
+        mSeekBar                          = (SeekBar) findViewById(R.id.seek_bar_playback);
+        mStatusTextView                   = (TextView) findViewById(R.id.text_view_playback_status);
+        ivPlayPause                       = (ImageView) findViewById(R.id.iv_play_playback);
+        ivStop                            = (ImageView) findViewById(R.id.iv_stop_playback);
+        ivForward                         = (ImageView) findViewById(R.id.iv_forward_playback);
+        ivBackward                        = (ImageView) findViewById(R.id.iv_backward_playback);
 
         ivPlayPause.setImageDrawable(getResources().getDrawable(R.drawable.ic_play_playback));
 
-        //botões desabilitados a pedido da giga, videos curtos estavam pulando muitos frames e encerrando a exibição
+        //(SDK ANTIGA)botões desabilitados a pedido da giga, videos curtos estavam pulando muitos frames e encerrando a exibição
         ivBackward.setVisibility(View.GONE);
         ivForward.setVisibility(View.GONE);
 
+
+
         // Set listeners
-        mSurfaceView.setCurrentPlaybackListener(mPlaybackListener);
+        mSurfaceViewManager.setCurrentPlaybackListener(mPlaybackListener);
         mSeekBar.setOnSeekBarChangeListener(mSeekBarChangeListener);
 
         ivPlayPause.setOnClickListener(new View.OnClickListener() {
@@ -182,12 +193,11 @@ public class DevicePlaybackVideoActivity extends ActionBarActivity {
 //            }
 //        });
 
-        // Get data from previous activity
-        Bundle extras = getIntent().getExtras();
-        mDevice = (Device) extras.getSerializable("device");
-        mFileData = (FileData) extras.getSerializable("fileData");
+
         mSurfaceView.deviceSn = mDevice.getSerialNumber();
-        mSurfaceView.playType = 1;
+        mSurfaceViewManager.playType = 1;
+
+        mSurfaceViewManager.addSurfaceViewComponent(mSurfaceView);
 
 //        mSurfaceView.setAudioCtrl(MyConfig.AudioState.OPENED);
 
@@ -202,7 +212,7 @@ public class DevicePlaybackVideoActivity extends ActionBarActivity {
     }
 
     public void playButtonClick() {
-        if (mSurfaceView.isConnected && !mSurfaceView.isPlaying()) {
+        if (mSurfaceView.isConnected() && !mSurfaceView.isPlaying()) {
             resume();
         } else if (mSurfaceView.isPlaying()) {
             pause();
@@ -212,7 +222,7 @@ public class DevicePlaybackVideoActivity extends ActionBarActivity {
     }
 
     public void stopButtonClick() {
-        if (mSurfaceView.isConnected) {
+        if (mSurfaceView.isConnected()) {
             stop();
             mSeekBar.setProgress(0);
         }
@@ -257,13 +267,13 @@ public class DevicePlaybackVideoActivity extends ActionBarActivity {
         mSurfaceView.setVisibility(View.VISIBLE);
 
         mProgressBar.setVisibility(View.VISIBLE);
-        mSurfaceView.progressBar.setVisibility(View.VISIBLE);
-        mSurfaceView.onPlayPlayback(mFileData.getFileData());
+        mSurfaceView.isLoading(true);
+        mSurfaceViewManager.onPlayPlayback(mFileData.getFileData(), mSurfaceView);
         mSeekBar.setProgress(0);
     }
 
     public void resume() {
-        mSurfaceView.onResume();
+        mSurfaceViewManager.onResume(mSurfaceView);
 
         String text = getResources().getString(R.string.label_playing);
 
@@ -273,7 +283,7 @@ public class DevicePlaybackVideoActivity extends ActionBarActivity {
     }
 
     public void stop() {
-        mSurfaceView.onStop();
+        mSurfaceViewManager.onStop(mSurfaceView);
         String text = getResources().getString(R.string.label_stopped);
         mSurfaceView.setVisibility(View.INVISIBLE);
 
@@ -289,7 +299,7 @@ public class DevicePlaybackVideoActivity extends ActionBarActivity {
     }
 
     public void pause() {
-        mSurfaceView.onPause();
+        mSurfaceViewManager.onPause(mSurfaceView);
 
         String text = getResources().getString(R.string.label_paused);
         updateStatusTextView(text);
@@ -306,7 +316,7 @@ public class DevicePlaybackVideoActivity extends ActionBarActivity {
     public void setPlaybackProgress(int progress) {
         Log.d(TAG, "setPlaybackProgress: SEEKING TO: " + (progress*100)/(int)mFileData.getTotalTime());
         definedProgress = (progress*100)/(int)mFileData.getTotalTime();
-        mSurfaceView.seekByPos(definedProgress);
+        mSurfaceViewManager.seekByPos(definedProgress, mSurfaceView);
     }
 
     @Override
@@ -329,7 +339,8 @@ public class DevicePlaybackVideoActivity extends ActionBarActivity {
 
         switch (id) {
             case android.R.id.home:
-                mSurfaceView.onStop();
+                mSurfaceViewManager.onStop(mSurfaceView);
+                mSurfaceViewManager.playType = 0;
                 finish();
                 return true;
             default:

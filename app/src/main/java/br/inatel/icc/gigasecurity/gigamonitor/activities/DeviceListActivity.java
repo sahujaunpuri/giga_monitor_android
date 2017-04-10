@@ -4,7 +4,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.res.Configuration;
 import android.os.Bundle;
-import android.support.annotation.IdRes;
 import android.support.v7.app.ActionBarActivity;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -12,7 +11,6 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.ExpandableListView;
-import android.widget.RelativeLayout;
 
 import java.util.ArrayList;
 
@@ -20,9 +18,7 @@ import br.inatel.icc.gigasecurity.gigamonitor.R;
 import br.inatel.icc.gigasecurity.gigamonitor.adapters.DeviceExpandableListAdapter;
 import br.inatel.icc.gigasecurity.gigamonitor.core.DeviceManager;
 import br.inatel.icc.gigasecurity.gigamonitor.model.Device;
-import br.inatel.icc.gigasecurity.gigamonitor.model.ListComponent;
-import br.inatel.icc.gigasecurity.gigamonitor.model.SurfaceViewComponent;
-import br.inatel.icc.gigasecurity.gigamonitor.util.MyExceptionHandler;
+import br.inatel.icc.gigasecurity.gigamonitor.model.SurfaceViewManager;
 
 public class DeviceListActivity extends ActionBarActivity {
 
@@ -32,7 +28,6 @@ public class DeviceListActivity extends ActionBarActivity {
     public static DeviceManager mDeviceManager;
     public static ArrayList<Device> mDevices;
     public static int previousGroup = -1;
-    public static ArrayList<ListComponent> listComponents = new ArrayList<>();
     public static int expandedGroups = 0;
 
     @Override
@@ -47,7 +42,7 @@ public class DeviceListActivity extends ActionBarActivity {
             getSupportActionBar().hide();
 
             if(previousGroup != -1) {
-//                mAdapter.onChangeOrientation(previousGroup);
+                mAdapter.onChangeOrientation(previousGroup);
                 mExpandableListView.scrollTo(previousGroup, 0);
             }
         } else{
@@ -69,9 +64,9 @@ public class DeviceListActivity extends ActionBarActivity {
 
 
 
-        if(previousGroup != -1) {
-            mAdapter.onChangeOrientation(previousGroup);
-        }
+//        if(previousGroup != -1) {
+//            mAdapter.onChangeOrientation(previousGroup);
+//        }
 
         //if don't have any device registered, start InitialActivity.
         if(mDevices.size() == 0) {
@@ -99,7 +94,26 @@ public class DeviceListActivity extends ActionBarActivity {
         });
     }
 
+    @Override
+    public void onConfigurationChanged(Configuration newConfig){
+        super.onConfigurationChanged(newConfig);
 
+        if(getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE) {
+            getWindow().clearFlags(WindowManager.LayoutParams.FLAG_FORCE_NOT_FULLSCREEN);
+            getWindow().addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
+//            getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
+            getSupportActionBar().hide();
+            if(previousGroup != -1) {
+                mExpandableListView.scrollTo(previousGroup, 0);
+            }
+        } else{
+            getSupportActionBar().show();
+            getWindow().clearFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
+            getWindow().addFlags(WindowManager.LayoutParams.FLAG_FORCE_NOT_FULLSCREEN);
+        }
+
+        mAdapter.onChangeOrientation(previousGroup);
+    }
 
     @Override
     protected void onResume() {
@@ -119,7 +133,6 @@ public class DeviceListActivity extends ActionBarActivity {
         mDeviceManager      = DeviceManager.getInstance();
         mContext            = DeviceListActivity.this;
         mAdapter            = mDeviceManager.getExpandableListAdapter(mContext);
-        listComponents      = mDeviceManager.getListComponents();
         mDevices            = mDeviceManager.getDevices();
         mDeviceManager.currentContext = this;
         mAdapter.setDevices(mDevices);
@@ -129,6 +142,7 @@ public class DeviceListActivity extends ActionBarActivity {
 //        mAdapter = new DeviceExpandableListAdapter(mContext, mDevices);
 
         mExpandableListView.setAdapter(mAdapter);
+
         mAdapter.notifyDataSetChanged();
 //        if(mDevices == null) {
 //            mDevices = mDeviceManager.getDevices();
@@ -137,19 +151,19 @@ public class DeviceListActivity extends ActionBarActivity {
 
     }
 
-    public static void loadDevices() {
+    /*public static void loadDevices() {
         if(mDevices == null) {
             mDevices = mDeviceManager.getDevices();
 
-            listComponents.clear();
+            surfaceViewManagers.clear();
 
             for(int i=0; i < mDevices.size(); i++) {
-                ListComponent listComponent = new ListComponent(mDevices.get(i));
+                SurfaceViewManager surfaceViewManager = new SurfaceViewManager(mDevices.get(i));
 
-                listComponents.add(listComponent);
+                surfaceViewManagers.add(surfaceViewManager);
             }
         }
-    }
+    }*/
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -164,10 +178,12 @@ public class DeviceListActivity extends ActionBarActivity {
         int id = item.getItemId();
         switch (id){
             case (R.id.action_add):
+                collapseAll();
                 startInitialActivity();
 
                 return true;
             case (R.id.action_edit):
+                collapseAll();
                 startEditActivity();
 
                 return true;
@@ -177,6 +193,15 @@ public class DeviceListActivity extends ActionBarActivity {
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
+        }
+    }
+
+    public void collapseAll(){
+        for(int i = 0; i<mDevices.size(); i++) {
+            if(mExpandableListView.isGroupExpanded(i)){
+                mExpandableListView.collapseGroup(i);
+                mAdapter.onGroupCollapsed(i);
+            }
         }
     }
 

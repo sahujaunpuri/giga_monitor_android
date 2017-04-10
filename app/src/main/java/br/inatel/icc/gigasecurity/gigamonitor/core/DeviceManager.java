@@ -37,8 +37,8 @@ import br.inatel.icc.gigasecurity.gigamonitor.listeners.ConfigListener;
 import br.inatel.icc.gigasecurity.gigamonitor.listeners.LoginDeviceListener;
 import br.inatel.icc.gigasecurity.gigamonitor.listeners.PlaybackSearchListener;
 import br.inatel.icc.gigasecurity.gigamonitor.model.Device;
-import br.inatel.icc.gigasecurity.gigamonitor.model.ListComponent;
-import br.inatel.icc.gigasecurity.gigamonitor.model.SurfaceViewComponent;
+import br.inatel.icc.gigasecurity.gigamonitor.model.SurfaceViewManager;
+import br.inatel.icc.gigasecurity.gigamonitor.ui.SurfaceViewComponent;
 import br.inatel.icc.gigasecurity.gigamonitor.util.ComplexPreferences;
 import br.inatel.icc.gigasecurity.gigamonitor.util.Utils;
 
@@ -63,7 +63,7 @@ public class DeviceManager implements IFunSDKResult{
     public ArrayList<Device> mFavoriteDevices = new ArrayList<Device>();
     private final HashMap<Integer, Device> mLoggedDevices = new HashMap<Integer, Device>();
     private LinkedList<SurfaceViewComponent> startList = new LinkedList<SurfaceViewComponent>();
-    private HashMap<Integer, LoginDeviceListener> loginList = new HashMap<Integer, LoginDeviceListener>();
+    private HashMap<String, LoginDeviceListener> loginList = new HashMap<String, LoginDeviceListener>();
 
 
     private LoginDeviceListener currentLoginListener;
@@ -74,7 +74,7 @@ public class DeviceManager implements IFunSDKResult{
     public Context currentContext;
 
     private DeviceExpandableListAdapter expandableListAdapter;
-    private ArrayList<ListComponent> listComponents;
+    private ArrayList<SurfaceViewManager> surfaceViewManagers;
     public int favoriteChannels = 0;
 
     private boolean startPlay = false;
@@ -176,19 +176,18 @@ public class DeviceManager implements IFunSDKResult{
                     putLoggedDevice(device);
 
                     if(device.getChannelNumber()>0)
-//                        currentLoginListener.onLoginSuccess();
-                        loginList.get(mDevices.indexOf(device)).onLoginSuccess(device);
+                        loginList.get(device.getSerialNumber()).onLoginSuccess(device);
                     else {
                         FunSDK.DevGetConfigByJson(getHandler(), device.getSerialNumber(), "SystemInfo", 4096, -1, 10000, device.getId());
                     }
                } else if(msg.arg1 == -11301) {
                     if (device != null)
 //                        currentLoginListener.onLoginError(msg.arg1, device);
-                        loginList.get(mDevices.indexOf(device)).onLoginError(msg.arg1, device);
+                        loginList.get(device.getSerialNumber()).onLoginError(msg.arg1, device);
                 } else if(msg.arg1 == -11307){
                     if(device != null)
 //                        currentLoginListener.onLoginError(msg.arg1, device);
-                        loginList.get(mDevices.indexOf(device)).onLoginError(msg.arg1, device);
+                        loginList.get(device.getSerialNumber()).onLoginError(msg.arg1, device);
                 } else {
                     FunSDK.DevLogin(getHandler(), device.getSerialNumber(), device.getUsername(), device.getPassword(), device.getId());
                     Log.d(TAG, "OnFunSDKResult: Login ERROR");
@@ -211,7 +210,7 @@ public class DeviceManager implements IFunSDKResult{
 
                         if(stateCheckTry>2) {
                             device.isOnline = false;
-                            loginList.get(mDevices.indexOf(device)).onLoginError(-1, device);
+                            loginList.get(device.getSerialNumber()).onLoginError(-1, device);
                             stateCheckTry = 0;
                         } else{
                             FunSDK.SysGetDevState(getHandler(), device.getSerialNumber(), device.getId());
@@ -239,7 +238,7 @@ public class DeviceManager implements IFunSDKResult{
                         case "SystemInfo":{
                             setDeviceInfo(json, device);
 //                            currentLoginListener.onLoginSuccess();
-                            loginList.get(mDevices.indexOf(device)).onLoginSuccess(device);
+                            loginList.get(device.getSerialNumber()).onLoginSuccess(device);
                         }
                         break;
                         case "NetWork.NetCommon":{
@@ -344,6 +343,11 @@ public class DeviceManager implements IFunSDKResult{
 
     public void addDevice(Context context, Device device) {
         mDevices.add(device);
+        saveData();
+    }
+
+    public void addDevice(Context context, Device device, int position) {
+        mDevices.add(position, device);
         saveData();
     }
 
@@ -638,38 +642,53 @@ public class DeviceManager implements IFunSDKResult{
         return expandableListAdapter;
     }
 
-    public ArrayList<ListComponent> getListComponents(){
-        if(listComponents == null){
-            listComponents = new ArrayList<ListComponent>();
-            for(int i=0; i < mDevices.size(); i++) {
-                ListComponent listComponent = new ListComponent(mDevices.get(i));
-                listComponents.add(listComponent);
-            }
-        }
-        return listComponents;
+    public void invalidateExpandableList(){
+        expandableListAdapter = null;
     }
 
-    public void updateListComponents(){
-        listComponents.clear();
-        for(int i=0; i < mDevices.size(); i++) {
-            ListComponent listComponent = new ListComponent(mDevices.get(i));
-            listComponents.add(listComponent);
+    public ArrayList<SurfaceViewManager> getSurfaceViewManagers(){
+        if(surfaceViewManagers == null){
+            surfaceViewManagers = new ArrayList<SurfaceViewManager>();
+            for(int i=0; i < mDevices.size(); i++) {
+                SurfaceViewManager surfaceViewManager = new SurfaceViewManager(mDevices.get(i));
+                surfaceViewManagers.add(surfaceViewManager);
+            }
+        }
+        return surfaceViewManagers;
+    }
 
+    public SurfaceViewManager findSurfaceViewManagerByDevice(Device device){
+        for(SurfaceViewManager svm : surfaceViewManagers){
+            if(svm.mDevice.getSerialNumber().equals(device.getSerialNumber()))
+                return svm;
+        }
+        Log.e(TAG, "findSurfaceViewManagerByDevice: SurfaceViewManager Not Found");
+        return null;
+    }
+
+    public void updateSurfaceViewManagers(){
+        if(surfaceViewManagers == null)
+            return;
+        surfaceViewManagers.clear();
+        for(int i=0; i < mDevices.size(); i++) {
+            SurfaceViewManager surfaceViewManager = new SurfaceViewManager(mDevices.get(i));
+            surfaceViewManagers.add(surfaceViewManager);
         }
     }
 
     public void removeFromExpandableList(ArrayList<Integer> itens){
         for(Integer i : itens) {
-            listComponents.get(i).stopChannels(0);
+            surfaceViewManagers.get(i).stopChannels(0);
             expandableListAdapter.removeGroup(i);
         }
-        updateListComponents();
+        updateSurfaceViewManagers();
     }
 
     public void loginDevice(final Device device, final LoginDeviceListener loginDeviceListener) {
-        loginList.put(mDevices.indexOf(device), loginDeviceListener);
-//        loginList.add(mDevices.indexOf(device), loginDeviceListener);
-//        currentLoginListener = loginDeviceListener;
+        loginList.put(device.getSerialNumber(), loginDeviceListener);
+        if(!device.getIpAddress().isEmpty())
+            device.setSerialNumber(device.getIpAddress()+ ":" + device.getTCPPort());
+        loginList.put(device.getSerialNumber(), loginDeviceListener);
         FunSDK.SysGetDevState(getHandler(), device.getSerialNumber(), device.getId());
     }
 
@@ -796,34 +815,34 @@ public class DeviceManager implements IFunSDKResult{
         return path == null ? "" : path;
     }
 
-    public void addToStart(SurfaceViewComponent surfaceViewComponent) {
+    /*public void addToStart(SurfaceViewComponent svc) {
         synchronized (startList) {
-            startList.add(surfaceViewComponent);
+            startList.add(svc);
             if (!startPlay)
-                requestStart();
+                requestStart(svc);
         }
     }
 
-    public void requestStart(){
+    public void requestStart(SurfaceViewComponent svc){
         if(!startList.isEmpty()){
             startPlay = true;
-            startList.getFirst().onStartVideo();
+            startList.getFirst().onStartVideo(svc);
         } else{
             startPlay = false;
         }
     }
 
-    public void removeFromStartQueue(SurfaceViewComponent surfaceViewComponent){
+    public void removeFromStartQueue(SurfaceViewManager surfaceViewManager){
         synchronized (startList){
-            startList.remove(surfaceViewComponent);
+            startList.remove(surfaceViewManager);
         }
     }
 
-    public boolean isOnStartQueue(SurfaceViewComponent surfaceViewComponent){
+    public boolean isOnStartQueue(SurfaceViewManager surfaceViewManager){
         synchronized (startList) {
-            return startList.contains(surfaceViewComponent);
+            return startList.contains(surfaceViewManager);
         }
-    }
+    }*/
 
     public void findPlaybackList(Device device, H264_DVR_FINDINFO info, PlaybackSearchListener listener){
         currentPlaybackSearchListener = listener;
@@ -838,7 +857,7 @@ public class DeviceManager implements IFunSDKResult{
         return favoritesMap.containsKey(serialNumber) && favoritesMap.get(serialNumber).contains(channelNumber);
     }
 
-    public void addFavorite(Context context, SurfaceViewComponent channel){
+    /*public void addFavorite(Context context, SurfaceViewManager channel){
         Log.d(TAG, "addFavorite: channel " + channel.mySurfaceViewChannelId);
         ArrayList<Integer> arrayList = new ArrayList<Integer>();
         if(favoritesMap.containsKey(channel.deviceSn)){
@@ -851,7 +870,7 @@ public class DeviceManager implements IFunSDKResult{
         saveData();
     }
 
-    public void removeFavorite(Context context, SurfaceViewComponent channel){
+    public void removeFavorite(Context context, SurfaceViewManager channel){
         Log.d(TAG, "removeFavorite: channel " + channel.mySurfaceViewChannelId);
         if(isFavorite(channel.deviceSn, channel.mySurfaceViewChannelId)){
             ArrayList<Integer> arrayList = favoritesMap.get(channel.deviceSn);
@@ -862,7 +881,7 @@ public class DeviceManager implements IFunSDKResult{
         }
         channel.isFavorite = false;
         saveData();
-    }
+    }*/
 
 
 

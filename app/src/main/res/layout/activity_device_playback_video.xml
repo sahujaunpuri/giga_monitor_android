@@ -22,7 +22,7 @@
                 android:layout_height="match_parent"
                 android:background="#000000">
 
-                <br.inatel.icc.gigasecurity.gigamonitor.model.SurfaceViewComponent
+                <br.inatel.icc.gigasecurity.gigamonitor.model.SurfaceViewManager
                     android:id="@+id/surface_view_test_1"
                     android:layout_width="fill_parent"
                     android:layout_height="240dp"

@@ -3,15 +3,10 @@ package br.inatel.icc.gigasecurity.gigamonitor.ui;
 import android.content.Context;
 import android.graphics.Color;
 import android.util.AttributeSet;
-import android.util.Log;
-import android.view.LayoutInflater;
-import android.view.SurfaceView;
 import android.view.View;
-import android.view.ViewGroup;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.ImageView;
-import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -19,7 +14,7 @@ import android.widget.Toast;
 import br.inatel.icc.gigasecurity.gigamonitor.R;
 import br.inatel.icc.gigasecurity.gigamonitor.activities.DeviceListActivity;
 import br.inatel.icc.gigasecurity.gigamonitor.core.DeviceManager;
-import br.inatel.icc.gigasecurity.gigamonitor.model.SurfaceViewComponent;
+import br.inatel.icc.gigasecurity.gigamonitor.model.SurfaceViewManager;
 
 /**
  * Created by zappts on 3/24/17.
@@ -31,17 +26,19 @@ public class OverlayMenu extends RelativeLayout {
     public ImageView ivHQ, ivPlayPause, ivSnapshot, ivSnapvideo, ivFavorite, ivSendAudio, ivReceiveAudio;
     public TextView ivTitle;
     public DeviceManager mDeviceManager;
+    public SurfaceViewManager surfaceViewManager;
 
-    public OverlayMenu(Context context) {
+    public OverlayMenu(Context context, SurfaceViewManager surfaceViewManager) {
         super(context);
         mContext = context;
+        this.surfaceViewManager = surfaceViewManager;
         init();
     }
 
-    public OverlayMenu(Context context, AttributeSet attrs, SurfaceViewComponent surfaceViewComponent) {
+    public OverlayMenu(Context context, AttributeSet attrs,  SurfaceViewManager surfaceViewManager) {
         super(context, attrs);
         this.mContext = context;
-        this.surfaceViewComponent = surfaceViewComponent;
+        this.surfaceViewManager = surfaceViewManager;
         init();
     }
 
@@ -62,6 +59,8 @@ public class OverlayMenu extends RelativeLayout {
         ivReceiveAudio       = (ImageView) findViewById(R.id.iv_enable_receive_audio);
         ivSendAudio          = (ImageView) findViewById(R.id.iv_enable_send_audio);
         ivTitle              = (TextView)  findViewById(R.id.tv_channel_title);
+
+//        surfaceViewComponent = new SurfaceViewComponent(mContext, surfaceViewManager);
 
         mDeviceManager = DeviceManager.getInstance();
 
@@ -84,7 +83,7 @@ public class OverlayMenu extends RelativeLayout {
             ivHQ.setImageDrawable(mContext.getResources().getDrawable(R.drawable.ic_hq_off));
         }
 
-        if(surfaceViewComponent.isConnected) {
+        if(surfaceViewComponent.isConnected()) {
             if (surfaceViewComponent.isPlaying) {
                 ivPlayPause.setImageDrawable(mContext.getResources().getDrawable(R.drawable.ic_pause_white_36dp));
             } else {
@@ -123,12 +122,12 @@ public class OverlayMenu extends RelativeLayout {
         ivPlayPause.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (surfaceViewComponent.isConnected) {
+                if (surfaceViewComponent.isConnected()) {
                     if (surfaceViewComponent.isPlaying) {
-                        surfaceViewComponent.onPause();
+                        surfaceViewManager.onPause(surfaceViewComponent);
                         ivPlayPause.setImageDrawable(mContext.getResources().getDrawable(R.drawable.ic_play_arrow_white_36dp));
                     } else {
-                        surfaceViewComponent.onResume();
+                        surfaceViewManager.onResume(surfaceViewComponent);
                         ivPlayPause.setImageDrawable(mContext.getResources().getDrawable(R.drawable.ic_pause_white_36dp));
                     }
                 }
@@ -141,7 +140,7 @@ public class OverlayMenu extends RelativeLayout {
                 if(surfaceViewComponent.isREC){
                     Toast.makeText(mContext, "Finalize a gravação.", Toast.LENGTH_SHORT).show();
                 } else {
-                    surfaceViewComponent.progressBar.setVisibility(View.VISIBLE);
+                    surfaceViewComponent.isLoading(true);
                     if (!surfaceViewComponent.isHD()) {
                         surfaceViewComponent.setStreamType(0);
                         ivHQ.setImageDrawable(mContext.getResources().getDrawable(R.drawable.ic_hq_on));
@@ -149,7 +148,7 @@ public class OverlayMenu extends RelativeLayout {
                         surfaceViewComponent.setStreamType(1);
                         ivHQ.setImageDrawable(mContext.getResources().getDrawable(R.drawable.ic_hq_off));
                     }
-                    surfaceViewComponent.restartVideo();
+                    surfaceViewManager.restartVideo(surfaceViewComponent);
                 }
             }
         });
@@ -157,7 +156,7 @@ public class OverlayMenu extends RelativeLayout {
         ivSnapshot.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                surfaceViewComponent.takeSnapshot();
+                surfaceViewManager.takeSnapshot(surfaceViewComponent);
                 startAnimationBlink(surfaceViewComponent);
             }
         });
@@ -170,11 +169,11 @@ public class OverlayMenu extends RelativeLayout {
                 } else if(!surfaceViewComponent.isREC()){
                     surfaceViewComponent.setREC(true);
                     mDeviceManager.channelOnRec = true;
-                    surfaceViewComponent.startRecord();
+                    surfaceViewManager.startRecord(surfaceViewComponent);
                     ivSnapvideo.setImageDrawable(mContext.getResources().getDrawable(R.drawable.ic_snapvideo_on));
                 } else {
                     surfaceViewComponent.setREC(false);
-                    surfaceViewComponent.stopRecord();
+                    surfaceViewManager.stopRecord(surfaceViewComponent);
                     ivSnapvideo.setImageDrawable(mContext.getResources().getDrawable(R.drawable.ic_snapvideo));
                 }
             }
@@ -184,11 +183,10 @@ public class OverlayMenu extends RelativeLayout {
             @Override
             public void onClick(View view) {
                 if(surfaceViewComponent.isFavorite()){
-//                    mDeviceManager.removeFavorite(mContext, surfaceViewComponent);
+//                    mDeviceManager.removeFavorite(mContext, surfaceViewManager);
                     ivFavorite.clearColorFilter();
                 } else {
-                    surfaceViewComponent.setFluency1();
-//                    mDeviceManager.addFavorite(mContext, surfaceViewComponent);
+//                    mDeviceManager.addFavorite(mContext, surfaceViewManager);
                     ivFavorite.setColorFilter(Color.parseColor("#FFFF00"));
                 }
             }
@@ -225,7 +223,7 @@ public class OverlayMenu extends RelativeLayout {
         });
     }
 
-    private void startAnimationBlink(final SurfaceViewComponent svc) {
+    private void startAnimationBlink(final SurfaceViewComponent svl) {
         new Thread(new Runnable() {
             @Override
             public void run() {
@@ -233,7 +231,7 @@ public class OverlayMenu extends RelativeLayout {
                 ((DeviceListActivity) mContext).runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        svc.startAnimation(mAnimationBlink);
+                        svl.startAnimation(mAnimationBlink);
                     }
                 });
             }

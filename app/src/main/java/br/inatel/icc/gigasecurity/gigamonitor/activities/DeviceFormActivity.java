@@ -53,7 +53,7 @@ public class DeviceFormActivity extends ActionBarActivity{
 
         arrayList = deviceManager.getDevices();
 
-        checkEdit();
+
     }
 
     private void checkEdit() {
@@ -147,6 +147,7 @@ public class DeviceFormActivity extends ActionBarActivity{
         Intent i = new Intent(this, DeviceListActivity.class);
         i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP);
         startActivity(i);
+        finish();
     }
 
     @Override
@@ -166,15 +167,19 @@ public class DeviceFormActivity extends ActionBarActivity{
                 return true;
             case R.id.action_save:
                 if(save()) {
-                    deviceManager.addDevice(this, mDevice);
-                    deviceManager.updateListComponents();
-//                    DeviceListActivity.mDevices = null;
-                    if(editPosition != -1)
+                    if(editPosition != -1){
                         deviceManager.logoutDevice(mDevice);
+                        checkEdit();
+                        deviceManager.addDevice(this, mDevice, editPosition);
+                    } else if(deviceManager.findDeviceBySN(mDevice.getSerialNumber()) != null) {
+                        Toast.makeText(this, "Dispositivo já adicionado.", Toast.LENGTH_SHORT).show();
+                        startDeviceListActivity();
+                    } else {
+                        deviceManager.addDevice(this, mDevice);
+                    }
+
+                    deviceManager.updateSurfaceViewManagers();
                     startDeviceListActivity();
-
-
-                    finish();
 
                     return true;
                 } else {

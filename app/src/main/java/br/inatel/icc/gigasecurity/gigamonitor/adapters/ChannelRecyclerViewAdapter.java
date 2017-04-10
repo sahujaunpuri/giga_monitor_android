@@ -1,32 +1,25 @@
 package br.inatel.icc.gigasecurity.gigamonitor.adapters;
 
 import android.content.Context;
-import android.content.res.Configuration;
-import android.content.res.Resources;
-import android.graphics.Color;
+import android.opengl.GLSurfaceView;
 import android.os.Handler;
 import android.os.Looper;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
-import android.util.TimingLogger;
-import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.animation.Animation;
-import android.view.animation.AnimationUtils;
 import android.widget.FrameLayout;
-import android.widget.LinearLayout;
-import android.widget.Toast;
+
+import com.video.opengl.GLSurfaceView20;
 
 import br.inatel.icc.gigasecurity.gigamonitor.R;
-import br.inatel.icc.gigasecurity.gigamonitor.activities.DeviceListActivity;
 import br.inatel.icc.gigasecurity.gigamonitor.core.DeviceManager;
 import br.inatel.icc.gigasecurity.gigamonitor.model.Device;
-import br.inatel.icc.gigasecurity.gigamonitor.model.ListComponent;
-import br.inatel.icc.gigasecurity.gigamonitor.model.SurfaceViewComponent;
+import br.inatel.icc.gigasecurity.gigamonitor.model.SurfaceViewManager;
 import br.inatel.icc.gigasecurity.gigamonitor.ui.OverlayMenu;
+import br.inatel.icc.gigasecurity.gigamonitor.ui.SurfaceViewComponent;
 
 
 /**
@@ -43,15 +36,15 @@ public class ChannelRecyclerViewAdapter extends RecyclerView.Adapter<ChannelRecy
     private long clickTime, lastClickTime = 0;
     public boolean doubleClick = false;
     public final Handler handler = new Handler(Looper.getMainLooper());
-    public final ListComponent listComponent;
+    public final SurfaceViewManager surfaceViewManager;
 
-    public ChannelRecyclerViewAdapter(Context mContext, Device mDevice, int numQuad, DeviceExpandableListAdapter.ChildViewHolder chieldViewHolder, ListComponent listComponent) {
+    public ChannelRecyclerViewAdapter(Context mContext, Device mDevice, int numQuad, DeviceExpandableListAdapter.ChildViewHolder chieldViewHolder, SurfaceViewManager surfaceViewManager) {
         this.mContext = mContext;
         this.mDevice = mDevice;
         this.numQuad = numQuad;
         this.childViewHolder = chieldViewHolder;
         this.mDeviceManager  = DeviceManager.getInstance();
-        this.listComponent = listComponent;
+        this.surfaceViewManager = surfaceViewManager;
     }
 
     public ChannelRecyclerViewAdapter getAdapter(){
@@ -61,6 +54,7 @@ public class ChannelRecyclerViewAdapter extends RecyclerView.Adapter<ChannelRecy
     public class MyViewHolder extends RecyclerView.ViewHolder {
 
         public FrameLayout frameLayout;
+        public GLSurfaceView20 surfaceViewComponent;
 
         public MyViewHolder(View view) {
             super(view);
@@ -99,7 +93,8 @@ public class ChannelRecyclerViewAdapter extends RecyclerView.Adapter<ChannelRecy
     public void onBindViewHolder(final ChannelRecyclerViewAdapter.MyViewHolder myViewHolder, final int position) {
 
         try{ //TODO detectar porque esta sendo chamado quando tenta conectar pela segunda vez a um dispositivo offline
-            final SurfaceViewComponent currentSurfaceView = listComponent.surfaceViewComponents.get(position);
+
+            final SurfaceViewComponent currentSurfaceView = surfaceViewManager.surfaceViewComponents.get(position);
             currentSurfaceView.mRecyclerAdapter = getAdapter();
 
             myViewHolder.frameLayout.removeAllViews();
@@ -111,13 +106,14 @@ public class ChannelRecyclerViewAdapter extends RecyclerView.Adapter<ChannelRecy
 
             myViewHolder.frameLayout.addView(currentSurfaceView);
 
-            currentSurfaceView.progressBar.setVisibility(View.VISIBLE);
+            currentSurfaceView.setLayoutParams(new FrameLayout.LayoutParams(FrameLayout.LayoutParams.MATCH_PARENT, FrameLayout.LayoutParams.MATCH_PARENT));
 
-            if (!currentSurfaceView.isConnected)
-                currentSurfaceView.onStartVideo();
-//            currentSurfaceView.onPlayLive();
+            currentSurfaceView.isLoading(true);
 
-            listComponent.changeSurfaceViewSize(currentSurfaceView);
+            if (!currentSurfaceView.isConnected())
+                surfaceViewManager.onStartVideo(currentSurfaceView);
+
+            surfaceViewManager.changeSurfaceViewSize(currentSurfaceView);
         } catch (IndexOutOfBoundsException e){
             Log.d(TAG, "onBindViewHolder: " + e.toString());
         }
@@ -130,9 +126,10 @@ public class ChannelRecyclerViewAdapter extends RecyclerView.Adapter<ChannelRecy
         return mDevice.getChannelNumber();
     }
 
-/*    @Override
+    /*@Override
     public long getItemId(int position){
-        return position;
+        return surfaceViewManager.getChannelSelected(position);
+//        return position;
     }*/
 
     public void disableListScrolling(){
@@ -144,35 +141,35 @@ public class ChannelRecyclerViewAdapter extends RecyclerView.Adapter<ChannelRecy
     }
 
     public void singleQuad(SurfaceViewComponent surfaceViewComponent, int position){
-        listComponent.resetScale();
-        msvSelected = listComponent.getChannelSelected(position);
-        surfaceViewComponent.progressBar.setVisibility(View.VISIBLE);
+        surfaceViewManager.resetScale();
+        msvSelected = surfaceViewManager.getChannelSelected(position);
+        surfaceViewComponent.isLoading(true);
 
-        if(listComponent.numQuad == 1) {
-            listComponent.numQuad = listComponent.lastNumQuad;
+        if(surfaceViewManager.numQuad == 1) {
+            surfaceViewManager.numQuad = surfaceViewManager.lastNumQuad;
         } else {
-            listComponent.numQuad = 1;
+            surfaceViewManager.numQuad = 1;
             GridLayoutManager lm = (GridLayoutManager) childViewHolder.recyclerViewChannels.getLayoutManager();
-            listComponent.lastFirstItemBeforeSelectChannel = lm.findFirstVisibleItemPosition();
+            surfaceViewManager.lastFirstItemBeforeSelectChannel = lm.findFirstVisibleItemPosition();
         }
-        childViewHolder.gridLayoutManager.setSpanCount(listComponent.numQuad);
+        childViewHolder.gridLayoutManager.setSpanCount(surfaceViewManager.numQuad);
         childViewHolder.mRecyclerAdapter.notifyDataSetChanged();
 
-        if(listComponent.numQuad == 1) {
-            childViewHolder.gridLayoutManager.scrollToPositionWithOffset(listComponent.getChannelSelected(position), 0);
-            listComponent.lastFirstVisibleItem = listComponent.getChannelSelected(position);
-            listComponent.lastLastVisibleItem = listComponent.getChannelSelected(position);
+        if(surfaceViewManager.numQuad == 1) {
+            childViewHolder.gridLayoutManager.scrollToPositionWithOffset(surfaceViewManager.getChannelSelected(position), 0);
+            surfaceViewManager.lastFirstVisibleItem = surfaceViewManager.getChannelSelected(position);
+            surfaceViewManager.lastLastVisibleItem = surfaceViewManager.getChannelSelected(position);
         } else {
-            childViewHolder.gridLayoutManager.scrollToPositionWithOffset(listComponent.lastFirstItemBeforeSelectChannel, 0);
-//            childViewHolder.recyclerViewChannels.scrollToPosition(listComponent.lastFirstItemBeforeSelectChannel);
-            listComponent.lastFirstVisibleItem = listComponent.lastFirstItemBeforeSelectChannel;
-            listComponent.lastLastVisibleItem = listComponent.lastFirstItemBeforeSelectChannel + listComponent.numQuad;
+            childViewHolder.gridLayoutManager.scrollToPositionWithOffset(surfaceViewManager.lastFirstItemBeforeSelectChannel, 0);
+//            childViewHolder.recyclerViewChannels.scrollToPosition(surfaceViewManager.lastFirstItemBeforeSelectChannel);
+            surfaceViewManager.lastFirstVisibleItem = surfaceViewManager.lastFirstItemBeforeSelectChannel;
+            surfaceViewManager.lastLastVisibleItem = surfaceViewManager.lastFirstItemBeforeSelectChannel + surfaceViewManager.numQuad;
         }
 
 
     }
 
-    public void openOverlayMenu(SurfaceViewComponent surfaceViewComponent, int channelPosition) {
+    public void openOverlayMenu(SurfaceViewComponent surfaceViewComponent) {
 
         OverlayMenu overlayMenu = childViewHolder.overlayMenu;
         if(overlayMenu.getVisibility() == View.VISIBLE) {

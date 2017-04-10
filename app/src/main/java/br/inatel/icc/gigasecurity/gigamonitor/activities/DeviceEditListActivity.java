@@ -34,13 +34,14 @@ public class DeviceEditListActivity extends ActionBarActivity {
 
         this.modified = false;
 
-        if(getIntent().getExtras() != null){
+        /*if(getIntent().getExtras() != null){
             mDevices = (ArrayList<Device>) getIntent().getExtras().getSerializable("devices");
         } else {
             mDevices = new ArrayList<>();
-        }
+        }*/
 
         mDeviceManager = DeviceManager.getInstance();
+        mDevices = (ArrayList<Device>) mDeviceManager.getDevices().clone();
 
         initComponents();
 
@@ -75,7 +76,7 @@ public class DeviceEditListActivity extends ActionBarActivity {
                     mDevices.remove(from);
                     mDevices.add(to, item);
 
-                    mDeviceManager.updateDevices(DeviceEditListActivity.this, mDevices);
+//                    mDeviceManager.updateDevices(DeviceEditListActivity.this, mDevices);
 
                     mAdapter = new DeviceEditAdapter(DeviceEditListActivity.this, mDevices);
                     lv.setAdapter(mAdapter);
@@ -91,9 +92,11 @@ public class DeviceEditListActivity extends ActionBarActivity {
                 public void remove(int which) {
                     mDevices.remove(mAdapter.getItem(which));
 
-                    mDeviceManager.updateDevices(DeviceEditListActivity.this, mDevices);
+//                    mDeviceManager.updateDevices(DeviceEditListActivity.this, mDevices);
 
-                    mAdapter.notifyDataSetChanged();
+//                    mAdapter.notifyDataSetChanged();
+                    mAdapter = new DeviceEditAdapter(DeviceEditListActivity.this, mDevices);
+                    lv.setAdapter(mAdapter);
 
 //                    mAdapter = new DeviceEditAdapter(DeviceEditListActivity.this, mDevices);
 
@@ -133,14 +136,13 @@ public class DeviceEditListActivity extends ActionBarActivity {
             if(!modified)
                 finish();
             else {
-                mDeviceManager.updateDevices(DeviceEditListActivity.this, mDevices);
 
-                DeviceListActivity.mDevices = null;
+                mDeviceManager.invalidateExpandableList();
+                mDeviceManager.updateDevices(null, mDevices);
+
                 mDeviceManager.loadSavedData(DeviceListActivity.mContext);
-//                DeviceListActivity.loadDevices();
-//                mDeviceManager.updateListComponents();
-//                mDeviceManager.removeFromExpandableList(itensRemoved);
-                mDeviceManager.getExpandableListAdapter(null).notifyDataSetChanged();
+                mDeviceManager.updateSurfaceViewManagers();
+//                mDeviceManager.getExpandableListAdapter(null).notifyDataSetChanged();
 
                 startDeviceListActivity();
             }
@@ -167,15 +169,23 @@ public class DeviceEditListActivity extends ActionBarActivity {
         alert.setPositiveButton("Salvar", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialogInterface, int which) {
+                mDeviceManager.invalidateExpandableList();
                 mDeviceManager.updateDevices(DeviceEditListActivity.this, mDevices);
 
                 DeviceListActivity.mDevices = null;
 //                DeviceListActivity.loadDevices();
-                mDeviceManager.updateListComponents();
+                mDeviceManager.updateSurfaceViewManagers();
+//                mDeviceManager.getExpandableListAdapter(null).notifyDataSetChanged();
 
                 startDeviceListActivity();
             }
             });
+        alert.setNeutralButton("Não Salvar", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                startDeviceListActivity();
+            }
+        });
         alert.setNegativeButton("Cancelar", new DialogInterface.OnClickListener() {
             @Override
              public void onClick(DialogInterface dialog, int which) {

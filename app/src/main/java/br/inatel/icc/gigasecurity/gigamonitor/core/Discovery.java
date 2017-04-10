@@ -69,6 +69,7 @@ public class Discovery extends Thread {
             listenForResponses(mSocket);
         } catch (IOException e) {
             Log.e(TAG, "Could not send discovery request", e);
+            run();
         }
     }
 
