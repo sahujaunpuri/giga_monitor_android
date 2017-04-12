@@ -109,22 +109,18 @@ public class DeviceFormActivity extends ActionBarActivity{
         if(isHostnameFilled && ((isPortFilled && (isIPFilled || isDNSFilled)) || isSerialNumberFilled)) {
             mDevice.deviceName = etName.getText().toString();
 
-            String ip;
-            if(!isIPFilled)
-                ip = etDomain.getText().toString();
-            else
-                ip = etIpAddress.getText().toString();
-
-            mDevice.setIpAddress(ip);
-
-            if(isSerialNumberFilled) {
+//            if(isDNSFilled)
+                mDevice.setDomain(etDomain.getText().toString());
+//            if(isIPFilled)
+                mDevice.setIpAddress(etIpAddress.getText().toString());
+//            if(isSerialNumberFilled) {
                 mDevice.setSerialNumber(etSerial.getText().toString());
-                if(mDevice.getIpAddress().isEmpty())
-                    mDevice.setIpAddress(mDevice.getSerialNumber());
-            }else
-                mDevice.setSerialNumber(ip + ":" + etPort.getText().toString());
+//                if(mDevice.getIpAddress().isEmpty())
+//                    mDevice.setIpAddress(mDevice.getSerialNumber());
+//            }/*else
+//                mDevice.setSerialNumber(ip + ":" + etPort.getText().toString());     */
 
-            if (isPortFilled)
+//            if (isPortFilled)
                 mDevice.setTCPPort(Integer.parseInt(etPort.getText().toString()));
 
             if(isUsernameFilled)
@@ -132,11 +128,12 @@ public class DeviceFormActivity extends ActionBarActivity{
             else
                 mDevice.setUsername("admin");
 
-            if(isPasswordFilled)
+//            if(isPasswordFilled)
                 mDevice.setPassword(etPassword.getText().toString());
-            else
-                mDevice.setPassword("");
+//            else
+//                mDevice.setPassword("");
 
+            mDevice.checkConnectionMethod();
             return true;
         }
 
@@ -171,7 +168,7 @@ public class DeviceFormActivity extends ActionBarActivity{
                         deviceManager.logoutDevice(mDevice);
                         checkEdit();
                         deviceManager.addDevice(this, mDevice, editPosition);
-                    } else if(deviceManager.findDeviceBySN(mDevice.getSerialNumber()) != null) {
+                    } else if(deviceManager.findDeviceById(mDevice.getId()) != null) {
                         Toast.makeText(this, "Dispositivo já adicionado.", Toast.LENGTH_SHORT).show();
                         startDeviceListActivity();
                     } else {

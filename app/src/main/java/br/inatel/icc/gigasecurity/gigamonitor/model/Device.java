@@ -65,6 +65,7 @@ public class Device implements Serializable {
     @Expose public int audioInChannel;
     @Expose public int talkInChannel;
     @Expose public int talkOutChannel;
+    public String connectionString;
 
     //State
     public boolean isLogged = false;
@@ -97,6 +98,7 @@ public class Device implements Serializable {
         this.gigaCode = gigaCode;
         this.username = "admin";
         this.password = "";
+        checkConnectionMethod();
     }
 
     public Device(SDK_CONFIG_NET_COMMON_V2 comm) {
@@ -107,6 +109,16 @@ public class Device implements Serializable {
         this.username = "admin";
         this.password = "";
         this.tcpPort = comm.st_05_TCPPort;
+        checkConnectionMethod();
+    }
+
+    public void checkConnectionMethod(){
+        if(!ipAddress.isEmpty())
+            connectionString = ipAddress+":"+tcpPort;
+        else if(!domain.isEmpty())
+            connectionString = domain+":"+tcpPort;
+        else if(!serialNumber.isEmpty())
+            connectionString = serialNumber;
     }
 
     /*
@@ -127,15 +139,15 @@ public class Device implements Serializable {
 
     @Override
     public int hashCode() {
-        if ( null != this.serialNumber ) {
-            return (this.serialNumber + this.hostname).hashCode();
+        if ( null != this.connectionString ) {
+            return (this.connectionString).hashCode();
         }
 
         return super.hashCode();
     }
 
     public int getId() {
-        return (this.serialNumber + this.deviceName).hashCode();
+        return (this.connectionString).hashCode();
     }
 
     public boolean hasLogin(){

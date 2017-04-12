@@ -156,6 +156,7 @@ public class Discovery extends Thread {
         Device device;
         try {
             while (true) {
+                boolean existent = false;
                 mLock =  mWifi.createMulticastLock("br.inatel.icc.gigasecurity.gigamonitor.tests");
                 mLock.acquire();
 
@@ -189,7 +190,14 @@ public class Discovery extends Thread {
                     if (netCommon.has("SN")) device.setSerialNumber(netCommon.getString("SN"));
                     if (netCommon.has("MAC")) device.setMacAddress(netCommon.getString("MAC"));
 
-                    devices.add(device);
+                    for(Device dev : devices){
+                        if(dev.getIpAddress().equals(device.getIpAddress())){
+                            existent = true;
+                            break;
+                        }
+                    }
+                    if(!existent)
+                        devices.add(device);
 
                 } catch (JSONException e) {
                     Log.d(TAG, e.getMessage());

@@ -125,6 +125,7 @@ public class DeviceListActivity extends ActionBarActivity {
     @Override
     protected void onPause() {
         super.onPause();
+        collapseAll();
 //        if (previousGroup != -1) mAdapter.stopChannels(previousGroup);
     }
 
@@ -188,6 +189,7 @@ public class DeviceListActivity extends ActionBarActivity {
 
                 return true;
             case (R.id.action_media):
+                collapseAll();
                 startMediaActivity();
 
                 return true;

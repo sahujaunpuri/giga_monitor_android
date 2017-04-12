@@ -5,7 +5,10 @@ import android.content.res.Configuration;
 import android.os.Environment;
 import android.os.Message;
 import android.util.Log;
+import android.view.Gravity;
+import android.view.View;
 import android.widget.FrameLayout;
+import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import com.basic.G;
@@ -23,6 +26,7 @@ import java.util.Comparator;
 import java.util.Locale;
 
 import br.inatel.icc.gigasecurity.gigamonitor.activities.DeviceListActivity;
+import br.inatel.icc.gigasecurity.gigamonitor.adapters.ChannelRecyclerViewAdapter;
 import br.inatel.icc.gigasecurity.gigamonitor.core.DeviceManager;
 import br.inatel.icc.gigasecurity.gigamonitor.listeners.PlaybackListener;
 import br.inatel.icc.gigasecurity.gigamonitor.ui.SurfaceViewComponent;
@@ -37,11 +41,15 @@ public class SurfaceViewManager implements IFunSDKResult {
     public ArrayList<SurfaceViewComponent> surfaceViewComponents;
     public Device mDevice;
     public DeviceManager mDeviceManager;
+    public ChannelRecyclerViewAdapter mRecyclerAdapter;
     public Context mContext;
     public int numQuad, lastNumQuad;
     public int lastFirstVisibleItem;
     public int lastLastVisibleItem;
     public int lastFirstItemBeforeSelectChannel;
+
+    public FrameLayout.LayoutParams pbParam;
+    public FrameLayout.LayoutParams surfaceViewLayout;
 
     private int mUserID = -1;
     public PlaybackListener currentPlaybackListener;
@@ -68,6 +76,10 @@ public class SurfaceViewManager implements IFunSDKResult {
 
         this.lastFirstVisibleItem = 0;
         this.lastLastVisibleItem = 0;
+
+
+        surfaceViewLayout = new FrameLayout.LayoutParams(FrameLayout.LayoutParams.MATCH_PARENT, FrameLayout.LayoutParams.MATCH_PARENT);
+        pbParam = new FrameLayout.LayoutParams(FrameLayout.LayoutParams.WRAP_CONTENT, FrameLayout.LayoutParams.WRAP_CONTENT, Gravity.CENTER);
     }
 
     public void createComponents() {
@@ -76,9 +88,10 @@ public class SurfaceViewManager implements IFunSDKResult {
 
             surfaceViewComponent.mySurfaceViewChannelId = i;
             surfaceViewComponent.mySurfaceViewOrderId = i;
-            surfaceViewComponent.deviceSn = mDevice.getSerialNumber();
+            surfaceViewComponent.deviceConnection = mDevice.connectionString;
+            surfaceViewComponent.deviceId = mDevice.getId();
 
-            if(mDeviceManager.isFavorite(mDevice.getSerialNumber(), i))
+            if(mDeviceManager.isFavorite(mDevice.getId(), i))
                 surfaceViewComponent.setFavorite(true);
 
             surfaceViewComponent.setLayoutParams(new FrameLayout.LayoutParams(FrameLayout.LayoutParams.MATCH_PARENT, FrameLayout.LayoutParams.MATCH_PARENT));
@@ -86,6 +99,7 @@ public class SurfaceViewManager implements IFunSDKResult {
             surfaceViewComponents.add(surfaceViewComponent);
         }
         this.reOrderSurfaceViewComponents();
+        changeSurfaceViewSize(null);
     }
 
     public void addSurfaceViewComponent(SurfaceViewComponent svc){
@@ -100,7 +114,16 @@ public class SurfaceViewManager implements IFunSDKResult {
         if (mContext.getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE) {
             surfaceViewHeight = (mDeviceManager.screenHeight) / numQuad;
         }
-        surfaceViewComponent.setViewSize(surfaceViewWidth, surfaceViewHeight);
+//        surfaceViewComponent.setViewSize(surfaceViewWidth, surfaceViewHeight);
+        surfaceViewLayout.width = surfaceViewWidth;
+        surfaceViewLayout.height = surfaceViewHeight;
+
+        pbParam.width = surfaceViewWidth/4;
+        pbParam.height = surfaceViewHeight/4;
+
+        for(SurfaceViewComponent svc : surfaceViewComponents){
+            svc.requestLayout();
+        }
     }
 
 
@@ -144,15 +167,21 @@ public class SurfaceViewManager implements IFunSDKResult {
         this.lastFirstVisibleItem = currentFirstVisibleItem;
         this.lastLastVisibleItem = currentLastVisibleItem;
 
-        this.handleVisibleChannels();
+//        this.handleVisibleChannels();
         return itemToScroll;
     }
 
     public void resetScale(){
-        for(SurfaceViewComponent svc : surfaceViewComponents){
-            if(svc.mScaleFactor > 1.F)
-                svc.mySurfaceView.resetScaleInfo();
-        }
+        ((DeviceListActivity) mContext).runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+//                reOrderSurfaceViewComponents();
+                for(SurfaceViewComponent svc : surfaceViewComponents){
+                    if(svc.mScaleFactor > 1.F)
+                        svc.mySurfaceView.resetScaleInfo();
+                }
+            }
+        });
     }
 
 
@@ -164,9 +193,14 @@ public class SurfaceViewManager implements IFunSDKResult {
             mDeviceManager.addToStart(svc);*/
     }
 
-    public void onStartVideo(SurfaceViewComponent svc){
-        svc.setConnected(true);
-        svc.mPlayerHandler = FunSDK.MediaRealPlay(mUserID, svc.deviceSn, svc.mySurfaceViewChannelId, svc.streamType, svc.mySurfaceView, svc.mySurfaceViewOrderId);
+    public void onStartVideo(final SurfaceViewComponent svc){
+//        svc.setConnected(true);
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                svc.mPlayerHandler = FunSDK.MediaRealPlay(mUserID, svc.deviceConnection, svc.mySurfaceViewChannelId, svc.streamType, svc.mySurfaceView, svc.mySurfaceViewOrderId);
+            }
+        }).start();
     }
 
     public void onPause(SurfaceViewComponent svc){
@@ -225,7 +259,7 @@ public class SurfaceViewManager implements IFunSDKResult {
     }
 
     public void onPlayPlayback(H264_DVR_FILE_DATA file, SurfaceViewComponent svc){
-        svc.mPlayerHandler = FunSDK.MediaNetRecordPlay(mUserID, svc.deviceSn, G.ObjToBytes(file), svc.mySurfaceView, 0);
+        svc.mPlayerHandler = FunSDK.MediaNetRecordPlay(mUserID, svc.deviceConnection, G.ObjToBytes(file), svc.mySurfaceView, 0);
     }
 
     public void seekByTime(int absTime, SurfaceViewComponent svc) {
@@ -257,7 +291,7 @@ public class SurfaceViewManager implements IFunSDKResult {
 
     public void ptzControl(int command, SurfaceViewComponent svc){
         //EPTZCMD
-        FunSDK.DevPTZControl(svc.mPlayerHandler, svc.deviceSn, svc.mySurfaceViewChannelId, command, 0, 4, svc.mySurfaceViewChannelId);
+        FunSDK.DevPTZControl(svc.mPlayerHandler, svc.deviceConnection, svc.mySurfaceViewChannelId, command, 0, 4, svc.mySurfaceViewChannelId);
     }
 
     public void handleVisibleChannels() {

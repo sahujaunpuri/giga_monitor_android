@@ -194,10 +194,12 @@ public class DevicePlaybackVideoActivity extends ActionBarActivity {
 //        });
 
 
-        mSurfaceView.deviceSn = mDevice.getSerialNumber();
+        mSurfaceView.deviceConnection = mDevice.connectionString;
+        mSurfaceView.playType = 1;
         mSurfaceViewManager.playType = 1;
 
         mSurfaceViewManager.addSurfaceViewComponent(mSurfaceView);
+        mSurfaceView.mSurfaceViewManager = this.mSurfaceViewManager;
 
 //        mSurfaceView.setAudioCtrl(MyConfig.AudioState.OPENED);
 

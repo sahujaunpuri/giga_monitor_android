@@ -57,11 +57,11 @@ public class DeviceManager implements IFunSDKResult{
     private static DeviceManager mInstance = null;
     private int mFunUserHandler;
 
-    public HashMap<String, ArrayList<Integer>> favoritesMap;
+    public HashMap<Integer, ArrayList<Integer>> favoritesMap;
     private ArrayList<Device> mDevices = new ArrayList<Device>();
     private ArrayList<Device> mLanDevices = new ArrayList<Device>();
     public ArrayList<Device> mFavoriteDevices = new ArrayList<Device>();
-    private final HashMap<Integer, Device> mLoggedDevices = new HashMap<Integer, Device>();
+//    private final HashMap<Integer, Device> mLoggedDevices = new HashMap<Integer, Device>();
     private LinkedList<SurfaceViewComponent> startList = new LinkedList<SurfaceViewComponent>();
     private HashMap<String, LoginDeviceListener> loginList = new HashMap<String, LoginDeviceListener>();
 
@@ -173,23 +173,23 @@ public class DeviceManager implements IFunSDKResult{
                 if(msg.arg1 == 0) {
                     Log.d(TAG, "OnFunSDKResult: Login SUCCESS");
                     device.isLogged = true;
-                    putLoggedDevice(device);
+//                    putLoggedDevice(device);
 
                     if(device.getChannelNumber()>0)
-                        loginList.get(device.getSerialNumber()).onLoginSuccess(device);
+                        loginList.get(device.connectionString).onLoginSuccess(device);
                     else {
-                        FunSDK.DevGetConfigByJson(getHandler(), device.getSerialNumber(), "SystemInfo", 4096, -1, 10000, device.getId());
+                        FunSDK.DevGetConfigByJson(getHandler(), device.connectionString, "SystemInfo", 4096, -1, 10000, device.getId());
                     }
                } else if(msg.arg1 == -11301) {
                     if (device != null)
 //                        currentLoginListener.onLoginError(msg.arg1, device);
-                        loginList.get(device.getSerialNumber()).onLoginError(msg.arg1, device);
+                        loginList.get(device.connectionString).onLoginError(msg.arg1, device);
                 } else if(msg.arg1 == -11307){
                     if(device != null)
 //                        currentLoginListener.onLoginError(msg.arg1, device);
-                        loginList.get(device.getSerialNumber()).onLoginError(msg.arg1, device);
+                        loginList.get(device.connectionString).onLoginError(msg.arg1, device);
                 } else {
-                    FunSDK.DevLogin(getHandler(), device.getSerialNumber(), device.getUsername(), device.getPassword(), device.getId());
+                    FunSDK.DevLogin(getHandler(), device.connectionString, device.getUsername(), device.getPassword(), device.getId());
                     Log.d(TAG, "OnFunSDKResult: Login ERROR");
                 }
             }
@@ -198,22 +198,23 @@ public class DeviceManager implements IFunSDKResult{
             {
                 Device device = null;
                 if(!msgContent.str.equals("0")) {
-                    device = findDeviceBySN(msgContent.str);
+//                    device = findDeviceBySN(msgContent.str);
+                    device = findDeviceById((msgContent.str).hashCode());
                 }
                 if(device != null) {
                     if (msg.arg1 > 0) {
                         Log.d(TAG, "OnFunSDKResult: Device ONLINE");
                         device.isOnline = true;
-                        FunSDK.DevLogin(getHandler(), device.getSerialNumber(), device.getUsername(), device.getPassword(), device.getId());
+                        FunSDK.DevLogin(getHandler(), device.connectionString, device.getUsername(), device.getPassword(), device.getId());
                     } else {
                         Log.i(TAG, "OnFunSDKResult: Device OFFLINE");
 
                         if(stateCheckTry>2) {
                             device.isOnline = false;
-                            loginList.get(device.getSerialNumber()).onLoginError(-1, device);
+                            loginList.get(device.connectionString).onLoginError(-1, device);
                             stateCheckTry = 0;
                         } else{
-                            FunSDK.SysGetDevState(getHandler(), device.getSerialNumber(), device.getId());
+                            FunSDK.SysGetDevState(getHandler(), device.connectionString, device.getId());
                             stateCheckTry++;
                         }
                     }
@@ -238,7 +239,7 @@ public class DeviceManager implements IFunSDKResult{
                         case "SystemInfo":{
                             setDeviceInfo(json, device);
 //                            currentLoginListener.onLoginSuccess();
-                            loginList.get(device.getSerialNumber()).onLoginSuccess(device);
+                            loginList.get(device.connectionString).onLoginSuccess(device);
                         }
                         break;
                         case "NetWork.NetCommon":{
@@ -274,7 +275,7 @@ public class DeviceManager implements IFunSDKResult{
                     }
                 } else{
                     Device device = findDeviceById(msgContent.seq);
-                    FunSDK.DevGetConfigByJson(getHandler(), device.getSerialNumber(), msgContent.str, 4096, -1, 10000, device.getId());
+                    FunSDK.DevGetConfigByJson(getHandler(), device.connectionString, msgContent.str, 4096, -1, 10000, device.getId());
                     Log.d(TAG, "OnFunSDKResult: GETCONFIGJSON ERROR");
                 }
             }
@@ -337,16 +338,18 @@ public class DeviceManager implements IFunSDKResult{
 
     public void loadSavedData(Context context){
         mDevices = loadDevices(context);
-        favoritesMap = new HashMap<String, ArrayList<Integer>>();
+        favoritesMap = new HashMap<Integer, ArrayList<Integer>>();
         favoritesMap = loadFavorites(context);
     }
 
     public void addDevice(Context context, Device device) {
+        device.checkConnectionMethod();
         mDevices.add(device);
         saveData();
     }
 
     public void addDevice(Context context, Device device, int position) {
+        device.checkConnectionMethod();
         mDevices.add(position, device);
         saveData();
     }
@@ -365,15 +368,17 @@ public class DeviceManager implements IFunSDKResult{
         if (deviceList == null || deviceList.getList() == null) {
             return new ArrayList<Device>();
         }
+        for(Device device : deviceList.getList())
+            device.checkConnectionMethod();
         return deviceList.getList();
     }
 
-    private HashMap<String, ArrayList<Integer>> loadFavorites(Context context) {
+    private HashMap<Integer, ArrayList<Integer>> loadFavorites(Context context) {
         ComplexPreferences cp = new ComplexPreferences(context, context.getString(R.string.sheredpreference_list), Context.MODE_PRIVATE);
-        HashMap<String, ArrayList<Double>> hashMap = cp.getObject("FavoritesMap", HashMap.class);
+        HashMap<Integer, ArrayList<Double>> hashMap = cp.getObject("FavoritesMap", HashMap.class);
         if(hashMap != null)
-            for (HashMap.Entry<String, ArrayList<Double>> entry : hashMap.entrySet()){
-                mFavoriteDevices.add(findDeviceBySN(entry.getKey()));
+            for (HashMap.Entry<Integer, ArrayList<Double>> entry : hashMap.entrySet()){
+                mFavoriteDevices.add(findDeviceById(entry.getKey()));
                 ArrayList<Integer> arrayList = new ArrayList<Integer>();
                 for(Double i : entry.getValue()){
                     arrayList.add(i.intValue());
@@ -421,7 +426,7 @@ public class DeviceManager implements IFunSDKResult{
 
     public void getJsonConfig(Device device, String configString, ConfigListener configListener){
         currentConfigListener = configListener;
-        FunSDK.DevGetConfigByJson(getHandler(), device.getSerialNumber(), configString, 4096, -1, 10000, device.getId());
+        FunSDK.DevGetConfigByJson(getHandler(), device.connectionString, configString, 4096, -1, 10000, device.getId());
     }
 
     private void handleEthernetConfig(JSONObject jsonObject, Device device){
@@ -569,7 +574,7 @@ public class DeviceManager implements IFunSDKResult{
         }
 
         Log.d(TAG, "setCurrentConfig: " + currentConfig.toString());
-        FunSDK.DevSetConfigByJson(getHandler(), device.getSerialNumber(), "NetWork.NetCommon", currentConfig.toString(), -1, 15000, device.getId());
+        FunSDK.DevSetConfigByJson(getHandler(), device.connectionString, "NetWork.NetCommon", currentConfig.toString(), -1, 15000, device.getId());
         currentConfig = null;
     }
 
@@ -581,7 +586,7 @@ public class DeviceManager implements IFunSDKResult{
             e.printStackTrace();
         }
         Log.d(TAG, "setCurrentConfig: " + currentConfig.toString());
-        FunSDK.DevSetConfigByJson(getHandler(), device.getSerialNumber(), "NetWork.Nat", currentConfig.toString(), -1, 15000, device.getId());
+        FunSDK.DevSetConfigByJson(getHandler(), device.connectionString, "NetWork.Nat", currentConfig.toString(), -1, 15000, device.getId());
         currentConfig = null;
     }
 
@@ -600,7 +605,7 @@ public class DeviceManager implements IFunSDKResult{
             e.printStackTrace();
         }
         Log.d(TAG, "setCurrentConfig: " + currentConfig.toString());
-        FunSDK.DevSetConfigByJson(getHandler(), device.getSerialNumber(), "NetWork.NetDDNS", currentConfigArray.toString(), -1, 15000, device.getId());
+        FunSDK.DevSetConfigByJson(getHandler(), device.connectionString, "NetWork.NetDDNS", currentConfigArray.toString(), -1, 15000, device.getId());
         currentConfig = null;
     }
 
@@ -614,7 +619,7 @@ public class DeviceManager implements IFunSDKResult{
             e.printStackTrace();
         }
         Log.d(TAG, "setCurrentConfig: " + currentConfig.toString());
-        FunSDK.DevSetConfigByJson(getHandler(), device.getSerialNumber(), "NetWork.Upnp", currentConfig.toString(), -1, 15000, device.getId());
+        FunSDK.DevSetConfigByJson(getHandler(), device.connectionString, "NetWork.Upnp", currentConfig.toString(), -1, 15000, device.getId());
         currentConfig = null;
     }
 
@@ -630,7 +635,7 @@ public class DeviceManager implements IFunSDKResult{
         } catch (JSONException e) {
             e.printStackTrace();
         }
-        FunSDK.DevCmdGeneral(getHandler(), device.getSerialNumber(), 1450, "OPMachine", 2048, 10000, reboot.toString().getBytes(), -1, device.getId());
+        FunSDK.DevCmdGeneral(getHandler(), device.connectionString, 1450, "OPMachine", 2048, 10000, reboot.toString().getBytes(), -1, device.getId());
         logoutDevice(mDevices.get(DeviceListActivity.previousGroup));
         DeviceListActivity.collapseGroup(DeviceListActivity.previousGroup);
     }
@@ -659,7 +664,8 @@ public class DeviceManager implements IFunSDKResult{
 
     public SurfaceViewManager findSurfaceViewManagerByDevice(Device device){
         for(SurfaceViewManager svm : surfaceViewManagers){
-            if(svm.mDevice.getSerialNumber().equals(device.getSerialNumber()))
+//            if(svm.mDevice.getSerialNumber().equals(device.getSerialNumber()))
+            if(svm.mDevice.getId() == svm.mDevice.getId())
                 return svm;
         }
         Log.e(TAG, "findSurfaceViewManagerByDevice: SurfaceViewManager Not Found");
@@ -685,14 +691,14 @@ public class DeviceManager implements IFunSDKResult{
     }
 
     public void loginDevice(final Device device, final LoginDeviceListener loginDeviceListener) {
-        loginList.put(device.getSerialNumber(), loginDeviceListener);
-        if(!device.getIpAddress().isEmpty())
-            device.setSerialNumber(device.getIpAddress()+ ":" + device.getTCPPort());
-        loginList.put(device.getSerialNumber(), loginDeviceListener);
-        FunSDK.SysGetDevState(getHandler(), device.getSerialNumber(), device.getId());
+//        loginList.put(device.getSerialNumber(), loginDeviceListener);
+//        if(!device.getIpAddress().isEmpty())
+//            device.setSerialNumber(device.getIpAddress()+ ":" + device.getTCPPort());
+        loginList.put(device.connectionString, loginDeviceListener);
+        FunSDK.SysGetDevState(getHandler(), device.connectionString, device.getId());
     }
 
-    private void putLoggedDevice(Device device) {
+   /* private void putLoggedDevice(Device device) {
         synchronized (mLoggedDevices) {
             mLoggedDevices.put(device.getId(), device);
         }
@@ -703,12 +709,12 @@ public class DeviceManager implements IFunSDKResult{
             mLoggedDevices.remove(device.getId());
             device.isLogged = false;
         }
-    }
+    }*/
 
     public boolean logoutDevice(Device device){
-        removeLoggedDevice(device);
+//        removeLoggedDevice(device);
         device.isLogged = false;
-        return (FunSDK.DevLogout(getHandler(), device.getSerialNumber(), device.getId()) == 0);
+        return (FunSDK.DevLogout(getHandler(), device.connectionString, device.getId()) == 0);
     }
 
     public void changePassword(Device device, String oldPassword, String newPassword, ConfigListener listener) {
@@ -728,7 +734,7 @@ public class DeviceManager implements IFunSDKResult{
             e.printStackTrace();
         }
 
-        FunSDK.DevSetConfigByJson(getHandler(), device.getSerialNumber(), "ModifyPassword", jsonPassword.toString(), -1, 15000, device.getId());
+        FunSDK.DevSetConfigByJson(getHandler(), device.connectionString, "ModifyPassword", jsonPassword.toString(), -1, 15000, device.getId());
     }
 
     public boolean searchDevices() {
@@ -846,15 +852,15 @@ public class DeviceManager implements IFunSDKResult{
 
     public void findPlaybackList(Device device, H264_DVR_FINDINFO info, PlaybackSearchListener listener){
         currentPlaybackSearchListener = listener;
-        FunSDK.DevFindFile(getHandler(), device.getSerialNumber(), G.ObjToBytes(info), 64, 20000, device.getId());
+        FunSDK.DevFindFile(getHandler(), device.connectionString, G.ObjToBytes(info), 64, 20000, device.getId());
     }
 
     public void remoteControl(Device device, int command){
-        FunSDK.DevOption(getHandler(), device.getSerialNumber(), EDEV_OPTERATE.EDOPT_DEV_CONTROL, null, 0, command, 0, 0, "", device.getId());
+        FunSDK.DevOption(getHandler(), device.connectionString, EDEV_OPTERATE.EDOPT_DEV_CONTROL, null, 0, command, 0, 0, "", device.getId());
     }
 
-    public boolean isFavorite(String serialNumber, int channelNumber){
-        return favoritesMap.containsKey(serialNumber) && favoritesMap.get(serialNumber).contains(channelNumber);
+    public boolean isFavorite(int deviceId, int channelNumber){
+        return favoritesMap.containsKey(deviceId) && favoritesMap.get(deviceId).contains(channelNumber);
     }
 
     /*public void addFavorite(Context context, SurfaceViewManager channel){
