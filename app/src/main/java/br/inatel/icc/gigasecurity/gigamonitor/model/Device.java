@@ -390,14 +390,6 @@ public class Device implements Serializable {
         return this.secondaryDNS;
     }
 
-    public int getHTTPPort() {
-        return HTTPPort;
-    }
-
-    public void setHTTPPort(int HTTPPort) {
-        this.HTTPPort = HTTPPort;
-    }
-
     public int getMediaPort() {
         return MediaPort;
     }

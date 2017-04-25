@@ -29,13 +29,14 @@ public class DeviceListActivity extends ActionBarActivity {
     public static ArrayList<Device> mDevices;
     public static int previousGroup = -1;
     public static int expandedGroups = 0;
+    public static boolean running = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_device_list);
 
-        if(getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE) {
+        /*if(getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE) {
             getWindow().clearFlags(WindowManager.LayoutParams.FLAG_FORCE_NOT_FULLSCREEN);
             getWindow().addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
 //            getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
@@ -48,7 +49,7 @@ public class DeviceListActivity extends ActionBarActivity {
         } else{
             getWindow().clearFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
             getWindow().addFlags(WindowManager.LayoutParams.FLAG_FORCE_NOT_FULLSCREEN);
-        }
+        }*/
 
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
 
@@ -109,10 +110,23 @@ public class DeviceListActivity extends ActionBarActivity {
         } else{
             getSupportActionBar().show();
             getWindow().clearFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
-            getWindow().addFlags(WindowManager.LayoutParams.FLAG_FORCE_NOT_FULLSCREEN);
+//            getWindow().addFlags(WindowManager.LayoutParams.FLAG_FORCE_NOT_FULLSCREEN);
         }
 
-        mAdapter.onChangeOrientation(previousGroup);
+        if(previousGroup != -1)
+            mAdapter.onChangeOrientation(previousGroup);
+    }
+
+    @Override
+    protected void onStart(){
+        super.onStart();
+        running = true;
+    }
+
+    @Override
+    protected void onStop(){
+        super.onStop();
+        running = false;
     }
 
     @Override
@@ -136,7 +150,10 @@ public class DeviceListActivity extends ActionBarActivity {
         mAdapter            = mDeviceManager.getExpandableListAdapter(mContext);
         mDevices            = mDeviceManager.getDevices();
         mDeviceManager.currentContext = this;
+        mAdapter.mContext = this;
         mAdapter.setDevices(mDevices);
+        mAdapter.notifyDataSetChanged();
+
 
 //        loadDevices();
 
@@ -205,6 +222,7 @@ public class DeviceListActivity extends ActionBarActivity {
                 mAdapter.onGroupCollapsed(i);
             }
         }
+        previousGroup = -1;
     }
 
     private void startInitialActivity() {

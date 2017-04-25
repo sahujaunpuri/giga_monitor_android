@@ -29,7 +29,7 @@ public class ConfigMenuActivity extends ActionBarActivity implements OnClickList
 
     private Button mWifiButton, mGeneralButton, mEthernetButton, mCloudButton, mDNSButton, mDHCPButton, mDDNSButton, mUPnPButton, mPasswordButton, mRebootDeviceButton;
     private Device mDevice;
-    private String deviceSn;
+    private int deviceId;
     private DeviceManager mDeviceManager;
 
     @Override
@@ -43,7 +43,7 @@ public class ConfigMenuActivity extends ActionBarActivity implements OnClickList
 
         Bundle extras = savedInstanceState == null ? getIntent().getExtras() : savedInstanceState;
 //        mDevice = (Device) extras.getSerializable(KEY_ARGS);
-        deviceSn = (String) extras.getSerializable(KEY_ARGS);
+        deviceId = (int) extras.getSerializable(KEY_ARGS);
 
         mDeviceManager = DeviceManager.getInstance();
     }
@@ -76,7 +76,7 @@ public class ConfigMenuActivity extends ActionBarActivity implements OnClickList
 
     @Override
     protected void onSaveInstanceState(Bundle outState) {
-        outState.putSerializable("device", deviceSn);
+        outState.putSerializable("device", deviceId);
         super.onSaveInstanceState(outState);
     }
 
@@ -131,7 +131,7 @@ public class ConfigMenuActivity extends ActionBarActivity implements OnClickList
 
         if (intent != null) {
             Bundle extras = new Bundle();
-            extras.putSerializable("device", deviceSn);
+            extras.putSerializable("device", deviceId);
             intent.putExtras(extras);
             startActivity(intent);
         }
@@ -148,7 +148,7 @@ public class ConfigMenuActivity extends ActionBarActivity implements OnClickList
         builder.setMessage(text)
                 .setPositiveButton(labelYes, new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int id) {
-                        mDeviceManager.rebootDevice(mDeviceManager.findDeviceBySN(deviceSn));
+                        mDeviceManager.rebootDevice(mDeviceManager.findDeviceById(deviceId));
 
 //                        startDeviceListActivity();
                         finish();

@@ -62,7 +62,7 @@ public class DNSConfigActivity extends ActionBarActivity {
         setContentView(R.layout.activity_dns_config);
         findViews();
         mManager = DeviceManager.getInstance();
-        mDevice = mManager.findDeviceBySN((String) getIntent().getExtras().getSerializable("device"));
+        mDevice = mManager.findDeviceById((int) getIntent().getExtras().getSerializable("device"));
         mContext = this;
 
         mManager.getJsonConfig(mDevice, "NetWork.Nat", listener);

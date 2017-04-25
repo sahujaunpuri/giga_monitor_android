@@ -61,7 +61,7 @@ public class UpnpConfigActivity extends ActionBarActivity {
         findViews();
 
         mManager = DeviceManager.getInstance();
-        mDevice = mManager.findDeviceBySN((String) getIntent().getExtras().getSerializable("device"));
+        mDevice = mManager.findDeviceById((int) getIntent().getExtras().getSerializable("device"));
         mContext = this;
 
         mManager.getJsonConfig(mDevice, "NetWork.Upnp", listener);
@@ -80,7 +80,7 @@ public class UpnpConfigActivity extends ActionBarActivity {
         mEnableCheckBox.setChecked(mDevice.isUpnpEnable());
 //        mStateCheckBox.setChecked(mConfig.isState());
 //        mArg0EditText.setText(mConfig.getArg0());
-        mHttpPortEditText.setText(String.valueOf(mDevice.getHTTPPort()));
+        mHttpPortEditText.setText(String.valueOf(mDevice.getHttpPort()));
         mMediaPortEditText.setText(String.valueOf(mDevice.getMediaPort()));
         mMobilePortEditText.setText(String.valueOf(mDevice.getMobilePort()));
     }
@@ -92,7 +92,7 @@ public class UpnpConfigActivity extends ActionBarActivity {
         mDevice.setUpnpEnable(mEnableCheckBox.isChecked());
 //        mConfig.setState(mStateCheckBox.isChecked());
 //        mConfig.setArg0(mArg0EditText.getText().toString());
-        mDevice.setHTTPPort(Integer.parseInt(mHttpPortEditText.getText().toString()));
+        mDevice.setHttpPort(Integer.parseInt(mHttpPortEditText.getText().toString()));
         mDevice.setMediaPort(Integer.parseInt(mMediaPortEditText.getText().toString()));
         mDevice.setMobilePort(Integer.parseInt(mMobilePortEditText.getText().toString()));
 

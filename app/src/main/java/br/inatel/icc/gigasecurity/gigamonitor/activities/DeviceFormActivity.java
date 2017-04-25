@@ -103,36 +103,20 @@ public class DeviceFormActivity extends ActionBarActivity{
         boolean isIPFilled = !TextUtils.isEmpty(etIpAddress.getText().toString());
         boolean isDNSFilled = !TextUtils.isEmpty(etDomain.getText().toString());
         boolean isUsernameFilled = !TextUtils.isEmpty(etUsername.getText().toString());
-        boolean isPasswordFilled = !TextUtils.isEmpty(etPassword.getText().toString());
-
 
         if(isHostnameFilled && ((isPortFilled && (isIPFilled || isDNSFilled)) || isSerialNumberFilled)) {
             mDevice.deviceName = etName.getText().toString();
-
-//            if(isDNSFilled)
-                mDevice.setDomain(etDomain.getText().toString());
-//            if(isIPFilled)
-                mDevice.setIpAddress(etIpAddress.getText().toString());
-//            if(isSerialNumberFilled) {
-                mDevice.setSerialNumber(etSerial.getText().toString());
-//                if(mDevice.getIpAddress().isEmpty())
-//                    mDevice.setIpAddress(mDevice.getSerialNumber());
-//            }/*else
-//                mDevice.setSerialNumber(ip + ":" + etPort.getText().toString());     */
-
-//            if (isPortFilled)
-                mDevice.setTCPPort(Integer.parseInt(etPort.getText().toString()));
+            mDevice.setDomain(etDomain.getText().toString());
+            mDevice.setIpAddress(etIpAddress.getText().toString());
+            mDevice.setSerialNumber(etSerial.getText().toString());
+            mDevice.setTCPPort(Integer.parseInt(etPort.getText().toString()));
 
             if(isUsernameFilled)
                 mDevice.setUsername(etUsername.getText().toString());
             else
                 mDevice.setUsername("admin");
 
-//            if(isPasswordFilled)
-                mDevice.setPassword(etPassword.getText().toString());
-//            else
-//                mDevice.setPassword("");
-
+            mDevice.setPassword(etPassword.getText().toString());
             mDevice.checkConnectionMethod();
             return true;
         }
@@ -141,9 +125,11 @@ public class DeviceFormActivity extends ActionBarActivity{
     }
 
     private void startDeviceListActivity() {
-        Intent i = new Intent(this, DeviceListActivity.class);
-        i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP);
-        startActivity(i);
+        if(!DeviceListActivity.running) {
+            Intent i = new Intent(this, DeviceListActivity.class);
+            i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP);
+            startActivity(i);
+        }
         finish();
     }
 
@@ -168,14 +154,16 @@ public class DeviceFormActivity extends ActionBarActivity{
                         deviceManager.logoutDevice(mDevice);
                         checkEdit();
                         deviceManager.addDevice(this, mDevice, editPosition);
+                        deviceManager.logoutDevice(mDevice);
                     } else if(deviceManager.findDeviceById(mDevice.getId()) != null) {
                         Toast.makeText(this, "Dispositivo já adicionado.", Toast.LENGTH_SHORT).show();
+                        deviceManager.logoutDevice(deviceManager.findDeviceById(mDevice.getId()));
                         startDeviceListActivity();
                     } else {
                         deviceManager.addDevice(this, mDevice);
                     }
 
-                    deviceManager.updateSurfaceViewManagers();
+                    deviceManager.addSurfaceViewManager();
                     startDeviceListActivity();
 
                     return true;

@@ -6,6 +6,7 @@
 
     <LinearLayout
         android:layout_width="wrap_content"
+        android:visibility="gone"
         android:layout_height="match_parent"
         android:layout_alignParentLeft="true"
         android:orientation="vertical">
@@ -35,6 +36,7 @@
 
     <ImageView
         android:layout_width="36dp"
+        android:visibility="gone"
         android:layout_height="36dp"
         android:src="@drawable/ic_star_white_36dp"
         android:id="@+id/iv_favorite_star"

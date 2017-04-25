@@ -182,11 +182,9 @@ public class DeviceManager implements IFunSDKResult{
                     }
                } else if(msg.arg1 == -11301) {
                     if (device != null)
-//                        currentLoginListener.onLoginError(msg.arg1, device);
                         loginList.get(device.connectionString).onLoginError(msg.arg1, device);
                 } else if(msg.arg1 == -11307){
                     if(device != null)
-//                        currentLoginListener.onLoginError(msg.arg1, device);
                         loginList.get(device.connectionString).onLoginError(msg.arg1, device);
                 } else {
                     FunSDK.DevLogin(getHandler(), device.connectionString, device.getUsername(), device.getPassword(), device.getId());
@@ -263,6 +261,7 @@ public class DeviceManager implements IFunSDKResult{
                         }
                         break;
                     }
+                    /*
 //                     salvar json como txt
                     File file = new File("/storage/emulated/0/", "abc.txt");
                     try {
@@ -272,7 +271,7 @@ public class DeviceManager implements IFunSDKResult{
                         writer.close();
                     } catch (IOException e) {
                         e.printStackTrace();
-                    }
+                    }*/
                 } else{
                     Device device = findDeviceById(msgContent.seq);
                     FunSDK.DevGetConfigByJson(getHandler(), device.connectionString, msgContent.str, 4096, -1, 10000, device.getId());
@@ -285,6 +284,8 @@ public class DeviceManager implements IFunSDKResult{
                 if(msg.arg1 >= 0){
                     Log.d(TAG, "OnFunSDKResult: CONFIG SET SUCCESS");
                     currentConfigListener.onSetConfig();
+                    expandableListAdapter.notifyDataSetChanged();
+                    updateDevicesManagers();
                 } else{
                     Log.d(TAG, "OnFunSDKResult: CONFIG SET ERROR");
                     currentConfigListener.onError();
@@ -326,6 +327,14 @@ public class DeviceManager implements IFunSDKResult{
                 }
             }
             break;
+            case EUIMSG.DEV_OPTION:
+           /* {
+//                if(msg.arg1 >= 0){
+                    String data = G.ToStringJson(msgContent.pData);
+                    Log.d(TAG, "--> DATA: " + data);
+//                }
+            }*/
+            break;
 
         }
         return 0;
@@ -351,6 +360,8 @@ public class DeviceManager implements IFunSDKResult{
     public void addDevice(Context context, Device device, int position) {
         device.checkConnectionMethod();
         mDevices.add(position, device);
+        expandableListAdapter.notifyDataSetChanged();
+        surfaceViewManagers.get(position).mDevice = mDevices.get(position);
         saveData();
     }
 
@@ -541,7 +552,7 @@ public class DeviceManager implements IFunSDKResult{
             if(json.has("Enable"))
                 device.setUpnpEnable(json.getBoolean("Enable"));
             if(json.has("HTTPPort"))
-                device.setHTTPPort(json.getInt("HTTPPort"));
+                device.setHttpPort(json.getInt("HTTPPort"));
             if(json.has("MediaPort"))
                 device.setMediaPort(json.getInt("MediaPort"));
             if(json.has("MobilePort"))
@@ -555,7 +566,8 @@ public class DeviceManager implements IFunSDKResult{
         expandableListAdapter.notifyDataSetChanged();
     }
 
-    public void setEthernetConfig(Device device){
+    public void setEthernetConfig(Device device, ConfigListener configListener){
+//        currentConfigListener = configListener;
         try {
             currentConfig.put("HostName", device.getHostname());
             currentConfig.put("GateWay", Utils.stringIpToHexString(device.getGateway()));
@@ -595,6 +607,7 @@ public class DeviceManager implements IFunSDKResult{
             currentConfig.put("DDNSKey", "Giga DDNS");
             currentConfig.put("Enable", device.isDdnsEnable());
             currentConfig.put("HostName", device.getDdnsDomain());
+            currentConfig.put("Online", "true");
             currentConfigB.put("UserName", device.getDdnsUserName());
             currentConfigB.put("Name", "gigaddns.com.br");
             currentConfigB.put("Address", "0x0A060001"/*Utils.stringIpToHexString("10.6.0.1")*/);
@@ -612,7 +625,7 @@ public class DeviceManager implements IFunSDKResult{
     public void setUpnpConfig(Device device){
         try{
             currentConfig.put("Enable", device.isUpnpEnable());
-            currentConfig.put("HTTPPort", device.getHTTPPort());
+            currentConfig.put("HTTPPort", device.getHttpPort());
             currentConfig.put("MediaPort", device.getMediaPort());
             currentConfig.put("MobilePort", device.getMobilePort());
         }catch (JSONException e){
@@ -636,8 +649,11 @@ public class DeviceManager implements IFunSDKResult{
             e.printStackTrace();
         }
         FunSDK.DevCmdGeneral(getHandler(), device.connectionString, 1450, "OPMachine", 2048, 10000, reboot.toString().getBytes(), -1, device.getId());
-        logoutDevice(mDevices.get(DeviceListActivity.previousGroup));
-        DeviceListActivity.collapseGroup(DeviceListActivity.previousGroup);
+    }
+
+    public void remoteControl(Device device, int command){
+        FunSDK.DevOption(getHandler(), device.connectionString, EDEV_OPTERATE.EDOPT_NET_KEY_CLICK, null, 0, command, 0, 0, "", device.getId());
+//        FunSDK.DevCmdGeneral(getHandler(), device.connectionString, command, "", 1024, 8000, null, 0, device.getId());
     }
 
     public DeviceExpandableListAdapter getExpandableListAdapter(Context context){
@@ -672,6 +688,23 @@ public class DeviceManager implements IFunSDKResult{
         return null;
     }
 
+    public void addSurfaceViewManager(){
+        if(surfaceViewManagers == null)
+            return;
+        SurfaceViewManager surfaceViewManager = new SurfaceViewManager(mDevices.get(mDevices.size()-1));
+        surfaceViewManagers.add(surfaceViewManager);
+    }
+
+    public void updateDevicesManagers(){
+        if(surfaceViewManagers == null)
+            return;
+        int i = 0;
+        for(SurfaceViewManager svm : surfaceViewManagers){
+            svm.mDevice = mDevices.get(i);
+            i++;
+        }
+    }
+
     public void updateSurfaceViewManagers(){
         if(surfaceViewManagers == null)
             return;
@@ -680,6 +713,10 @@ public class DeviceManager implements IFunSDKResult{
             SurfaceViewManager surfaceViewManager = new SurfaceViewManager(mDevices.get(i));
             surfaceViewManagers.add(surfaceViewManager);
         }
+    }
+
+    public void reorderSurfaceViewManagers(){
+
     }
 
     public void removeFromExpandableList(ArrayList<Integer> itens){
@@ -821,42 +858,40 @@ public class DeviceManager implements IFunSDKResult{
         return path == null ? "" : path;
     }
 
-    /*public void addToStart(SurfaceViewComponent svc) {
+    public void addToStart(SurfaceViewComponent svc) {
         synchronized (startList) {
-            startList.add(svc);
+//            if(!isOnStartQueue(svc))
+                startList.add(svc);
             if (!startPlay)
-                requestStart(svc);
+                requestStart();
         }
     }
 
-    public void requestStart(SurfaceViewComponent svc){
+    public void requestStart(){
         if(!startList.isEmpty()){
             startPlay = true;
-            startList.getFirst().onStartVideo(svc);
+            SurfaceViewComponent svc = startList.getFirst();
+            svc.mSurfaceViewManager.onStartVideo(svc);
         } else{
             startPlay = false;
         }
     }
 
-    public void removeFromStartQueue(SurfaceViewManager surfaceViewManager){
+    public void removeFromStartQueue(SurfaceViewComponent svc){
         synchronized (startList){
-            startList.remove(surfaceViewManager);
+            startList.remove(svc);
         }
     }
 
-    public boolean isOnStartQueue(SurfaceViewManager surfaceViewManager){
+    public boolean isOnStartQueue(SurfaceViewComponent svc){
         synchronized (startList) {
-            return startList.contains(surfaceViewManager);
+            return startList.contains(svc);
         }
-    }*/
+    }
 
     public void findPlaybackList(Device device, H264_DVR_FINDINFO info, PlaybackSearchListener listener){
         currentPlaybackSearchListener = listener;
         FunSDK.DevFindFile(getHandler(), device.connectionString, G.ObjToBytes(info), 64, 20000, device.getId());
-    }
-
-    public void remoteControl(Device device, int command){
-        FunSDK.DevOption(getHandler(), device.connectionString, EDEV_OPTERATE.EDOPT_DEV_CONTROL, null, 0, command, 0, 0, "", device.getId());
     }
 
     public boolean isFavorite(int deviceId, int channelNumber){

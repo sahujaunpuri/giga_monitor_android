@@ -40,6 +40,7 @@ public class DDNSConfigActivity extends ActionBarActivity {
     private ConfigListener listener = new ConfigListener() {
         @Override
         public void onReceivedConfig() {
+            mDevice = mManager.findDeviceById((int) getIntent().getExtras().getSerializable("device"));
             initData();
             mDeviceManager.currentContext = mContext;
             initViews();
@@ -72,7 +73,7 @@ public class DDNSConfigActivity extends ActionBarActivity {
         if (savedInstanceState == null) {
 
             mManager = DeviceManager.getInstance();
-            mDevice = mManager.findDeviceBySN((String) getIntent().getExtras().getSerializable("device"));
+            mDevice = mManager.findDeviceById((int) getIntent().getExtras().getSerializable("device"));
             mContext = this;
 
             mManager.getJsonConfig(mDevice, "NetWork.NetDDNS", listener);

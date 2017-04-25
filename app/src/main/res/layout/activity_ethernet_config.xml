@@ -70,7 +70,18 @@
                 android:hint="192.168.1.1"
                 android:maxLines="1"/>
 
-            <!--
+            <TextView
+                android:layout_marginTop="5dp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/label_tcp_port"/>
+
+            <EditText
+                android:id="@+id/edit_text_ethernet_tcp_port"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="34567"/>
+
             <TextView
                 android:layout_marginTop="5dp"
                 android:layout_width="match_parent"
@@ -99,18 +110,6 @@
                 android:layout_marginTop="5dp"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="@string/label_tcp_port"/>
-
-            <EditText
-                android:id="@+id/edit_text_ethernet_tcp_port"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:hint="34567"/>
-
-            <TextView
-                android:layout_marginTop="5dp"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
                 android:text="UDP port"/>
 
             <EditText
@@ -118,6 +117,8 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:hint="34568"/>
+
+            <!--
 
             <TextView
                 android:layout_marginTop="5dp"

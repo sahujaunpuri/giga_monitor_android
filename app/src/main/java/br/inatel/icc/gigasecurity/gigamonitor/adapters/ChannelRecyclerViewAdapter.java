@@ -17,6 +17,7 @@ import com.video.opengl.GLSurfaceView20;
 import br.inatel.icc.gigasecurity.gigamonitor.R;
 import br.inatel.icc.gigasecurity.gigamonitor.activities.DeviceListActivity;
 import br.inatel.icc.gigasecurity.gigamonitor.core.DeviceManager;
+import br.inatel.icc.gigasecurity.gigamonitor.managers.CustomGridLayoutManager;
 import br.inatel.icc.gigasecurity.gigamonitor.model.Device;
 import br.inatel.icc.gigasecurity.gigamonitor.model.SurfaceViewManager;
 import br.inatel.icc.gigasecurity.gigamonitor.ui.OverlayMenu;
@@ -56,7 +57,6 @@ public class ChannelRecyclerViewAdapter extends RecyclerView.Adapter<ChannelRecy
     public class MyViewHolder extends RecyclerView.ViewHolder {
 
         public FrameLayout frameLayout;
-        public GLSurfaceView20 surfaceViewComponent;
 
         public MyViewHolder(View view) {
             super(view);
@@ -89,8 +89,6 @@ public class ChannelRecyclerViewAdapter extends RecyclerView.Adapter<ChannelRecy
         super.onViewDetachedFromWindow(holder);
     }
 
-
-
     @Override
     public void onBindViewHolder(final ChannelRecyclerViewAdapter.MyViewHolder myViewHolder, final int position) {
 
@@ -107,18 +105,15 @@ public class ChannelRecyclerViewAdapter extends RecyclerView.Adapter<ChannelRecy
                 parent.removeAllViews();
             }
 
-            myViewHolder.frameLayout.addView(currentSurfaceView);
-
 //            currentSurfaceView.setLayoutParams(new FrameLayout.LayoutParams(FrameLayout.LayoutParams.MATCH_PARENT, FrameLayout.LayoutParams.MATCH_PARENT));
 
-//            currentSurfaceView.isLoading(true);
+            currentSurfaceView.isLoading(true);
+//            surfaceViewManager.onPlayLive(currentSurfaceView);
+            surfaceViewManager.onStartVideo(currentSurfaceView);
 
-            if (!currentSurfaceView.isConnected()) {
-                currentSurfaceView.isLoading(true);
-                surfaceViewManager.onStartVideo(currentSurfaceView);
-            }
+            myViewHolder.frameLayout.addView(currentSurfaceView);
 
-//            surfaceViewManager.changeSurfaceViewSize(currentSurfaceView);
+//            surfaceViewManager.changeSurfaceViewSize();
         } catch (IndexOutOfBoundsException e){
             Log.d(TAG, "onBindViewHolder: " + e.toString());
         }
@@ -145,20 +140,21 @@ public class ChannelRecyclerViewAdapter extends RecyclerView.Adapter<ChannelRecy
         childViewHolder.gridLayoutManager.setScrollEnabled(true);
     }
 
-    public void singleQuad(SurfaceViewComponent surfaceViewComponent, int position){
+    public void singleQuad(int position){
         if(surfaceViewManager.numQuad == 1 && surfaceViewManager.surfaceViewComponents.size() == 1) {
             return;
         }
 
         surfaceViewManager.resetScale();
         msvSelected = surfaceViewManager.getChannelSelected(position);
-        surfaceViewComponent.isLoading(true);
+        surfaceViewManager.onStop(surfaceViewManager.surfaceViewComponents.get(msvSelected));
+//        surfaceViewComponent.isLoading(true);
 
         if(surfaceViewManager.numQuad == 1) {
             surfaceViewManager.numQuad = surfaceViewManager.lastNumQuad;
         } else {
             surfaceViewManager.numQuad = 1;
-            GridLayoutManager lm = (GridLayoutManager) childViewHolder.recyclerViewChannels.getLayoutManager();
+            CustomGridLayoutManager lm = (CustomGridLayoutManager) childViewHolder.recyclerViewChannels.getLayoutManager();
             surfaceViewManager.lastFirstItemBeforeSelectChannel = lm.findFirstVisibleItemPosition();
         }
         childViewHolder.gridLayoutManager.setSpanCount(surfaceViewManager.numQuad);
@@ -176,7 +172,8 @@ public class ChannelRecyclerViewAdapter extends RecyclerView.Adapter<ChannelRecy
         }
         surfaceViewManager.reOrderSurfaceViewComponents();
 
-        surfaceViewManager.changeSurfaceViewSize(null);
+        surfaceViewManager.changeSurfaceViewSize();
+
 
     }
 
@@ -187,7 +184,7 @@ public class ChannelRecyclerViewAdapter extends RecyclerView.Adapter<ChannelRecy
             @Override
             public void run() {
                 if(overlayMenu.getVisibility() == View.VISIBLE) {
-                    overlayMenu.setVisibility(View.INVISIBLE);
+                    overlayMenu.setVisibility(View.GONE);
                 }else {
                     overlayMenu.setSurfaceViewComponent(surfaceViewComponent);
                     overlayMenu.updateIcons();

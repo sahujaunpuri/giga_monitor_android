@@ -99,7 +99,7 @@ public class OverlayMenu extends RelativeLayout {
             ivSnapvideo.setImageDrawable(mContext.getResources().getDrawable(R.drawable.ic_snapvideo));
         }
 
-        if(!surfaceViewComponent.isFavorite()){
+        /*if(!surfaceViewComponent.isFavorite()){
             ivFavorite.clearColorFilter();
         } else {
             ivFavorite.setColorFilter(Color.parseColor("#FFFF00"));
@@ -115,7 +115,7 @@ public class OverlayMenu extends RelativeLayout {
             ivReceiveAudio.setImageDrawable(mContext.getResources().getDrawable(R.drawable.ic_volume_mute_white_36dp));
         }else {
             ivReceiveAudio.setImageDrawable(mContext.getResources().getDrawable(R.drawable.ic_volume_up_white_36dp));
-        }
+        }*/
     }
 
     private void setClickListeners(){

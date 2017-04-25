@@ -29,8 +29,7 @@ public class EthernetConfigActivity extends ActionBarActivity implements OnCheck
     private Context mContext;
     private Device mDevice;
 //    private EthernetConfig mConfig;
-    private EditText mHostNameEditText, mHostIPEditText, mSubmaskEditText, mGatewayEditText, mMacEditText;
-            //mHttpPortEditText, mTcpPortEditText, mSslPortEditText, mUdpPortEditText,
+    private EditText mHostNameEditText, mHostIPEditText, mSubmaskEditText, mGatewayEditText, mMacEditText, mHttpPortEditText, mTcpPortEditText, mSslPortEditText, mUdpPortEditText;
             //mMaxConnEditText, mMonModeEditText, mMaxBpsEditText, mTransferPlanEditText, mMacEditText,
             //mZarg0EditText;
 
@@ -58,6 +57,7 @@ public class EthernetConfigActivity extends ActionBarActivity implements OnCheck
 
             Toast.makeText(getApplicationContext(), messageId, Toast.LENGTH_SHORT).show();
             mManager.saveData();
+            mDevice.checkConnectionMethod();
 
             finish();
         }
@@ -66,7 +66,7 @@ public class EthernetConfigActivity extends ActionBarActivity implements OnCheck
         public void onError(){
             int messageId = R.string.invalid_device_save;
 
-            Toast.makeText(getApplicationContext(), messageId, Toast.LENGTH_SHORT).show();
+//            Toast.makeText(getApplicationContext(), messageId, Toast.LENGTH_SHORT).show();
             mManager.saveData();
 
             finish();
@@ -86,7 +86,7 @@ public class EthernetConfigActivity extends ActionBarActivity implements OnCheck
 //        } else {
 //            mDevice = (Device) savedInstanceState.getSerializable("device");
 //        }
-        mDevice = mManager.findDeviceBySN((String) getIntent().getExtras().getSerializable("device"));
+        mDevice = mManager.findDeviceById((int) getIntent().getExtras().getSerializable("device"));
         mManager.getJsonConfig(mDevice, "NetWork.NetCommon", mListener);
     }
 
@@ -127,11 +127,11 @@ public class EthernetConfigActivity extends ActionBarActivity implements OnCheck
         mHostIPEditText = (EditText) findViewById(R.id.edit_text_ethernet_host_ip);
         mSubmaskEditText = (EditText) findViewById(R.id.edit_text_ethernet_submask);
         mGatewayEditText = (EditText) findViewById(R.id.edit_text_ethernet_gateway);
-        /*mHttpPortEditText = (EditText) findViewById(R.id.edit_text_ethernet_http_port);
+        mHttpPortEditText = (EditText) findViewById(R.id.edit_text_ethernet_http_port);
         mTcpPortEditText = (EditText) findViewById(R.id.edit_text_ethernet_tcp_port);
         mSslPortEditText = (EditText) findViewById(R.id.edit_text_ethernet_ssl_port);
         mUdpPortEditText = (EditText) findViewById(R.id.edit_text_ethernet_udp_port);
-        mMaxConnEditText = (EditText) findViewById(R.id.edit_text_ethernet_max_conn);
+        /*mMaxConnEditText = (EditText) findViewById(R.id.edit_text_ethernet_max_conn);
         mMonModeEditText = (EditText) findViewById(R.id.edit_text_ethernet_mon_mode);
         mMaxBpsEditText = (EditText) findViewById(R.id.edit_text_ethernet_max_bps);
         mTransferPlanEditText = (EditText) findViewById(R.id.edit_text_ethernet_transfer_plan);*/
@@ -171,18 +171,18 @@ public class EthernetConfigActivity extends ActionBarActivity implements OnCheck
     }
 
     private void initViews() {
-        ((Activity) this).runOnUiThread(new Runnable() {
+        (this).runOnUiThread(new Runnable() {
             @Override
             public void run() {
                 mHostNameEditText.setText(mHostName);
                 mHostIPEditText.setText(mHostIP);
                 mSubmaskEditText.setText(mSubmask);
                 mGatewayEditText.setText(mGateway);
-                /*mHttpPortEditText.setText(String.valueOf(mHttpPort));
+                mHttpPortEditText.setText(String.valueOf(mHttpPort));
                 mTcpPortEditText.setText(String.valueOf(mTcpPort));
                 mSslPortEditText.setText(String.valueOf(mSslPort));
                 mUdpPortEditText.setText(String.valueOf(mUdpPort));
-                mMaxConnEditText.setText(String.valueOf(mMaxConn));
+                /*mMaxConnEditText.setText(String.valueOf(mMaxConn));
                 mMonModeEditText.setText(String.valueOf(mMonMode));
                 mMaxBpsEditText.setText(String.valueOf(mMaxBps));
                 mTransferPlanEditText.setText(String.valueOf(mTransferPlan));*/
@@ -218,10 +218,15 @@ public class EthernetConfigActivity extends ActionBarActivity implements OnCheck
 
     private void save() {
 
+        mManager.logoutDevice(mDevice);
         mDevice.setHostname(mHostNameEditText.getText().toString());
         mDevice.setIpAddress(mHostIPEditText.getText().toString());
         mDevice.setSubmask(mSubmaskEditText.getText().toString());
         mDevice.setGateway(mGatewayEditText.getText().toString());
+        mDevice.setTCPPort(Integer.parseInt(mTcpPortEditText.getText().toString()));
+        mDevice.setHttpPort(Integer.parseInt(mHttpPortEditText.getText().toString()));
+        mDevice.setSslPort(Integer.parseInt(mSslPortEditText.getText().toString()));
+        mDevice.setUdpPort(Integer.parseInt(mUdpPortEditText.getText().toString()));
 
         /*commonConfig.setHttpPort(Integer.valueOf(mHttpPortEditText.getText().toString()));
         commonConfig.setTcpPort(Integer.valueOf(mTcpPortEditText.getText().toString()));
@@ -235,7 +240,8 @@ public class EthernetConfigActivity extends ActionBarActivity implements OnCheck
         //commonConfig.setMac(mMacEditText.getText().toString());
         //commonConfig.setZarg0(mZarg0EditText.getText().toString());
 
-        mManager.setEthernetConfig(mDevice);
+        mManager.setEthernetConfig(mDevice, mListener);
+        mListener.onSetConfig();
     }
 
     private void startDeviceListActivity() {

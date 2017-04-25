@@ -60,7 +60,7 @@ public class PasswordConfigActivity extends ActionBarActivity {
 
         mContext = this;
         mManager = DeviceManager.getInstance();
-        mDevice = mManager.findDeviceBySN((String) getIntent().getExtras().getSerializable("device"));
+        mDevice = mManager.findDeviceById((int) getIntent().getExtras().getSerializable("device"));
     }
 
     private void findViews() {
@@ -78,7 +78,7 @@ public class PasswordConfigActivity extends ActionBarActivity {
         String msg;
 
         if(!mDevice.getPassword().equals(oldPass)){
-            msg = "Antiga senha incorreta.";
+            msg = "Senha atual inválida";
             Toast.makeText(activity, msg, Toast.LENGTH_LONG).show();
         } else if (!newPass.equals(confNewPass)){
             msg = "Confimação inválida";

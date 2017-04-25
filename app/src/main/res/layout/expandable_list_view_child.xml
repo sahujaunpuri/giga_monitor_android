@@ -3,8 +3,7 @@
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:gravity="center"
-    android:layout_gravity="center"
+    android:focusable="false"
     android:background="@drawable/background_with_shadow">
 
     <!--<FrameLayout-->
@@ -20,9 +19,8 @@
             android:layout_height="match_parent"
             android:background="#000000"
             android:visibility="gone"
-            android:gravity="center"
-            android:layout_gravity="center"
-            android:scrollbars="vertical" />
+            android:scrollbars="vertical"
+            />
 
         <!--<RelativeLayout-->
             <!--android:orientation="vertical"-->

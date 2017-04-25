@@ -1,5 +1,6 @@
 package br.inatel.icc.gigasecurity.gigamonitor.model;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.res.Configuration;
 import android.os.Environment;
@@ -17,6 +18,7 @@ import com.lib.FunSDK;
 import com.lib.IFunSDKResult;
 import com.lib.MsgContent;
 import com.lib.sdk.struct.H264_DVR_FILE_DATA;
+import com.video.opengl.GLSurfaceView20;
 
 import java.io.File;
 import java.text.SimpleDateFormat;
@@ -39,6 +41,8 @@ public class SurfaceViewManager implements IFunSDKResult {
     String TAG = "SurfaceViewManager";
 
     public ArrayList<SurfaceViewComponent> surfaceViewComponents;
+    public ArrayList<GLSurfaceView20> mySurfaceViews;
+    public ArrayList<Integer> handlers;
     public Device mDevice;
     public DeviceManager mDeviceManager;
     public ChannelRecyclerViewAdapter mRecyclerAdapter;
@@ -69,6 +73,8 @@ public class SurfaceViewManager implements IFunSDKResult {
         }
         this.mDevice = mDevice;
         this.surfaceViewComponents = new ArrayList<>();
+        this.mySurfaceViews = new ArrayList<GLSurfaceView20>();
+        this.handlers = new ArrayList<>();
         this.mContext = DeviceListActivity.mContext;
         this.numQuad = 1;
         this.lastNumQuad = 1;
@@ -83,32 +89,58 @@ public class SurfaceViewManager implements IFunSDKResult {
     }
 
     public void createComponents() {
+
+        if (!mySurfaceViews.isEmpty()){
+            mySurfaceViews.clear();
+        }
+
+        if (!surfaceViewComponents.isEmpty()){
+            surfaceViewComponents.clear();
+        }
+
         for (int i = 0; i < mDevice.getChannelNumber(); i++) {
-            SurfaceViewComponent surfaceViewComponent = new SurfaceViewComponent(mContext, this);
 
-            surfaceViewComponent.mySurfaceViewChannelId = i;
-            surfaceViewComponent.mySurfaceViewOrderId = i;
-            surfaceViewComponent.deviceConnection = mDevice.connectionString;
-            surfaceViewComponent.deviceId = mDevice.getId();
+            this.createComponent(i);
 
-            if(mDeviceManager.isFavorite(mDevice.getId(), i))
-                surfaceViewComponent.setFavorite(true);
-
-            surfaceViewComponent.setLayoutParams(new FrameLayout.LayoutParams(FrameLayout.LayoutParams.MATCH_PARENT, FrameLayout.LayoutParams.MATCH_PARENT));
-
-            surfaceViewComponents.add(surfaceViewComponent);
         }
         this.reOrderSurfaceViewComponents();
-        changeSurfaceViewSize(null);
+        changeSurfaceViewSize();
     }
+
+
+    public void createComponent(int position) {
+
+        int i = position;
+
+        GLSurfaceView20 mySurfaceView = new GLSurfaceView20(mContext);
+        mySurfaceView.setLayoutParams(surfaceViewLayout);
+        mySurfaceViews.add(i,mySurfaceView);
+
+
+        SurfaceViewComponent surfaceViewComponent = new SurfaceViewComponent(mContext, this, i);
+
+        surfaceViewComponent.mySurfaceViewChannelId = i;
+        surfaceViewComponent.mySurfaceViewOrderId = i;
+        surfaceViewComponent.deviceConnection = mDevice.connectionString;
+        surfaceViewComponent.deviceId = mDevice.getId();
+
+        if(mDeviceManager.isFavorite(mDevice.getId(), i))
+            surfaceViewComponent.setFavorite(true);
+
+//            surfaceViewComponent.setLayoutParams(new FrameLayout.LayoutParams(FrameLayout.LayoutParams.MATCH_PARENT, FrameLayout.LayoutParams.MATCH_PARENT));
+        surfaceViewComponent.setLayoutParams(surfaceViewLayout);
+
+        surfaceViewComponents.add(i,surfaceViewComponent);
+    }
+
 
     public void addSurfaceViewComponent(SurfaceViewComponent svc){
         surfaceViewComponents.add(svc);
     }
 
-    public void changeSurfaceViewSize(SurfaceViewComponent surfaceViewComponent) {
+    public void changeSurfaceViewSize() {
         mDeviceManager.getScreenSize();
-        int surfaceViewWidth = (mDeviceManager.screenWidth / numQuad);
+        int surfaceViewWidth = (int) Math.ceil((mDeviceManager.screenWidth / numQuad));// + numQuad;
         int surfaceViewHeight = ((mDeviceManager.screenHeight / 3) + 10) / numQuad;
 
         if (mContext.getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE) {
@@ -121,9 +153,13 @@ public class SurfaceViewManager implements IFunSDKResult {
         pbParam.width = surfaceViewWidth/4;
         pbParam.height = surfaceViewHeight/4;
 
-        for(SurfaceViewComponent svc : surfaceViewComponents){
+        /*for(SurfaceViewComponent svc : surfaceViewComponents){
             svc.requestLayout();
-        }
+        }*/
+    }
+
+    public GLSurfaceView20 getMySurfaceView(int channelId){
+        return mySurfaceViews.get(channelId);
     }
 
 
@@ -144,7 +180,7 @@ public class SurfaceViewManager implements IFunSDKResult {
         return inverseMatrix[numQuad - 1][gridPositionSelected];
     }
 
-    public int scrollToItem(int currentFirstVisibleItem, int currentLastVisibleItem, int amountScrolled) {
+    public int scrollToItem(int currentFirstVisibleItem, int currentLastVisibleItem) {
         int itemToScroll = 0;
         int totalQuads = numQuad*numQuad;
         if (totalQuads > 1) {
@@ -172,7 +208,7 @@ public class SurfaceViewManager implements IFunSDKResult {
     }
 
     public void resetScale(){
-        ((DeviceListActivity) mContext).runOnUiThread(new Runnable() {
+        ((Activity) mContext).runOnUiThread(new Runnable() {
             @Override
             public void run() {
 //                reOrderSurfaceViewComponents();
@@ -187,20 +223,27 @@ public class SurfaceViewManager implements IFunSDKResult {
 
     /** Media Control Functions **/
     public void onPlayLive(SurfaceViewComponent svc) {
-        /*if(svc.isConnected())
-            onResume(svc);
-        else
-            mDeviceManager.addToStart(svc);*/
+        mDeviceManager.addToStart(svc);
     }
 
     public void onStartVideo(final SurfaceViewComponent svc){
-//        svc.setConnected(true);
         new Thread(new Runnable() {
             @Override
             public void run() {
-                svc.mPlayerHandler = FunSDK.MediaRealPlay(mUserID, svc.deviceConnection, svc.mySurfaceViewChannelId, svc.streamType, svc.mySurfaceView, svc.mySurfaceViewOrderId);
+                svc.mPlayerHandler = FunSDK.MediaRealPlay(mUserID, mDevice.connectionString, svc.mySurfaceViewChannelId, svc.streamType, mySurfaceViews.get(svc.mySurfaceViewChannelId), svc.mySurfaceViewOrderId);
             }
         }).start();
+
+    }
+
+    // NOT TESTED
+    public void onRefreshVideo(final SurfaceViewComponent svc){
+//        svc.mPlayerHandler = FunSDK.MediaPlay(svc.mPlayerHandler, mUserID);
+        svc.mPlayerHandler = FunSDK.MediaRefresh(svc.mPlayerHandler, mUserID);
+    }
+
+    public void setPlayView(final SurfaceViewComponent svc){
+        FunSDK.MediaSetPlayView(svc.mPlayerHandler, mySurfaceViews.get(svc.mySurfaceViewChannelId), mUserID);
     }
 
     public void onPause(SurfaceViewComponent svc){
@@ -247,14 +290,14 @@ public class SurfaceViewManager implements IFunSDKResult {
         if(svc.isConnected()) {
             String path = Environment.getExternalStorageDirectory().getPath() + "/Movies/Giga Monitor/" + Utils.currentDateTime() + ".mp4";
             FunSDK.MediaStartRecord(svc.mPlayerHandler, path, 0);
-            recHandler = svc.mPlayerHandler;
+//            recHandler = svc.mPlayerHandler;
             svc.isREC = true;
         }
     }
 
     public void stopRecord(SurfaceViewComponent svc){
         if(svc.isConnected()) {
-            FunSDK.MediaStopRecord(recHandler, 0);
+            FunSDK.MediaStopRecord(svc.mPlayerHandler, 0);
         }
     }
 
@@ -311,11 +354,17 @@ public class SurfaceViewManager implements IFunSDKResult {
         }
     }
 
-    public void stopChannels(int start){
-        for(int i = start; i < surfaceViewComponents.size(); i++){
-            if(surfaceViewComponents.get(i).isConnected())
-                onStop(surfaceViewComponents.get(i));
-        }
+    public void stopChannels(final int start){
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                for(int i = start; i < surfaceViewComponents.size(); i++){
+                    if(surfaceViewComponents.get(i).isConnected())
+                        onStop(surfaceViewComponents.get(i));
+                }
+            }
+        }).start();
+
     }
 
 
@@ -357,13 +406,13 @@ public class SurfaceViewManager implements IFunSDKResult {
                 if(svc!=null) {
                     if (msg.arg1 == 0) {
                         svc.setConnected(true);
-                        /*if (mDeviceManager.isOnStartQueue(this)) {
-                            mDeviceManager.removeFromStartQueue(this);
+                        /*if (mDeviceManager.isOnStartQueue(svc)) {
+                            mDeviceManager.removeFromStartQueue(svc);
                             mDeviceManager.requestStart();
                         }*/
                         Log.i(TAG, "START SUCCESS");
                     } else {
-                        //mDeviceManager.requestStart();
+//                        mDeviceManager.requestStart();
                         onStartVideo(svc);
                         Log.i(TAG, "START FAILED");
                     }
@@ -374,7 +423,9 @@ public class SurfaceViewManager implements IFunSDKResult {
                 Log.i(TAG, "EUIMSG.STOP_PLAY");
                 if (msg.arg1 == 0) {
                     Log.i(TAG, "STOP SUCCESS");
-                    findSurfaceByHandler(msgContent.sender).setConnected(false);
+                    SurfaceViewComponent svc = findSurfaceByHandler(msgContent.sender);
+                    svc.setConnected(false);
+//                    svc.stoping = false;
                 } else {
                     Log.i(TAG, "STOP FAILED");
                 }
@@ -407,6 +458,7 @@ public class SurfaceViewManager implements IFunSDKResult {
                         svc.isPlaying = true;
                         if (svc.playType == 0) {
                             svc.isLoading(false);
+//                            svc.setVisibility(View.VISIBLE);
 //                        menu.updateIcons();
                         } else if (svc.playType == 1) {
                             currentPlaybackListener.onPlayState(2);
