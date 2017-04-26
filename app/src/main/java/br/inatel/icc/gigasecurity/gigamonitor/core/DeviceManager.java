@@ -62,7 +62,7 @@ public class DeviceManager implements IFunSDKResult{
     private ArrayList<Device> mLanDevices = new ArrayList<Device>();
     public ArrayList<Device> mFavoriteDevices = new ArrayList<Device>();
 //    private final HashMap<Integer, Device> mLoggedDevices = new HashMap<Integer, Device>();
-    private LinkedList<SurfaceViewComponent> startList = new LinkedList<SurfaceViewComponent>();
+    public LinkedList<SurfaceViewComponent> startList = new LinkedList<SurfaceViewComponent>();
     private HashMap<String, LoginDeviceListener> loginList = new HashMap<String, LoginDeviceListener>();
 
 
@@ -108,6 +108,8 @@ public class DeviceManager implements IFunSDKResult{
 //        FunSDK.InitEx(0, G.ObjToBytes(initparam), "GIGA_", "", 0);
         FunSDK.InitExV2(0, G.ObjToBytes(initparam), 4, "GIGA_", "cloudgiga.com.br", 8765);
         FunSDK.SysSetServerIPPort("MI_SERVER", "cloudgiga.com.br", 80);
+
+
 
 //        FunSDK.Init(0, G.ObjToBytes(initparam));
 
@@ -858,9 +860,14 @@ public class DeviceManager implements IFunSDKResult{
         return path == null ? "" : path;
     }
 
+    public void clearStart(){
+        startList.clear();
+        startPlay = false;
+    }
+
     public void addToStart(SurfaceViewComponent svc) {
         synchronized (startList) {
-//            if(!isOnStartQueue(svc))
+            if(!isOnStartQueue(svc))
                 startList.add(svc);
             if (!startPlay)
                 requestStart();
@@ -870,8 +877,11 @@ public class DeviceManager implements IFunSDKResult{
     public void requestStart(){
         if(!startList.isEmpty()){
             startPlay = true;
-            SurfaceViewComponent svc = startList.getFirst();
-            svc.mSurfaceViewManager.onStartVideo(svc);
+            SurfaceViewComponent svc = startList.poll();
+//            if(!svc.stoping)
+                svc.mSurfaceViewManager.onStartVideo(svc);
+//            else
+//                addToStart(svc);
         } else{
             startPlay = false;
         }

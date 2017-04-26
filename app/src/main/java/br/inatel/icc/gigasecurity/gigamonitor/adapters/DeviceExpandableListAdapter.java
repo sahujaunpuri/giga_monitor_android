@@ -236,10 +236,10 @@ public class DeviceExpandableListAdapter extends BaseExpandableListAdapter {
         if(mContext.getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE && DeviceListActivity.previousGroup != -1) {
 //            currentGroupViewHolder.convertView = mInflater.inflate(R.layout.blank_layout, parent, false);
             return new FrameLayout(mContext);
-        } /*else {
+        } else {
             currentGroupViewHolder.ivMore.setOnClickListener(createMoreListener(groupPosition));
             currentGroupViewHolder.ivQuad.setOnClickListener(createQuadListener(groupPosition));
-        }*/
+        }
         return currentGroupViewHolder.convertView;
     }
 
@@ -262,8 +262,8 @@ public class DeviceExpandableListAdapter extends BaseExpandableListAdapter {
                 loginDevice(currentGroupViewHolder.mDevice, currentGroupViewHolder, currentChildViewHolder, groupPosition);
             } else {
                 showExpanded(groupPosition, currentGroupViewHolder, currentChildViewHolder);
+                currentChildViewHolder.gridLayoutManager.scrollToPosition(mDeviceManager.getSurfaceViewManagers().get(groupPosition).lastFirstVisibleItem);
             }
-            currentChildViewHolder.gridLayoutManager.scrollToPosition(mDeviceManager.getSurfaceViewManagers().get(groupPosition).lastFirstVisibleItem);
             setLayoutSize(groupPosition);
         }
         return currentChildViewHolder.convertView;
@@ -273,6 +273,7 @@ public class DeviceExpandableListAdapter extends BaseExpandableListAdapter {
         ((DeviceListActivity) mContext).runOnUiThread(new Runnable() {
             @Override
             public void run() {
+                
                 childViewHolder.tvMessage.setVisibility(View.GONE);
                 groupViewHolder.ivQuad.setVisibility(View.INVISIBLE);
                 groupViewHolder.ivIndicator.setImageDrawable(mContext.getResources().getDrawable(R.drawable.ic_indicator_minus));
@@ -312,11 +313,13 @@ public class DeviceExpandableListAdapter extends BaseExpandableListAdapter {
                 currentGroupViewHolder.ivIndicator.setImageDrawable(mContext.getResources().getDrawable(R.drawable.ic_indicator_plus));
                 currentGroupViewHolder.ivQuad.setVisibility(View.INVISIBLE);
                 currentChildViewHolder.recyclerViewChannels.setVisibility(View.INVISIBLE);
+                currentChildViewHolder.overlayMenu.setVisibility(View.GONE);
             }
         });
 
         currentChildViewHolder.recyclerViewChannels.removeAllViewsInLayout();
         mDeviceManager.getSurfaceViewManagers().get(groupPosition).surfaceViewComponents.clear();
+        mDeviceManager.clearStart();
 
 //        onChangeOrientation(groupPosition);
     }
@@ -414,7 +417,7 @@ public class DeviceExpandableListAdapter extends BaseExpandableListAdapter {
             @Override
             public void run() {
                 builder.setTitle("")
-                        .setItems(new CharSequence[]{"Configurações", "Controle Remoto", "Playback"},
+                        .setItems(new CharSequence[]{"Configurações"/*, "Controle Remoto"*/, "Playback"},
                                 new DialogInterface.OnClickListener() {
                                     @Override
                                     public void onClick(DialogInterface dialog, int which) {
@@ -422,10 +425,10 @@ public class DeviceExpandableListAdapter extends BaseExpandableListAdapter {
                                             case 0:
                                                 startSettingsActivity(groupViewHolder.mDevice);
                                                 break;
-                                            case 1:
+                                            /*case 1:
                                                 startDeviceRemoteControlActivity(groupViewHolder.mDevice);
-                                                break;
-                                            case 2:
+                                                break;*/
+                                            case 1:
                                                 startPlaybackActivity(groupViewHolder.mDevice);
                                                 break;
                                         }

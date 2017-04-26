@@ -406,14 +406,15 @@ public class SurfaceViewManager implements IFunSDKResult {
                 if(svc!=null) {
                     if (msg.arg1 == 0) {
                         svc.setConnected(true);
-                        /*if (mDeviceManager.isOnStartQueue(svc)) {
-                            mDeviceManager.removeFromStartQueue(svc);
+                        if (svc.playType == 0) {
                             mDeviceManager.requestStart();
-                        }*/
+                        }
                         Log.i(TAG, "START SUCCESS");
                     } else {
-//                        mDeviceManager.requestStart();
-                        onStartVideo(svc);
+                        if(svc.playType == 0) {
+                            mDeviceManager.addToStart(svc);
+                        }
+
                         Log.i(TAG, "START FAILED");
                     }
                 }
@@ -425,7 +426,6 @@ public class SurfaceViewManager implements IFunSDKResult {
                     Log.i(TAG, "STOP SUCCESS");
                     SurfaceViewComponent svc = findSurfaceByHandler(msgContent.sender);
                     svc.setConnected(false);
-//                    svc.stoping = false;
                 } else {
                     Log.i(TAG, "STOP FAILED");
                 }

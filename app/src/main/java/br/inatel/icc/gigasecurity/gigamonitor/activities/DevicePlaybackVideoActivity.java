@@ -141,7 +141,8 @@ public class DevicePlaybackVideoActivity extends ActionBarActivity {
         Bundle extras = getIntent().getExtras();
         mDevice = (Device) extras.getSerializable("device");
         mFileData = (FileData) extras.getSerializable("fileData");
-        mSurfaceViewManager = DeviceManager.getInstance().findSurfaceViewManagerByDevice(mDevice);
+        //*mSurfaceViewManager = DeviceManager.getInstance().findSurfaceViewManagerByDevice(mDevice);
+        mSurfaceViewManager = new SurfaceViewManager(mDevice);
 
         // Find views
         mSurfaceView                      = (SurfaceViewComponent) findViewById(R.id.surface_view_test_1);
@@ -342,7 +343,8 @@ public class DevicePlaybackVideoActivity extends ActionBarActivity {
         switch (id) {
             case android.R.id.home:
                 mSurfaceViewManager.onStop(mSurfaceView);
-                mSurfaceViewManager.playType = 0;
+//                mSurfaceViewManager.playType = 0;
+//                DeviceManager.getInstance().updateSurfaceViewManagers();
                 finish();
                 return true;
             default:

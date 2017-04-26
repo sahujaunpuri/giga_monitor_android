@@ -53,7 +53,6 @@ public class SurfaceViewComponent extends FrameLayout {
     public boolean isReceiveAudioEnabled = false;
     public boolean isScaling = false;
     public float mScaleFactor = 1.F;
-    public boolean stoping = false;
 
     public SurfaceViewComponent(Context context, SurfaceViewManager surfaceViewManager, int id) {
         super(context);
@@ -85,18 +84,18 @@ public class SurfaceViewComponent extends FrameLayout {
         //SurfaceView
         if(playType == 0) {
             mySurfaceView = mSurfaceViewManager.getMySurfaceView(mySurfaceViewChannelId);
-            if (mySurfaceView == null)
-                mySurfaceView = new GLSurfaceView20(mContext);
 //        mySurfaceView.setRenderMode(GLSurfaceView.RENDERMODE_CONTINUOUSLY);
-            mySurfaceView.setLongClickable(true);
-            mySurfaceView.setOnZoomListener(mScaleListener);
-//        lp = new FrameLayout.LayoutParams(FrameLayout.LayoutParams.MATCH_PARENT, FrameLayout.LayoutParams.MATCH_PARENT);
-//            mySurfaceView.setLayoutParams(mSurfaceViewManager.surfaceViewLayout);
-            ViewGroup parent = (ViewGroup) mySurfaceView.getParent();
-            if (parent != null)
-                parent.removeAllViews();
-            this.addView(mySurfaceView);
+
         }
+
+        if (mySurfaceView == null)
+            mySurfaceView = new GLSurfaceView20(mContext);
+        mySurfaceView.setLongClickable(true);
+        mySurfaceView.setOnZoomListener(mScaleListener);
+        ViewGroup parent = (ViewGroup) mySurfaceView.getParent();
+        if (parent != null)
+            parent.removeAllViews();
+        this.addView(mySurfaceView);
 
 
         //ProgressBar
@@ -221,21 +220,15 @@ public class SurfaceViewComponent extends FrameLayout {
     @Override
     protected void onDetachedFromWindow() {
         super.onDetachedFromWindow();
-
-
-//        new Thread(new Runnable() {
-//            @Override
-//            public void run() {
-//                stoping = true;
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
                 if(isConnected()) {
-//                    if(surfaceViewComponent().streamType == 0)
-//                        surfaceViewComponent().streamType = 1;
                     mSurfaceViewManager.onStop(surfaceViewComponent());
-//                }
-//                stoping = false;
-
+                }
             }
-//        }).start();
+        }).start();
+
     }
 
     @Override
