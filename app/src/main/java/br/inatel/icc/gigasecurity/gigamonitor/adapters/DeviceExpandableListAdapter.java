@@ -48,10 +48,10 @@ import static android.support.v7.widget.RecyclerView.SCROLL_STATE_SETTLING;
 public class DeviceExpandableListAdapter extends BaseExpandableListAdapter {
 
     private LayoutInflater mInflater;
-    private ArrayList<Device> mDevices;
+    public ArrayList<Device> mDevices;
     public Context mContext;
     private DeviceManager mDeviceManager;
-    private ArrayList<GroupViewHolder> groupViewHolder;
+    public ArrayList<GroupViewHolder> groupViewHolder;
     private ArrayList<ChildViewHolder> childViewHolder;
     private int amountScrolled = 0;
 

@@ -362,6 +362,9 @@ public class DeviceManager implements IFunSDKResult{
     public void addDevice(Context context, Device device, int position) {
         device.checkConnectionMethod();
         mDevices.add(position, device);
+//        expandableListAdapter.mDevices = mDevices;
+        expandableListAdapter.groupViewHolder.get(position).mDevice = device;
+        expandableListAdapter.groupViewHolder.get(position).tvDeviceName.setText(device.deviceName);
         expandableListAdapter.notifyDataSetChanged();
         surfaceViewManagers.get(position).mDevice = mDevices.get(position);
         saveData();
@@ -720,6 +723,7 @@ public class DeviceManager implements IFunSDKResult{
     public void updateSurfaceViewManager(int i){
         surfaceViewManagers.remove(i);
         surfaceViewManagers.add(i, new SurfaceViewManager(mDevices.get(i)));
+        expandableListAdapter.notifyDataSetChanged();
     }
 
     public int getDevicePosition(Device device){

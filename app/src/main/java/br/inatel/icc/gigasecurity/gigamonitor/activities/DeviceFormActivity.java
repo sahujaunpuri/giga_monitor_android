@@ -155,7 +155,6 @@ public class DeviceFormActivity extends ActionBarActivity{
                         checkEdit();
                         mDevice.setChannelNumber(0);
                         deviceManager.addDevice(this, mDevice, editPosition);
-                        deviceManager.logoutDevice(mDevice);
                         deviceManager.updateSurfaceViewManager(editPosition);
                     } else if(deviceManager.findDeviceById(mDevice.getId()) != null) {
                         Toast.makeText(this, "Dispositivo já adicionado.", Toast.LENGTH_SHORT).show();

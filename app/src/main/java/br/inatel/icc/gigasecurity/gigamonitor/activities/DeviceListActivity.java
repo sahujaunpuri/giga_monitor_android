@@ -133,6 +133,7 @@ public class DeviceListActivity extends ActionBarActivity {
     protected void onResume() {
         super.onResume();
         mAdapter.notifyDataSetChanged();
+//        mExpandableListView.invalidate();
 //        if (previousGroup != -1) mAdapter.playChannels(previousGroup);
     }
 
