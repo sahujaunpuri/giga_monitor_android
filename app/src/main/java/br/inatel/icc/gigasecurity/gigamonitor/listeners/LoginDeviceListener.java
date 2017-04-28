@@ -7,7 +7,7 @@ import br.inatel.icc.gigasecurity.gigamonitor.model.Device;
  */
 
 public interface LoginDeviceListener {
-    void onLoginSuccess();
+    void onLoginSuccess(Device device);
     void onLoginError(long error, Device device);
     void onLogout();
 }

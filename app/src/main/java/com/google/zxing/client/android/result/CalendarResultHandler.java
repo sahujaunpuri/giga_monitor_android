@@ -16,17 +16,18 @@
 
 package com.google.zxing.client.android.result;
 
+import android.app.Activity;
 import android.content.ActivityNotFoundException;
+import android.content.Intent;
 import android.util.Log;
-import br.inatel.icc.gigasecurity.gigamonitor.R;
+
 import com.google.zxing.client.result.CalendarParsedResult;
 import com.google.zxing.client.result.ParsedResult;
 
-import android.app.Activity;
-import android.content.Intent;
-
 import java.text.DateFormat;
 import java.util.Date;
+
+import br.inatel.icc.gigasecurity.gigamonitor.R;
 
 /**
  * Handles calendar entries encoded in QR Codes.

@@ -12,11 +12,12 @@ import android.widget.Button;
 
 import br.inatel.icc.gigasecurity.gigamonitor.R;
 import br.inatel.icc.gigasecurity.gigamonitor.activities.DeviceListActivity;
-//import br.inatel.icc.gigasecurity.gigamonitor.config.ddns.DDNSConfigActivity;
-//import br.inatel.icc.gigasecurity.gigamonitor.config.dns.DNSConfigActivity;
-//import br.inatel.icc.gigasecurity.gigamonitor.config.ethernet.EthernetConfigActivity;
-//import br.inatel.icc.gigasecurity.gigamonitor.config.general.GeneralConfigActivity;
-//import br.inatel.icc.gigasecurity.gigamonitor.config.upnp.UpnpConfigActivity;
+import br.inatel.icc.gigasecurity.gigamonitor.config.ddns.DDNSConfigActivity;
+import br.inatel.icc.gigasecurity.gigamonitor.config.dns.DNSConfigActivity;
+import br.inatel.icc.gigasecurity.gigamonitor.config.ethernet.EthernetConfigActivity;
+import br.inatel.icc.gigasecurity.gigamonitor.config.general.GeneralConfigActivity;
+import br.inatel.icc.gigasecurity.gigamonitor.config.password.PasswordConfigActivity;
+import br.inatel.icc.gigasecurity.gigamonitor.config.upnp.UpnpConfigActivity;
 import br.inatel.icc.gigasecurity.gigamonitor.core.DeviceManager;
 import br.inatel.icc.gigasecurity.gigamonitor.model.Device;
 
@@ -28,6 +29,7 @@ public class ConfigMenuActivity extends ActionBarActivity implements OnClickList
 
     private Button mWifiButton, mGeneralButton, mEthernetButton, mCloudButton, mDNSButton, mDHCPButton, mDDNSButton, mUPnPButton, mPasswordButton, mRebootDeviceButton;
     private Device mDevice;
+    private int deviceId;
     private DeviceManager mDeviceManager;
 
     @Override
@@ -40,13 +42,14 @@ public class ConfigMenuActivity extends ActionBarActivity implements OnClickList
         setListeners();
 
         Bundle extras = savedInstanceState == null ? getIntent().getExtras() : savedInstanceState;
-        mDevice = (Device) extras.getSerializable(KEY_ARGS);
+//        mDevice = (Device) extras.getSerializable(KEY_ARGS);
+        deviceId = (int) extras.getSerializable(KEY_ARGS);
 
         mDeviceManager = DeviceManager.getInstance();
     }
 
     private void findViews() {
-        //mWifiButton         = (Button) findViewById(R.id.button_wifi_config);
+//        mWifiButton         = (Button) findViewById(R.id.button_wifi_config);
         mGeneralButton      = (Button) findViewById(R.id.button_general_config);
         mEthernetButton     = (Button) findViewById(R.id.button_ethernet_config);
         //mCloudButton        = (Button) findViewById(R.id.button_cloud_config);
@@ -54,7 +57,7 @@ public class ConfigMenuActivity extends ActionBarActivity implements OnClickList
         //mDHCPButton         = (Button) findViewById(R.id.button_dhcp_config);
         mDDNSButton         = (Button) findViewById(R.id.button_ddns_config);
         mUPnPButton         = (Button) findViewById(R.id.button_upnp_config);
-        //mPasswordButton     = (Button) findViewById(R.id.button_password_config);
+        mPasswordButton     = (Button) findViewById(R.id.button_password_config);
         mRebootDeviceButton = (Button) findViewById(R.id.button_reboot_device);
     }
 
@@ -67,13 +70,13 @@ public class ConfigMenuActivity extends ActionBarActivity implements OnClickList
         //mDHCPButton.setOnClickListener(this);
         mDDNSButton.setOnClickListener(this);
         mUPnPButton.setOnClickListener(this);
-        //mPasswordButton.setOnClickListener(this);
+        mPasswordButton.setOnClickListener(this);
         mRebootDeviceButton.setOnClickListener(this);
     }
 
     @Override
     protected void onSaveInstanceState(Bundle outState) {
-        outState.putSerializable("device", mDevice);
+        outState.putSerializable("device", deviceId);
         super.onSaveInstanceState(outState);
     }
 
@@ -92,35 +95,35 @@ public class ConfigMenuActivity extends ActionBarActivity implements OnClickList
         Intent intent = null;
 
         switch (v.getId()) {
-            /*case R.id.button_wifi_config:
-                intent = new Intent(this, WifiSearchActivity.class);
-                break;*/
-            case R.id.button_general_config:
-                //intent = new Intent(this, GeneralConfigActivity.class);
-                break;
+//            case R.id.button_wifi_config:
+//                //intent = new Intent(this, WifiSearchActivity.class);
+//                break;
+//            case R.id.button_general_config:
+//                intent = new Intent(this, GeneralConfigActivity.class);
+//                break;
             case R.id.button_ethernet_config:
-                //intent = new Intent(this, EthernetConfigActivity.class);
+                intent = new Intent(this, EthernetConfigActivity.class);
                 break;
-           /* case R.id.button_cloud_config:
-                intent = new Intent(this, CloudConfigActivity.class);
-                break;*/
+//            case R.id.button_cloud_config:
+//                //intent = new Intent(this, CloudConfigActivity.class);
+//                break;
             case R.id.button_dns_config:
-                //intent = new Intent(this, DNSConfigActivity.class);
+                intent = new Intent(this, DNSConfigActivity.class);
                 break;
-            /*case R.id.button_dhcp_config:
-                intent = new Intent(this, DHCPConfigActivity.class);
-                break;*/
+//            case R.id.button_dhcp_config:
+//                //intent = new Intent(this, DHCPConfigActivity.class);
+//                break;
             case R.id.button_ddns_config:
-                //intent = new Intent(this, DDNSConfigActivity.class);
+                intent = new Intent(this, DDNSConfigActivity.class);
                 break;
             case R.id.button_upnp_config:
-                //intent = new Intent(this, UpnpConfigActivity.class);
+                intent = new Intent(this, UpnpConfigActivity.class);
                 break;
-            /*case R.id.button_password_config:
+            case R.id.button_password_config:
                 intent = new Intent(this, PasswordConfigActivity.class);
-                break;*/
+                break;
             case R.id.button_reboot_device:
-                //showRebootDialog();
+                showRebootDialog();
                 break;
             default:
                 break;
@@ -128,7 +131,7 @@ public class ConfigMenuActivity extends ActionBarActivity implements OnClickList
 
         if (intent != null) {
             Bundle extras = new Bundle();
-            extras.putSerializable("device", mDevice);
+            extras.putSerializable("device", deviceId);
             intent.putExtras(extras);
             startActivity(intent);
         }
@@ -145,9 +148,10 @@ public class ConfigMenuActivity extends ActionBarActivity implements OnClickList
         builder.setMessage(text)
                 .setPositiveButton(labelYes, new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int id) {
-                        //mDeviceManager.rebootDevice(mDevice);
+                        mDeviceManager.rebootDevice(mDeviceManager.findDeviceById(deviceId));
 
-                        startDeviceListActivity();
+//                        startDeviceListActivity();
+                        finish();
                     }
                 })
                 .setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {

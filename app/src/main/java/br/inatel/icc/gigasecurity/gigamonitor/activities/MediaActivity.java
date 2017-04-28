@@ -1,24 +1,11 @@
 package br.inatel.icc.gigasecurity.gigamonitor.activities;
 
-import android.content.Context;
-import android.graphics.Bitmap;
-import android.net.Uri;
-import android.os.AsyncTask;
 import android.os.Bundle;
-import android.os.Environment;
 import android.support.v7.app.ActionBarActivity;
-import android.util.Log;
 import android.view.View;
 import android.view.ViewConfiguration;
-import android.view.Window;
 import android.widget.GridView;
 import android.widget.ImageView;
-import android.widget.ProgressBar;
-import android.widget.Toast;
-
-
-import java.io.File;
-import java.util.ArrayList;
 
 import br.inatel.icc.gigasecurity.gigamonitor.R;
 import br.inatel.icc.gigasecurity.gigamonitor.adapters.MediaGridAdapter;

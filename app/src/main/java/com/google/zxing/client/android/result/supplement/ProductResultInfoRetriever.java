@@ -19,14 +19,16 @@ package com.google.zxing.client.android.result.supplement;
 import android.content.Context;
 import android.text.Html;
 import android.widget.TextView;
+
 import com.google.zxing.client.android.HttpHelper;
-import br.inatel.icc.gigasecurity.gigamonitor.R;
 import com.google.zxing.client.android.LocaleManager;
 
 import java.io.IOException;
 import java.net.URLEncoder;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import br.inatel.icc.gigasecurity.gigamonitor.R;
 
 /**
  * <p>Retrieves product information from Google Product search.</p>

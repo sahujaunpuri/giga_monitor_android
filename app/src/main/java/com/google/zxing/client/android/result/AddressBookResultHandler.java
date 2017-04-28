@@ -16,21 +16,22 @@
 
 package com.google.zxing.client.android.result;
 
-import br.inatel.icc.gigasecurity.gigamonitor.R;
-import com.google.zxing.client.result.AddressBookParsedResult;
-import com.google.zxing.client.result.ParsedResult;
-
 import android.app.Activity;
 import android.telephony.PhoneNumberUtils;
 import android.text.Spannable;
 import android.text.SpannableString;
 import android.text.style.StyleSpan;
 
+import com.google.zxing.client.result.AddressBookParsedResult;
+import com.google.zxing.client.result.ParsedResult;
+
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
+
+import br.inatel.icc.gigasecurity.gigamonitor.R;
 
 /**
  * Handles address book entries.

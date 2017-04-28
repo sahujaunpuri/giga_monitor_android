@@ -15,8 +15,8 @@ import android.widget.TextView;
 import java.util.ArrayList;
 
 import br.inatel.icc.gigasecurity.gigamonitor.R;
-import br.inatel.icc.gigasecurity.gigamonitor.activities.DeviceFormActivity;
 import br.inatel.icc.gigasecurity.gigamonitor.activities.DeviceEditListActivity;
+import br.inatel.icc.gigasecurity.gigamonitor.activities.DeviceFormActivity;
 import br.inatel.icc.gigasecurity.gigamonitor.core.DeviceManager;
 import br.inatel.icc.gigasecurity.gigamonitor.model.Device;
 
@@ -64,7 +64,7 @@ public class DeviceEditAdapter extends BaseAdapter {
             ivDeleteDevice = (ImageView) convertView.findViewById(R.id.iv_delete_device);
         }
 
-        tvDeviceName.setText(mDevices.get(position).getHostname());
+        tvDeviceName.setText(mDevices.get(position).deviceName);
 
         ivDeleteDevice.setOnClickListener(new View.OnClickListener() {
             @Override

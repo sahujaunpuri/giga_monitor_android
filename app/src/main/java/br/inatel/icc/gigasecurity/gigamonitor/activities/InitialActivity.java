@@ -1,28 +1,22 @@
 package br.inatel.icc.gigasecurity.gigamonitor.activities;
 
-import android.app.ProgressDialog;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.graphics.PorterDuff;
-import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
-import android.util.Log;
+import android.support.v7.app.ActionBarActivity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.Button;
 import android.widget.ProgressBar;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.Locale;
 
 import br.inatel.icc.gigasecurity.gigamonitor.R;
-import br.inatel.icc.gigasecurity.gigamonitor.core.DeviceManager;
 import br.inatel.icc.gigasecurity.gigamonitor.core.Discovery;
 import br.inatel.icc.gigasecurity.gigamonitor.model.Device;
 
@@ -85,7 +79,6 @@ public class InitialActivity extends ActionBarActivity implements View.OnClickLi
     }
 
     private void startSearchActivity() {
-
         if(mDevices != null) {
             Intent i = new Intent(this, DeviceSearchListActivity.class);
 

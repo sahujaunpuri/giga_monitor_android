@@ -24,10 +24,11 @@ import android.util.Log;
 import android.widget.Toast;
 
 import com.google.zxing.client.android.CaptureActivity;
-import br.inatel.icc.gigasecurity.gigamonitor.R;
 import com.google.zxing.client.android.wifi.WifiConfigManager;
 import com.google.zxing.client.result.ParsedResult;
 import com.google.zxing.client.result.WifiParsedResult;
+
+import br.inatel.icc.gigasecurity.gigamonitor.R;
 
 /**
  * Handles wifi access information.

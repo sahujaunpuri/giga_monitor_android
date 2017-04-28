@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     
-    <color name="action_bar_color">#99cc00</color>
+    <color name="action_bar_color">#88d70c</color>
     <color name="stacked_color">#bef274</color>
     <color name="text_color">#ffff</color>
     <color name="title">#f6f6f6</color>

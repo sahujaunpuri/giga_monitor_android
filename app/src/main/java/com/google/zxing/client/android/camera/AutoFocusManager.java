@@ -23,11 +23,11 @@ import android.os.AsyncTask;
 import android.preference.PreferenceManager;
 import android.util.Log;
 
+import com.google.zxing.client.android.PreferencesActivity;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.concurrent.RejectedExecutionException;
-
-import com.google.zxing.client.android.PreferencesActivity;
 
 final class AutoFocusManager implements Camera.AutoFocusCallback {
 

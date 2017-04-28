@@ -2,11 +2,9 @@ package br.inatel.icc.gigasecurity.gigamonitor.util;
 
 
 import android.app.Activity;
-import android.os.Bundle;
-import android.view.GestureDetector;
+import android.content.Context;
 import android.view.GestureDetector.OnGestureListener;
 import android.view.MotionEvent;
-import android.content.Context;
 import android.widget.Toast;
 
 /**

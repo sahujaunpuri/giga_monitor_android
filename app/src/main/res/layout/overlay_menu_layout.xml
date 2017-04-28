@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#66000000">
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:visibility="gone"
+        android:layout_height="match_parent"
+        android:layout_alignParentLeft="true"
+        android:orientation="vertical">
+        <ImageView
+            android:layout_width="36dp"
+            android:layout_height="50dp"
+            android:src="@drawable/ic_volume_mute_white_36dp"
+            android:id="@+id/iv_enable_receive_audio" />
+
+        <ImageView
+            android:layout_width="36dp"
+            android:layout_height="50dp"
+            android:src="@drawable/ic_mic_off_white_36dp"
+            android:id="@+id/iv_enable_send_audio"
+            />
+    </LinearLayout>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:layout_alignParentTop="true"
+        android:layout_centerInParent="true"
+        android:text="Canal"
+        android:textColor="#FFFFFF"
+        android:id="@+id/tv_channel_title" />
+
+    <ImageView
+        android:layout_width="36dp"
+        android:visibility="gone"
+        android:layout_height="36dp"
+        android:src="@drawable/ic_star_white_36dp"
+        android:id="@+id/iv_favorite_star"
+        android:layout_alignParentRight="true"
+        android:layout_marginTop="5dp"
+        android:layout_marginRight="5dp"/>
+
+    <ImageView
+        android:layout_width="36dp"
+        android:layout_height="36dp"
+        android:src="@drawable/ic_pause_white_36dp"
+        android:id="@+id/iv_play_pause"
+        android:scaleX="1.6"
+        android:scaleY="1.6"
+        android:layout_centerInParent="true"/>
+
+    <ImageView
+        android:layout_width="46dp"
+        android:layout_height="36dp"
+        android:src="@drawable/ic_hq_off"
+        android:id="@+id/iv_hq"
+        android:scaleX="1.5"
+        android:scaleY="1.5"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentLeft="true"/>
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:orientation="horizontal"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentRight="true">
+        <ImageView
+            android:layout_width="50dp"
+            android:layout_height="36dp"
+            android:src="@drawable/ic_camera_alt_white_36dp"
+            android:id="@+id/iv_snapshot"
+            android:layout_gravity="bottom"/>
+        <ImageView
+            android:layout_width="50dp"
+            android:layout_height="36dp"
+            android:scaleX="1.4"
+            android:scaleY="1.4"
+            android:src="@drawable/ic_snapvideo"
+            android:id="@+id/iv_snapvideo"
+            android:layout_gravity="bottom"/>
+    </LinearLayout>
+
+</RelativeLayout>

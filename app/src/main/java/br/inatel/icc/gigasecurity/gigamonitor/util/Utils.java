@@ -4,7 +4,6 @@ import android.app.Activity;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.graphics.Movie;
 import android.util.Log;
 import android.util.Patterns;
 import android.view.View;
@@ -21,12 +20,8 @@ import java.net.UnknownHostException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.text.SimpleDateFormat;
-import java.util.Calendar;
 import java.util.Date;
 import java.util.Locale;
-
-import static java.text.DateFormat.getDateInstance;
-import static java.text.DateFormat.getTimeInstance;
 
 /**
  * Created by Denis Vilela on 04/09/2014.
@@ -75,7 +70,7 @@ public class Utils {
         return number;
     }
 
-    private static int stringToHexIP( final String ip ) {
+    public static int stringToHexIP( final String ip ) {
 
         int retIP = 0x00000000;
         final String regex = "((2((5[0-5])|[0-4][0-9])|(1([0-9]{2}))|(0|([1-9][0-9]))|([0-9]))\\.){3}(2((5[0-5])|[0-4][0-9])|(1([0-9]{2}))|(0|([1-9][0-9]))|([0-9]))";
@@ -90,6 +85,33 @@ public class Utils {
         }
 
         return ( retIP & 0xFFFFFFFF );
+    }
+
+    public static String stringIpToHexString(String ip){
+        String[] parts = ip.split("\\.");
+        String hexIp = "0x";
+        int segment;
+        for(int i = 3; i >= 0; i--){
+            segment = Integer.parseInt(parts[i]);
+            if(segment < 16)
+                hexIp = hexIp.concat("0");
+            hexIp = hexIp.concat(Integer.toHexString(segment).toUpperCase());
+        }
+        return hexIp;
+    }
+
+    public static String reverseIp(String ip){
+        String[] segment = new String[4];
+        int j = 0;
+        for(int i = 0; i < 4; i++){
+            segment[i] = "";
+            while(ip.charAt(j) != '.'){
+                segment[i] += ip.charAt(j);
+            }
+            j++;
+        }
+
+        return segment[3] + "." + segment[2] + "." + segment[1] + "." + segment[0];
     }
 
     private static String hexIPToString( final int hexIP ) {

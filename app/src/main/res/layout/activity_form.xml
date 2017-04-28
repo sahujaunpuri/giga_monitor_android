@@ -110,7 +110,7 @@
                 android:ems="10"
                 android:id="@+id/edit_text_device_form_Port"
                 android:hint="34567"
-                android:text=""
+                android:text="34567"
                 android:textColorHint="@android:color/secondary_text_light_nodisable"
                 android:layout_below="@+id/tvPort"
                 android:inputType="number"

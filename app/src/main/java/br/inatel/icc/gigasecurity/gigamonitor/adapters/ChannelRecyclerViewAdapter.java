@@ -1,6 +1,7 @@
 package br.inatel.icc.gigasecurity.gigamonitor.adapters;
 
 import android.content.Context;
+import android.opengl.GLSurfaceView;
 import android.os.Handler;
 import android.os.Looper;
 import android.support.v7.widget.GridLayoutManager;
@@ -9,23 +10,26 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.animation.Animation;
-import android.view.animation.AnimationUtils;
 import android.widget.FrameLayout;
-import android.widget.Toast;
+
+import com.video.opengl.GLSurfaceView20;
 
 import br.inatel.icc.gigasecurity.gigamonitor.R;
 import br.inatel.icc.gigasecurity.gigamonitor.activities.DeviceListActivity;
 import br.inatel.icc.gigasecurity.gigamonitor.core.DeviceManager;
+import br.inatel.icc.gigasecurity.gigamonitor.managers.CustomGridLayoutManager;
 import br.inatel.icc.gigasecurity.gigamonitor.model.Device;
-import br.inatel.icc.gigasecurity.gigamonitor.model.ListComponent;
-import br.inatel.icc.gigasecurity.gigamonitor.model.SurfaceViewComponent;
+import br.inatel.icc.gigasecurity.gigamonitor.model.SurfaceViewManager;
+import br.inatel.icc.gigasecurity.gigamonitor.ui.OverlayMenu;
+import br.inatel.icc.gigasecurity.gigamonitor.ui.SurfaceViewComponent;
+
 
 /**
  * Created by filipecampos on 28/04/2016.
  */
 public class ChannelRecyclerViewAdapter extends RecyclerView.Adapter<ChannelRecyclerViewAdapter.MyViewHolder>  {
 
+    private final String TAG = "RecyclerViewAdapter";
     public Device mDevice;
     public Context mContext;
     private static int numQuad, msvSelected = -1,positionSelected = -1;
@@ -34,17 +38,20 @@ public class ChannelRecyclerViewAdapter extends RecyclerView.Adapter<ChannelRecy
     private long clickTime, lastClickTime = 0;
     public boolean doubleClick = false;
     public final Handler handler = new Handler(Looper.getMainLooper());
-    public final ListComponent listComponent;
+    public final SurfaceViewManager surfaceViewManager;
 
-
-    public ChannelRecyclerViewAdapter(Context mContext, Device mDevice, int numQuad, DeviceExpandableListAdapter.ChildViewHolder chieldViewHolder, ListComponent listComponent) {
+    public ChannelRecyclerViewAdapter(Context mContext, Device mDevice, int numQuad, DeviceExpandableListAdapter.ChildViewHolder chieldViewHolder, SurfaceViewManager surfaceViewManager) {
         this.mContext = mContext;
         this.mDevice = mDevice;
         this.numQuad = numQuad;
         this.childViewHolder = chieldViewHolder;
         this.mDeviceManager  = DeviceManager.getInstance();
-        this.listComponent = listComponent;
+        this.surfaceViewManager = surfaceViewManager;
+        surfaceViewManager.mRecyclerAdapter = this;
+    }
 
+    public ChannelRecyclerViewAdapter getAdapter(){
+        return this;
     }
 
     public class MyViewHolder extends RecyclerView.ViewHolder {
@@ -63,193 +70,54 @@ public class ChannelRecyclerViewAdapter extends RecyclerView.Adapter<ChannelRecy
         View itemView = LayoutInflater.from(parent.getContext()).inflate(R.layout.channel_recycler_view_layout, parent, false);
 
         MyViewHolder newMyViewHolder = new MyViewHolder(itemView);
-
         return newMyViewHolder;
     }
 
+    @Override
+    public void onDetachedFromRecyclerView(RecyclerView recyclerView) {
+        super.onDetachedFromRecyclerView(recyclerView);
+    }
+
+    @Override
+    public void onViewRecycled(MyViewHolder holder) {
+        super.onViewRecycled(holder);
+
+    }
+
+    @Override
+    public void onViewDetachedFromWindow(MyViewHolder holder) {
+        super.onViewDetachedFromWindow(holder);
+    }
 
     @Override
     public void onBindViewHolder(final ChannelRecyclerViewAdapter.MyViewHolder myViewHolder, final int position) {
 
-        listComponent.reOrderSurfaceViewComponents();
+        try{ //TODO detectar porque esta sendo chamado quando tenta conectar pela segunda vez a um dispositivo offline
 
-        final SurfaceViewComponent currentSurfaceView = listComponent.surfaceViewComponents.get(position);
+//            surfaceViewManager.reOrderSurfaceViewComponents();
 
-        myViewHolder.frameLayout.removeAllViews();
-        ViewGroup parent = (ViewGroup) currentSurfaceView.getParent();
+            final SurfaceViewComponent currentSurfaceView = surfaceViewManager.surfaceViewComponents.get(position);
 
-        if(parent != null) {
-            parent.removeAllViews();
+            myViewHolder.frameLayout.removeAllViews();
+            ViewGroup parent = (ViewGroup) currentSurfaceView.getParent();
+
+            if (parent != null) {
+                parent.removeAllViews();
+            }
+
+//            currentSurfaceView.setLayoutParams(new FrameLayout.LayoutParams(FrameLayout.LayoutParams.MATCH_PARENT, FrameLayout.LayoutParams.MATCH_PARENT));
+
+//            currentSurfaceView.isLoading(true);
+            surfaceViewManager.onPlayLive(currentSurfaceView);
+//            surfaceViewManager.onStartVideo(currentSurfaceView);
+
+            myViewHolder.frameLayout.addView(currentSurfaceView);
+
+//            surfaceViewManager.changeSurfaceViewSize();
+        } catch (IndexOutOfBoundsException e){
+            Log.d(TAG, "onBindViewHolder: " + e.toString());
         }
-        myViewHolder.frameLayout.addView(currentSurfaceView);
-        myViewHolder.frameLayout.addView(currentSurfaceView.progressBar);
-        currentSurfaceView.progressBar.setVisibility(View.VISIBLE);
 
-        listComponent.changeSurfaceViewSize(currentSurfaceView, myViewHolder.frameLayout);
-
-        if(currentSurfaceView.isConnected)
-            currentSurfaceView.onStartVideo();
-        else
-            currentSurfaceView.onPlayLive();
-
-        //TODO click listener pela GLView - onInterceptTouchEvent()
-        currentSurfaceView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                clickTime = System.currentTimeMillis();
-                if(clickTime - lastClickTime <= 300) {
-                    doubleClick = true;
-                    currentSurfaceView.progressBar.setVisibility(View.VISIBLE);
-
-                    if(listComponent.numQuad == 1) {
-                        listComponent.numQuad = listComponent.lastNumQuad;
-                    } else {
-                        listComponent.numQuad = 1;
-                        GridLayoutManager lm = (GridLayoutManager) childViewHolder.recyclerViewChannels.getLayoutManager();
-                        listComponent.lastFirstItemBeforeSelectChannel = lm.findFirstVisibleItemPosition();
-                    }
-
-                    childViewHolder.gridLayoutManager = new GridLayoutManager(mContext, listComponent.numQuad, GridLayoutManager.HORIZONTAL, false);
-                    childViewHolder.recyclerViewChannels.setLayoutManager(childViewHolder.gridLayoutManager);
-                    childViewHolder.mRecyclerAdapter = new ChannelRecyclerViewAdapter(mContext, mDevice, listComponent.numQuad, childViewHolder, listComponent);
-                    childViewHolder.recyclerViewChannels.setAdapter(childViewHolder.mRecyclerAdapter);
-
-                    listComponent.changeSurfaceViewSize(listComponent.surfaceViewComponents.get(msvSelected), myViewHolder.frameLayout);
-
-                    if(listComponent.numQuad == 1) {
-                        childViewHolder.recyclerViewChannels.scrollToPosition(msvSelected);
-                        listComponent.lastFirstVisibleItem = msvSelected;
-                        listComponent.lastLastVisibleItem = msvSelected;
-                    } else {
-                        childViewHolder.recyclerViewChannels.scrollToPosition(listComponent.lastFirstItemBeforeSelectChannel);
-                        listComponent.lastFirstVisibleItem = listComponent.lastFirstItemBeforeSelectChannel;
-                        listComponent.lastLastVisibleItem = listComponent.lastFirstItemBeforeSelectChannel + listComponent.numQuad;
-                    }
-
-                } else {
-                    if (childViewHolder.layoutMenu.getVisibility() == View.GONE) {
-                        msvSelected = listComponent.getChannelSelected(position);
-                        positionSelected = position;
-                        SurfaceViewComponent selectedSurfaceView = listComponent.surfaceViewComponents.get(positionSelected);
-
-                        int channelPosition = msvSelected + 1;
-
-                        String title = "Canal " + channelPosition;
-                        childViewHolder.tvChnNumber.setText(title);
-
-                        if (selectedSurfaceView.isHD()) {
-                            childViewHolder.ivHQ.setImageDrawable(mContext.getResources().getDrawable(R.drawable.ic_hq_on));
-                        } else {
-                            childViewHolder.ivHQ.setImageDrawable(mContext.getResources().getDrawable(R.drawable.ic_hq_off));
-                        }
-
-                        if (selectedSurfaceView.isPlaying) {
-                            childViewHolder.ivPlayPause.setImageDrawable(mContext.getResources().getDrawable(R.drawable.ic_pause));
-                        } else {
-                            childViewHolder.ivPlayPause.setImageDrawable(mContext.getResources().getDrawable(R.drawable.ic_play_off));
-                        }
-
-                        if (selectedSurfaceView.isREC()) {
-                            childViewHolder.ivSnapvideo.setImageDrawable(mContext.getResources().getDrawable(R.drawable.ic_snapvideo_on));
-                        } else {
-                            childViewHolder.ivSnapvideo.setImageDrawable(mContext.getResources().getDrawable(R.drawable.ic_snapvideo));
-                        }
-
-                        new Thread(new Runnable() {
-                            @Override
-                            public void run() {
-                                try {
-                                    Thread.sleep(200);
-                                } catch (InterruptedException e) {
-                                    e.printStackTrace();
-                                }
-                                ((DeviceListActivity) mContext).runOnUiThread(new Runnable() {
-                                    @Override
-                                    public void run() {
-                                        if(!doubleClick) {
-                                            childViewHolder.layoutMenu.setVisibility(View.VISIBLE);
-                                        } else {
-                                            doubleClick = false;
-                                        }
-                                    }
-                                });
-                            }
-                        }).start();
-
-
-                    } else {
-                        childViewHolder.layoutMenu.setVisibility(View.GONE);
-                    }
-
-                }
-
-                lastClickTime = clickTime;
-            }
-        });
-
-        childViewHolder.ivPlayPause.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                SurfaceViewComponent selectedSurfaceView = listComponent.surfaceViewComponents.get(positionSelected);
-                //TODO verificaçao de isConnected necessaria? /
-                if (selectedSurfaceView.isConnected) {
-                    if (selectedSurfaceView.isPlaying) {
-                        selectedSurfaceView.onPause();
-                        childViewHolder.ivPlayPause.setImageDrawable(mContext.getResources().getDrawable(R.drawable.ic_play_off));
-                    } else {
-                        selectedSurfaceView.onResume();
-                        childViewHolder.ivPlayPause.setImageDrawable(mContext.getResources().getDrawable(R.drawable.ic_pause));
-                    }
-                }
-            }
-        });
-
-        childViewHolder.ivHQ.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                SurfaceViewComponent selectedSurfaceView = listComponent.surfaceViewComponents.get(positionSelected);
-                selectedSurfaceView.onStop();
-                selectedSurfaceView.progressBar.setVisibility(View.VISIBLE);
-                if (positionSelected != -1) {
-                    if (!selectedSurfaceView.isHD()) {
-                        selectedSurfaceView.setStreamType(0);
-                        childViewHolder.ivHQ.setImageDrawable(mContext.getResources().getDrawable(R.drawable.ic_hq_on));
-                        Log.d("HD", "onClick: HD ON");
-                    } else {
-                        selectedSurfaceView.setStreamType(1);
-                        childViewHolder.ivHQ.setImageDrawable(mContext.getResources().getDrawable(R.drawable.ic_hq_off));
-                        Log.d("HD", "onClick: HD OFF");
-                    }
-                }
-                selectedSurfaceView.onPlayLive();
-            }
-        });
-
-        childViewHolder.ivSnapshot.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                listComponent.surfaceViewComponents.get(positionSelected).takeSnapshot();
-                startAnimationBlink();
-            }
-        });
-
-        childViewHolder.ivSnapvideo.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if(!listComponent.surfaceViewComponents.get(positionSelected).isPlaying) {
-                    Toast.makeText(mContext, "Vídeo pausado", Toast.LENGTH_SHORT).show();
-                } else if(!listComponent.surfaceViewComponents.get(positionSelected).isREC()){
-                    listComponent.surfaceViewComponents.get(positionSelected).setREC(true);
-                    mDeviceManager.channelOnRec = true;
-                    listComponent.surfaceViewComponents.get(positionSelected).startRecord();
-                    childViewHolder.ivSnapvideo.setImageDrawable(mContext.getResources().getDrawable(R.drawable.ic_snapvideo_on));
-                } else {
-                    listComponent.surfaceViewComponents.get(positionSelected).setREC(false);
-                    listComponent.surfaceViewComponents.get(positionSelected).stopRecord();
-                    childViewHolder.ivSnapvideo.setImageDrawable(mContext.getResources().getDrawable(R.drawable.ic_snapvideo));
-                }
-            }
-        });
 
     }
 
@@ -258,22 +126,79 @@ public class ChannelRecyclerViewAdapter extends RecyclerView.Adapter<ChannelRecy
         return mDevice.getChannelNumber();
     }
 
-    private void startAnimationBlink() {
-        new Thread(new Runnable() {
+    /*@Override
+    public long getItemId(int position){
+//        return surfaceViewManager.getChannelSelected(position);
+        return position;
+    }*/
+
+    public void disableListScrolling(){
+        childViewHolder.gridLayoutManager.setScrollEnabled(false);
+    }
+
+    public void enableListScrolling(){
+        childViewHolder.gridLayoutManager.setScrollEnabled(true);
+    }
+
+    public void singleQuad(int position){
+        if(surfaceViewManager.numQuad == 1 && surfaceViewManager.surfaceViewComponents.size() == 1) {
+            return;
+        }
+
+        surfaceViewManager.resetScale();
+        msvSelected = surfaceViewManager.getChannelSelected(position);
+        surfaceViewManager.onStop(surfaceViewManager.surfaceViewComponents.get(msvSelected));
+//        surfaceViewComponent.isLoading(true);
+
+        if(surfaceViewManager.numQuad == 1) {
+            surfaceViewManager.numQuad = surfaceViewManager.lastNumQuad;
+        } else {
+            surfaceViewManager.numQuad = 1;
+            CustomGridLayoutManager lm = (CustomGridLayoutManager) childViewHolder.recyclerViewChannels.getLayoutManager();
+            surfaceViewManager.lastFirstItemBeforeSelectChannel = lm.findFirstVisibleItemPosition();
+        }
+        childViewHolder.gridLayoutManager.setSpanCount(surfaceViewManager.numQuad);
+        childViewHolder.mRecyclerAdapter.notifyDataSetChanged();
+
+        if(surfaceViewManager.numQuad == 1) {
+            childViewHolder.gridLayoutManager.scrollToPositionWithOffset((position), 0);
+            surfaceViewManager.lastFirstVisibleItem = surfaceViewManager.getChannelSelected(position);
+            surfaceViewManager.lastLastVisibleItem = surfaceViewManager.getChannelSelected(position);
+        } else {
+            childViewHolder.gridLayoutManager.scrollToPositionWithOffset(surfaceViewManager.lastFirstItemBeforeSelectChannel, 0);
+//            childViewHolder.recyclerViewChannels.scrollToPosition(surfaceViewManager.lastFirstItemBeforeSelectChannel);
+            surfaceViewManager.lastFirstVisibleItem = surfaceViewManager.lastFirstItemBeforeSelectChannel;
+            surfaceViewManager.lastLastVisibleItem = surfaceViewManager.lastFirstItemBeforeSelectChannel + surfaceViewManager.numQuad;
+        }
+        surfaceViewManager.reOrderSurfaceViewComponents();
+
+        surfaceViewManager.changeSurfaceViewSize();
+
+
+    }
+
+    public void openOverlayMenu(final SurfaceViewComponent surfaceViewComponent) {
+        final OverlayMenu overlayMenu = childViewHolder.overlayMenu;
+
+        ((DeviceListActivity) mContext).runOnUiThread(new Runnable() {
             @Override
             public void run() {
-
-                final Animation mAnimationBlink = AnimationUtils.loadAnimation(mContext, R.anim.blink);
-
-                ((DeviceListActivity) mContext).runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        DeviceListActivity.layoutMain.startAnimation(mAnimationBlink);
-                    }
-                });
-
+                if(overlayMenu.getVisibility() == View.VISIBLE) {
+                    overlayMenu.setVisibility(View.GONE);
+                }else {
+                    overlayMenu.setSurfaceViewComponent(surfaceViewComponent);
+                    overlayMenu.updateIcons();
+                    overlayMenu.setVisibility(View.VISIBLE);
+                }
             }
-        }).start();
+        });
+
     }
+
+
+
+
+
+
 
 }

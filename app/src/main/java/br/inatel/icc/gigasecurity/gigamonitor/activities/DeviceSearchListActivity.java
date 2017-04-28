@@ -7,22 +7,17 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
-import android.util.Log;
-import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
-import android.widget.EditText;
 import android.widget.ListView;
-import android.widget.Toast;
 
 import java.util.ArrayList;
 
 import br.inatel.icc.gigasecurity.gigamonitor.R;
 import br.inatel.icc.gigasecurity.gigamonitor.adapters.DeviceSearchAdapter;
-import br.inatel.icc.gigasecurity.gigamonitor.core.DeviceManager;
 import br.inatel.icc.gigasecurity.gigamonitor.core.Discovery;
 import br.inatel.icc.gigasecurity.gigamonitor.model.Device;
 
@@ -70,6 +65,7 @@ public class DeviceSearchListActivity extends ActionBarActivity {
                 Intent intent = new Intent(DeviceSearchListActivity.this, DeviceFormActivity.class);
                 intent.putExtras(extras);
                 startActivity(intent);
+                finish();
 
                 /*String labelSetIP = getResources().getString(R.string.label_set_ip);
 
@@ -235,6 +231,7 @@ public class DeviceSearchListActivity extends ActionBarActivity {
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.device_search, menu);
         return super.onCreateOptionsMenu(menu);
@@ -243,6 +240,10 @@ public class DeviceSearchListActivity extends ActionBarActivity {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
+
+        if(id == R.id.home){
+            finish();
+        }
 
         if (id == R.id.action_refresh) {
             searchDevices();

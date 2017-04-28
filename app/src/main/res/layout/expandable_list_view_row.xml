@@ -2,6 +2,7 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:focusable="false"
     android:background="#e6e6e6">
 
 
@@ -17,14 +18,14 @@
 
 
         <TableLayout
-            android:layout_width="fill_parent"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="3dp"
             android:stretchColumns="1">
 
             <TableRow
                 android:id="@+id/tableRow1"
-                android:layout_width="fill_parent"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="10dp"
                 android:layout_marginBottom="10dp"
@@ -35,7 +36,7 @@
                     android:layout_height="15dp"
                     android:layout_gravity="right|center_vertical"
                     android:layout_marginRight="5dp"
-                    android:focusable="false"
+
                     android:visibility="visible"
                     android:src="@drawable/ic_indicator_plus"
                     android:id="@+id/iv_indicator" />
@@ -55,8 +56,8 @@
                     android:layout_height="35dp"
                     android:layout_gravity="right|center_vertical"
                     android:layout_marginRight="7dp"
-                    android:focusable="false"
-                    android:visibility="gone"
+
+                    android:visibility="invisible"
                     android:src="@drawable/ic_grid"
                     android:id="@+id/iv_grid_list_device" />
 
@@ -66,8 +67,8 @@
                     android:layout_height="35dp"
                     android:layout_marginRight="30dp"
                     android:layout_marginLeft="7dp"
-                    android:focusable="false"
-                    android:visibility="gone"
+
+                    android:visibility="invisible"
                     android:src="@drawable/ic_more"
                     android:id="@+id/iv_device_more" />
 
@@ -77,7 +78,7 @@
                     android:layout_gravity="center"
                     android:layout_marginLeft="10dp"
                     android:layout_marginRight="10dp"
-                    android:visibility="invisible"
+                    android:visibility="gone"
                     android:id="@+id/pb_expandable_list" />
 
 

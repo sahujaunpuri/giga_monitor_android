@@ -1,9 +1,9 @@
 //package br.inatel.icc.gigasecurity.gigamonitor.config.dns;
 //
 //import com.basic.G;
-//import com.xm.MyConfig;
-//import com.xm.javaclass.CONFIG_IPAddress;
-//import com.xm.javaclass.SDK_NetDNSConfig;
+//import com.lib.sdk.struct.CONFIG_IPAddress;
+//import com.lib.sdk.struct.SDK_NetDNSConfig;
+//
 //import java.io.Serializable;
 //import br.inatel.icc.gigasecurity.gigamonitor.config.Config2Abstract;
 //import br.inatel.icc.gigasecurity.gigamonitor.config.ConfigAbstract;

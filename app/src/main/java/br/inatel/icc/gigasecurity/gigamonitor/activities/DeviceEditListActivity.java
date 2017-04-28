@@ -22,6 +22,7 @@ public class DeviceEditListActivity extends ActionBarActivity {
     private DeviceEditAdapter mAdapter;
     private ArrayList<Device> mDevices;
     private DeviceManager mDeviceManager;
+    private ArrayList<Integer> itensRemoved = new ArrayList<Integer>();
 
     public static DragSortListView lv;
     private boolean modified;
@@ -33,13 +34,14 @@ public class DeviceEditListActivity extends ActionBarActivity {
 
         this.modified = false;
 
-        if(getIntent().getExtras() != null){
+        /*if(getIntent().getExtras() != null){
             mDevices = (ArrayList<Device>) getIntent().getExtras().getSerializable("devices");
         } else {
             mDevices = new ArrayList<>();
-        }
+        }*/
 
         mDeviceManager = DeviceManager.getInstance();
+        mDevices = (ArrayList<Device>) mDeviceManager.getDevices().clone();
 
         initComponents();
 
@@ -59,6 +61,7 @@ public class DeviceEditListActivity extends ActionBarActivity {
         Intent i = new Intent(this, DeviceListActivity.class);
         i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP);
         startActivity(i);
+        finish();
     }
 
 
@@ -73,7 +76,7 @@ public class DeviceEditListActivity extends ActionBarActivity {
                     mDevices.remove(from);
                     mDevices.add(to, item);
 
-                    mDeviceManager.updateDevices(DeviceEditListActivity.this, mDevices);
+//                    mDeviceManager.updateDevices(DeviceEditListActivity.this, mDevices);
 
                     mAdapter = new DeviceEditAdapter(DeviceEditListActivity.this, mDevices);
                     lv.setAdapter(mAdapter);
@@ -89,11 +92,17 @@ public class DeviceEditListActivity extends ActionBarActivity {
                 public void remove(int which) {
                     mDevices.remove(mAdapter.getItem(which));
 
-                    mDeviceManager.updateDevices(DeviceEditListActivity.this, mDevices);
+//                    mDeviceManager.updateDevices(DeviceEditListActivity.this, mDevices);
 
+//                    mAdapter.notifyDataSetChanged();
                     mAdapter = new DeviceEditAdapter(DeviceEditListActivity.this, mDevices);
-
                     lv.setAdapter(mAdapter);
+
+//                    mAdapter = new DeviceEditAdapter(DeviceEditListActivity.this, mDevices);
+
+//                    lv.setAdapter(mAdapter);
+
+//                    itensRemoved.add(which);
 
                     modified = true;
                 }
@@ -127,11 +136,13 @@ public class DeviceEditListActivity extends ActionBarActivity {
             if(!modified)
                 finish();
             else {
-                mDeviceManager.updateDevices(DeviceEditListActivity.this, mDevices);
 
-                DeviceListActivity.mDevices = null;
+                mDeviceManager.invalidateExpandableList();
+                mDeviceManager.updateDevices(null, mDevices);
+
                 mDeviceManager.loadSavedData(DeviceListActivity.mContext);
-                DeviceListActivity.loadDevices();
+                mDeviceManager.updateSurfaceViewManagers();
+//                mDeviceManager.getExpandableListAdapter(null).notifyDataSetChanged();
 
                 startDeviceListActivity();
             }
@@ -158,14 +169,23 @@ public class DeviceEditListActivity extends ActionBarActivity {
         alert.setPositiveButton("Salvar", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialogInterface, int which) {
+                mDeviceManager.invalidateExpandableList();
                 mDeviceManager.updateDevices(DeviceEditListActivity.this, mDevices);
 
                 DeviceListActivity.mDevices = null;
-                DeviceListActivity.loadDevices();
+//                DeviceListActivity.loadDevices();
+                mDeviceManager.updateSurfaceViewManagers();
+//                mDeviceManager.getExpandableListAdapter(null).notifyDataSetChanged();
 
                 startDeviceListActivity();
             }
             });
+        alert.setNeutralButton("Não Salvar", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                startDeviceListActivity();
+            }
+        });
         alert.setNegativeButton("Cancelar", new DialogInterface.OnClickListener() {
             @Override
              public void onClick(DialogInterface dialog, int which) {

@@ -17,9 +17,6 @@
 
 package br.inatel.icc.gigasecurity.gigamonitor.ui;
 
-import java.text.DateFormatSymbols;
-import java.util.Calendar;
-
 import android.content.Context;
 import android.os.Parcel;
 import android.os.Parcelable;
@@ -30,6 +27,9 @@ import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.NumberPicker;
 import android.widget.NumberPicker.Formatter;
+
+import java.text.DateFormatSymbols;
+import java.util.Calendar;
 
 import br.inatel.icc.gigasecurity.gigamonitor.R;
 

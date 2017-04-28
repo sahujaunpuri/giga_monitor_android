@@ -16,13 +16,14 @@
 
 package com.google.zxing.client.android.result;
 
+import android.app.Activity;
+
 import com.google.zxing.Result;
-import br.inatel.icc.gigasecurity.gigamonitor.R;
 import com.google.zxing.client.result.ExpandedProductParsedResult;
 import com.google.zxing.client.result.ParsedResult;
 import com.google.zxing.client.result.ProductParsedResult;
 
-import android.app.Activity;
+import br.inatel.icc.gigasecurity.gigamonitor.R;
 
 /**
  * Handles generic products which are not books.

@@ -69,6 +69,7 @@ public class Discovery extends Thread {
             listenForResponses(mSocket);
         } catch (IOException e) {
             Log.e(TAG, "Could not send discovery request", e);
+            run();
         }
     }
 
@@ -155,6 +156,7 @@ public class Discovery extends Thread {
         Device device;
         try {
             while (true) {
+                boolean existent = false;
                 mLock =  mWifi.createMulticastLock("br.inatel.icc.gigasecurity.gigamonitor.tests");
                 mLock.acquire();
 
@@ -184,11 +186,18 @@ public class Discovery extends Thread {
                     if (netCommon.has("SslPort")) device.setSslPort(netCommon.getInt("SSLPort"));
                     if (netCommon.has("UDPPort")) device.setSslPort(netCommon.getInt("UDPPort"));
                     if (netCommon.has("MonMode")) device.setMonMode(netCommon.getString("MonMode"));
-                    if (netCommon.has("DvrMac")) device.setDvrMac(netCommon.getString("DvrMac"));
+                    if (netCommon.has("DvrMac")) device.setMacAddress(netCommon.getString("DvrMac"));
                     if (netCommon.has("SN")) device.setSerialNumber(netCommon.getString("SN"));
                     if (netCommon.has("MAC")) device.setMacAddress(netCommon.getString("MAC"));
 
-                    devices.add(device);
+                    for(Device dev : devices){
+                        if(dev.getIpAddress().equals(device.getIpAddress())){
+                            existent = true;
+                            break;
+                        }
+                    }
+                    if(!existent)
+                        devices.add(device);
 
                 } catch (JSONException e) {
                     Log.d(TAG, e.getMessage());
