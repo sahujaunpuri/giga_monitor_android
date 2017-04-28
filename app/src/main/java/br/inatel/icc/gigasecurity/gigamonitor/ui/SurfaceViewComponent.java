@@ -13,6 +13,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import android.widget.ProgressBar;
+import android.widget.Toast;
 
 import com.video.opengl.GLSurfaceView20;
 
@@ -37,6 +38,7 @@ public class SurfaceViewComponent extends FrameLayout {
     public String deviceConnection;
     public int mySurfaceViewChannelId; //ordem original
     public int mySurfaceViewOrderId;  //ordem modificada para grid
+    public String recordFileName;
 
 
     // state variables
@@ -53,6 +55,8 @@ public class SurfaceViewComponent extends FrameLayout {
     public boolean isReceiveAudioEnabled = false;
     public boolean isScaling = false;
     public float mScaleFactor = 1.F;
+    public boolean isVisible = false;
+    public boolean stoppingRec = false;
 
     public SurfaceViewComponent(Context context, SurfaceViewManager surfaceViewManager, int id) {
         super(context);
@@ -223,6 +227,7 @@ public class SurfaceViewComponent extends FrameLayout {
         new Thread(new Runnable() {
             @Override
             public void run() {
+                isVisible = false;
                 if(isConnected()) {
                     mSurfaceViewManager.onStop(surfaceViewComponent());
                 }
@@ -234,6 +239,7 @@ public class SurfaceViewComponent extends FrameLayout {
     @Override
     protected void onAttachedToWindow() {
         super.onAttachedToWindow();
+        isVisible = true;
 //        new Thread(new Runnable() {
 //            @Override
 //            public void run() {
@@ -348,6 +354,12 @@ public class SurfaceViewComponent extends FrameLayout {
             ((Activity) mContext).runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
+                    if(isREC){
+                        mSurfaceViewManager.stopRecord(surfaceViewComponent());
+                        isREC = false;
+                        String mensagem = "Gravação finalizada";
+                        Toast.makeText(mContext, mensagem, Toast.LENGTH_SHORT).show();
+                    }
                     mSurfaceViewManager.mRecyclerAdapter.singleQuad(mySurfaceViewChannelId);
                     /*new Thread(new Runnable() {    //timer para evitar que um pequeno arraste no doubleclick também faça scroll
                         @Override

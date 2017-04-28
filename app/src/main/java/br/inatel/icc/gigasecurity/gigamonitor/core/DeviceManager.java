@@ -717,6 +717,15 @@ public class DeviceManager implements IFunSDKResult{
         }
     }
 
+    public void updateSurfaceViewManager(int i){
+        surfaceViewManagers.remove(i);
+        surfaceViewManagers.add(i, new SurfaceViewManager(mDevices.get(i)));
+    }
+
+    public int getDevicePosition(Device device){
+        return mDevices.indexOf(device);
+    }
+
     public void reorderSurfaceViewManagers(){
 
     }
@@ -867,8 +876,10 @@ public class DeviceManager implements IFunSDKResult{
 
     public void addToStart(SurfaceViewComponent svc) {
         synchronized (startList) {
-            if(!isOnStartQueue(svc))
+            if(!isOnStartQueue(svc) && !svc.isConnected()) {
+                svc.isLoading(true);
                 startList.add(svc);
+            }
             if (!startPlay)
                 requestStart();
         }

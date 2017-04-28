@@ -258,10 +258,12 @@ public class SurfaceViewManager implements IFunSDKResult {
 
     public void onStop(SurfaceViewComponent svc){
         if ( svc.isConnected() ) {
-            if(svc.isREC)
+            if(svc.isREC) {
+                svc.stoppingRec = true;
                 stopRecord(svc);
+            }
             FunSDK.MediaStop(svc.mPlayerHandler);
-            if(svc.playType == 1)
+            if(svc.playType == 0)
                 svc.setConnected(false);
 
         }
@@ -288,8 +290,8 @@ public class SurfaceViewManager implements IFunSDKResult {
 
     public void startRecord(SurfaceViewComponent svc){
         if(svc.isConnected()) {
-            String path = Environment.getExternalStorageDirectory().getPath() + "/Movies/Giga Monitor/" + Utils.currentDateTime() + ".mp4";
-            FunSDK.MediaStartRecord(svc.mPlayerHandler, path, 0);
+            svc.recordFileName = Environment.getExternalStorageDirectory().getPath() + "/Movies/Giga Monitor/" + Utils.currentDateTime() + ".mp4";
+            FunSDK.MediaStartRecord(svc.mPlayerHandler, svc.recordFileName, 0);
 //            recHandler = svc.mPlayerHandler;
             svc.isREC = true;
         }
@@ -458,6 +460,14 @@ public class SurfaceViewManager implements IFunSDKResult {
                         svc.isPlaying = true;
                         if (svc.playType == 0) {
                             svc.isLoading(false);
+                           /* if(!svc.isVisible) {
+                                if(numQuad != 1  && !svc.singleQuad) {
+                                    onStop(svc);
+                                } else if(lastNumQuad != 1 && !svc.singleQuad){
+                                    onStop(svc);
+                                }
+                                svc.singleQuad = false;
+                            }*/
 //                            svc.setVisibility(View.VISIBLE);
 //                        menu.updateIcons();
                         } else if (svc.playType == 1) {
@@ -488,11 +498,17 @@ public class SurfaceViewManager implements IFunSDKResult {
             break;
             case EUIMSG.STOP_SAVE_MEDIA_FILE: {
                 if(msg.arg1 == 0){
-                    File file = new File(msgContent.str);
-                    findSurfaceByHandler(msgContent.sender).isREC = false;
-                    if(file.length() > 1000)
-                        Toast.makeText(mContext, "Gravação finalizada", Toast.LENGTH_SHORT).show();
-                    else{
+                    SurfaceViewComponent svc = findSurfaceByHandler(msgContent.sender);
+                    File file = new File(svc.recordFileName);
+                    svc.isREC = false;
+                    if(file.length() > 1000) {
+                        String mensagem = "Gravação do canal " + (svc.mySurfaceViewChannelId + 1) + " finalizada";
+                        Toast.makeText(mContext, mensagem, Toast.LENGTH_SHORT).show();
+                        if(svc.stoppingRec) {
+                            onStop(svc);
+                            svc.stoppingRec = false;
+                        }
+                    }else{
                         file.delete();
                         Toast.makeText(mContext, "Falha na captura da imagem", Toast.LENGTH_SHORT).show();
                     }
