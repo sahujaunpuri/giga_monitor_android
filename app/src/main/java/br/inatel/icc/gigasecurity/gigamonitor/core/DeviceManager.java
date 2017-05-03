@@ -656,6 +656,16 @@ public class DeviceManager implements IFunSDKResult{
         FunSDK.DevCmdGeneral(getHandler(), device.connectionString, 1450, "OPMachine", 2048, 10000, reboot.toString().getBytes(), -1, device.getId());
     }
 
+    public void generalCommand(JSONObject json, Device device, int commandId) throws JSONException {
+        FunSDK.DevCmdGeneral(getHandler(), device.connectionString,
+                commandId, json.getString("Name"), 0, 10000,
+                json.toString().getBytes(), -1, device.getId());
+    }
+
+    public void sendAudio(Device device, byte[] data, int size){
+        FunSDK.DevSendTalkData(device.connectionString, data, size);
+    }
+
     public void remoteControl(Device device, int command){
         FunSDK.DevOption(getHandler(), device.connectionString, EDEV_OPTERATE.EDOPT_NET_KEY_CLICK, null, 0, command, 0, 0, "", device.getId());
 //        FunSDK.DevCmdGeneral(getHandler(), device.connectionString, command, "", 1024, 8000, null, 0, device.getId());

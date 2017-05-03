@@ -85,9 +85,9 @@ public class OverlayMenu extends RelativeLayout {
 
         if(surfaceViewComponent.isConnected()) {
             if (surfaceViewComponent.isPlaying) {
-                ivPlayPause.setImageDrawable(mContext.getResources().getDrawable(R.drawable.ic_pause_white_36dp));
+                ivPlayPause.setImageDrawable(mContext.getResources().getDrawable(R.drawable.ic_pause_white_48dp));
             } else {
-                ivPlayPause.setImageDrawable(mContext.getResources().getDrawable(R.drawable.ic_play_arrow_white_36dp));
+                ivPlayPause.setImageDrawable(mContext.getResources().getDrawable(R.drawable.ic_play_arrow_white_48dp));
             }
         } else{
             ivPlayPause.setVisibility(INVISIBLE);
@@ -103,7 +103,7 @@ public class OverlayMenu extends RelativeLayout {
             ivFavorite.clearColorFilter();
         } else {
             ivFavorite.setColorFilter(Color.parseColor("#FFFF00"));
-        }
+        }*/
 
         if(!surfaceViewComponent.isSendAudioEnabled){
             ivSendAudio.setImageDrawable(mContext.getResources().getDrawable(R.drawable.ic_mic_off_white_36dp));
@@ -111,11 +111,13 @@ public class OverlayMenu extends RelativeLayout {
             ivSendAudio.setImageDrawable(mContext.getResources().getDrawable(R.drawable.ic_mic_white_36dp));
         }
 
-        if(!surfaceViewComponent.isReceiveAudioEnabled){
+        if(!surfaceViewComponent.isReceiveAudioEnabled && !surfaceViewComponent.isSendAudioEnabled){
             ivReceiveAudio.setImageDrawable(mContext.getResources().getDrawable(R.drawable.ic_volume_mute_white_36dp));
-        }else {
+        }else if(!surfaceViewComponent.isSendAudioEnabled){
             ivReceiveAudio.setImageDrawable(mContext.getResources().getDrawable(R.drawable.ic_volume_up_white_36dp));
-        }*/
+        } else{
+            ivReceiveAudio.setImageDrawable(mContext.getResources().getDrawable(R.drawable.ic_volume_off_white_36dp));
+        }
     }
 
     private void setClickListeners(){
@@ -125,10 +127,10 @@ public class OverlayMenu extends RelativeLayout {
                 if (surfaceViewComponent.isConnected()) {
                     if (surfaceViewComponent.isPlaying) {
                         surfaceViewManager.onPause(surfaceViewComponent);
-                        ivPlayPause.setImageDrawable(mContext.getResources().getDrawable(R.drawable.ic_play_arrow_white_36dp));
+                        ivPlayPause.setImageDrawable(mContext.getResources().getDrawable(R.drawable.ic_play_arrow_white_48dp));
                     } else {
                         surfaceViewManager.onResume(surfaceViewComponent);
-                        ivPlayPause.setImageDrawable(mContext.getResources().getDrawable(R.drawable.ic_pause_white_36dp));
+                        ivPlayPause.setImageDrawable(mContext.getResources().getDrawable(R.drawable.ic_pause_white_48dp));
                     }
                 }
             }
@@ -196,11 +198,28 @@ public class OverlayMenu extends RelativeLayout {
             @Override
             public void onClick(View view) {
                 if(surfaceViewComponent.isSendAudioEnabled){
-                    //disable
+                    surfaceViewManager.disableSendAudio();
                     surfaceViewComponent.isSendAudioEnabled = false;
                     ivSendAudio.setImageDrawable(mContext.getResources().getDrawable(R.drawable.ic_mic_off_white_36dp));
+
+                    //reabilita recepção de audio
+                    if(surfaceViewComponent.isReceiveAudioEnabled){
+                        surfaceViewManager.toggleReceiveAudio(surfaceViewComponent);
+                    }
+                    if(surfaceViewComponent.isReceiveAudioEnabled)
+                        ivReceiveAudio.setImageDrawable(mContext.getResources().getDrawable(R.drawable.ic_volume_up_white_36dp));
+                    else
+                        ivReceiveAudio.setImageDrawable(mContext.getResources().getDrawable(R.drawable.ic_volume_mute_white_36dp));
+                    ivReceiveAudio.setClickable(true);
                 } else{
-                    //enable
+                    //desabilita recepção de audio para funcionar
+                    if(surfaceViewComponent.isReceiveAudioEnabled){
+                        surfaceViewManager.toggleReceiveAudio(surfaceViewComponent);
+                    }
+                    ivReceiveAudio.setImageDrawable(mContext.getResources().getDrawable(R.drawable.ic_volume_off_white_36dp));
+                    ivReceiveAudio.setClickable(false);
+
+                    surfaceViewManager.enableSendAudio();
                     surfaceViewComponent.isSendAudioEnabled = true;
                     ivSendAudio.setImageDrawable(mContext.getResources().getDrawable(R.drawable.ic_mic_white_36dp));
                 }
@@ -211,14 +230,13 @@ public class OverlayMenu extends RelativeLayout {
             @Override
             public void onClick(View view) {
                 if(surfaceViewComponent.isReceiveAudioEnabled){
-                    //disable
                     surfaceViewComponent.isReceiveAudioEnabled = false;
                     ivReceiveAudio.setImageDrawable(mContext.getResources().getDrawable(R.drawable.ic_volume_mute_white_36dp));
                 }else {
-                    //enable
                     surfaceViewComponent.isReceiveAudioEnabled = true;
                     ivReceiveAudio.setImageDrawable(mContext.getResources().getDrawable(R.drawable.ic_volume_up_white_36dp));
                 }
+                surfaceViewManager.toggleReceiveAudio(surfaceViewComponent);
             }
         });
     }

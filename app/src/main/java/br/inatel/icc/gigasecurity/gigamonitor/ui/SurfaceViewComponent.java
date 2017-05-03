@@ -233,7 +233,6 @@ public class SurfaceViewComponent extends FrameLayout {
                 }
             }
         }).start();
-
     }
 
     @Override

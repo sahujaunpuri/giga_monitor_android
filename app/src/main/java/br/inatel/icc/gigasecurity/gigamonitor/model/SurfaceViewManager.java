@@ -31,6 +31,7 @@ import br.inatel.icc.gigasecurity.gigamonitor.activities.DeviceListActivity;
 import br.inatel.icc.gigasecurity.gigamonitor.adapters.ChannelRecyclerViewAdapter;
 import br.inatel.icc.gigasecurity.gigamonitor.core.DeviceManager;
 import br.inatel.icc.gigasecurity.gigamonitor.listeners.PlaybackListener;
+import br.inatel.icc.gigasecurity.gigamonitor.task.AudioRecordThread;
 import br.inatel.icc.gigasecurity.gigamonitor.ui.SurfaceViewComponent;
 import br.inatel.icc.gigasecurity.gigamonitor.util.Utils;
 
@@ -57,7 +58,9 @@ public class SurfaceViewManager implements IFunSDKResult {
 
     private int mUserID = -1;
     public PlaybackListener currentPlaybackListener;
+    public AudioRecordThread mRecordThread;
     public int recHandler;
+    private int talkHandler;
     public int playType = 0; //0 - live, 1 - playback live
 
     private int[][] inverseMatrix = new int[][]{
@@ -90,13 +93,13 @@ public class SurfaceViewManager implements IFunSDKResult {
 
     public void createComponents() {
 
-        if (!mySurfaceViews.isEmpty()){
+        /*if (!mySurfaceViews.isEmpty()){
             mySurfaceViews.clear();
         }
 
         if (!surfaceViewComponents.isEmpty()){
             surfaceViewComponents.clear();
-        }
+        }*/
 
         for (int i = 0; i < mDevice.getChannelNumber(); i++) {
 
@@ -276,6 +279,28 @@ public class SurfaceViewManager implements IFunSDKResult {
             onStartVideo(svc);
 //            mPlayerHandler = FunSDK.MediaRealPlay(mUserID, deviceSn, mySurfaceViewChannelId, streamType, surfaceViewComponent.mySurfaceView, mySurfaceViewOrderId);
         }
+    }
+
+    public void toggleReceiveAudio(SurfaceViewComponent svc){
+        int volume;
+        if(svc.isReceiveAudioEnabled)
+            volume = 100;
+        else
+            volume = -1;
+        FunSDK.MediaSetSound(svc.mPlayerHandler, volume, svc.mySurfaceViewOrderId);
+    }
+
+    public void enableSendAudio(){
+        talkHandler = FunSDK.DevStarTalk(mUserID, mDevice.connectionString, mUserID);
+        mRecordThread = new AudioRecordThread(mDevice);
+    }
+
+    public void disableSendAudio(){
+        mRecordThread.Stop();
+        mRecordThread.Pause(true);
+        mRecordThread = null;
+//        FunSDK.MediaSetSound(talkHandler, 50, 0);
+        FunSDK.DevStopTalk(talkHandler);
     }
 
     public void takeSnapshot(SurfaceViewComponent svc){
@@ -548,6 +573,12 @@ public class SurfaceViewManager implements IFunSDKResult {
                 }
             }
             break;
+            case EUIMSG.DEV_START_TALK: {
+                if(msg.arg1 == 0){
+                    mRecordThread.Start();
+                    mRecordThread.Pause(false);
+                }
+            }
         }
         return 0;
     }

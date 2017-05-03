@@ -54,6 +54,7 @@ public class DeviceExpandableListAdapter extends BaseExpandableListAdapter {
     public ArrayList<GroupViewHolder> groupViewHolder;
     private ArrayList<ChildViewHolder> childViewHolder;
     private int amountScrolled = 0;
+    public int spanSize = 1;
 
     public DeviceExpandableListAdapter(Context mContext, ArrayList<Device> mDevices) {
         this.mContext        = mContext;
@@ -366,6 +367,7 @@ public class DeviceExpandableListAdapter extends BaseExpandableListAdapter {
                         }
                         mDeviceManager.getSurfaceViewManagers().get(position).createComponents();
                         childViewHolder.gridLayoutManager.setSpanCount(mDeviceManager.getSurfaceViewManagers().get(position).numQuad);
+
                         childViewHolder.recyclerViewChannels.getAdapter().notifyDataSetChanged();
                         showExpanded(position, groupViewHolder, childViewHolder);
             }

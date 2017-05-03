@@ -126,11 +126,11 @@ public class ChannelRecyclerViewAdapter extends RecyclerView.Adapter<ChannelRecy
         return mDevice.getChannelNumber();
     }
 
-    /*@Override
+    @Override
     public long getItemId(int position){
 //        return surfaceViewManager.getChannelSelected(position);
         return position;
-    }*/
+    }
 
     public void disableListScrolling(){
         childViewHolder.gridLayoutManager.setScrollEnabled(false);
