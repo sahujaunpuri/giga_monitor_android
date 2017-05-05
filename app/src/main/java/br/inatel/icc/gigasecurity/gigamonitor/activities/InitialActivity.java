@@ -17,11 +17,13 @@ import java.util.ArrayList;
 import java.util.Locale;
 
 import br.inatel.icc.gigasecurity.gigamonitor.R;
+import br.inatel.icc.gigasecurity.gigamonitor.core.DeviceManager;
 import br.inatel.icc.gigasecurity.gigamonitor.core.Discovery;
 import br.inatel.icc.gigasecurity.gigamonitor.model.Device;
 
 public class InitialActivity extends ActionBarActivity implements View.OnClickListener {
 
+    private static final int REQUEST_EXIT = 1;
     private ArrayList<Device> mDevices;
     private Discovery mDiscoveryThread;
     private ProgressBar pbInitial;
@@ -93,12 +95,14 @@ public class InitialActivity extends ActionBarActivity implements View.OnClickLi
 
     private void startQrCode() {
         Intent i = new Intent(InitialActivity.this, com.google.zxing.client.android.CaptureActivity.class);
-        startActivity(i);
+//        startActivity(i);
+        startActivityForResult(i, REQUEST_EXIT);
     }
 
     private void startNewDeviceActivity() {
         Intent i = new Intent(this, DeviceFormActivity.class);
-        startActivity(i);
+//        startActivity(i);
+        startActivityForResult(i, REQUEST_EXIT);
     }
 
     public void searchDevices(){
@@ -149,7 +153,13 @@ public class InitialActivity extends ActionBarActivity implements View.OnClickLi
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.menu_initial, menu);
+//        getMenuInflater().inflate(R.menu.menu_initial, menu);
+        if(DeviceManager.getInstance().getDevices().isEmpty())
+            getSupportActionBar().setDisplayHomeAsUpEnabled(false);
+        else
+            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+
+        getMenuInflater().inflate(R.menu.menu_initial_return, menu);
 
         return true;
     }
@@ -161,7 +171,20 @@ public class InitialActivity extends ActionBarActivity implements View.OnClickLi
         if (id == R.id.action_refresh) {
             searchDevices();
         }
+        if(id == android.R.id.home){
+            finish();
+            return true;
+        }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (requestCode == REQUEST_EXIT) {
+            if (resultCode == RESULT_OK) {
+                this.finish();
+            }
+        }
     }
 }

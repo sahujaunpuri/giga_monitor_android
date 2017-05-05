@@ -53,8 +53,6 @@ public class DeviceExpandableListAdapter extends BaseExpandableListAdapter {
     private DeviceManager mDeviceManager;
     public ArrayList<GroupViewHolder> groupViewHolder;
     private ArrayList<ChildViewHolder> childViewHolder;
-    private int amountScrolled = 0;
-    public int spanSize = 1;
 
     public DeviceExpandableListAdapter(Context mContext, ArrayList<Device> mDevices) {
         this.mContext        = mContext;
@@ -297,6 +295,7 @@ public class DeviceExpandableListAdapter extends BaseExpandableListAdapter {
     @Override
     public void onGroupExpanded(int groupPosition){
         final GroupViewHolder currentGroupViewHolder = groupViewHolder.get(groupPosition);
+        mDeviceManager.getSurfaceViewManagers().get(groupPosition).collpased = false;
         if(currentGroupViewHolder.mDevice.isLogged) {
             mDeviceManager.getSurfaceViewManagers().get(groupPosition).createComponents();
         }
@@ -319,7 +318,9 @@ public class DeviceExpandableListAdapter extends BaseExpandableListAdapter {
         });
 
         currentChildViewHolder.recyclerViewChannels.removeAllViewsInLayout();
-        mDeviceManager.getSurfaceViewManagers().get(groupPosition).surfaceViewComponents.clear();
+        if(mDeviceManager.getSurfaceViewManagers().get(groupPosition).recCounter <= 0)
+            mDeviceManager.getSurfaceViewManagers().get(groupPosition).surfaceViewComponents.clear();
+        mDeviceManager.getSurfaceViewManagers().get(groupPosition).collpased = true;
         mDeviceManager.clearStart();
 
 //        onChangeOrientation(groupPosition);
@@ -406,10 +407,6 @@ public class DeviceExpandableListAdapter extends BaseExpandableListAdapter {
     }
 
     public void onChangeOrientation(int groupPosition){
-//        childViewHolder.get(groupPosition).gridLayoutManager = new CustomGridLayoutManager(mContext, mDeviceManager.getSurfaceViewManagers().get(groupPosition).numQuad, GridLayoutManager.HORIZONTAL, false);
-//        childViewHolder.get(groupPosition).recyclerViewChannels.setLayoutManager(childViewHolder.get(groupPosition).gridLayoutManager);
-//        if(mContext.getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE)
-//            childViewHolder.get(groupPosition).recyclerViewChannels.setHasFixedSize(true);
         mDeviceManager.getSurfaceViewManagers().get(groupPosition).changeSurfaceViewSize();
     }
 
@@ -419,7 +416,7 @@ public class DeviceExpandableListAdapter extends BaseExpandableListAdapter {
             @Override
             public void run() {
                 builder.setTitle("")
-                        .setItems(new CharSequence[]{"Configurações"/*, "Controle Remoto"*/, "Playback"},
+                        .setItems(new CharSequence[]{"Configurações", "Controle Remoto", "Playback"},
                                 new DialogInterface.OnClickListener() {
                                     @Override
                                     public void onClick(DialogInterface dialog, int which) {
@@ -427,10 +424,10 @@ public class DeviceExpandableListAdapter extends BaseExpandableListAdapter {
                                             case 0:
                                                 startSettingsActivity(groupViewHolder.mDevice);
                                                 break;
-                                            /*case 1:
-                                                startDeviceRemoteControlActivity(groupViewHolder.mDevice);
-                                                break;*/
                                             case 1:
+                                                startDeviceRemoteControlActivity(groupViewHolder.mDevice);
+                                                break;
+                                            case 2:
                                                 startPlaybackActivity(groupViewHolder.mDevice);
                                                 break;
                                         }
@@ -544,9 +541,7 @@ public class DeviceExpandableListAdapter extends BaseExpandableListAdapter {
         public ViewGroup convertView;
         public RecyclerView recyclerViewChannels;
         public OverlayMenu overlayMenu;
-        public RelativeLayout layoutMenu;
-        public ImageView ivHQ, ivPlayPause, ivSnapshot, ivSnapvideo, ivFavorite, ivSendAudio, ivReceiveAudio;
-        public TextView tvChnNumber, tvMessage;
+        public TextView tvMessage;
         public ChannelRecyclerViewAdapter mRecyclerAdapter;
 
         public  CustomGridLayoutManager gridLayoutManager;

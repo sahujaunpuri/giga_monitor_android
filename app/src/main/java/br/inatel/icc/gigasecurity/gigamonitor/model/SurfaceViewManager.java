@@ -59,9 +59,10 @@ public class SurfaceViewManager implements IFunSDKResult {
     private int mUserID = -1;
     public PlaybackListener currentPlaybackListener;
     public AudioRecordThread mRecordThread;
-    public int recHandler;
+    public int recCounter = 0;
     private int talkHandler;
     public int playType = 0; //0 - live, 1 - playback live
+    public boolean collpased = false;
 
     private int[][] inverseMatrix = new int[][]{
             {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15},
@@ -264,8 +265,8 @@ public class SurfaceViewManager implements IFunSDKResult {
             if(svc.isREC) {
                 svc.stoppingRec = true;
                 stopRecord(svc);
-            }
-            FunSDK.MediaStop(svc.mPlayerHandler);
+            } else
+                FunSDK.MediaStop(svc.mPlayerHandler);
             if(svc.playType == 0)
                 svc.setConnected(false);
 
@@ -277,7 +278,6 @@ public class SurfaceViewManager implements IFunSDKResult {
         if(svc.isConnected()){
             onStop(svc);
             onStartVideo(svc);
-//            mPlayerHandler = FunSDK.MediaRealPlay(mUserID, deviceSn, mySurfaceViewChannelId, streamType, surfaceViewComponent.mySurfaceView, mySurfaceViewOrderId);
         }
     }
 
@@ -305,7 +305,7 @@ public class SurfaceViewManager implements IFunSDKResult {
 
     public void takeSnapshot(SurfaceViewComponent svc){
         if(svc.isConnected()){
-            String path = Environment.getExternalStorageDirectory().getPath() + "/Pictures/Giga Monitor/" + Utils.currentDateTime();
+            String path = Environment.getExternalStorageDirectory().getPath() + "/Pictures/Giga Monitor/" + Utils.currentDateTime() + ".jpg";
             int result = FunSDK.MediaSnapImage(svc.mPlayerHandler, path, 0);
             if(result == 0){
                 Utils.savePictureFile(path);
@@ -315,6 +315,7 @@ public class SurfaceViewManager implements IFunSDKResult {
 
     public void startRecord(SurfaceViewComponent svc){
         if(svc.isConnected()) {
+            recCounter++;
             svc.recordFileName = Environment.getExternalStorageDirectory().getPath() + "/Movies/Giga Monitor/" + Utils.currentDateTime() + ".mp4";
             FunSDK.MediaStartRecord(svc.mPlayerHandler, svc.recordFileName, 0);
 //            recHandler = svc.mPlayerHandler;
@@ -540,6 +541,9 @@ public class SurfaceViewManager implements IFunSDKResult {
                 } else{
                     Toast.makeText(mContext, "Falha na gravação", Toast.LENGTH_SHORT).show();
                 }
+                recCounter--;
+                if(collpased)
+                    surfaceViewComponents.clear();
             }
             break;
             case EUIMSG.ON_PLAY_INFO: {

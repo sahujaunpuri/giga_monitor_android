@@ -479,9 +479,20 @@ public final class CaptureActivity extends Activity implements SurfaceHolder.Cal
 
     Intent i = new Intent(this, DeviceFormActivity.class);
     i.putExtras(extras);
-    startActivity(i);
+//    startActivity(i);
+    startActivityForResult(i, 1);
 
-    finish();
+//    finish();
+  }
+
+  @Override
+  protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+    if (requestCode == 1) {
+      if (resultCode == RESULT_OK) {
+        setResult(RESULT_OK, null);
+      }
+    }
+    this.finish();
   }
 
   // Briefly show the contents of the barcode, then handle the result outside Barcode Scanner.

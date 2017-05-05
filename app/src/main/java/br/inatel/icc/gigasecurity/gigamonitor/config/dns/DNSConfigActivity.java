@@ -140,6 +140,7 @@ public class DNSConfigActivity extends ActionBarActivity {
                 return true;
             case R.id.action_save:
                 save();
+                mManager.collapse = mManager.getDevices().indexOf(mDevice);
                 return true;
             default: return false;
         }

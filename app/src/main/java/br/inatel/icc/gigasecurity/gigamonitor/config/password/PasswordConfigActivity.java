@@ -33,7 +33,7 @@ public class PasswordConfigActivity extends ActionBarActivity {
 
         @Override
         public void onSetConfig() {
-            mDeviceManager.currentContext = mContext;
+            mManager.currentContext = mContext;
             int messageId = R.string.saved;
 
             Toast.makeText(getApplicationContext(), messageId, Toast.LENGTH_SHORT).show();
@@ -106,6 +106,7 @@ public class PasswordConfigActivity extends ActionBarActivity {
         switch (id) {
             case R.id.action_config_save:
                 save();
+                mManager.collapse = mManager.getDevices().indexOf(mDevice);
                 Utils.hideKeyboard(this);
                 return true;
             case android.R.id.home:

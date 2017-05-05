@@ -126,12 +126,22 @@ public class DeviceListActivity extends ActionBarActivity {
     @Override
     protected void onStop(){
         super.onStop();
+    }
+
+    @Override
+    protected void onDestroy(){
+        super.onDestroy();
         running = false;
     }
 
     @Override
     protected void onResume() {
         super.onResume();
+        if(mDeviceManager.collapse >=0 && previousGroup == mDeviceManager.collapse) {
+            mExpandableListView.collapseGroup(mDeviceManager.collapse);
+            mAdapter.onGroupCollapsed(mDeviceManager.collapse);
+            mDeviceManager.collapse = -1;
+        }
         mAdapter.notifyDataSetChanged();
 //        mExpandableListView.invalidate();
 //        if (previousGroup != -1) mAdapter.playChannels(previousGroup);
@@ -140,7 +150,7 @@ public class DeviceListActivity extends ActionBarActivity {
     @Override
     protected void onPause() {
         super.onPause();
-        collapseAll();
+//        collapseAll();
 //        if (previousGroup != -1) mAdapter.stopChannels(previousGroup);
     }
 
@@ -197,17 +207,17 @@ public class DeviceListActivity extends ActionBarActivity {
         int id = item.getItemId();
         switch (id){
             case (R.id.action_add):
-                collapseAll();
+//                collapseAll();
                 startInitialActivity();
 
                 return true;
             case (R.id.action_edit):
-                collapseAll();
+//                collapseAll();
                 startEditActivity();
 
                 return true;
             case (R.id.action_media):
-                collapseAll();
+//                collapseAll();
                 startMediaActivity();
 
                 return true;

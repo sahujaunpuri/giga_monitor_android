@@ -267,6 +267,7 @@ public class EthernetConfigActivity extends ActionBarActivity implements OnCheck
             case R.id.action_config_save:
                 Utils.hideKeyboard(this);
                 if (isFieldsValid()) {
+                    mManager.collapse = mManager.getDevices().indexOf(mDevice);
                     save();
                 }
                 return true;

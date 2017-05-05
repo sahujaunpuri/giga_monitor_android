@@ -7,6 +7,7 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
+import android.media.MediaMetadataRetriever;
 import android.media.MediaPlayer;
 import android.media.ThumbnailUtils;
 import android.net.Uri;
@@ -52,7 +53,7 @@ public class MediaGridAdapter extends BaseAdapter {
     private ArrayList<Boolean> tridToGetVideoThumbnail;
 
     public long videoClickDownTime = 0;
-    private String path = Environment.getExternalStorageDirectory().getPath() + "/Giga Monitor";
+    private String path = Environment.getExternalStorageDirectory().getPath();
     private boolean pictureMode;
 
     public static Drawable blankDrawable;
@@ -80,9 +81,11 @@ public class MediaGridAdapter extends BaseAdapter {
     }
 
     private void getImgFiles() {
-        File imgFile = new File("/sdcard/Pictures/Giga Monitor");
+        File imgFile = new File(path + "/Pictures/Giga Monitor/");
         File[] imgFiles = imgFile.listFiles();
         mImageFiles = new ArrayList<>();
+        if(imgFiles == null)
+            return;
         for(int i =0; i<imgFiles.length; i++) {
             mImageFiles.add(imgFiles[i]);
             //Aux Array
@@ -101,9 +104,11 @@ public class MediaGridAdapter extends BaseAdapter {
     }
 
     private void getVideoFiles() {
-        File videoFile = new File("/sdcard/Movies/Giga Monitor");
+        File videoFile = new File(path + "/Movies/Giga Monitor/"); //"/sdcard/Movies/Giga Monitor");
         File[] videoFiles = videoFile.listFiles();
         mVideoFiles = new ArrayList<>();
+        if(videoFiles == null)
+            return;
         for(int i =0; i<videoFiles.length; i++) {
             if(videoFiles[i].getName().contains(".mp4")) {
                 mVideoFiles.add(videoFiles[i]);
@@ -357,7 +362,10 @@ public class MediaGridAdapter extends BaseAdapter {
 
     public Drawable getVideoDrawable(int position) {
         if (mVideoDrawables.get(position) == null) {
-            Bitmap bitmap = ThumbnailUtils.createVideoThumbnail(mVideoFiles.get(position).getPath(), MediaStore.Images.Thumbnails.MINI_KIND);
+            MediaMetadataRetriever retriever = new MediaMetadataRetriever();
+            retriever.setDataSource(mVideoFiles.get(position).getPath());
+            Bitmap bitmap = retriever.getFrameAtTime(1000, MediaMetadataRetriever.OPTION_CLOSEST_SYNC);
+//            Bitmap bitmap = ThumbnailUtils.createVideoThumbnail(mVideoFiles.get(position).getPath(), MediaStore.Images.Thumbnails.MINI_KIND);
             if (bitmap != null) {
                 mVideoDrawables.add(position,new BitmapDrawable(mContext.getResources(), bitmap));
             }

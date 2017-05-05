@@ -76,10 +76,9 @@ public class DeviceEditListActivity extends ActionBarActivity {
                     mDevices.remove(from);
                     mDevices.add(to, item);
 
-//                    mDeviceManager.updateDevices(DeviceEditListActivity.this, mDevices);
-
                     mAdapter = new DeviceEditAdapter(DeviceEditListActivity.this, mDevices);
                     lv.setAdapter(mAdapter);
+//                    mAdapter.notifyDataSetChanged();
 
                     modified = true;
                 }
@@ -92,17 +91,10 @@ public class DeviceEditListActivity extends ActionBarActivity {
                 public void remove(int which) {
                     mDevices.remove(mAdapter.getItem(which));
 
-//                    mDeviceManager.updateDevices(DeviceEditListActivity.this, mDevices);
-
 //                    mAdapter.notifyDataSetChanged();
                     mAdapter = new DeviceEditAdapter(DeviceEditListActivity.this, mDevices);
                     lv.setAdapter(mAdapter);
 
-//                    mAdapter = new DeviceEditAdapter(DeviceEditListActivity.this, mDevices);
-
-//                    lv.setAdapter(mAdapter);
-
-//                    itensRemoved.add(which);
 
                     modified = true;
                 }
@@ -120,6 +112,14 @@ public class DeviceEditListActivity extends ActionBarActivity {
                     }
                 }
             };
+
+    @Override
+    public void onResume(){
+        super.onResume();
+        mDevices = mDeviceManager.getDevices();
+        mAdapter = new DeviceEditAdapter(DeviceEditListActivity.this, mDevices);
+        lv.setAdapter(mAdapter);
+    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {

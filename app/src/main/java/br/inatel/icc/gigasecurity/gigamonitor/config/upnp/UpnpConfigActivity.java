@@ -38,7 +38,7 @@ public class UpnpConfigActivity extends ActionBarActivity {
 
         @Override
         public void onSetConfig() {
-            mDeviceManager.currentContext = mContext;
+            mManager.currentContext = mContext;
             int messageId = R.string.saved;
             Toast.makeText(getApplicationContext(), messageId, Toast.LENGTH_SHORT).show();
             mManager.saveData();
@@ -114,6 +114,7 @@ public class UpnpConfigActivity extends ActionBarActivity {
                 return true;
             case R.id.action_config_save:
                 save();
+                mManager.collapse = mManager.getDevices().indexOf(mDevice);
                 return true;
             default:
                 return super.onOptionsItemSelected(item);

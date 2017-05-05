@@ -18,7 +18,6 @@ import br.inatel.icc.gigasecurity.gigamonitor.model.Device;
 import br.inatel.icc.gigasecurity.gigamonitor.util.Utils;
 
 import static br.inatel.icc.gigasecurity.gigamonitor.activities.DeviceListActivity.mContext;
-import static br.inatel.icc.gigasecurity.gigamonitor.activities.DeviceListActivity.mDeviceManager;
 
 public class DDNSConfigActivity extends ActionBarActivity {
 
@@ -42,7 +41,7 @@ public class DDNSConfigActivity extends ActionBarActivity {
         public void onReceivedConfig() {
             mDevice = mManager.findDeviceById((int) getIntent().getExtras().getSerializable("device"));
             initData();
-            mDeviceManager.currentContext = mContext;
+            mManager.currentContext = mContext;
             initViews();
         }
 
@@ -210,6 +209,7 @@ public class DDNSConfigActivity extends ActionBarActivity {
                 Utils.hideKeyboard(this);
                 if (validate()) {
                     save();
+                    mManager.collapse = mManager.getDevices().indexOf(mDevice);
                 }
                 return true;
             default:

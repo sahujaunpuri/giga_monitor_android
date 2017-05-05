@@ -130,6 +130,7 @@ public class DeviceFormActivity extends ActionBarActivity{
             i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP);
             startActivity(i);
         }
+        setResult(RESULT_OK, null);
         finish();
     }
 
@@ -154,17 +155,17 @@ public class DeviceFormActivity extends ActionBarActivity{
                         deviceManager.logoutDevice(mDevice);
                         checkEdit();
                         mDevice.setChannelNumber(0);
-                        deviceManager.addDevice(this, mDevice, editPosition);
+                        deviceManager.addDevice(mDevice, editPosition);
                         deviceManager.updateSurfaceViewManager(editPosition);
+                        deviceManager.collapse = editPosition;
                     } else if(deviceManager.findDeviceById(mDevice.getId()) != null) {
                         Toast.makeText(this, "Dispositivo já adicionado.", Toast.LENGTH_SHORT).show();
-                        deviceManager.logoutDevice(deviceManager.findDeviceById(mDevice.getId()));
-                        startDeviceListActivity();
+//                        deviceManager.logoutDevice(deviceManager.findDeviceById(mDevice.getId()));
+//                        startDeviceListActivity();
                     } else {
-                        deviceManager.addDevice(this, mDevice);
+                        deviceManager.addDevice(mDevice);
+                        deviceManager.addSurfaceViewManager();
                     }
-
-                    deviceManager.addSurfaceViewManager();
                     startDeviceListActivity();
 
                     return true;

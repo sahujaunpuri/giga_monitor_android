@@ -65,7 +65,7 @@ public class Device implements Serializable {
     @Expose public int audioInChannel;
     @Expose public int talkInChannel;
     @Expose public int talkOutChannel;
-    public String connectionString;
+    @Expose public String connectionString;
 
     //State
     public boolean isLogged = false;

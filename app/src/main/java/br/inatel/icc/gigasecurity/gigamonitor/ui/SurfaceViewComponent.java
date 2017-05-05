@@ -40,7 +40,6 @@ public class SurfaceViewComponent extends FrameLayout {
     public int mySurfaceViewOrderId;  //ordem modificada para grid
     public String recordFileName;
 
-
     // state variables
     public int mPlayerHandler = 0;
     public int streamType = 1;  //HD:0, SD:1
@@ -186,6 +185,10 @@ public class SurfaceViewComponent extends FrameLayout {
 
     public void setMySurfaceViewChannelId(int mySurfaceViewChannelId) {
         this.mySurfaceViewChannelId = mySurfaceViewChannelId;
+    }
+
+    public int getDeviceId(){
+        return mSurfaceViewManager.mDevice.getId();
     }
 
     public void isLoading(final boolean isLoading){

@@ -80,6 +80,7 @@ public class DeviceManager implements IFunSDKResult{
     private boolean startPlay = false;
     public boolean channelOnRec;
     private int stateCheckTry = 0;
+    public int collapse = -1;
 
     public int screenWidth;
     public int screenHeight;
@@ -130,6 +131,8 @@ public class DeviceManager implements IFunSDKResult{
         loadSavedData(context);
 
         getScreenSize();
+
+
 
 
     }
@@ -188,7 +191,7 @@ public class DeviceManager implements IFunSDKResult{
                 } else if(msg.arg1 == -11307){
                     if(device != null)
                         loginList.get(device.connectionString).onLoginError(msg.arg1, device);
-                } else {
+                } else if(device != null){
                     FunSDK.DevLogin(getHandler(), device.connectionString, device.getUsername(), device.getPassword(), device.getId());
                     Log.d(TAG, "OnFunSDKResult: Login ERROR");
                 }
@@ -353,13 +356,13 @@ public class DeviceManager implements IFunSDKResult{
         favoritesMap = loadFavorites(context);
     }
 
-    public void addDevice(Context context, Device device) {
+    public void addDevice(Device device) {
         device.checkConnectionMethod();
         mDevices.add(device);
         saveData();
     }
 
-    public void addDevice(Context context, Device device, int position) {
+    public void addDevice(Device device, int position) {
         device.checkConnectionMethod();
         mDevices.add(position, device);
 //        expandableListAdapter.mDevices = mDevices;
@@ -653,6 +656,8 @@ public class DeviceManager implements IFunSDKResult{
         } catch (JSONException e) {
             e.printStackTrace();
         }
+        collapse = mDevices.indexOf(device);
+        logoutDevice(device);
         FunSDK.DevCmdGeneral(getHandler(), device.connectionString, 1450, "OPMachine", 2048, 10000, reboot.toString().getBytes(), -1, device.getId());
     }
 
@@ -667,8 +672,8 @@ public class DeviceManager implements IFunSDKResult{
     }
 
     public void remoteControl(Device device, int command){
-        FunSDK.DevOption(getHandler(), device.connectionString, EDEV_OPTERATE.EDOPT_NET_KEY_CLICK, null, 0, command, 0, 0, "", device.getId());
-//        FunSDK.DevCmdGeneral(getHandler(), device.connectionString, command, "", 1024, 8000, null, 0, device.getId());
+//        FunSDK.DevOption(getHandler(), device.connectionString, EDEV_OPTERATE.EDOPT_NET_KEY_CLICK, null, 0, command, 0, 0, "OPNetKeyboard", device.getId());
+//        FunSDK.DevCmdGeneral(getHandler(), device.connectionString, EDEV_OPTERATE.EDOPT_NET_KEY_CLICK, "OPNetKeyboard", 1024, 8000, jsonObj.toString().getBytes(), 0, device.getId());
     }
 
     public DeviceExpandableListAdapter getExpandableListAdapter(Context context){
@@ -705,7 +710,7 @@ public class DeviceManager implements IFunSDKResult{
 
     public void addSurfaceViewManager(){
         if(surfaceViewManagers == null)
-            return;
+            getSurfaceViewManagers();
         SurfaceViewManager surfaceViewManager = new SurfaceViewManager(mDevices.get(mDevices.size()-1));
         surfaceViewManagers.add(surfaceViewManager);
     }
@@ -880,6 +885,11 @@ public class DeviceManager implements IFunSDKResult{
             path = dirFile.getAbsolutePath();
         }
 
+        File file = new File(dirFile.getPath() + "/Pictures/Giga Monitor/");
+        if(!file.exists()){
+            file.mkdirs();
+        }
+
         return path == null ? "" : path;
     }
 
@@ -933,31 +943,31 @@ public class DeviceManager implements IFunSDKResult{
         return favoritesMap.containsKey(deviceId) && favoritesMap.get(deviceId).contains(channelNumber);
     }
 
-    /*public void addFavorite(Context context, SurfaceViewManager channel){
+    public void addFavorite(SurfaceViewComponent channel){
         Log.d(TAG, "addFavorite: channel " + channel.mySurfaceViewChannelId);
         ArrayList<Integer> arrayList = new ArrayList<Integer>();
-        if(favoritesMap.containsKey(channel.deviceSn)){
-            arrayList = favoritesMap.get(channel.deviceSn);
-            favoritesMap.remove(channel.deviceSn);
+        if(favoritesMap.containsKey(channel.getDeviceId())){
+            arrayList = favoritesMap.get(channel.getDeviceId());
+            favoritesMap.remove(channel.getDeviceId());
         }
         arrayList.add(channel.mySurfaceViewChannelId);
-        favoritesMap.put(channel.deviceSn, arrayList);
+        favoritesMap.put(channel.getDeviceId(), arrayList);
         channel.isFavorite = true;
         saveData();
     }
 
-    public void removeFavorite(Context context, SurfaceViewManager channel){
+    public void removeFavorite(SurfaceViewComponent channel){
         Log.d(TAG, "removeFavorite: channel " + channel.mySurfaceViewChannelId);
-        if(isFavorite(channel.deviceSn, channel.mySurfaceViewChannelId)){
-            ArrayList<Integer> arrayList = favoritesMap.get(channel.deviceSn);
-            arrayList.remove(Integer.valueOf(channel.mySurfaceViewChannelId));
-            favoritesMap.remove(channel.deviceSn);
+        if(isFavorite(channel.getDeviceId(), channel.mySurfaceViewChannelId)){
+            ArrayList<Integer> arrayList = favoritesMap.get(channel.getDeviceId());
+            arrayList.remove(channel.mySurfaceViewChannelId);
+            favoritesMap.remove(channel.getDeviceId());
             if(arrayList.size() > 0)
-                favoritesMap.put(channel.deviceSn, arrayList);
+                favoritesMap.put(channel.getDeviceId(), arrayList);
         }
         channel.isFavorite = false;
         saveData();
-    }*/
+    }
 
 
 
