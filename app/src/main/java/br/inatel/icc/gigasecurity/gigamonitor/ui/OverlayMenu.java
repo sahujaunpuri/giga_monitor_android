@@ -14,7 +14,7 @@ import android.widget.Toast;
 import br.inatel.icc.gigasecurity.gigamonitor.R;
 import br.inatel.icc.gigasecurity.gigamonitor.activities.DeviceListActivity;
 import br.inatel.icc.gigasecurity.gigamonitor.core.DeviceManager;
-import br.inatel.icc.gigasecurity.gigamonitor.model.SurfaceViewManager;
+import br.inatel.icc.gigasecurity.gigamonitor.model.DeviceChannelsManager;
 
 /**
  * Created by zappts on 3/24/17.
@@ -26,19 +26,19 @@ public class OverlayMenu extends RelativeLayout {
     public ImageView ivHQ, ivPlayPause, ivSnapshot, ivSnapvideo, ivFavorite, ivSendAudio, ivReceiveAudio;
     public TextView ivTitle;
     public DeviceManager mDeviceManager;
-    public SurfaceViewManager surfaceViewManager;
+    public DeviceChannelsManager deviceChannelsManager;
 
-    public OverlayMenu(Context context, SurfaceViewManager surfaceViewManager) {
+    public OverlayMenu(Context context, DeviceChannelsManager deviceChannelsManager) {
         super(context);
         mContext = context;
-        this.surfaceViewManager = surfaceViewManager;
+        this.deviceChannelsManager = deviceChannelsManager;
         init();
     }
 
-    public OverlayMenu(Context context, AttributeSet attrs,  SurfaceViewManager surfaceViewManager) {
+    public OverlayMenu(Context context, AttributeSet attrs,  DeviceChannelsManager deviceChannelsManager) {
         super(context, attrs);
         this.mContext = context;
-        this.surfaceViewManager = surfaceViewManager;
+        this.deviceChannelsManager = deviceChannelsManager;
         init();
     }
 
@@ -60,7 +60,7 @@ public class OverlayMenu extends RelativeLayout {
         ivSendAudio          = (ImageView) findViewById(R.id.iv_enable_send_audio);
         ivTitle              = (TextView)  findViewById(R.id.tv_channel_title);
 
-//        surfaceViewComponent = new SurfaceViewComponent(mContext, surfaceViewManager);
+//        surfaceViewComponent = new SurfaceViewComponent(mContext, deviceChannelsManager);
 
         mDeviceManager = DeviceManager.getInstance();
 
@@ -126,10 +126,10 @@ public class OverlayMenu extends RelativeLayout {
             public void onClick(View v) {
                 if (surfaceViewComponent.isConnected()) {
                     if (surfaceViewComponent.isPlaying) {
-                        surfaceViewManager.onPause(surfaceViewComponent);
+                        deviceChannelsManager.onPause(surfaceViewComponent);
                         ivPlayPause.setImageDrawable(mContext.getResources().getDrawable(R.drawable.ic_play_arrow_white_48dp));
                     } else {
-                        surfaceViewManager.onResume(surfaceViewComponent);
+                        deviceChannelsManager.onResume(surfaceViewComponent);
                         ivPlayPause.setImageDrawable(mContext.getResources().getDrawable(R.drawable.ic_pause_white_48dp));
                     }
                 }
@@ -150,7 +150,7 @@ public class OverlayMenu extends RelativeLayout {
                         surfaceViewComponent.setStreamType(1);
                         ivHQ.setImageDrawable(mContext.getResources().getDrawable(R.drawable.ic_hq_off));
                     }
-                    surfaceViewManager.restartVideo(surfaceViewComponent);
+                    deviceChannelsManager.restartVideo(surfaceViewComponent);
                 }
             }
         });
@@ -158,7 +158,7 @@ public class OverlayMenu extends RelativeLayout {
         ivSnapshot.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                surfaceViewManager.takeSnapshot(surfaceViewComponent);
+                deviceChannelsManager.takeSnapshot(surfaceViewComponent);
                 startAnimationBlink(surfaceViewComponent);
             }
         });
@@ -171,11 +171,11 @@ public class OverlayMenu extends RelativeLayout {
                 } else if(!surfaceViewComponent.isREC()){
                     surfaceViewComponent.setREC(true);
                     mDeviceManager.channelOnRec = true;
-                    surfaceViewManager.startRecord(surfaceViewComponent);
+                    deviceChannelsManager.startRecord(surfaceViewComponent);
                     ivSnapvideo.setImageDrawable(mContext.getResources().getDrawable(R.drawable.ic_snapvideo_on));
                 } else {
                     surfaceViewComponent.setREC(false);
-                    surfaceViewManager.stopRecord(surfaceViewComponent);
+                    deviceChannelsManager.stopRecord(surfaceViewComponent);
                     ivSnapvideo.setImageDrawable(mContext.getResources().getDrawable(R.drawable.ic_snapvideo));
                 }
             }
@@ -198,13 +198,13 @@ public class OverlayMenu extends RelativeLayout {
             @Override
             public void onClick(View view) {
                 if(surfaceViewComponent.isSendAudioEnabled){
-                    surfaceViewManager.disableSendAudio();
+                    deviceChannelsManager.disableSendAudio();
                     surfaceViewComponent.isSendAudioEnabled = false;
                     ivSendAudio.setImageDrawable(mContext.getResources().getDrawable(R.drawable.ic_mic_off_white_36dp));
 
                     //reabilita recepção de audio
                     if(surfaceViewComponent.isReceiveAudioEnabled){
-                        surfaceViewManager.toggleReceiveAudio(surfaceViewComponent);
+                        deviceChannelsManager.toggleReceiveAudio(surfaceViewComponent);
                     }
                     if(surfaceViewComponent.isReceiveAudioEnabled)
                         ivReceiveAudio.setImageDrawable(mContext.getResources().getDrawable(R.drawable.ic_volume_up_white_36dp));
@@ -214,12 +214,12 @@ public class OverlayMenu extends RelativeLayout {
                 } else{
                     //desabilita recepção de audio para funcionar
                     if(surfaceViewComponent.isReceiveAudioEnabled){
-                        surfaceViewManager.toggleReceiveAudio(surfaceViewComponent);
+                        deviceChannelsManager.toggleReceiveAudio(surfaceViewComponent);
                     }
                     ivReceiveAudio.setImageDrawable(mContext.getResources().getDrawable(R.drawable.ic_volume_off_white_36dp));
                     ivReceiveAudio.setClickable(false);
 
-                    surfaceViewManager.enableSendAudio();
+                    deviceChannelsManager.enableSendAudio(surfaceViewComponent);
                     surfaceViewComponent.isSendAudioEnabled = true;
                     ivSendAudio.setImageDrawable(mContext.getResources().getDrawable(R.drawable.ic_mic_white_36dp));
                 }
@@ -236,7 +236,7 @@ public class OverlayMenu extends RelativeLayout {
                     surfaceViewComponent.isReceiveAudioEnabled = true;
                     ivReceiveAudio.setImageDrawable(mContext.getResources().getDrawable(R.drawable.ic_volume_up_white_36dp));
                 }
-                surfaceViewManager.toggleReceiveAudio(surfaceViewComponent);
+                deviceChannelsManager.toggleReceiveAudio(surfaceViewComponent);
             }
         });
     }

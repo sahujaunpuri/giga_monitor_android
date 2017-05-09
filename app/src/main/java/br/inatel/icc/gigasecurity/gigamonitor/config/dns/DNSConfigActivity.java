@@ -42,6 +42,7 @@ public class DNSConfigActivity extends ActionBarActivity {
         public void onSetConfig() {
             int messageId = R.string.saved;
             Toast.makeText(getApplicationContext(), messageId, Toast.LENGTH_SHORT).show();
+            mManager.collapse = mManager.getDevices().indexOf(mDevice);
             mManager.saveData();
 
             finish();
@@ -51,6 +52,7 @@ public class DNSConfigActivity extends ActionBarActivity {
         public void onError() {
             int messageId = R.string.invalid_device_save;
             Toast.makeText(getApplicationContext(), messageId, Toast.LENGTH_SHORT).show();
+            mManager.collapse = mManager.getDevices().indexOf(mDevice);
             finish();
         }
     };
@@ -140,7 +142,6 @@ public class DNSConfigActivity extends ActionBarActivity {
                 return true;
             case R.id.action_save:
                 save();
-                mManager.collapse = mManager.getDevices().indexOf(mDevice);
                 return true;
             default: return false;
         }

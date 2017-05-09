@@ -15,17 +15,16 @@ import android.widget.SeekBar;
 import android.widget.TextView;
 
 import br.inatel.icc.gigasecurity.gigamonitor.R;
-import br.inatel.icc.gigasecurity.gigamonitor.core.DeviceManager;
 import br.inatel.icc.gigasecurity.gigamonitor.listeners.PlaybackListener;
 import br.inatel.icc.gigasecurity.gigamonitor.model.Device;
 import br.inatel.icc.gigasecurity.gigamonitor.model.FileData;
-import br.inatel.icc.gigasecurity.gigamonitor.model.SurfaceViewManager;
+import br.inatel.icc.gigasecurity.gigamonitor.model.DeviceChannelsManager;
 import br.inatel.icc.gigasecurity.gigamonitor.ui.SurfaceViewComponent;
 
 public class DevicePlaybackVideoActivity extends ActionBarActivity {
 
     private SurfaceViewComponent mSurfaceView;
-    private SurfaceViewManager mSurfaceViewManager;
+    private DeviceChannelsManager mDeviceChannelsManager;
     private SeekBar mSeekBar;
     private ProgressBar mProgressBar;
     private TextView mStatusTextView;
@@ -57,7 +56,7 @@ public class DevicePlaybackVideoActivity extends ActionBarActivity {
                     }else if(((progress*100)/(int)mFileData.getTotalTime()) == definedProgress){
                         mSurfaceView.setVisibility(View.VISIBLE);
                         mSurfaceView.isSeeking = false;
-                        mSurfaceViewManager.currentPlaybackListener.onPlayState(2);
+                        mDeviceChannelsManager.currentPlaybackListener.onPlayState(2);
                     }
                     Log.d(TAG, "onChangeProgress: progress:" + (progress*100)/(int)mFileData.getTotalTime() + " definedProgress:" + definedProgress);
                 }
@@ -141,8 +140,8 @@ public class DevicePlaybackVideoActivity extends ActionBarActivity {
         Bundle extras = getIntent().getExtras();
         mDevice = (Device) extras.getSerializable("device");
         mFileData = (FileData) extras.getSerializable("fileData");
-        //*mSurfaceViewManager = DeviceManager.getInstance().findSurfaceViewManagerByDevice(mDevice);
-        mSurfaceViewManager = new SurfaceViewManager(mDevice);
+        //*mDeviceChannelsManager = DeviceManager.getInstance().findSurfaceViewManagerByDevice(mDevice);
+        mDeviceChannelsManager = new DeviceChannelsManager(mDevice);
 
         // Find views
         mSurfaceView                      = (SurfaceViewComponent) findViewById(R.id.surface_view_test_1);
@@ -163,7 +162,7 @@ public class DevicePlaybackVideoActivity extends ActionBarActivity {
 
 
         // Set listeners
-        mSurfaceViewManager.setCurrentPlaybackListener(mPlaybackListener);
+        mDeviceChannelsManager.setCurrentPlaybackListener(mPlaybackListener);
         mSeekBar.setOnSeekBarChangeListener(mSeekBarChangeListener);
 
         ivPlayPause.setOnClickListener(new View.OnClickListener() {
@@ -197,10 +196,10 @@ public class DevicePlaybackVideoActivity extends ActionBarActivity {
 
         mSurfaceView.deviceConnection = mDevice.connectionString;
         mSurfaceView.playType = 1;
-        mSurfaceViewManager.playType = 1;
+        mDeviceChannelsManager.playType = 1;
 
-        mSurfaceViewManager.addSurfaceViewComponent(mSurfaceView);
-        mSurfaceView.mSurfaceViewManager = this.mSurfaceViewManager;
+        mDeviceChannelsManager.addSurfaceViewComponent(mSurfaceView);
+        mSurfaceView.mChannelsManager = this.mDeviceChannelsManager;
 
 //        mSurfaceView.setAudioCtrl(MyConfig.AudioState.OPENED);
 
@@ -271,12 +270,12 @@ public class DevicePlaybackVideoActivity extends ActionBarActivity {
 
         mProgressBar.setVisibility(View.VISIBLE);
         mSurfaceView.isLoading(true);
-        mSurfaceViewManager.onPlayPlayback(mFileData.getFileData(), mSurfaceView);
+        mDeviceChannelsManager.onPlayPlayback(mFileData.getFileData(), mSurfaceView);
         mSeekBar.setProgress(0);
     }
 
     public void resume() {
-        mSurfaceViewManager.onResume(mSurfaceView);
+        mDeviceChannelsManager.onResume(mSurfaceView);
 
         String text = getResources().getString(R.string.label_playing);
 
@@ -286,7 +285,7 @@ public class DevicePlaybackVideoActivity extends ActionBarActivity {
     }
 
     public void stop() {
-        mSurfaceViewManager.onStop(mSurfaceView);
+        mDeviceChannelsManager.onStop(mSurfaceView);
         String text = getResources().getString(R.string.label_stopped);
         mSurfaceView.setVisibility(View.INVISIBLE);
 
@@ -302,7 +301,7 @@ public class DevicePlaybackVideoActivity extends ActionBarActivity {
     }
 
     public void pause() {
-        mSurfaceViewManager.onPause(mSurfaceView);
+        mDeviceChannelsManager.onPause(mSurfaceView);
 
         String text = getResources().getString(R.string.label_paused);
         updateStatusTextView(text);
@@ -319,7 +318,7 @@ public class DevicePlaybackVideoActivity extends ActionBarActivity {
     public void setPlaybackProgress(int progress) {
         Log.d(TAG, "setPlaybackProgress: SEEKING TO: " + (progress*100)/(int)mFileData.getTotalTime());
         definedProgress = (progress*100)/(int)mFileData.getTotalTime();
-        mSurfaceViewManager.seekByPos(definedProgress, mSurfaceView);
+        mDeviceChannelsManager.seekByPos(definedProgress, mSurfaceView);
     }
 
     @Override
@@ -342,8 +341,8 @@ public class DevicePlaybackVideoActivity extends ActionBarActivity {
 
         switch (id) {
             case android.R.id.home:
-                mSurfaceViewManager.onStop(mSurfaceView);
-//                mSurfaceViewManager.playType = 0;
+                mDeviceChannelsManager.onStop(mSurfaceView);
+//                mDeviceChannelsManager.playType = 0;
 //                DeviceManager.getInstance().updateSurfaceViewManagers();
                 finish();
                 return true;

@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.CompoundButton;
@@ -28,6 +29,7 @@ public class EthernetConfigActivity extends ActionBarActivity implements OnCheck
 
     private Context mContext;
     private Device mDevice;
+    private Device temp;
 //    private EthernetConfig mConfig;
     private EditText mHostNameEditText, mHostIPEditText, mSubmaskEditText, mGatewayEditText, mMacEditText, mHttpPortEditText, mTcpPortEditText, mSslPortEditText, mUdpPortEditText;
             //mMaxConnEditText, mMonModeEditText, mMaxBpsEditText, mTransferPlanEditText, mMacEditText,
@@ -54,10 +56,12 @@ public class EthernetConfigActivity extends ActionBarActivity implements OnCheck
         @Override
         public void onSetConfig() {
             int messageId = R.string.saved;
-
+            mDevice = temp;
             Toast.makeText(getApplicationContext(), messageId, Toast.LENGTH_SHORT).show();
             mManager.saveData();
             mDevice.checkConnectionMethod();
+            mManager.logoutDevice(mDevice);
+            mManager.collapse = mManager.getDevices().indexOf(mDevice);
 
             finish();
         }
@@ -68,6 +72,7 @@ public class EthernetConfigActivity extends ActionBarActivity implements OnCheck
 
 //            Toast.makeText(getApplicationContext(), messageId, Toast.LENGTH_SHORT).show();
             mManager.saveData();
+            mManager.collapse = mManager.getDevices().indexOf(mDevice);
 
             finish();
         }
@@ -87,6 +92,7 @@ public class EthernetConfigActivity extends ActionBarActivity implements OnCheck
 //            mDevice = (Device) savedInstanceState.getSerializable("device");
 //        }
         mDevice = mManager.findDeviceById((int) getIntent().getExtras().getSerializable("device"));
+        temp = new Device(mDevice);
         mManager.getJsonConfig(mDevice, "NetWork.NetCommon", mListener);
     }
 
@@ -218,15 +224,15 @@ public class EthernetConfigActivity extends ActionBarActivity implements OnCheck
 
     private void save() {
 
-        mManager.logoutDevice(mDevice);
-        mDevice.setHostname(mHostNameEditText.getText().toString());
-        mDevice.setIpAddress(mHostIPEditText.getText().toString());
-        mDevice.setSubmask(mSubmaskEditText.getText().toString());
-        mDevice.setGateway(mGatewayEditText.getText().toString());
-        mDevice.setTCPPort(Integer.parseInt(mTcpPortEditText.getText().toString()));
-        mDevice.setHttpPort(Integer.parseInt(mHttpPortEditText.getText().toString()));
-        mDevice.setSslPort(Integer.parseInt(mSslPortEditText.getText().toString()));
-        mDevice.setUdpPort(Integer.parseInt(mUdpPortEditText.getText().toString()));
+//        mManager.logoutDevice(mDevice);
+        temp.setHostname(mHostNameEditText.getText().toString());
+        temp.setIpAddress(mHostIPEditText.getText().toString());
+        temp.setSubmask(mSubmaskEditText.getText().toString());
+        temp.setGateway(mGatewayEditText.getText().toString());
+        temp.setTCPPort(Integer.parseInt(mTcpPortEditText.getText().toString()));
+        temp.setHttpPort(Integer.parseInt(mHttpPortEditText.getText().toString()));
+        temp.setSslPort(Integer.parseInt(mSslPortEditText.getText().toString()));
+        temp.setUdpPort(Integer.parseInt(mUdpPortEditText.getText().toString()));
 
         /*commonConfig.setHttpPort(Integer.valueOf(mHttpPortEditText.getText().toString()));
         commonConfig.setTcpPort(Integer.valueOf(mTcpPortEditText.getText().toString()));
@@ -240,8 +246,8 @@ public class EthernetConfigActivity extends ActionBarActivity implements OnCheck
         //commonConfig.setMac(mMacEditText.getText().toString());
         //commonConfig.setZarg0(mZarg0EditText.getText().toString());
 
-        mManager.setEthernetConfig(mDevice, mListener);
-        mListener.onSetConfig();
+        mManager.setEthernetConfig(temp, mListener);
+//        mListener.onSetConfig();
     }
 
     private void startDeviceListActivity() {
@@ -267,7 +273,6 @@ public class EthernetConfigActivity extends ActionBarActivity implements OnCheck
             case R.id.action_config_save:
                 Utils.hideKeyboard(this);
                 if (isFieldsValid()) {
-                    mManager.collapse = mManager.getDevices().indexOf(mDevice);
                     save();
                 }
                 return true;

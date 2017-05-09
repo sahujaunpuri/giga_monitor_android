@@ -164,7 +164,7 @@ public class DeviceFormActivity extends ActionBarActivity{
 //                        startDeviceListActivity();
                     } else {
                         deviceManager.addDevice(mDevice);
-                        deviceManager.addSurfaceViewManager();
+                        deviceManager.addSurfaceViewManager(mDevice);
                     }
                     startDeviceListActivity();
 

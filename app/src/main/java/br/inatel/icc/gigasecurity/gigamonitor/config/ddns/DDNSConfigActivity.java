@@ -49,6 +49,7 @@ public class DDNSConfigActivity extends ActionBarActivity {
         public void onSetConfig() {
             int messageId = R.string.saved;
             Toast.makeText(getApplicationContext(), messageId, Toast.LENGTH_SHORT).show();
+            mManager.collapse = mManager.getDevices().indexOf(mDevice);
             mManager.saveData();
 
             finish();
@@ -58,6 +59,7 @@ public class DDNSConfigActivity extends ActionBarActivity {
         public void onError() {
             int messageId = R.string.invalid_device_save;
             Toast.makeText(getApplicationContext(), messageId, Toast.LENGTH_SHORT).show();
+            mManager.collapse = mManager.getDevices().indexOf(mDevice);
             finish();
         }
     };
@@ -209,7 +211,6 @@ public class DDNSConfigActivity extends ActionBarActivity {
                 Utils.hideKeyboard(this);
                 if (validate()) {
                     save();
-                    mManager.collapse = mManager.getDevices().indexOf(mDevice);
                 }
                 return true;
             default:

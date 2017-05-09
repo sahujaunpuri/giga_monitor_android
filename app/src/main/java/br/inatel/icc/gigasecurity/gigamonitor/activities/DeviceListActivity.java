@@ -18,7 +18,6 @@ import br.inatel.icc.gigasecurity.gigamonitor.R;
 import br.inatel.icc.gigasecurity.gigamonitor.adapters.DeviceExpandableListAdapter;
 import br.inatel.icc.gigasecurity.gigamonitor.core.DeviceManager;
 import br.inatel.icc.gigasecurity.gigamonitor.model.Device;
-import br.inatel.icc.gigasecurity.gigamonitor.model.SurfaceViewManager;
 
 public class DeviceListActivity extends ActionBarActivity {
 
@@ -187,9 +186,9 @@ public class DeviceListActivity extends ActionBarActivity {
             surfaceViewManagers.clear();
 
             for(int i=0; i < mDevices.size(); i++) {
-                SurfaceViewManager surfaceViewManager = new SurfaceViewManager(mDevices.get(i));
+                DeviceChannelsManager deviceChannelsManager = new DeviceChannelsManager(mDevices.get(i));
 
-                surfaceViewManagers.add(surfaceViewManager);
+                surfaceViewManagers.add(deviceChannelsManager);
             }
         }
     }*/

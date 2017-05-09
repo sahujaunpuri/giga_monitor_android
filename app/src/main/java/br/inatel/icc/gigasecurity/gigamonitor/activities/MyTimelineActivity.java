@@ -24,8 +24,8 @@
 //import br.inatel.icc.gigasecurity.gigamonitor.core.DeviceManager;
 //import br.inatel.icc.gigasecurity.gigamonitor.listeners.LoginDeviceListener;
 //import br.inatel.icc.gigasecurity.gigamonitor.model.Device;
-//import br.inatel.icc.gigasecurity.gigamonitor.model.SurfaceViewManager;
-//import br.inatel.icc.gigasecurity.gigamonitor.model.SurfaceViewManager;
+//import br.inatel.icc.gigasecurity.gigamonitor.model.DeviceChannelsManager;
+//import br.inatel.icc.gigasecurity.gigamonitor.model.DeviceChannelsManager;
 //
 ///**
 // * Created by zappts on 3/22/17.
@@ -37,15 +37,15 @@
 //    private ListAdapter mAdapter;
 //    private DeviceManager mDeviceManager;
 //    public Context mContext;
-//    public ArrayList<SurfaceViewManager> favoritesViews = new ArrayList<SurfaceViewManager>();
+//    public ArrayList<DeviceChannelsManager> favoritesViews = new ArrayList<DeviceChannelsManager>();
 //    public ArrayList<TextView> text = new ArrayList<TextView>();
 //    public int nFavorites = 0;
 //
 //    private LoginDeviceListener loginListener = new LoginDeviceListener() {
 //        @Override
 //        public void onLoginSuccess(Device device) {
-//            for(SurfaceViewManager surfaceViewManager : favoritesViews){
-//                surfaceViewManager.onPlayLive();
+//            for(DeviceChannelsManager deviceChannelsManager : favoritesViews){
+//                deviceChannelsManager.onPlayLive();
 //            }
 //        }
 //
@@ -106,23 +106,23 @@
 //
 //    private void createSurfaceView(String serialNumber, int channelNumber){
 //
-//        SurfaceViewManager surfaceViewManager = new SurfaceViewManager(mContext);
+//        DeviceChannelsManager deviceChannelsManager = new DeviceChannelsManager(mContext);
 //
-//        surfaceViewManager.mySurfaceViewChannelId = channelNumber;
-//        surfaceViewManager.mySurfaceViewOrderId = nFavorites++;
-//        surfaceViewManager.deviceSn = serialNumber;
+//        deviceChannelsManager.mySurfaceViewChannelId = channelNumber;
+//        deviceChannelsManager.mySurfaceViewOrderId = nFavorites++;
+//        deviceChannelsManager.deviceSn = serialNumber;
 //
 //        if(mDeviceManager.isFavorite(serialNumber, channelNumber))
-//            surfaceViewManager.setFavorite(true);
+//            deviceChannelsManager.setFavorite(true);
 //
 //
 ////        int surfaceViewHeight = (int) ((Resources.getSystem().getDisplayMetrics().heightPixels / 3.5));
 ////        int surfaceViewWidth = (int) (surfaceViewHeight * 1.77777777778);
 ////
-////        surfaceViewManager.setViewSize(surfaceViewWidth, surfaceViewHeight, 1);
+////        deviceChannelsManager.setViewSize(surfaceViewWidth, surfaceViewHeight, 1);
 //
-////        surfaceViewManager.menu.updateIcons();
-//        favoritesViews.add(surfaceViewManager);
+////        deviceChannelsManager.menu.updateIcons();
+//        favoritesViews.add(deviceChannelsManager);
 //    }
 //
 //}

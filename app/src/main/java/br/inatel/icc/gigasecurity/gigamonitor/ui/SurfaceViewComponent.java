@@ -18,7 +18,8 @@ import android.widget.Toast;
 import com.video.opengl.GLSurfaceView20;
 
 import br.inatel.icc.gigasecurity.gigamonitor.core.DeviceManager;
-import br.inatel.icc.gigasecurity.gigamonitor.model.SurfaceViewManager;
+import br.inatel.icc.gigasecurity.gigamonitor.model.ChannelsManager;
+import br.inatel.icc.gigasecurity.gigamonitor.model.DeviceChannelsManager;
 
 /**
  * Created by zappts on 4/6/17.
@@ -27,7 +28,7 @@ import br.inatel.icc.gigasecurity.gigamonitor.model.SurfaceViewManager;
 public class SurfaceViewComponent extends FrameLayout {
     String TAG = "SurfaceViewLayout";
     String TAG2 = "SurfaceViewLayoutTouch";
-    public SurfaceViewManager mSurfaceViewManager;
+    public DeviceChannelsManager mChannelsManager;
     private DeviceManager mDeviceManager;
     public GLSurfaceView20 mySurfaceView;
     private ProgressBar progressBar;
@@ -57,11 +58,11 @@ public class SurfaceViewComponent extends FrameLayout {
     public boolean isVisible = false;
     public boolean stoppingRec = false;
 
-    public SurfaceViewComponent(Context context, SurfaceViewManager surfaceViewManager, int id) {
+    public SurfaceViewComponent(Context context, DeviceChannelsManager channelsManager, int id) {
         super(context);
         this.mContext = context;
         this.mySurfaceViewChannelId = id;
-        this.mSurfaceViewManager = surfaceViewManager;
+        this.mChannelsManager = channelsManager;
         init();
     }
 
@@ -86,7 +87,7 @@ public class SurfaceViewComponent extends FrameLayout {
 
         //SurfaceView
         if(playType == 0) {
-            mySurfaceView = mSurfaceViewManager.getMySurfaceView(mySurfaceViewChannelId);
+            mySurfaceView = mChannelsManager.getMySurfaceView(mySurfaceViewChannelId);
 //        mySurfaceView.setRenderMode(GLSurfaceView.RENDERMODE_CONTINUOUSLY);
 
         }
@@ -106,13 +107,13 @@ public class SurfaceViewComponent extends FrameLayout {
         progressBar.setIndeterminate(true);
         progressBar.setScrollBarStyle(View.SCROLLBARS_INSIDE_INSET);
 //        FrameLayout.LayoutParams pbParam = new FrameLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT, Gravity.CENTER);
-//        progressBar.setLayoutParams(mSurfaceViewManager.pbParam);
+//        progressBar.setLayoutParams(mDeviceChannelsManager.pbParam);
 //        this.addView(progressBar);
 
-        if(mSurfaceViewManager != null) {
-            mySurfaceView.setLayoutParams(mSurfaceViewManager.surfaceViewLayout);
+        if(mChannelsManager != null) {
+            mySurfaceView.setLayoutParams(mChannelsManager.surfaceViewLayout);
 //            this.addView(mySurfaceView);
-            progressBar.setLayoutParams(mSurfaceViewManager.pbParam);
+            progressBar.setLayoutParams(mChannelsManager.pbParam);
             this.addView(progressBar);
         }
     }
@@ -188,7 +189,7 @@ public class SurfaceViewComponent extends FrameLayout {
     }
 
     public int getDeviceId(){
-        return mSurfaceViewManager.mDevice.getId();
+        return deviceId;
     }
 
     public void isLoading(final boolean isLoading){
@@ -207,16 +208,16 @@ public class SurfaceViewComponent extends FrameLayout {
 
     private void interruptScroll(){
         this.getParent().requestDisallowInterceptTouchEvent(true);
-        if(mSurfaceViewManager.mRecyclerAdapter!=null)
-            mSurfaceViewManager.mRecyclerAdapter.disableListScrolling();
+        if(mChannelsManager.mRecyclerAdapter!=null)
+            mChannelsManager.mRecyclerAdapter.disableListScrolling();
 
     }
 
     public void resumeScroll(){
         mySurfaceView.setRenderMode(GLSurfaceView.RENDERMODE_WHEN_DIRTY);
         this.getParent().requestDisallowInterceptTouchEvent(false);
-        if(mSurfaceViewManager.mRecyclerAdapter!=null)
-            mSurfaceViewManager.mRecyclerAdapter.enableListScrolling();
+        if(mChannelsManager.mRecyclerAdapter!=null)
+            mChannelsManager.mRecyclerAdapter.enableListScrolling();
     }
 
     @Override
@@ -232,7 +233,7 @@ public class SurfaceViewComponent extends FrameLayout {
             public void run() {
                 isVisible = false;
                 if(isConnected()) {
-                    mSurfaceViewManager.onStop(surfaceViewComponent());
+                    mChannelsManager.onStop(surfaceViewComponent());
                 }
             }
         }).start();
@@ -242,27 +243,6 @@ public class SurfaceViewComponent extends FrameLayout {
     protected void onAttachedToWindow() {
         super.onAttachedToWindow();
         isVisible = true;
-//        new Thread(new Runnable() {
-//            @Override
-//            public void run() {
-
-//        this.removeView(mySurfaceView);
-//        mySurfaceView = mSurfaceViewManager.getMySurfaceView(mySurfaceViewChannelId);
-//        ViewGroup parent = (ViewGroup) mySurfaceView.getParent();
-//        if(parent != null)
-//            parent.removeView(mySurfaceView);
-//        this.addView(mySurfaceView);
-////        mySurfaceView.setOnZoomListener(mScaleListener);
-
-//        progressBar.bringToFront();
-//                if(isConnected) {
-//                    surfaceViewComponent().isLoading(true);
-//                    mSurfaceViewManager.onStartVideo(surfaceViewComponent());
-//                    mSurfaceViewManager.onPlayLive(surfaceViewComponent());
-//                }
-//            }
-//        }).start();
-
     }
 
 
@@ -290,7 +270,7 @@ public class SurfaceViewComponent extends FrameLayout {
         if(mScaleFactor > 1.F)
             interruptScroll();
         mySurfaceView.setRenderMode(GLSurfaceView.RENDERMODE_CONTINUOUSLY);
-        if(mSurfaceViewManager.mRecyclerAdapter != null)
+        if(mChannelsManager.mRecyclerAdapter != null)
             mClickListener.onTouchEvent(ev);
         mScaleDetector.onTouchEvent(ev);
         if(isScaling)
@@ -343,7 +323,7 @@ public class SurfaceViewComponent extends FrameLayout {
         @Override
         public boolean onSingleTapConfirmed(MotionEvent motionEvent) {
             //open menu
-            mSurfaceViewManager.mRecyclerAdapter.openOverlayMenu(surfaceViewComponent());
+            mChannelsManager.mRecyclerAdapter.openOverlayMenu(surfaceViewComponent());
             Log.d(TAG2, "onSingleTapConfirmed: ");
             resumeScroll();
             return true;
@@ -357,13 +337,13 @@ public class SurfaceViewComponent extends FrameLayout {
                 @Override
                 public void run() {
                     if(isREC){
-                        mSurfaceViewManager.stopRecord(surfaceViewComponent());
+                        mChannelsManager.stopRecord(surfaceViewComponent());
                         isREC = false;
                         String mensagem = "Gravação finalizada";
                         Toast.makeText(mContext, mensagem, Toast.LENGTH_SHORT).show();
                     }
-                    mSurfaceViewManager.mRecyclerAdapter.singleQuad(mySurfaceViewChannelId);
-                    /*new Thread(new Runnable() {    //timer para evitar que um pequeno arraste no doubleclick também faça scroll
+                    mChannelsManager.mRecyclerAdapter.singleQuad(mySurfaceViewChannelId);
+                    /*new Thread(new Runnable() {    //timer para evitar que um pequeno arraste no doubleclick também faça scroll (testar)
                         @Override
                         public void run() {
                             try {

@@ -13,35 +13,35 @@
 //
 //import br.inatel.icc.gigasecurity.gigamonitor.R;
 //import br.inatel.icc.gigasecurity.gigamonitor.core.DeviceManager;
-//import br.inatel.icc.gigasecurity.gigamonitor.model.SurfaceViewManager;
+//import br.inatel.icc.gigasecurity.gigamonitor.model.DeviceChannelsManager;
 //
 ///**
 // * Created by zappts on 3/23/17.
 // */
 //
-//public class ListAdapter extends ArrayAdapter<SurfaceViewManager> {
+//public class ListAdapter extends ArrayAdapter<DeviceChannelsManager> {
 //    private DeviceManager mDeviceManager = DeviceManager.getInstance();
-//    private ArrayList<SurfaceViewManager> channels;
+//    private ArrayList<DeviceChannelsManager> channels;
 //
 //    private static class ViewHolder {
-//        private SurfaceViewManager surfaceViewManager;
+//        private DeviceChannelsManager deviceChannelsManager;
 //        private ProgressBar progressBar;
 //        private FrameLayout frameLayout;
 //    }
 //
 //
-//    public ListAdapter(Context context, int resource, ArrayList<SurfaceViewManager> objects) {
+//    public ListAdapter(Context context, int resource, ArrayList<DeviceChannelsManager> objects) {
 //        super(context, resource, objects);
 //        this.channels = objects;
 //    }
 //
 //    @Override
-//    public void add(SurfaceViewManager object) {
+//    public void add(DeviceChannelsManager object) {
 //        super.add(object);
 //    }
 //
 //    @Override
-//    public void remove(SurfaceViewManager object) {
+//    public void remove(DeviceChannelsManager object) {
 //        super.remove(object);
 //    }
 //
@@ -52,21 +52,21 @@
 //        View v = convertView;
 //
 //        if(v == null){
-//            final SurfaceViewManager surfaceViewManager = getItem(position);
+//            final DeviceChannelsManager deviceChannelsManager = getItem(position);
 //            LayoutInflater inflater = LayoutInflater.from(getContext());
 //            v = inflater.inflate(R.layout.list_row, null);
 //            FrameLayout  layout = (FrameLayout) v.findViewById(R.id.frame_layout_list);
 //
 ////            v = inflater.inflate(R.layout.overlay_menu_layout, null);
 //
-//            layout.addView(surfaceViewManager);
+//            layout.addView(deviceChannelsManager);
 ////            layout.addView(v);
 //
 //            viewHolder = new ViewHolder();
-//            viewHolder.surfaceViewManager = surfaceViewManager;
-//            viewHolder.progressBar = surfaceViewManager.progressBar;
+//            viewHolder.deviceChannelsManager = deviceChannelsManager;
+//            viewHolder.progressBar = deviceChannelsManager.progressBar;
 //            viewHolder.frameLayout = layout;
-//            surfaceViewManager.progressBar.setVisibility(View.VISIBLE);
+//            deviceChannelsManager.progressBar.setVisibility(View.VISIBLE);
 //            v.setTag(viewHolder);
 //        } else{
 //            viewHolder = (ViewHolder) v.getTag();

@@ -18,7 +18,7 @@
 //
 //public class ListComponentOld {
 //
-//    public ArrayList<SurfaceViewManager> surfaceViewManagers = new ArrayList<>();
+//    public ArrayList<DeviceChannelsManager> surfaceViewManagers = new ArrayList<>();
 //    public Device mDevice;
 //    public View view;
 //    public TableLayout mTableLayout;
@@ -33,11 +33,11 @@
 //    public int width, height, positionChnPage;
 //    public int[] channels;
 //
-//    public ArrayList<SurfaceViewManager> getSurfaceViewManagers() {
+//    public ArrayList<DeviceChannelsManager> getDeviceChannelsManagers() {
 //        return surfaceViewManagers;
 //    }
 //
-//    public void setSurfaceViewManagers(ArrayList<SurfaceViewManager> surfaceViewManagers) {
+//    public void setSurfaceViewManagers(ArrayList<DeviceChannelsManager> surfaceViewManagers) {
 //        this.surfaceViewManagers = surfaceViewManagers;
 //    }
 //

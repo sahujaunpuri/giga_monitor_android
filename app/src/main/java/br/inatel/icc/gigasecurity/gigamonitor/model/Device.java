@@ -73,13 +73,46 @@ public class Device implements Serializable {
 
     private Calendar systemTime;
 
-    private long loginID;
-    private int error;
-
-    private long voiceHandle = -1L;
-    private long playbackHandle = -1L;
-
     public Device() {
+    }
+
+    public Device(Device device){
+        this.deviceName = device.deviceName;
+        this.hostname = device.hostname;
+        this.ipAddress = device.ipAddress;
+        this.domain = device.domain;
+        this.submask = device.submask;
+        this.macAddress = device.macAddress;
+        this.gateway = device.gateway;
+        this.serialNumber = device.serialNumber;
+        this.httpPort = device.httpPort;
+        this.sslPort = device.sslPort;
+        this.tcpPort = device.tcpPort;
+        this.udpPort = device.udpPort;
+        this.maxBPS = device.maxBPS;
+        this.transferPlan = device.transferPlan;
+        this.monMode = device.monMode;
+        this.tcpMaxConn = device.tcpMaxConn;
+        this.primaryDNS = device.primaryDNS;
+        this.secondaryDNS = device.secondaryDNS;
+        this.upnpEnable = device.upnpEnable;
+        this.HTTPPort = device.HTTPPort;
+        this.MediaPort = device.MediaPort;
+        this.MobilePort = device.MobilePort;
+        this.ddnsEnable = device.ddnsEnable;
+        this.ddnsDomain = device.ddnsDomain;
+        this.ddnsUserName = device.ddnsUserName;
+        this.username = device.username;
+        this.password = device.password;
+        this.channelNumber = device.channelNumber;
+        this.numberOfAlarmsIn = device.numberOfAlarmsIn;
+        this.numberOfAlarmsOut = device.numberOfAlarmsOut;
+        this.audioInChannel = device.audioInChannel;
+        this.talkInChannel = device.talkInChannel;
+        this.talkOutChannel = device.talkOutChannel;
+        this.connectionString = device.connectionString;
+        this.isLogged  = device.isLogged ;
+        this.isOnline = device.isOnline;
     }
 
     public Device(String deviceName) {
@@ -131,12 +164,6 @@ public class Device implements Serializable {
    -(id) copyWithZone:(NSZone *) zone;
    */
 
-
-//    public void setChannel(SDK_ChannelNameConfigAll channel) {
-//        this.channel = channel;
-//        this.channelNumber = channel.nChnCount;
-//    }
-
     @Override
     public int hashCode() {
         if ( null != this.connectionString ) {
@@ -158,9 +185,7 @@ public class Device implements Serializable {
         isLogged = login;
     }
 
-
    public void printDeviceInfo(){
-
        Log.d("deviceInfo","================================================");
        Log.d("deviceInfo","DEVICE INFO:");
        Log.d("deviceInfo","------------------------------------------------");
@@ -326,36 +351,12 @@ public class Device implements Serializable {
         this.tcpMaxConn = tcpMaxConn;
     }
 
-    public String getGigaCode() {
-        return gigaCode;
-    }
-
-    public void setGigaCode(String gigaCode) {
-        this.gigaCode = gigaCode;
-    }
-
-    public long getLoginID() {
-        return loginID;
-    }
-
-    public void setLoginID(long loginID) {
-        this.loginID = loginID;
-    }
-
     public Calendar getSystemTime() {
         return systemTime;
     }
 
     public void setSystemTime(Calendar systemTime) {
         this.systemTime = systemTime;
-    }
-
-    public int getError() {
-        return error;
-    }
-
-    public void setError(int error) {
-        this.error = error;
     }
 
     public int getTransferPlan() {
@@ -438,73 +439,6 @@ public class Device implements Serializable {
         this.ddnsUserName = ddnsUserName;
     }
 
-    //    public JSONObject getCurrentConfig(){
-//        return currentConfig;
-//    }
-//
-//    public void setCurrentConfig(JSONObject currentConfig){
-//        this.currentConfig = currentConfig;
-//    }
-
-
-//    public EthernetConfig getCurrentConfig() {
-//        if(currentConfig == null){
-//            currentConfig = new EthernetConfig();
-//        }
-//        return currentConfig;
-//    }
-//
-//    public void setCurrentConfig(EthernetConfig config) { this.currentConfig = config; }
-//
-//    public WifiConfig getWifiConfig() {
-//        if(wifiConfig == null){
-//            wifiConfig = new WifiConfig();
-//        }
-//        return wifiConfig;
-//    }
-//
-//    public DNSConfig getDNSConfig() {
-//        if(dnsConfig == null){
-//            dnsConfig = new DNSConfig();
-//        }
-//        return dnsConfig;
-//    }
-//
-//    public void setDNSConfig(DNSConfig dnsConfig) {
-//        this.dnsConfig = dnsConfig;
-//    }
-//
-//    public void setWifiConfig(WifiConfig wifiConfig) {
-//        this.wifiConfig = wifiConfig;
-//    }
-//
-//    public DDNSConfig getDdnsConfig() {
-//        if (ddnsConfig == null) {
-//            ddnsConfig = new DDNSConfig();
-//        }
-//        return ddnsConfig;
-//    }
-//
-//    public void setDdnsConfig(DDNSConfig ddnsConfig) {
-//        this.ddnsConfig = ddnsConfig;
-//    }
-
-    /*public AudioParam getAudioParam() {
-        AudioParam ap = new AudioParam();
-        ap.mFrequency = 8000;
-        ap.mChannel = AudioFormat.CHANNEL_CONFIGURATION_MONO;
-        ap.mSampBit = AudioFormat.ENCODING_PCM_16BIT;
-        return ap;
-    }*/
-
-    public void setVoiceHandle(long voiceHandle) {
-        this.voiceHandle = voiceHandle;
-    }
-
-    public long getVoiceHandle() {
-        return this.voiceHandle;
-    }
-
     public String getHostID() {
         String hostID;
         if (getIpAddress() != null && !getIpAddress().isEmpty()) {
@@ -518,44 +452,10 @@ public class Device implements Serializable {
     }
 
 
-
     @Override
     public String toString() {
         return deviceName;
     }
-
-    public long getPlaybackHandle() {
-        return playbackHandle;
-    }
-
-    public void setPlaybackHandle(long playbackHandle) {
-        this.playbackHandle = playbackHandle;
-    }
-
-//    public UpnpConfig getUpnpConfig() {
-//        if(upnpConfig == null){
-//            upnpConfig = new UpnpConfig();
-//        }
-//        return upnpConfig;
-//    }
-//
-//    public void setUpnpConfig(UpnpConfig upnpConfig) {
-//        this.upnpConfig = upnpConfig;
-//    }
-//
-//    public CloudConfig getCloudConfig() {
-//        if(cloudConfig == null){
-//            cloudConfig = new CloudConfig();
-//        }
-//        return cloudConfig;
-//    }
-//
-//    public DHCPConfig getDhcpConfig() {
-//        if(dhcpConfig == null){
-//            dhcpConfig = new DHCPConfig();
-//        }
-//        return dhcpConfig;
-//    }
 
     public String getDomain() {
         return domain;

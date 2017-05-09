@@ -64,8 +64,9 @@ public class DeviceSearchListActivity extends ActionBarActivity {
 
                 Intent intent = new Intent(DeviceSearchListActivity.this, DeviceFormActivity.class);
                 intent.putExtras(extras);
-                startActivity(intent);
-                finish();
+//                startActivity(intent);
+                startActivityForResult(intent, 1);
+//                finish();
 
                 /*String labelSetIP = getResources().getString(R.string.label_set_ip);
 
@@ -183,6 +184,16 @@ public class DeviceSearchListActivity extends ActionBarActivity {
         );
 
     }*/
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (requestCode == 1) {
+            if (resultCode == RESULT_OK) {
+                setResult(RESULT_OK, null);
+                this.finish();
+            }
+        }
+    }
 
     public void searchDevices(){
         if (mDiscoveryThread == null) {

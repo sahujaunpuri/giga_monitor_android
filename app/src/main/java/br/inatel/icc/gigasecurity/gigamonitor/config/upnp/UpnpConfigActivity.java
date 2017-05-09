@@ -42,6 +42,7 @@ public class UpnpConfigActivity extends ActionBarActivity {
             int messageId = R.string.saved;
             Toast.makeText(getApplicationContext(), messageId, Toast.LENGTH_SHORT).show();
             mManager.saveData();
+            mManager.collapse = mManager.getDevices().indexOf(mDevice);
 
             finish();
         }
@@ -50,6 +51,7 @@ public class UpnpConfigActivity extends ActionBarActivity {
         public void onError() {
             int messageId = R.string.invalid_device_save;
             Toast.makeText(getApplicationContext(), messageId, Toast.LENGTH_SHORT).show();
+            mManager.collapse = mManager.getDevices().indexOf(mDevice);
             finish();
         }
     };
@@ -114,7 +116,6 @@ public class UpnpConfigActivity extends ActionBarActivity {
                 return true;
             case R.id.action_config_save:
                 save();
-                mManager.collapse = mManager.getDevices().indexOf(mDevice);
                 return true;
             default:
                 return super.onOptionsItemSelected(item);

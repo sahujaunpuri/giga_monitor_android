@@ -1,10 +1,8 @@
 package br.inatel.icc.gigasecurity.gigamonitor.adapters;
 
 import android.content.Context;
-import android.opengl.GLSurfaceView;
 import android.os.Handler;
 import android.os.Looper;
-import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -12,14 +10,12 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
 
-import com.video.opengl.GLSurfaceView20;
-
 import br.inatel.icc.gigasecurity.gigamonitor.R;
 import br.inatel.icc.gigasecurity.gigamonitor.activities.DeviceListActivity;
 import br.inatel.icc.gigasecurity.gigamonitor.core.DeviceManager;
 import br.inatel.icc.gigasecurity.gigamonitor.managers.CustomGridLayoutManager;
 import br.inatel.icc.gigasecurity.gigamonitor.model.Device;
-import br.inatel.icc.gigasecurity.gigamonitor.model.SurfaceViewManager;
+import br.inatel.icc.gigasecurity.gigamonitor.model.DeviceChannelsManager;
 import br.inatel.icc.gigasecurity.gigamonitor.ui.OverlayMenu;
 import br.inatel.icc.gigasecurity.gigamonitor.ui.SurfaceViewComponent;
 
@@ -38,16 +34,16 @@ public class ChannelRecyclerViewAdapter extends RecyclerView.Adapter<ChannelRecy
     private long clickTime, lastClickTime = 0;
     public boolean doubleClick = false;
     public final Handler handler = new Handler(Looper.getMainLooper());
-    public final SurfaceViewManager surfaceViewManager;
+    public final DeviceChannelsManager deviceChannelsManager;
 
-    public ChannelRecyclerViewAdapter(Context mContext, Device mDevice, int numQuad, DeviceExpandableListAdapter.ChildViewHolder chieldViewHolder, SurfaceViewManager surfaceViewManager) {
+    public ChannelRecyclerViewAdapter(Context mContext, Device mDevice, int numQuad, DeviceExpandableListAdapter.ChildViewHolder chieldViewHolder, DeviceChannelsManager deviceChannelsManager) {
         this.mContext = mContext;
         this.mDevice = mDevice;
         this.numQuad = numQuad;
         this.childViewHolder = chieldViewHolder;
         this.mDeviceManager  = DeviceManager.getInstance();
-        this.surfaceViewManager = surfaceViewManager;
-        surfaceViewManager.mRecyclerAdapter = this;
+        this.deviceChannelsManager = deviceChannelsManager;
+        deviceChannelsManager.mRecyclerAdapter = this;
     }
 
     public ChannelRecyclerViewAdapter getAdapter(){
@@ -94,9 +90,9 @@ public class ChannelRecyclerViewAdapter extends RecyclerView.Adapter<ChannelRecy
 
         try{ //TODO detectar porque esta sendo chamado quando tenta conectar pela segunda vez a um dispositivo offline
 
-//            surfaceViewManager.reOrderSurfaceViewComponents();
+//            deviceChannelsManager.reOrderSurfaceViewComponents();
 
-            final SurfaceViewComponent currentSurfaceView = surfaceViewManager.surfaceViewComponents.get(position);
+            final SurfaceViewComponent currentSurfaceView = deviceChannelsManager.surfaceViewComponents.get(position);
 
             myViewHolder.frameLayout.removeAllViews();
             ViewGroup parent = (ViewGroup) currentSurfaceView.getParent();
@@ -108,12 +104,12 @@ public class ChannelRecyclerViewAdapter extends RecyclerView.Adapter<ChannelRecy
 //            currentSurfaceView.setLayoutParams(new FrameLayout.LayoutParams(FrameLayout.LayoutParams.MATCH_PARENT, FrameLayout.LayoutParams.MATCH_PARENT));
 
 //            currentSurfaceView.isLoading(true);
-            surfaceViewManager.onPlayLive(currentSurfaceView);
-//            surfaceViewManager.onStartVideo(currentSurfaceView);
+            deviceChannelsManager.onPlayLive(currentSurfaceView);
+//            deviceChannelsManager.onStartVideo(currentSurfaceView);
 
             myViewHolder.frameLayout.addView(currentSurfaceView);
 
-//            surfaceViewManager.changeSurfaceViewSize();
+//            deviceChannelsManager.changeSurfaceViewSize();
         } catch (IndexOutOfBoundsException e){
             Log.d(TAG, "onBindViewHolder: " + e.toString());
         }
@@ -128,7 +124,7 @@ public class ChannelRecyclerViewAdapter extends RecyclerView.Adapter<ChannelRecy
 
     @Override
     public long getItemId(int position){
-//        return surfaceViewManager.getChannelSelected(position);
+//        return deviceChannelsManager.getChannelSelected(position);
         return position;
     }
 
@@ -141,38 +137,38 @@ public class ChannelRecyclerViewAdapter extends RecyclerView.Adapter<ChannelRecy
     }
 
     public void singleQuad(int position){
-        if(surfaceViewManager.numQuad == 1 && surfaceViewManager.surfaceViewComponents.size() == 1) {
+        if(deviceChannelsManager.numQuad == 1 && deviceChannelsManager.surfaceViewComponents.size() == 1) {
             return;
         }
 
-        surfaceViewManager.resetScale();
-        msvSelected = surfaceViewManager.getChannelSelected(position);
-        surfaceViewManager.onStop(surfaceViewManager.surfaceViewComponents.get(msvSelected));
+        deviceChannelsManager.resetScale();
+        msvSelected = deviceChannelsManager.getChannelSelected(position);
+        deviceChannelsManager.onStop(deviceChannelsManager.surfaceViewComponents.get(msvSelected));
 //        surfaceViewComponent.isLoading(true);
 
-        if(surfaceViewManager.numQuad == 1) {
-            surfaceViewManager.numQuad = surfaceViewManager.lastNumQuad;
+        if(deviceChannelsManager.numQuad == 1) {
+            deviceChannelsManager.numQuad = deviceChannelsManager.lastNumQuad;
         } else {
-            surfaceViewManager.numQuad = 1;
+            deviceChannelsManager.numQuad = 1;
             CustomGridLayoutManager lm = (CustomGridLayoutManager) childViewHolder.recyclerViewChannels.getLayoutManager();
-            surfaceViewManager.lastFirstItemBeforeSelectChannel = lm.findFirstVisibleItemPosition();
+            deviceChannelsManager.lastFirstItemBeforeSelectChannel = lm.findFirstVisibleItemPosition();
         }
-        childViewHolder.gridLayoutManager.setSpanCount(surfaceViewManager.numQuad);
+        childViewHolder.gridLayoutManager.setSpanCount(deviceChannelsManager.numQuad);
         childViewHolder.mRecyclerAdapter.notifyDataSetChanged();
 
-        if(surfaceViewManager.numQuad == 1) {
+        if(deviceChannelsManager.numQuad == 1) {
             childViewHolder.gridLayoutManager.scrollToPositionWithOffset((position), 0);
-            surfaceViewManager.lastFirstVisibleItem = surfaceViewManager.getChannelSelected(position);
-            surfaceViewManager.lastLastVisibleItem = surfaceViewManager.getChannelSelected(position);
+            deviceChannelsManager.lastFirstVisibleItem = deviceChannelsManager.getChannelSelected(position);
+            deviceChannelsManager.lastLastVisibleItem = deviceChannelsManager.getChannelSelected(position);
         } else {
-            childViewHolder.gridLayoutManager.scrollToPositionWithOffset(surfaceViewManager.lastFirstItemBeforeSelectChannel, 0);
-//            childViewHolder.recyclerViewChannels.scrollToPosition(surfaceViewManager.lastFirstItemBeforeSelectChannel);
-            surfaceViewManager.lastFirstVisibleItem = surfaceViewManager.lastFirstItemBeforeSelectChannel;
-            surfaceViewManager.lastLastVisibleItem = surfaceViewManager.lastFirstItemBeforeSelectChannel + surfaceViewManager.numQuad;
+            childViewHolder.gridLayoutManager.scrollToPositionWithOffset(deviceChannelsManager.lastFirstItemBeforeSelectChannel, 0);
+//            childViewHolder.recyclerViewChannels.scrollToPosition(deviceChannelsManager.lastFirstItemBeforeSelectChannel);
+            deviceChannelsManager.lastFirstVisibleItem = deviceChannelsManager.lastFirstItemBeforeSelectChannel;
+            deviceChannelsManager.lastLastVisibleItem = deviceChannelsManager.lastFirstItemBeforeSelectChannel + deviceChannelsManager.numQuad;
         }
-        surfaceViewManager.reOrderSurfaceViewComponents();
+        deviceChannelsManager.reOrderSurfaceViewComponents();
 
-        surfaceViewManager.changeSurfaceViewSize();
+        deviceChannelsManager.changeSurfaceViewSize();
 
 
     }

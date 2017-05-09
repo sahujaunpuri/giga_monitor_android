@@ -88,7 +88,8 @@ public class InitialActivity extends ActionBarActivity implements View.OnClickLi
             extras.putSerializable("devicesSearch", mDevices);
 
             i.putExtras(extras);
-            startActivity(i);
+//            startActivity(i);
+            startActivityForResult(i, REQUEST_EXIT);
         }
 
     }
