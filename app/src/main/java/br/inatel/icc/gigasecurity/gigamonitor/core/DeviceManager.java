@@ -5,6 +5,7 @@ import android.content.res.Resources;
 import android.os.Environment;
 import android.os.Message;
 import android.util.Log;
+import android.widget.Toast;
 
 import com.basic.G;
 import com.google.gson.annotations.Expose;
@@ -330,13 +331,16 @@ public class DeviceManager implements IFunSDKResult{
                 }
             }
             break;
-            case EUIMSG.DEV_OPTION:
-           /* {
-//                if(msg.arg1 >= 0){
-                    String data = G.ToStringJson(msgContent.pData);
-                    Log.d(TAG, "--> DATA: " + data);
-//                }
-            }*/
+            case EUIMSG.DEV_ON_DISCONNECT:
+            {
+                if(msgContent.str != null){
+                    String mensagem = "Dispositivo desconectado";
+                    Device device = findDeviceById(msgContent.str.hashCode());
+                    if(device != null)
+                        mensagem = mensagem.concat(" (" + device.connectionString + ")");
+                    Toast.makeText(currentContext, mensagem, Toast.LENGTH_LONG).show();
+                }
+            }
             break;
 
         }

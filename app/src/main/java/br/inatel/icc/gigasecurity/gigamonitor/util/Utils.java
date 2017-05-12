@@ -10,6 +10,8 @@ import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 
 import com.lib.SDKCONST;
+import com.lib.sdk.struct.H264_DVR_FILE_DATA;
+import com.lib.sdk.struct.SDK_SYSTEM_TIME;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -19,8 +21,12 @@ import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.Arrays;
+import java.util.Calendar;
 import java.util.Date;
+import java.util.GregorianCalendar;
 import java.util.Locale;
 
 /**
@@ -179,6 +185,26 @@ public class Utils {
     public static String currentDateTime() {
         SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy HH_mm_ss", Locale.ENGLISH);
         return sdf.format(new Date());
+    }
+
+    public static Date parseStringToDate(String str){
+        SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss", Locale.ENGLISH);
+        try {
+            return sdf.parse(str);
+            /*Calendar calendar = GregorianCalendar.getInstance();
+            calendar.setTime(date);
+            Log.d("utils", "parseStringToTime: " + date.getTime());*/
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+
+        return null;
+    }
+
+    public static int parseStringToBits(String str){
+        String[] bits = str.split("=");
+        Log.d("parse", "parseStringToBits: " + Arrays.toString(bits));
+        return Integer.parseInt(bits[1]);
     }
 
     public static boolean savePictureFile(String path){

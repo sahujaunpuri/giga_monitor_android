@@ -46,16 +46,9 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="activities.DeviceFormActivity" />
         </activity>
-        <activity android:name=".activities.DevicesGridActivity" />
-        <activity
-            android:name=".activities.DeviceMonitorActivity"
-            android:screenOrientation="portrait" />
         <activity
             android:name=".config.ConfigMenuActivity"
             android:label="@string/title_activity_config_list" />
-        <activity
-            android:name=".config.wifi.WifiConfigActivity"
-            android:label="@string/title_activity_wifi_config" />
         <activity
             android:name=".config.general.GeneralConfigActivity"
             android:label="@string/title_activity_general_config" />
@@ -73,107 +66,26 @@
             android:name=".config.upnp.UpnpConfigActivity"
             android:label="@string/title_activity_upnp_config" />
         <activity
-            android:name=".activities.IntercomTestActivity"
-            android:label="@string/title_activity_bidirectional_talk_test"
-            android:screenOrientation="portrait" />
-        <activity
-            android:name=".activities.AlarmTestActivity"
-            android:label="@string/title_activity_alarm_test"
-            android:screenOrientation="portrait" />
-        <activity
-            android:name=".activities.AlarmOptionsActivity"
-            android:label="@string/title_activity_alarm_test"
-            android:screenOrientation="portrait" />
-        <activity
-            android:name=".activities.AlarmInActivity"
-            android:label="@string/title_activity_alarm_in"
-            android:parentActivityName=".activities.AlarmOptionsActivity"
+            android:name=".activities.DevicePlaybackActivity"
+            android:label="@string/title_activity_device_playback"
+            android:parentActivityName=".activities.DeviceListActivity"
             android:screenOrientation="portrait">
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value="br.inatel.icc.gigasecurity.gigamonitor.activities.AlarmOptionsActivity" />
-        </activity>
-        <activity
-            android:name=".activities.AlarmOutActivity"
-            android:label="@string/title_activity_alarm_out"
-            android:parentActivityName=".activities.AlarmOptionsActivity"
-            android:screenOrientation="portrait">
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value="br.inatel.icc.gigasecurity.gigamonitor.activities.AlarmOptionsActivity" />
-        </activity>
-        <activity
-            android:name=".activities.DeviceActivity"
-            android:label="@string/title_activity_device"
-            android:parentActivityName=".activities.DeviceListActivity">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="br.inatel.icc.gigasecurity.gigamonitor.activities.DeviceListActivity" />
         </activity>
         <activity
-            android:name=".activities.DevicePlaybackActivity"
-            android:label="@string/title_activity_device_playback"
-            android:parentActivityName=".activities.DeviceActivity"
-            android:screenOrientation="portrait">
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value="br.inatel.icc.gigasecurity.gigamonitor.activities.DeviceActivity" />
-        </activity>
-        <activity
             android:name=".activities.DevicePlaybackVideoActivity"
             android:label="@string/title_activity_device_playback_video"
+            android:screenOrientation="portrait"
             android:parentActivityName=".activities.DevicePlaybackActivity">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="br.inatel.icc.gigasecurity.gigamonitor.activities.DevicePlaybackActivity" />
         </activity>
         <activity
-            android:name=".config.wifi.WifiSearchActivity"
-            android:label="@string/title_activity_wifi_search"
-            android:parentActivityName=".config.wifi.WifiConfigActivity">
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value="br.inatel.icc.gigasecurity.gigamonitor.config.wifi.WifiConfigActivity" />
-        </activity>
-        <activity
-            android:name=".config.dhcp.DHCPConfigActivity"
-            android:label="@string/title_activity_dhcp"
-            android:parentActivityName=".config.ConfigMenuActivity"
-            android:screenOrientation="portrait">
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value=".config.ConfigMenuActivity" />
-        </activity>
-        <activity
-            android:name=".config.cloud.CloudConfigActivity"
-            android:label="@string/title_activity_cloud_config"
-            android:parentActivityName=".config.ConfigMenuActivity"
-            android:screenOrientation="portrait">
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value=".config.ConfigMenuActivity" />
-        </activity>
-        <activity
             android:name=".config.password.PasswordConfigActivity"
             android:label="@string/title_activity_password_config"
-            android:parentActivityName=".config.ConfigMenuActivity"
-            android:screenOrientation="portrait">
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value=".config.ConfigMenuActivity" />
-        </activity>
-        <activity
-            android:name=".activities.PTZActivity"
-            android:label="@string/title_activity_ptz"
-            android:parentActivityName=".config.ConfigMenuActivity"
-            android:screenOrientation="portrait">
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value=".activities.DeviceActivity" />
-        </activity>
-        <activity
-            android:name=".activities.DeviceEventsActivity"
-            android:label="@string/title_activity_devioce_events"
             android:parentActivityName=".config.ConfigMenuActivity"
             android:screenOrientation="portrait">
             <meta-data
@@ -222,17 +134,10 @@
             android:label="@string/title_activity_device_remote_control"
             android:screenOrientation="portrait" />
         <activity
-            android:name=".activities.DeviceChnZoom"
-            android:label="@string/title_activity_device_chn_zoom" />
-        <activity
             android:name=".activities.DeviceListActivity"
             android:hardwareAccelerated="true"
             android:configChanges="orientation|keyboardHidden|screenSize"
             android:label="@string/title_activity_device_list3"/>
-        <activity
-            android:name=".activities.MyTimelineActivity"
-            android:hardwareAccelerated="true"
-            android:label="@string/title_activity_timeline"/>
     </application>
 
 </manifest>
