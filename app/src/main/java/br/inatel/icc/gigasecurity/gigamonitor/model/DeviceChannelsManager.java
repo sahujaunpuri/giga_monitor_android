@@ -95,13 +95,15 @@ public class DeviceChannelsManager extends ChannelsManager implements IFunSDKRes
     }
 
     public void createComponents() {
-        for (int i = 0; i < mDevice.getChannelNumber(); i++) {
+        if(surfaceViewComponents.isEmpty()) {
+            for (int i = 0; i < mDevice.getChannelNumber(); i++) {
 
-            this.createComponent(i);
+                this.createComponent(i);
 
+            }
+            this.reOrderSurfaceViewComponents();
+            changeSurfaceViewSize();
         }
-        this.reOrderSurfaceViewComponents();
-        changeSurfaceViewSize();
     }
 
 
@@ -197,9 +199,6 @@ public class DeviceChannelsManager extends ChannelsManager implements IFunSDKRes
                 itemToScroll = currentLastVisibleItem;
             }
         }
-        Log.d("Item to scroll", "First Visible: " + currentFirstVisibleItem + " Last Visible:" + currentLastVisibleItem + " To Scroll:" + itemToScroll);
-        Log.d("Item to scroll", "LastFirst Visible: " + lastFirstVisibleItem + " LastLast Visible:" + lastLastVisibleItem);
-
         this.lastFirstVisibleItem = currentFirstVisibleItem;
         this.lastLastVisibleItem = currentLastVisibleItem;
 
@@ -443,6 +442,7 @@ public class DeviceChannelsManager extends ChannelsManager implements IFunSDKRes
                         Log.i(TAG, "START SUCCESS");
                     } else {
                         if(svc.playType == 0) {
+                            svc.setConnected(false);
                             mDeviceManager.addToStart(svc);
                         } else{
                             onPlayPlayback(fileToStart, svc);

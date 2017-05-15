@@ -18,6 +18,8 @@ import br.inatel.icc.gigasecurity.gigamonitor.R;
 import br.inatel.icc.gigasecurity.gigamonitor.adapters.DeviceExpandableListAdapter;
 import br.inatel.icc.gigasecurity.gigamonitor.core.DeviceManager;
 import br.inatel.icc.gigasecurity.gigamonitor.model.Device;
+import com.crashlytics.android.Crashlytics;
+import io.fabric.sdk.android.Fabric;
 
 public class DeviceListActivity extends ActionBarActivity {
 
@@ -34,21 +36,8 @@ public class DeviceListActivity extends ActionBarActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_device_list);
+        Fabric.with(this, new Crashlytics());
 
-        /*if(getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE) {
-            getWindow().clearFlags(WindowManager.LayoutParams.FLAG_FORCE_NOT_FULLSCREEN);
-            getWindow().addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
-//            getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
-            getSupportActionBar().hide();
-
-            if(previousGroup != -1) {
-                mAdapter.onChangeOrientation(previousGroup);
-                mExpandableListView.scrollTo(previousGroup, 0);
-            }
-        } else{
-            getWindow().clearFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
-            getWindow().addFlags(WindowManager.LayoutParams.FLAG_FORCE_NOT_FULLSCREEN);
-        }*/
 
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
 
@@ -61,12 +50,6 @@ public class DeviceListActivity extends ActionBarActivity {
         initComponents();
 
 //        Thread.setDefaultUncaughtExceptionHandler(new MyExceptionHandler(this, DeviceListActivity.class));
-
-
-
-//        if(previousGroup != -1) {
-//            mAdapter.onChangeOrientation(previousGroup);
-//        }
 
         //if don't have any device registered, start InitialActivity.
         if(mDevices.size() == 0) {
@@ -159,6 +142,7 @@ public class DeviceListActivity extends ActionBarActivity {
         mContext            = DeviceListActivity.this;
         mAdapter            = mDeviceManager.getExpandableListAdapter(mContext);
         mDevices            = mDeviceManager.getDevices();
+        previousGroup = -1;
         mDeviceManager.currentContext = this;
         mAdapter.mContext = this;
         mAdapter.setDevices(mDevices);

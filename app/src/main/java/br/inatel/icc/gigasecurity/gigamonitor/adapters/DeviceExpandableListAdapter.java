@@ -203,19 +203,12 @@ public class DeviceExpandableListAdapter extends BaseExpandableListAdapter {
                     final int itemToScroll;
                     final int currentFirstVisibleItem = currentChildViewHolder.gridLayoutManager.findFirstVisibleItemPosition();
                     final int currentLastVisibleItem = currentChildViewHolder.gridLayoutManager.findLastVisibleItemPosition();
-                    if(currentFirstVisibleItem != currentLastVisibleItem) {
-                        itemToScroll = mDeviceManager.getDeviceChannelsManagers().get(groupPosition).scrollToItem(currentFirstVisibleItem, currentLastVisibleItem);
+                    DeviceChannelsManager mChannelManager = mDeviceManager.getDeviceChannelsManagers().get(groupPosition);
+                    itemToScroll = mChannelManager.scrollToItem(currentFirstVisibleItem, currentLastVisibleItem);
+                    if(mChannelManager.lastFirstVisibleItem != mChannelManager.lastLastVisibleItem || currentFirstVisibleItem != currentLastVisibleItem)
                         currentChildViewHolder.gridLayoutManager.smoothScrollToPosition(currentChildViewHolder.recyclerViewChannels, null, itemToScroll);
-//                        Log.d("Item to scroll", "First Visible: " + currentFirstVisibleItem + " Last Visible:" + currentLastVisibleItem + " To Scroll:" + itemToScroll);
-                    }
                 }
             }
-
-//            @Override
-//            public void onScrolled(RecyclerView recyclerView, int dx, int dy){
-////                if(scrolled)
-////                    amountScrolled += dx;
-//            }
         };
     }
 
@@ -293,6 +286,7 @@ public class DeviceExpandableListAdapter extends BaseExpandableListAdapter {
 
     @Override
     public void onGroupExpanded(int groupPosition){
+        super.onGroupExpanded(groupPosition);
         final GroupViewHolder currentGroupViewHolder = groupViewHolder.get(groupPosition);
         mDeviceManager.getDeviceChannelsManagers().get(groupPosition).collpased = false;
         if(currentGroupViewHolder.mDevice.isLogged && !mDeviceManager.getDeviceChannelsManagers().get(groupPosition).surfaceViewComponents.isEmpty()) {
@@ -302,6 +296,7 @@ public class DeviceExpandableListAdapter extends BaseExpandableListAdapter {
 
     @Override
     public void onGroupCollapsed(int groupPosition){
+        super.onGroupCollapsed(groupPosition);
         stopChannels(groupPosition);
         final GroupViewHolder currentGroupViewHolder = groupViewHolder.get(groupPosition);
         final ChildViewHolder currentChildViewHolder = childViewHolder.get(groupPosition);
@@ -326,7 +321,7 @@ public class DeviceExpandableListAdapter extends BaseExpandableListAdapter {
 //        onChangeOrientation(groupPosition);
     }
 
-    private void setLayoutSize(int groupPosition) {
+    private void setLayoutSize(final int groupPosition) {
         DisplayMetrics displayMetrics = Resources.getSystem().getDisplayMetrics();
         int viewWidth = displayMetrics.widthPixels;
         int viewHeight;
@@ -340,15 +335,23 @@ public class DeviceExpandableListAdapter extends BaseExpandableListAdapter {
             viewHeight = ((displayMetrics.heightPixels / 3)+10);
         }
 
-        childViewHolder.get(groupPosition).overlayMenu.getLayoutParams().height = viewHeight;
-        childViewHolder.get(groupPosition).overlayMenu.getLayoutParams().width = viewWidth;
-        childViewHolder.get(groupPosition).overlayMenu.requestLayout();
+        final int width = viewWidth;
+        final int height = viewHeight;
 
-        FrameLayout.LayoutParams lpRecyclerView = new FrameLayout.LayoutParams(viewWidth, viewHeight);
-        childViewHolder.get(groupPosition).convertView.setLayoutParams(lpRecyclerView);
-        childViewHolder.get(groupPosition).recyclerViewChannels.setLayoutParams(lpRecyclerView);
-        childViewHolder.get(groupPosition).gridLayoutManager.requestLayout();
-        mDeviceManager.getDeviceChannelsManagers().get(groupPosition).resetScale();
+        ((Activity)mContext).runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                childViewHolder.get(groupPosition).overlayMenu.getLayoutParams().height = height;
+                childViewHolder.get(groupPosition).overlayMenu.getLayoutParams().width = width;
+                childViewHolder.get(groupPosition).overlayMenu.requestLayout();
+
+                FrameLayout.LayoutParams lpRecyclerView = new FrameLayout.LayoutParams(width, height);
+                childViewHolder.get(groupPosition).convertView.setLayoutParams(lpRecyclerView);
+                childViewHolder.get(groupPosition).recyclerViewChannels.setLayoutParams(lpRecyclerView);
+                childViewHolder.get(groupPosition).gridLayoutManager.requestLayout();
+                mDeviceManager.getDeviceChannelsManagers().get(groupPosition).resetScale();
+            }
+        });
     }
 
     @Override

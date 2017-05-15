@@ -183,6 +183,10 @@ public class DeviceEditListActivity extends ActionBarActivity {
         alert.setNeutralButton("Não Salvar", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
+                mDeviceManager.invalidateExpandableList();
+                mDeviceManager.loadSavedData(mDeviceManager.currentContext);
+                DeviceListActivity.mDevices = null;
+                mDeviceManager.updateSurfaceViewManagers();
                 startDeviceListActivity();
             }
         });
