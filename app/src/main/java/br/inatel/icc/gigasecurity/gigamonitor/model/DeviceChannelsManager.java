@@ -262,8 +262,7 @@ public class DeviceChannelsManager extends ChannelsManager implements IFunSDKRes
                 stopRecord(svc);
             } else
                 FunSDK.MediaStop(svc.mPlayerHandler);
-//            if(svc.playType == 0)
-                svc.setConnected(false);
+            svc.setConnected(false);
 
         }
         svc.isPlaying = false;
@@ -491,6 +490,9 @@ public class DeviceChannelsManager extends ChannelsManager implements IFunSDKRes
                         svc.isPlaying = true;
                         if (svc.playType == 0) {
                             svc.isLoading(false);
+                            if(!svc.isVisible){
+                                onStop(svc);
+                            }
 //                        menu.updateIcons();
                         } else if (svc.playType == 1) {
                             svc.isSeeking = false;

@@ -123,6 +123,7 @@ public class DeviceListActivity extends ActionBarActivity {
             mExpandableListView.collapseGroup(mDeviceManager.collapse);
             mAdapter.onGroupCollapsed(mDeviceManager.collapse);
             mDeviceManager.collapse = -1;
+            previousGroup = -1;
         }
         mAdapter.notifyDataSetChanged();
 //        mExpandableListView.invalidate();

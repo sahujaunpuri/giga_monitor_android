@@ -183,11 +183,15 @@ public class DeviceManager implements IFunSDKResult{
                         FunSDK.DevGetConfigByJson(getHandler(), device.connectionString, "SystemInfo", 4096, -1, 10000, device.getId());
                     }
                } else if(msg.arg1 == -11301 ) {
-                    if (device != null && loginList.get(device.connectionString) != null)
+                    if (device != null && loginList.get(device.connectionString) != null) {
                         loginList.get(device.connectionString).onLoginError(msg.arg1, device);
+                        loginList.remove(device.connectionString);
+                    }
                 } else if(msg.arg1 == -11307){
-                    if(device != null && loginList.get(device.connectionString) != null)
+                    if(device != null && loginList.get(device.connectionString) != null) {
                         loginList.get(device.connectionString).onLoginError(msg.arg1, device);
+                        loginList.remove(device.connectionString);
+                    }
                 } else if(device != null){
                     FunSDK.DevLogin(getHandler(), device.connectionString, device.getUsername(), device.getPassword(), device.getId());
                     Log.d(TAG, "OnFunSDKResult: Login ERROR");
@@ -240,8 +244,11 @@ public class DeviceManager implements IFunSDKResult{
                         case "SystemInfo":{
                             setDeviceInfo(json, device);
 //                            currentLoginListener.onLoginSuccess();
-                            if(loginList.get(device.connectionString) != null)
+                            if(loginList.get(device.connectionString) != null) {
                                 loginList.get(device.connectionString).onLoginSuccess(device);
+                                loginList.remove(device.connectionString);
+                            }
+
                         }
                         break;
                         case "NetWork.NetCommon":{
@@ -336,8 +343,11 @@ public class DeviceManager implements IFunSDKResult{
                 if(msgContent.str != null){
                     String mensagem = "Dispositivo desconectado";
                     Device device = findDeviceById(msgContent.str.hashCode());
-                    if(device != null)
+                    if(device != null) {
                         mensagem = mensagem.concat(" (" + device.connectionString + ")");
+                        device.isLogged = false;
+//                        FunSDK.SysGetDevState(getHandler(), device.connectionString, device.getId());
+                    }
                     Toast.makeText(currentContext, mensagem, Toast.LENGTH_LONG).show();
                 }
             }
@@ -354,7 +364,7 @@ public class DeviceManager implements IFunSDKResult{
 
     public void loadSavedData(Context context){
         mDevices = loadDevices(context);
-//        loginAllDevices();
+        loginAllDevices();
         favoritesMap = new HashMap<Integer, ArrayList<Integer>>();
         favoritesMap = loadFavorites(context);
         /*if(!favoritesMap.isEmpty()){
@@ -439,8 +449,8 @@ public class DeviceManager implements IFunSDKResult{
 
             if(systemInfo.has("AudioInChannel"))
                 device.audioInChannel = systemInfo.getInt("AudioInChannel");
-//            if(systemInfo.has("SerialNo"))
-//                device.setSerialNumber(systemInfo.getString("SerialNo"));
+            if(systemInfo.has("SerialNo"))
+                device.setSerialNumber(systemInfo.getString("SerialNo"));
             if(systemInfo.has("TalkInChannel"))
                 device.talkInChannel = systemInfo.getInt("TalkInChannel");
             if(systemInfo.has("TalkOutChannel"))
@@ -772,9 +782,9 @@ public class DeviceManager implements IFunSDKResult{
     }
 
     public void loginDevice(final Device device, final LoginDeviceListener loginDeviceListener) {
-            if(!loginList.containsKey(device.connectionString))
-                FunSDK.SysGetDevState(getHandler(), device.connectionString, device.getId());
-            loginList.put(device.connectionString, loginDeviceListener);
+        if(!loginList.containsKey(device.connectionString) || loginList.get(device.connectionString) != null)
+            FunSDK.SysGetDevState(getHandler(), device.connectionString, device.getId());
+        loginList.put(device.connectionString, loginDeviceListener);
     }
 
     public void removeLoginListener(String connectionString){
