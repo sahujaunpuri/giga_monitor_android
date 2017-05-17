@@ -11,7 +11,6 @@ import android.os.Bundle;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.DisplayMetrics;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -288,7 +287,7 @@ public class DeviceExpandableListAdapter extends BaseExpandableListAdapter {
     public void onGroupExpanded(int groupPosition){
         super.onGroupExpanded(groupPosition);
         final GroupViewHolder currentGroupViewHolder = groupViewHolder.get(groupPosition);
-        mDeviceManager.getDeviceChannelsManagers().get(groupPosition).collpased = false;
+        mDeviceManager.getDeviceChannelsManagers().get(groupPosition).collapased = false;
         if(currentGroupViewHolder.mDevice.isLogged && !mDeviceManager.getDeviceChannelsManagers().get(groupPosition).surfaceViewComponents.isEmpty()) {
             mDeviceManager.getDeviceChannelsManagers().get(groupPosition).createComponents();
         }
@@ -308,13 +307,14 @@ public class DeviceExpandableListAdapter extends BaseExpandableListAdapter {
                 currentGroupViewHolder.ivQuad.setVisibility(View.INVISIBLE);
                 currentChildViewHolder.recyclerViewChannels.setVisibility(View.INVISIBLE);
                 currentChildViewHolder.overlayMenu.setVisibility(View.GONE);
+                currentChildViewHolder.recyclerViewChannels.removeAllViewsInLayout();
             }
         });
 
-        currentChildViewHolder.recyclerViewChannels.removeAllViewsInLayout();
+
         if(mDeviceManager.getDeviceChannelsManagers().get(groupPosition).recCounter <= 0)
             mDeviceManager.getDeviceChannelsManagers().get(groupPosition).surfaceViewComponents.clear();
-        mDeviceManager.getDeviceChannelsManagers().get(groupPosition).collpased = true;
+        mDeviceManager.getDeviceChannelsManagers().get(groupPosition).collapased = true;
         mDeviceManager.removeLoginListener(currentGroupViewHolder.mDevice.connectionString);
         mDeviceManager.clearStart();
 
@@ -372,21 +372,11 @@ public class DeviceExpandableListAdapter extends BaseExpandableListAdapter {
     }
 
     private void loginDevice(final Device mDevice, final GroupViewHolder groupViewHolder, final ChildViewHolder childViewHolder, final int position) {
-//        groupViewHolder.ivIndicator.setImageDrawable(mContext.getResources().getDrawable(R.drawable.ic_indicator_minus));
         mDeviceManager.loginDevice(mDevice, new LoginDeviceListener() {
             @Override
             public void onLoginSuccess(Device device) {
                         mDevice.isLogged = true;
                         updateChildView(mDevice, groupViewHolder, childViewHolder, position);
-                        /*if(mDevice.getChannelNumber()>1){
-                            mDeviceManager.getDeviceChannelsManagers().get(position).numQuad = 2;
-                            mDeviceManager.getDeviceChannelsManagers().get(position).lastNumQuad = 2;
-                        }
-                        mDeviceManager.getDeviceChannelsManagers().get(position).createComponents();
-                        childViewHolder.gridLayoutManager.setSpanCount(mDeviceManager.getDeviceChannelsManagers().get(position).numQuad);
-
-                        childViewHolder.recyclerViewChannels.getAdapter().notifyDataSetChanged();
-                        showExpanded(position, groupViewHolder, childViewHolder);*/
             }
 
             @Override

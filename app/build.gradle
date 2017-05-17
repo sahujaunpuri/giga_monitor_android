@@ -54,9 +54,7 @@ dependencies {
     compile 'com.google.code.gson:gson:2.4'
     compile 'com.google.zxing:core:3.2.0'
     compile 'com.android.support:recyclerview-v7:21.+'
-//    compile files('libs/commons-lang-2.5.jar')
     compile files('libs/LibFunSDK.jar')
-//    compile files('libs/Core.jar')
     compile files('libs/dewarp.jar')
     compile files('libs/fastjson-1.2.8.jar')
     compile files('libs/stickygridheaders.jar')

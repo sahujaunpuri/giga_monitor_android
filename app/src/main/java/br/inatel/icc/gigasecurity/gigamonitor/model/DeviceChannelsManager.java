@@ -28,7 +28,6 @@ import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.Locale;
 
-import br.inatel.icc.gigasecurity.gigamonitor.activities.DeviceListActivity;
 import br.inatel.icc.gigasecurity.gigamonitor.adapters.ChannelRecyclerViewAdapter;
 import br.inatel.icc.gigasecurity.gigamonitor.core.DeviceManager;
 import br.inatel.icc.gigasecurity.gigamonitor.listeners.PlaybackListener;
@@ -63,7 +62,7 @@ public class DeviceChannelsManager extends ChannelsManager implements IFunSDKRes
     public int recCounter = 0;
     private int talkHandler;
     public int playType = 0; //0 - live, 1 - playback live
-    public boolean collpased = false;
+    public boolean collapased = false;
     private H264_DVR_FILE_DATA fileToStart;
 
     private int[][] inverseMatrix = new int[][]{
@@ -438,7 +437,7 @@ public class DeviceChannelsManager extends ChannelsManager implements IFunSDKRes
                         if (svc.playType == 0) {
                             mDeviceManager.requestStart();
                         }
-                        Log.i(TAG, "START SUCCESS");
+                        Log.i(TAG, "START SUCCESS " + (svc.getMySurfaceViewChannelId()+1));
                     } else {
                         if(svc.playType == 0) {
                             svc.setConnected(false);
@@ -490,9 +489,9 @@ public class DeviceChannelsManager extends ChannelsManager implements IFunSDKRes
                         svc.isPlaying = true;
                         if (svc.playType == 0) {
                             svc.isLoading(false);
-                            if(!svc.isVisible){
+                            /*if(!svc.isVisible){
                                 onStop(svc);
-                            }
+                            }*/
 //                        menu.updateIcons();
                         } else if (svc.playType == 1) {
                             svc.isSeeking = false;
@@ -541,7 +540,7 @@ public class DeviceChannelsManager extends ChannelsManager implements IFunSDKRes
                     Toast.makeText(mContext, "Falha na gravação", Toast.LENGTH_SHORT).show();
                 }
                 recCounter--;
-                if(collpased)
+                if(collapased)
                     surfaceViewComponents.clear();
             }
             break;
@@ -598,6 +597,10 @@ public class DeviceChannelsManager extends ChannelsManager implements IFunSDKRes
                     mRecordThread.Start();
                     mRecordThread.Pause(false);
                 }
+            }
+            break;
+            case EUIMSG.MEDIA_FRAME_LOSS: {
+                Log.d(TAG, "OnFunSDKResult: Media Frame Loss");
             }
         }
         return 0;

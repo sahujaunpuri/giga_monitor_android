@@ -62,7 +62,7 @@
 //    public int recCounter = 0;
 //    private int talkHandler;
 //    public int playType = 0; //0 - live, 1 - playback live
-//    public boolean collpased = false;
+//    public boolean collapased = false;
 //
 //    private int[][] inverseMatrix = new int[][]{
 //            {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15},

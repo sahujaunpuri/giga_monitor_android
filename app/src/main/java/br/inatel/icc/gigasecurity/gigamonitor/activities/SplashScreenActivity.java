@@ -23,9 +23,6 @@ public class SplashScreenActivity extends ActionBarActivity {
             getActionBar().hide();
         }
 
-
-        DeviceManager.getInstance().init(this);
-
         new Timer().schedule(new TimerTask() {
 
             @Override

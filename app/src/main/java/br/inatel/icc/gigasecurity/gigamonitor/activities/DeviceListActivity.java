@@ -47,6 +47,8 @@ public class DeviceListActivity extends ActionBarActivity {
 
         Thread.currentThread().setPriority(Thread.MAX_PRIORITY);
 
+        DeviceManager.getInstance().init(this);
+
         initComponents();
 
 //        Thread.setDefaultUncaughtExceptionHandler(new MyExceptionHandler(this, DeviceListActivity.class));
@@ -63,10 +65,12 @@ public class DeviceListActivity extends ActionBarActivity {
 
                 if (previousGroup == -1) {
                     previousGroup = groupPosition;
-                    return false;
+                    parent.expandGroup(groupPosition);
+                    return true;
                 }else if(previousGroup == groupPosition){
+                    parent.collapseGroup(previousGroup);
                     previousGroup = -1;
-                    return false;
+                    return true;
                 }else {
                     parent.collapseGroup(previousGroup);
                     parent.expandGroup(groupPosition);
@@ -150,33 +154,10 @@ public class DeviceListActivity extends ActionBarActivity {
         mAdapter.notifyDataSetChanged();
 
 
-//        loadDevices();
-
-//        mAdapter = new DeviceExpandableListAdapter(mContext, mDevices);
-
         mExpandableListView.setAdapter(mAdapter);
-
         mAdapter.notifyDataSetChanged();
-//        if(mDevices == null) {
-//            mDevices = mDeviceManager.getDevices();
-//
-//        }
 
     }
-
-    /*public static void loadDevices() {
-        if(mDevices == null) {
-            mDevices = mDeviceManager.getDevices();
-
-            surfaceViewManagers.clear();
-
-            for(int i=0; i < mDevices.size(); i++) {
-                DeviceChannelsManager deviceChannelsManager = new DeviceChannelsManager(mDevices.get(i));
-
-                surfaceViewManagers.add(deviceChannelsManager);
-            }
-        }
-    }*/
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {

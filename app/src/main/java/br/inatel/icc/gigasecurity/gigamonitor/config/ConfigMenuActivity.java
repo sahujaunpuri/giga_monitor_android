@@ -35,6 +35,7 @@ public class ConfigMenuActivity extends ActionBarActivity implements OnClickList
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
         setContentView(R.layout.activity_config);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 

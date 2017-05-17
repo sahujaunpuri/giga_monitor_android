@@ -9,6 +9,7 @@ import android.widget.Toast;
 
 import com.basic.G;
 import com.google.gson.annotations.Expose;
+import com.lib.EDEV_OPTERATE;
 import com.lib.EFUN_ATTR;
 import com.lib.EUIMSG;
 import com.lib.FunSDK;
@@ -213,9 +214,11 @@ public class DeviceManager implements IFunSDKResult{
                     } else {
                         Log.i(TAG, "OnFunSDKResult: Device OFFLINE");
 
-                        if(stateCheckTry>2 ) {
-                            if(loginList.get(device.connectionString) != null)
+                        if(stateCheckTry>3 ) {
+                            if(loginList.get(device.connectionString) != null) {
                                 loginList.get(device.connectionString).onLoginError(-1, device);
+                                loginList.remove(device.connectionString);
+                            }
                             device.isOnline = false;
                             stateCheckTry = 0;
                         } else{
@@ -692,8 +695,14 @@ public class DeviceManager implements IFunSDKResult{
     }
 
     public void remoteControl(Device device, int command){
-//        FunSDK.DevOption(getHandler(), device.connectionString, EDEV_OPTERATE.EDOPT_NET_KEY_CLICK, null, 0, command, 0, 0, "OPNetKeyboard", device.getId());
-//        FunSDK.DevCmdGeneral(getHandler(), device.connectionString, EDEV_OPTERATE.EDOPT_NET_KEY_CLICK, "OPNetKeyboard", 1024, 8000, jsonObj.toString().getBytes(), 0, device.getId());
+        JSONObject jsonObj = new JSONObject();
+        try {
+            jsonObj.put("Value", command);
+            jsonObj.put("Status", 0);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        FunSDK.DevCmdGeneral(getHandler(), device.connectionString, 1550, "", 0, 10000, jsonObj.toString().getBytes(), -1, device.getId());
     }
 
     public DeviceExpandableListAdapter getExpandableListAdapter(Context context){

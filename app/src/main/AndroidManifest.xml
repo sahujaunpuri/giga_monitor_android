@@ -17,11 +17,11 @@
     <uses-permission android:name="android.permission.WAKE_LOCK" />
     <uses-permission android:name="android.permission.WRITE_SETTINGS" />
     <uses-permission android:name="android.permission.CHANGE_WIFI_MULTICAST_STATE" />
-    <!--android:largeHeap="true"-->
 
     <application
         android:name=".activities.MyApplication"
         android:allowBackup="true"
+        android:largeHeap="true"
         android:allowClearUserData="true"
         android:hardwareAccelerated="true"
 

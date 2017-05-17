@@ -228,10 +228,10 @@ public class SurfaceViewComponent extends FrameLayout {
     @Override
     protected void onDetachedFromWindow() {
         super.onDetachedFromWindow();
+        isVisible = false;
         new Thread(new Runnable() {
             @Override
             public void run() {
-                isVisible = false;
                 if(isConnected()) {
                     mChannelsManager.onStop(surfaceViewComponent());
                 }
