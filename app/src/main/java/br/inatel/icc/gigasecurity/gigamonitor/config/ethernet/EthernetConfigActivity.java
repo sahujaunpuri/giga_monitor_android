@@ -1,8 +1,10 @@
 package br.inatel.icc.gigasecurity.gigamonitor.config.ethernet;
 
 import android.app.Activity;
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
@@ -57,18 +59,23 @@ public class EthernetConfigActivity extends ActionBarActivity implements OnCheck
         @Override
         public void onSetConfig() {
             int messageId = R.string.saved;
+
+//            mDevice = temp;
             mManager.logoutDevice(mDevice);
             mManager.getDevices().remove(position);
-            mManager.getDevices().add(position, temp);
+            mDevice.isLogged = false;
+            mDevice.setChannelNumber(0);
+            temp.isLogged = false;
             temp.setChannelNumber(0);
-            Toast.makeText(getApplicationContext(), messageId, Toast.LENGTH_SHORT).show();
-            mManager.saveData();
+            mManager.addDevice(temp, position);
             mManager.updateSurfaceViewManager(position);
-            mDevice.checkConnectionMethod();
-
             mManager.collapse = position;
 
+
+            Toast.makeText(getApplicationContext(), messageId, Toast.LENGTH_SHORT).show();
+
             finish();
+
         }
 
         @Override
@@ -247,8 +254,44 @@ public class EthernetConfigActivity extends ActionBarActivity implements OnCheck
         //commonConfig.setMac(mMacEditText.getText().toString());
         //commonConfig.setZarg0(mZarg0EditText.getText().toString());
 
-        mManager.setEthernetConfig(temp, mListener);
-        mListener.onSetConfig();
+
+
+        final ProgressDialog pd = new ProgressDialog(mContext);
+
+        AsyncTask<Void, Void, Void> task = new AsyncTask<Void, Void, Void>() {
+
+            @Override
+            protected void onPreExecute() {
+//                pd = new ProgressDialog(mContext);
+                pd.setTitle("Configurando");
+                pd.setMessage("Aguarde");
+                pd.setCancelable(false);
+                pd.setIndeterminate(true);
+                pd.show();
+            }
+
+            @Override
+            protected Void doInBackground(Void... arg0) {
+                try {
+                    mManager.setEthernetConfig(temp, null);
+                    Thread.sleep(3000);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+                return null;
+            }
+
+            @Override
+            protected void onPostExecute(Void result) {
+                if(pd.isShowing())
+                    pd.dismiss();
+                mListener.onSetConfig();
+            }
+
+        };
+        task.execute((Void[])null);
+
+
     }
 
     private void startDeviceListActivity() {

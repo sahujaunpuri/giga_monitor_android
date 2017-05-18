@@ -297,7 +297,10 @@ public class DeviceManager implements IFunSDKResult{
             {
                 if(msg.arg1 >= 0){
                     Log.d(TAG, "OnFunSDKResult: CONFIG SET SUCCESS");
-                    currentConfigListener.onSetConfig();
+                    if(currentConfigListener != null) {
+                        currentConfigListener.onSetConfig();
+                        currentConfigListener = null;
+                    }
                     expandableListAdapter.notifyDataSetChanged();
                     updateDevicesManagers();
                 } else{
@@ -598,7 +601,7 @@ public class DeviceManager implements IFunSDKResult{
     }
 
     public void setEthernetConfig(Device device, ConfigListener configListener){
-//        currentConfigListener = configListener;
+        currentConfigListener = configListener;
         try {
             currentConfig.put("HostName", device.getHostname());
             currentConfig.put("GateWay", Utils.stringIpToHexString(device.getGateway()));
@@ -785,9 +788,14 @@ public class DeviceManager implements IFunSDKResult{
     }
 
     public void loginAllDevices(){
-        for(Device device : mDevices){
-            loginDevice(device, null);
-        }
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                for(Device device : mDevices){
+                    loginDevice(device, null);
+                }
+            }
+        }).start();
     }
 
     public void loginDevice(final Device device, final LoginDeviceListener loginDeviceListener) {

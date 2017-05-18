@@ -240,6 +240,8 @@ public class DeviceExpandableListAdapter extends BaseExpandableListAdapter {
         }if(childViewHolder.size() > groupPosition)
             currentChildViewHolder = childViewHolder.get(groupPosition);
         if(currentChildViewHolder != null) {
+//            if(currentChildViewHolder.mRecyclerAdapter == null)
+//                initGridRecycler(groupPosition, currentChildViewHolder);
             if(!currentGroupViewHolder.mDevice.isLogged) {
                 //Inicializando grid e recycler temporariamente, apenas para não dar crash se não conectar
                 currentChildViewHolder.tvMessage.setText("Conectando...");
@@ -287,7 +289,6 @@ public class DeviceExpandableListAdapter extends BaseExpandableListAdapter {
     public void onGroupExpanded(int groupPosition){
         super.onGroupExpanded(groupPosition);
         final GroupViewHolder currentGroupViewHolder = groupViewHolder.get(groupPosition);
-        mDeviceManager.getDeviceChannelsManagers().get(groupPosition).collapased = false;
         if(currentGroupViewHolder.mDevice.isLogged && !mDeviceManager.getDeviceChannelsManagers().get(groupPosition).surfaceViewComponents.isEmpty()) {
             mDeviceManager.getDeviceChannelsManagers().get(groupPosition).createComponents();
         }
@@ -311,10 +312,8 @@ public class DeviceExpandableListAdapter extends BaseExpandableListAdapter {
             }
         });
 
+        mDeviceManager.getDeviceChannelsManagers().get(groupPosition).surfaceViewComponents.clear();
 
-        if(mDeviceManager.getDeviceChannelsManagers().get(groupPosition).recCounter <= 0)
-            mDeviceManager.getDeviceChannelsManagers().get(groupPosition).surfaceViewComponents.clear();
-        mDeviceManager.getDeviceChannelsManagers().get(groupPosition).collapased = true;
         mDeviceManager.removeLoginListener(currentGroupViewHolder.mDevice.connectionString);
         mDeviceManager.clearStart();
 

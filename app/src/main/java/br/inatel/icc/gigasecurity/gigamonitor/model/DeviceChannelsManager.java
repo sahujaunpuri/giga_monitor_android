@@ -62,7 +62,6 @@ public class DeviceChannelsManager extends ChannelsManager implements IFunSDKRes
     public int recCounter = 0;
     private int talkHandler;
     public int playType = 0; //0 - live, 1 - playback live
-    public boolean collapased = false;
     private H264_DVR_FILE_DATA fileToStart;
 
     private int[][] inverseMatrix = new int[][]{
@@ -109,10 +108,10 @@ public class DeviceChannelsManager extends ChannelsManager implements IFunSDKRes
     public void createComponent(int position) {
 
         int i = position;
-
-        GLSurfaceView20 mySurfaceView = new GLSurfaceView20(mContext);
+        GLSurfaceView20 mySurfaceView;
+        mySurfaceView = new GLSurfaceView20(mContext);
         mySurfaceView.setLayoutParams(surfaceViewLayout);
-        mySurfaceViews.add(i,mySurfaceView);
+        mySurfaceViews.add(i, mySurfaceView);
 
 
         SurfaceViewComponent surfaceViewComponent = new SurfaceViewComponent(mContext, this, i);
@@ -400,10 +399,14 @@ public class DeviceChannelsManager extends ChannelsManager implements IFunSDKRes
     /***************/
     public SurfaceViewComponent findSurfaceByHandler(int handler){
         SurfaceViewComponent found = null;
+//        Log.d(TAG, "findSurfaceByHandler: --------------------------------------- searching for: " + handler);
         if(handler>0){
             for(SurfaceViewComponent svc : surfaceViewComponents){
-                if(svc.mPlayerHandler == handler)
+//                Log.d(TAG, "findSurfaceByHandler: " + svc.mPlayerHandler + " searching for: " + handler);
+                if(svc.mPlayerHandler == handler) {
                     found = svc;
+                    break;
+                }
             }
         }
         if(found == null)
@@ -540,8 +543,6 @@ public class DeviceChannelsManager extends ChannelsManager implements IFunSDKRes
                     Toast.makeText(mContext, "Falha na gravação", Toast.LENGTH_SHORT).show();
                 }
                 recCounter--;
-                if(collapased)
-                    surfaceViewComponents.clear();
             }
             break;
             case EUIMSG.ON_PLAY_INFO: {

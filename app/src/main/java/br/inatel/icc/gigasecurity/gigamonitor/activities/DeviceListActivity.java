@@ -11,6 +11,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.ExpandableListView;
+import android.widget.Toast;
 
 import java.util.ArrayList;
 
@@ -62,10 +63,12 @@ public class DeviceListActivity extends ActionBarActivity {
         mExpandableListView.setOnGroupClickListener(new ExpandableListView.OnGroupClickListener() {
             @Override
             public boolean onGroupClick(ExpandableListView parent, View v, int groupPosition, long id) {
-
                 if (previousGroup == -1) {
                     previousGroup = groupPosition;
                     parent.expandGroup(groupPosition);
+                    return true;
+                }else if(mDeviceManager.getDeviceChannelsManagers().get(previousGroup).recCounter > 0){
+                    Toast.makeText(mContext, "Finalize a gravação", Toast.LENGTH_SHORT).show();
                     return true;
                 }else if(previousGroup == groupPosition){
                     parent.collapseGroup(previousGroup);
