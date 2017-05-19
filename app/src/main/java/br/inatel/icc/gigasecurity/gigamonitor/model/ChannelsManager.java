@@ -70,8 +70,13 @@ public abstract class ChannelsManager implements IFunSDKResult {
     };
 
 
-     abstract public void createComponents();
+    abstract public void createComponents();
 
+    public void clearSurfaceViewComponents(){
+        for(SurfaceViewComponent svc : surfaceViewComponents)
+            svc = null;
+        surfaceViewComponents.clear();
+    }
 
     public void addSurfaceViewComponent(SurfaceViewComponent svc){
         surfaceViewComponents.add(svc);
@@ -463,7 +468,7 @@ public abstract class ChannelsManager implements IFunSDKResult {
                 }
                 recCounter--;
                 if(collpased)
-                    surfaceViewComponents.clear();
+                    clearSurfaceViewComponents();
             }
             break;
             case EUIMSG.ON_PLAY_INFO: {

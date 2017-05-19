@@ -28,18 +28,14 @@ public class ChannelRecyclerViewAdapter extends RecyclerView.Adapter<ChannelRecy
     private final String TAG = "RecyclerViewAdapter";
     public Device mDevice;
     public Context mContext;
-    private static int numQuad, msvSelected = -1,positionSelected = -1;
+    private static int msvSelected = -1;
     public DeviceManager mDeviceManager;
     private DeviceExpandableListAdapter.ChildViewHolder childViewHolder;
-    private long clickTime, lastClickTime = 0;
-    public boolean doubleClick = false;
-    public final Handler handler = new Handler(Looper.getMainLooper());
     public final DeviceChannelsManager deviceChannelsManager;
 
-    public ChannelRecyclerViewAdapter(Context mContext, Device mDevice, int numQuad, DeviceExpandableListAdapter.ChildViewHolder chieldViewHolder, DeviceChannelsManager deviceChannelsManager) {
+    public ChannelRecyclerViewAdapter(Context mContext, Device mDevice, DeviceExpandableListAdapter.ChildViewHolder chieldViewHolder, DeviceChannelsManager deviceChannelsManager) {
         this.mContext = mContext;
         this.mDevice = mDevice;
-        this.numQuad = numQuad;
         this.childViewHolder = chieldViewHolder;
         this.mDeviceManager  = DeviceManager.getInstance();
         this.deviceChannelsManager = deviceChannelsManager;

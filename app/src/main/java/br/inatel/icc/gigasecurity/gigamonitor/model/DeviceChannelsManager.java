@@ -130,6 +130,12 @@ public class DeviceChannelsManager extends ChannelsManager implements IFunSDKRes
         surfaceViewComponents.add(i,surfaceViewComponent);
     }
 
+    public void clearSurfaceViewComponents(){
+        /*for(SurfaceViewComponent svc : surfaceViewComponents) {
+            svc.mySurfaceView = null;
+            svc = null;
+        }surfaceViewComponents.clear();*/
+    }
 
     public void addSurfaceViewComponent(SurfaceViewComponent svc){
         surfaceViewComponents.add(svc);

@@ -147,7 +147,7 @@ public class DeviceExpandableListAdapter extends BaseExpandableListAdapter {
     private void initGridRecycler(int groupPosition, ChildViewHolder childViewHolder){
         childViewHolder.gridLayoutManager = new CustomGridLayoutManager(mContext, mDeviceManager.getDeviceChannelsManagers().get(groupPosition).numQuad, GridLayoutManager.HORIZONTAL, false);
         childViewHolder.recyclerViewChannels.setLayoutManager(childViewHolder.gridLayoutManager);
-        childViewHolder.mRecyclerAdapter = new ChannelRecyclerViewAdapter(mContext, groupViewHolder.get(groupPosition).mDevice, mDeviceManager.getDeviceChannelsManagers().get(groupPosition).numQuad, childViewHolder, mDeviceManager.getDeviceChannelsManagers().get(groupPosition));
+        childViewHolder.mRecyclerAdapter = new ChannelRecyclerViewAdapter(mContext, groupViewHolder.get(groupPosition).mDevice, childViewHolder, mDeviceManager.getDeviceChannelsManagers().get(groupPosition));
 //        childViewHolder.mRecyclerAdapter.setHasStableIds(true);
         childViewHolder.recyclerViewChannels.setAdapter(childViewHolder.mRecyclerAdapter);
 //        childViewHolder.recyclerViewChannels.setHasFixedSize(true);
@@ -240,10 +240,7 @@ public class DeviceExpandableListAdapter extends BaseExpandableListAdapter {
         }if(childViewHolder.size() > groupPosition)
             currentChildViewHolder = childViewHolder.get(groupPosition);
         if(currentChildViewHolder != null) {
-//            if(currentChildViewHolder.mRecyclerAdapter == null)
-//                initGridRecycler(groupPosition, currentChildViewHolder);
             if(!currentGroupViewHolder.mDevice.isLogged) {
-                //Inicializando grid e recycler temporariamente, apenas para não dar crash se não conectar
                 currentChildViewHolder.tvMessage.setText("Conectando...");
                 currentChildViewHolder.tvMessage.setVisibility(View.VISIBLE);
                 currentChildViewHolder.recyclerViewChannels.setVisibility(View.INVISIBLE);
@@ -312,7 +309,7 @@ public class DeviceExpandableListAdapter extends BaseExpandableListAdapter {
             }
         });
 
-        mDeviceManager.getDeviceChannelsManagers().get(groupPosition).surfaceViewComponents.clear();
+        mDeviceManager.getDeviceChannelsManagers().get(groupPosition).clearSurfaceViewComponents();
 
         mDeviceManager.removeLoginListener(currentGroupViewHolder.mDevice.connectionString);
         mDeviceManager.clearStart();
@@ -363,10 +360,12 @@ public class DeviceExpandableListAdapter extends BaseExpandableListAdapter {
             mDeviceManager.getDeviceChannelsManagers().get(position).numQuad = 2;
             mDeviceManager.getDeviceChannelsManagers().get(position).lastNumQuad = 2;
         }
-        mDeviceManager.getDeviceChannelsManagers().get(position).createComponents();
-        childViewHolder.gridLayoutManager.setSpanCount(mDeviceManager.getDeviceChannelsManagers().get(position).numQuad);
+        if(mDeviceManager.getDeviceChannelsManagers().get(position).mySurfaceViews.isEmpty()) {
+            mDeviceManager.getDeviceChannelsManagers().get(position).createComponents();
+            childViewHolder.gridLayoutManager.setSpanCount(mDeviceManager.getDeviceChannelsManagers().get(position).numQuad);
 
-        childViewHolder.recyclerViewChannels.getAdapter().notifyDataSetChanged();
+            childViewHolder.recyclerViewChannels.getAdapter().notifyDataSetChanged();
+        }
         showExpanded(position, groupViewHolder, childViewHolder);
     }
 

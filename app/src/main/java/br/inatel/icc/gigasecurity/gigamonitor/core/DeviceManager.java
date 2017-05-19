@@ -178,9 +178,11 @@ public class DeviceManager implements IFunSDKResult{
                     device.isLogged = true;
 //                    putLoggedDevice(device);
 
-                    if(device.getChannelNumber()>0 && loginList.get(device.connectionString) != null)
-                        loginList.get(device.connectionString).onLoginSuccess(device);
-                    else {
+                    if(device.getChannelNumber()>0){
+                        if(loginList.get(device.connectionString) != null)
+                            loginList.get(device.connectionString).onLoginSuccess(device);
+                        loginList.remove(device.connectionString);
+                    }else {
                         FunSDK.DevGetConfigByJson(getHandler(), device.connectionString, "SystemInfo", 4096, -1, 10000, device.getId());
                     }
                } else if(msg.arg1 == -11301 ) {
@@ -249,8 +251,8 @@ public class DeviceManager implements IFunSDKResult{
 //                            currentLoginListener.onLoginSuccess();
                             if(loginList.get(device.connectionString) != null) {
                                 loginList.get(device.connectionString).onLoginSuccess(device);
-                                loginList.remove(device.connectionString);
                             }
+                            loginList.remove(device.connectionString);
 
                         }
                         break;
