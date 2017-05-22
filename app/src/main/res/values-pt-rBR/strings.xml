@@ -266,5 +266,11 @@
     <string name="serial_hint">0123456789</string>
     <string name="ip_address_hint">192.168.1.10</string>
     <string name="password_hint">Em branco</string>
+    <string name="title_activity_device_chn_zoom">Zoom do canal</string>
+    <string name="title_activity_device_list2">Meus Dispositivos</string>
+    <string name="title_activity_device_list3">Meus Dispositivos</string>
+    <string name="title_activity_device_remote_control">Controle Remoto</string>
+    <string name="title_activity_timeline">Minha Timeline</string>
+    <string name="title_activity_full_screen_my_surface">FullScreenMySurfaceActivity</string>
 
 </resources>

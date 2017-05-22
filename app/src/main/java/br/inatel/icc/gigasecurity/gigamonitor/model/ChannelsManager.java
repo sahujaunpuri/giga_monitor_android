@@ -21,8 +21,11 @@ import com.video.opengl.GLSurfaceView20;
 import java.io.File;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.Date;
+import java.util.GregorianCalendar;
 import java.util.Locale;
 
 import br.inatel.icc.gigasecurity.gigamonitor.activities.DeviceListActivity;
@@ -33,15 +36,12 @@ import br.inatel.icc.gigasecurity.gigamonitor.task.AudioRecordThread;
 import br.inatel.icc.gigasecurity.gigamonitor.ui.SurfaceViewComponent;
 import br.inatel.icc.gigasecurity.gigamonitor.util.Utils;
 
-/**
- * Created by filipecampos on 02/05/2016.
- */
+
 public abstract class ChannelsManager implements IFunSDKResult {
     String TAG = "DeviceChannelsManager";
 
     public ArrayList<SurfaceViewComponent> surfaceViewComponents;
     public ArrayList<GLSurfaceView20> mySurfaceViews;
-    public ArrayList<Integer> handlers;
     public DeviceManager mDeviceManager;
     public Context mContext;
     public int numQuad, lastNumQuad;
@@ -53,36 +53,43 @@ public abstract class ChannelsManager implements IFunSDKResult {
     public FrameLayout.LayoutParams pbParam;
     public FrameLayout.LayoutParams surfaceViewLayout;
 
-    public ChannelRecyclerViewAdapter mRecyclerAdapter;
-    private int mUserID = -1;
+    public int mUserID = -1;
     public PlaybackListener currentPlaybackListener;
     public AudioRecordThread mRecordThread;
     public int recCounter = 0;
     private int talkHandler;
     public int playType = 0; //0 - live, 1 - playback live
-    public boolean collpased = false;
+    private H264_DVR_FILE_DATA fileToStart;
 
-    private int[][] inverseMatrix = new int[][]{
-            {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15},
-            {0, 2, 1, 3, 4, 6, 5, 7, 8, 10, 9, 11, 12, 14, 13, 15},
-            {0, 3, 6, 1, 4, 7, 2, 5, 8, 9, 12, 14, 10, 13, 15, 11},
-            {0, 4, 8, 12, 1, 5, 9, 13, 2, 6, 10, 14, 3, 7, 11, 15}
-    };
+    public ChannelsManager(){
+        if(mUserID == -1){
+            mUserID = FunSDK.RegUser(this);
+        }
+        this.surfaceViewComponents = new ArrayList<>();
+        this.mySurfaceViews = new ArrayList<GLSurfaceView20>();
+        this.numQuad = 1;
+        this.lastNumQuad = 1;
+        this.mDeviceManager = DeviceManager.getInstance();
+        this.mContext = mDeviceManager.currentContext;
+        this.lastFirstVisibleItem = 0;
+        this.lastLastVisibleItem = 0;
+        surfaceViewLayout = new FrameLayout.LayoutParams(FrameLayout.LayoutParams.MATCH_PARENT, FrameLayout.LayoutParams.MATCH_PARENT);
+        pbParam = new FrameLayout.LayoutParams(FrameLayout.LayoutParams.WRAP_CONTENT, FrameLayout.LayoutParams.WRAP_CONTENT, Gravity.CENTER);
+    }
 
-
-    abstract public void createComponents();
+    public abstract void createComponents();
 
     public void clearSurfaceViewComponents(){
-        for(SurfaceViewComponent svc : surfaceViewComponents)
+        /*for(SurfaceViewComponent svc : surfaceViewComponents)
             svc = null;
-        surfaceViewComponents.clear();
+        surfaceViewComponents.clear();*/
     }
 
     public void addSurfaceViewComponent(SurfaceViewComponent svc){
         surfaceViewComponents.add(svc);
     }
 
-    public void changeSurfaceViewSize() {
+    public FrameLayout.LayoutParams changeSurfaceViewSize() {
         mDeviceManager.getScreenSize();
         int surfaceViewWidth = (int) Math.ceil((mDeviceManager.screenWidth / numQuad));// + numQuad;
         int surfaceViewHeight = ((mDeviceManager.screenHeight / 3) + 10) / numQuad;
@@ -96,6 +103,8 @@ public abstract class ChannelsManager implements IFunSDKResult {
 
         pbParam.width = surfaceViewWidth/4;
         pbParam.height = surfaceViewHeight/4;
+
+        return surfaceViewLayout;
     }
 
     public GLSurfaceView20 getMySurfaceView(int channelId){
@@ -104,21 +113,9 @@ public abstract class ChannelsManager implements IFunSDKResult {
 
 
     /** Grid Functions **/
-    public void reOrderSurfaceViewComponents() {
-        for (SurfaceViewComponent svc : surfaceViewComponents) {
-            svc.mySurfaceViewOrderId = inverseMatrix[numQuad - 1][svc.mySurfaceViewChannelId];
-        }
+    public abstract void reOrderSurfaceViewComponents();
 
-        Collections.sort(surfaceViewComponents, new Comparator<SurfaceViewComponent>() {
-            public int compare(SurfaceViewComponent svc1, SurfaceViewComponent svc2) {
-                return svc1.mySurfaceViewOrderId - svc2.mySurfaceViewOrderId;
-            }
-        });
-    }
-
-    public int getChannelSelected(int gridPositionSelected) {
-        return inverseMatrix[numQuad - 1][gridPositionSelected];
-    }
+    public abstract int getChannelSelected(int gridPositionSelected);
 
     public int scrollToItem(int currentFirstVisibleItem, int currentLastVisibleItem) {
         int itemToScroll = 0;
@@ -194,8 +191,7 @@ public abstract class ChannelsManager implements IFunSDKResult {
                 stopRecord(svc);
             } else
                 FunSDK.MediaStop(svc.mPlayerHandler);
-            if(svc.playType == 0)
-                svc.setConnected(false);
+            svc.setConnected(false);
         }
         svc.isPlaying = false;
     }
@@ -255,6 +251,7 @@ public abstract class ChannelsManager implements IFunSDKResult {
     }
 
     public void onPlayPlayback(H264_DVR_FILE_DATA file, SurfaceViewComponent svc){
+        fileToStart = file;
         svc.mPlayerHandler = FunSDK.MediaNetRecordPlay(mUserID, svc.deviceConnection, G.ObjToBytes(file), svc.mySurfaceView, 0);
     }
 
@@ -326,8 +323,10 @@ public abstract class ChannelsManager implements IFunSDKResult {
         SurfaceViewComponent found = null;
         if(handler>0){
             for(SurfaceViewComponent svc : surfaceViewComponents){
-                if(svc.mPlayerHandler == handler)
+                if(svc.mPlayerHandler == handler) {
                     found = svc;
+                    break;
+                }
             }
         }
         if(found == null)
@@ -339,18 +338,17 @@ public abstract class ChannelsManager implements IFunSDKResult {
     /** Async return from SDK**/
     @Override
     public int OnFunSDKResult(Message msg, MsgContent msgContent) {
-        if(msg.what == EUIMSG.ON_PLAY_INFO && playType == 0)
-            return 0;
-
-        Log.d(TAG, "msg.what : " + msg.what);
-        Log.d(TAG, "msg.arg1 : " + msg.arg1);
-        Log.d(TAG, "msg.arg2 : " + msg.arg2);
-        if (null != msgContent) {
-            Log.d(TAG, "msgContent.sender : " + msgContent.sender);
-            Log.d(TAG, "msgContent.seq : " + msgContent.seq);
-            Log.d(TAG, "msgContent.str : " + msgContent.str);
-            Log.d(TAG, "msgContent.arg3 : " + msgContent.arg3);
-            Log.d(TAG, "msgContent.pData : " + msgContent.pData);
+        if(!(msg.what == EUIMSG.ON_PLAY_INFO && playType == 0)) {
+            Log.d(TAG, "msg.what : " + msg.what);
+            Log.d(TAG, "msg.arg1 : " + msg.arg1);
+            Log.d(TAG, "msg.arg2 : " + msg.arg2);
+            if (null != msgContent) {
+                Log.d(TAG, "msgContent.sender : " + msgContent.sender);
+                Log.d(TAG, "msgContent.seq : " + msgContent.seq);
+                Log.d(TAG, "msgContent.str : " + msgContent.str);
+                Log.d(TAG, "msgContent.arg3 : " + msgContent.arg3);
+                Log.d(TAG, "msgContent.pData : " + msgContent.pData);
+            }
         }
         switch (msg.what) {
             case EUIMSG.START_PLAY: {
@@ -362,10 +360,13 @@ public abstract class ChannelsManager implements IFunSDKResult {
                         if (svc.playType == 0) {
                             mDeviceManager.requestStart();
                         }
-                        Log.i(TAG, "START SUCCESS");
+                        Log.i(TAG, "START SUCCESS " + (svc.getMySurfaceViewChannelId()+1));
                     } else {
                         if(svc.playType == 0) {
+                            svc.setConnected(false);
                             mDeviceManager.addToStart(svc);
+                        } else{
+                            onPlayPlayback(fileToStart, svc);
                         }
 
                         Log.i(TAG, "START FAILED");
@@ -411,17 +412,12 @@ public abstract class ChannelsManager implements IFunSDKResult {
                         svc.isPlaying = true;
                         if (svc.playType == 0) {
                             svc.isLoading(false);
-                           /* if(!svc.isVisible) {
-                                if(numQuad != 1  && !svc.singleQuad) {
-                                    onStop(svc);
-                                } else if(lastNumQuad != 1 && !svc.singleQuad){
-                                    onStop(svc);
-                                }
-                                svc.singleQuad = false;
+                            /*if(!svc.isVisible){
+                                onStop(svc);
                             }*/
-//                            svc.setVisibility(View.VISIBLE);
 //                        menu.updateIcons();
                         } else if (svc.playType == 1) {
+                            svc.isSeeking = false;
                             currentPlaybackListener.onPlayState(2);
                         }
                     }
@@ -467,38 +463,41 @@ public abstract class ChannelsManager implements IFunSDKResult {
                     Toast.makeText(mContext, "Falha na gravação", Toast.LENGTH_SHORT).show();
                 }
                 recCounter--;
-                if(collpased)
-                    clearSurfaceViewComponents();
             }
             break;
             case EUIMSG.ON_PLAY_INFO: {
 //                Log.d(TAG, "OnFunSDKResult: ON_PLAY_INFO");
                 if (playType == 1) {
                     SurfaceViewComponent svc = findSurfaceByHandler(msgContent.sender);
-                    int progress = msg.arg2 - msg.arg1;
-                    //                    Log.d(TAG, "OnFunSDKResult: PROGRESS " + progress);
-                    if (!svc.isSeeking && progress > 0)
-                        currentPlaybackListener.onChangeProgress(progress);
-                    else if (svc.isSeeking) {
-                        currentPlaybackListener.onChangeProgress(progress);
+                    if(svc != null) {
+                        String[] info = msgContent.str.split(";");
+                        if(info.length > 1){
+                            Date date = Utils.parseStringToDate(info[0]);
+                            if(date!=null) {
+                                Calendar calendar = GregorianCalendar.getInstance();
+                                calendar.setTime(date);
+                                int sec = calendar.get(Calendar.SECOND);
+                                int min = calendar.get(Calendar.MINUTE);
+                                int hour = calendar.get(Calendar.HOUR_OF_DAY);
+                                int currentSec = calendar.get(Calendar.SECOND) + calendar.get(Calendar.MINUTE)*60 + calendar.get(Calendar.HOUR_OF_DAY)*3600;
+                                Log.d(TAG, "OnFunSDKResult TIME: " + hour + "h" + min + "min " + sec + "s. " + currentSec);
+                                currentPlaybackListener.onChangeProgress(currentSec);
+                            }
+                        }
                     }
                 }
             }
             break;
             case EUIMSG.ON_PLAY_END: {
                 SurfaceViewComponent svc = findSurfaceByHandler(msgContent.sender);
-                if(svc.playType == 1){
+                if(svc != null && svc.playType == 1){
                     currentPlaybackListener.onComplete();
                 }
             }
             case EUIMSG.SEEK_TO_POS: {
                 SurfaceViewComponent svc = findSurfaceByHandler(msgContent.sender);
-                if(msg.arg1 == 0){
+                if(msg.arg1 == 0 && svc != null){
                     svc.seekPercentage = 0;
-//                    if(isSeeking && !isPlaying)
-//                        onResume();
-                } else{
-                    seekByPos(svc.seekPercentage, svc);
                 }
             }
             break;
@@ -509,8 +508,8 @@ public abstract class ChannelsManager implements IFunSDKResult {
                 }
             }
             break;
-            case EUIMSG.ON_MEDIA_NET_DISCONNECT: {
-                Log.d(TAG, "OnFunSDKResult: MEDIA DISCONNECT");
+            case EUIMSG.MEDIA_FRAME_LOSS: {
+                Log.d(TAG, "OnFunSDKResult: Media Frame Loss");
             }
         }
         return 0;

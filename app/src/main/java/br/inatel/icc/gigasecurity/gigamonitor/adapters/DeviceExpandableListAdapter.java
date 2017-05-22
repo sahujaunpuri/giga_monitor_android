@@ -174,12 +174,23 @@ public class DeviceExpandableListAdapter extends BaseExpandableListAdapter {
                         DeviceChannelsManager deviceChannelsManager = mDeviceManager.getDeviceChannelsManagers().get(groupPosition);
                         deviceChannelsManager.numQuad = nextNumQuad(deviceChannelsManager.numQuad, groupViewHolder.get(groupPosition).mDevice.getChannelNumber());
                         deviceChannelsManager.lastNumQuad = deviceChannelsManager.numQuad;
-//                        if(deviceChannelsManager.numQuad == 1)
-                        deviceChannelsManager.stopChannels(0);
+//                        deviceChannelsManager.stopChannels(0);
 
                         childViewHolder.get(groupPosition).gridLayoutManager.setSpanCount(mDeviceManager.getDeviceChannelsManagers().get(groupPosition).numQuad);
                         childViewHolder.get(groupPosition).mRecyclerAdapter.notifyDataSetChanged();
-                        deviceChannelsManager.changeSurfaceViewSize();
+                        FrameLayout.LayoutParams temp = deviceChannelsManager.changeSurfaceViewSize();
+
+                        /**/
+                        /*FrameLayout fl = new FrameLayout(mContext);
+                        fl.setLayoutParams(temp);
+                        childViewHolder.get(groupPosition).gridLayoutManager.addView(fl, 0);*/
+
+
+
+
+
+                        /**/
+
                         deviceChannelsManager.resetScale();
                         deviceChannelsManager.reOrderSurfaceViewComponents();
                     }
@@ -223,7 +234,7 @@ public class DeviceExpandableListAdapter extends BaseExpandableListAdapter {
         if(mContext.getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE && DeviceListActivity.previousGroup != -1) {
 //            currentGroupViewHolder.convertView = mInflater.inflate(R.layout.blank_layout, parent, false);
             return new FrameLayout(mContext);
-        } else {
+        } else{
             currentGroupViewHolder.ivMore.setOnClickListener(createMoreListener(groupPosition));
             currentGroupViewHolder.ivQuad.setOnClickListener(createQuadListener(groupPosition));
         }
