@@ -5,11 +5,11 @@ import android.content.res.Resources;
 import android.os.Environment;
 import android.os.Message;
 import android.util.Log;
+import android.widget.ExpandableListView;
 import android.widget.Toast;
 
 import com.basic.G;
 import com.google.gson.annotations.Expose;
-import com.lib.EDEV_OPTERATE;
 import com.lib.EFUN_ATTR;
 import com.lib.EUIMSG;
 import com.lib.FunSDK;
@@ -34,8 +34,10 @@ import br.inatel.icc.gigasecurity.gigamonitor.adapters.DeviceExpandableListAdapt
 import br.inatel.icc.gigasecurity.gigamonitor.listeners.ConfigListener;
 import br.inatel.icc.gigasecurity.gigamonitor.listeners.LoginDeviceListener;
 import br.inatel.icc.gigasecurity.gigamonitor.listeners.PlaybackSearchListener;
+import br.inatel.icc.gigasecurity.gigamonitor.model.ChannelsManager;
 import br.inatel.icc.gigasecurity.gigamonitor.model.Device;
 import br.inatel.icc.gigasecurity.gigamonitor.model.DeviceChannelsManager;
+import br.inatel.icc.gigasecurity.gigamonitor.model.FavoritesChannelsManager;
 import br.inatel.icc.gigasecurity.gigamonitor.ui.SurfaceViewComponent;
 import br.inatel.icc.gigasecurity.gigamonitor.util.ComplexPreferences;
 import br.inatel.icc.gigasecurity.gigamonitor.util.Utils;
@@ -59,20 +61,20 @@ public class DeviceManager implements IFunSDKResult{
     private ArrayList<Device> mDevices = new ArrayList<Device>();
     private ArrayList<Device> mLanDevices = new ArrayList<Device>();
     public ArrayList<Device> mFavoriteDevices = new ArrayList<Device>();
-//    private final HashMap<Integer, Device> mLoggedDevices = new HashMap<Integer, Device>();
     public LinkedList<SurfaceViewComponent> startList = new LinkedList<SurfaceViewComponent>();
     private HashMap<String, LoginDeviceListener> loginList = new HashMap<String, LoginDeviceListener>();
 
 
-    private LoginDeviceListener currentLoginListener;
     private PlaybackSearchListener currentPlaybackSearchListener;
     private ConfigListener currentConfigListener;
-    private JSONObject currentConfig, currentConfigA, currentConfigB;
+    private JSONObject currentConfig, currentConfigB;
     private JSONArray currentConfigArray;
     public Context currentContext;
 
     private DeviceExpandableListAdapter expandableListAdapter;
-    private ArrayList<DeviceChannelsManager> deviceChannelsManagers;
+    private ArrayList<ChannelsManager> deviceChannelsManagers;
+    public Device favoriteDevice;
+    public FavoritesChannelsManager favoriteManager;
     public int favoriteChannels = 0;
 
     private boolean startPlay = false;
@@ -98,7 +100,7 @@ public class DeviceManager implements IFunSDKResult{
     }
 
     public void init(Context context){
-        int result;
+        currentContext = context;
         Log.d(TAG, "DeviceManager: INIT");
 
 
@@ -360,6 +362,14 @@ public class DeviceManager implements IFunSDKResult{
                 }
             }
             break;
+            case EUIMSG.DEV_CMD_EN:
+            {
+                if(msgContent != null){
+                    String data = G.ToString(msgContent.pData);
+                    Log.d(TAG, "--> DATA: " + data);
+                }
+            }
+            break;
 
         }
         return 0;
@@ -372,15 +382,29 @@ public class DeviceManager implements IFunSDKResult{
 
     public void loadSavedData(Context context){
         mDevices = loadDevices(context);
-        loginAllDevices();
         favoritesMap = new HashMap<Integer, ArrayList<Integer>>();
         favoritesMap = loadFavorites(context);
-        /*if(!favoritesMap.isEmpty()){
-            Device favoritos = new Device("Favoritos");
-            favoritos.setSerialNumber("Favoritos");
-            mDevices.add(favoritos);
-            addSurfaceViewManager(favoritos);
-        }*/
+        createFavoriteDevice();
+
+        for(Device device : mDevices)
+            device.checkConnectionMethod();
+
+        loginAllDevices();
+    }
+
+    public void createFavoriteDevice(){
+        favoriteDevice = findDeviceBySN("Favoritos");
+        if(favoriteDevice == null) {
+            favoriteDevice = new Device("Favoritos");
+            favoriteDevice.setSerialNumber("Favoritos");
+            favoriteDevice.setChannelNumber(favoriteChannels);
+            favoriteDevice.checkConnectionMethod();
+            mDevices.add(0, favoriteDevice);
+            saveData();
+        }
+
+        favoriteDevice.isLogged = true;
+//            addSurfaceViewManager(favoritos);
     }
 
     public void addDevice(Device device) {
@@ -700,19 +724,25 @@ public class DeviceManager implements IFunSDKResult{
     }
 
     public void remoteControl(Device device, int command){
+        JSONObject j = new JSONObject();
         JSONObject jsonObj = new JSONObject();
         try {
+            j.put("Name", "OPNetKeyboard");
             jsonObj.put("Value", command);
             jsonObj.put("Status", 0);
+//            j.put("SessionID", "0x3");
+            j.put("OPNetKeyboard", jsonObj);
         } catch (JSONException e) {
             e.printStackTrace();
         }
-        FunSDK.DevCmdGeneral(getHandler(), device.connectionString, 1550, "", 0, 10000, jsonObj.toString().getBytes(), -1, device.getId());
+        Log.d(TAG, "remoteControl: " + jsonObj.toString());
+//        Log.d(TAG, "remoteControl: " + jsonObj.toString().getBytes());
+        FunSDK.DevCmdGeneral(getHandler(), device.connectionString, 1550, "OPNetKeyboard", 0, 10000, j.toString().getBytes(), -1, device.getId());
     }
 
-    public DeviceExpandableListAdapter getExpandableListAdapter(Context context){
+    public DeviceExpandableListAdapter getExpandableListAdapter(Context context, ExpandableListView mExpandableListView){
         if(expandableListAdapter == null){
-            expandableListAdapter = new DeviceExpandableListAdapter(context, mDevices);
+            expandableListAdapter = new DeviceExpandableListAdapter(context, mDevices, mExpandableListView);
         }
         return expandableListAdapter;
     }
@@ -721,21 +751,35 @@ public class DeviceManager implements IFunSDKResult{
         expandableListAdapter = null;
     }
 
-    public ArrayList<DeviceChannelsManager> getDeviceChannelsManagers(){
+    public ArrayList<ChannelsManager> getDeviceChannelsManagers(){
         if(deviceChannelsManagers == null){
-            deviceChannelsManagers = new ArrayList<DeviceChannelsManager>();
-            for(int i=0; i < mDevices.size(); i++) {
-                DeviceChannelsManager deviceChannelsManager = new DeviceChannelsManager(mDevices.get(i));
+            deviceChannelsManagers = new ArrayList<ChannelsManager>();
+            for(Device device : mDevices) {
+                ChannelsManager deviceChannelsManager;
+                if(device.getSerialNumber().equals("Favoritos")) {
+                    favoriteManager = new FavoritesChannelsManager(device);
+                    deviceChannelsManager = favoriteManager;
+                }else
+                    deviceChannelsManager = new DeviceChannelsManager(device);
                 deviceChannelsManagers.add(deviceChannelsManager);
             }
+            favoriteManager.createComponents();
         }
         return deviceChannelsManagers;
     }
 
-    public DeviceChannelsManager findSurfaceViewManagerByDevice(Device device){
-        for(DeviceChannelsManager svm : deviceChannelsManagers){
-//            if(svm.mDevice.getSerialNumber().equals(device.getSerialNumber()))
-            if(svm.mDevice.getId() == svm.mDevice.getId())
+    public ChannelsManager findSurfaceViewManagerByDevice(Device device){
+        for(ChannelsManager svm : deviceChannelsManagers){
+            if(device.getId() == svm.mDevice.getId())
+                return svm;
+        }
+        Log.e(TAG, "findSurfaceViewManagerByDevice: DeviceChannelsManager Not Found");
+        return null;
+    }
+
+    public ChannelsManager findSurfaceViewManagerByDevice(int deviceId){
+        for(ChannelsManager svm : deviceChannelsManagers){
+            if(deviceId == svm.mDevice.getId())
                 return svm;
         }
         Log.e(TAG, "findSurfaceViewManagerByDevice: DeviceChannelsManager Not Found");
@@ -753,7 +797,7 @@ public class DeviceManager implements IFunSDKResult{
         if(deviceChannelsManagers == null)
             return;
         int i = 0;
-        for(DeviceChannelsManager svm : deviceChannelsManagers){
+        for(ChannelsManager svm : deviceChannelsManagers){
             svm.mDevice = mDevices.get(i);
             i++;
         }
@@ -763,11 +807,13 @@ public class DeviceManager implements IFunSDKResult{
         if(deviceChannelsManagers == null)
             return;
         deviceChannelsManagers.clear();
-        for(int i=0; i < mDevices.size(); i++) {
+        deviceChannelsManagers = null;
+        getDeviceChannelsManagers();
+        /*for(int i=0; i < mDevices.size(); i++) {
             DeviceChannelsManager deviceChannelsManager = new DeviceChannelsManager(mDevices.get(i));
             deviceChannelsManagers.add(deviceChannelsManager);
         }
-        loginList.clear();
+        loginList.clear();*/
 //        loginAllDevices();
     }
 
@@ -794,7 +840,8 @@ public class DeviceManager implements IFunSDKResult{
             @Override
             public void run() {
                 for(Device device : mDevices){
-                    loginDevice(device, null);
+                    if(!device.isLogged)
+                        loginDevice(device, null);
                 }
             }
         }).start();
@@ -989,6 +1036,12 @@ public class DeviceManager implements IFunSDKResult{
         arrayList.add(channel.mySurfaceViewChannelId);
         favoritesMap.put(channel.getDeviceId(), arrayList);
         channel.isFavorite = true;
+//        if(favoriteChannels == 0)
+//            expandableListAdapter.notifyDataSetChanged();
+        favoriteChannels++;
+        favoriteDevice.setChannelNumber(favoriteChannels);
+        favoriteManager.createComponents();
+
         saveData();
     }
 
@@ -1001,7 +1054,13 @@ public class DeviceManager implements IFunSDKResult{
             if(arrayList.size() > 0)
                 favoritesMap.put(channel.getDeviceId(), arrayList);
         }
-        channel.isFavorite = false;
+        channel.setFavorite(false);
+        findSurfaceViewManagerByDevice(channel.deviceId).surfaceViewComponents.get(channel.mySurfaceViewChannelId).setFavorite(false);
+        favoriteChannels--;
+        favoriteDevice.setChannelNumber(favoriteChannels);
+        favoriteManager.createComponents();
+//        if(favoriteChannels == 0)
+//            expandableListAdapter.notifyDataSetChanged();
         saveData();
     }
 

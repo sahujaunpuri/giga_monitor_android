@@ -45,7 +45,7 @@ public class DeviceRemoteControlActivity extends ActionBarActivity {
             @Override
             public void onClick(View v) {
                 blink(ivQuad);
-                mManager.remoteControl(mDevice, SDKCONST.SDK_NetKeyBoardValue.SDK_NET_KEY_SPLIT);
+                mManager.remoteControl(mDevice, SDKCONST.NetKeyBoardValue.SDK_NET_KEY_SPLIT);
             }
         });
 
@@ -54,7 +54,7 @@ public class DeviceRemoteControlActivity extends ActionBarActivity {
             @Override
             public void onClick(View v) {
                 blink(ivMenu);
-                mManager.remoteControl(mDevice, SDKCONST.SDK_NetKeyBoardValue.SDK_NET_KEY_MENU);
+                mManager.remoteControl(mDevice, SDKCONST.NetKeyBoardValue.SDK_NET_KEY_MENU);
             }
         });
 
@@ -62,7 +62,7 @@ public class DeviceRemoteControlActivity extends ActionBarActivity {
             @Override
             public void onClick(View v) {
                 blink(ivOk);
-                mManager.remoteControl(mDevice, SDKCONST.SDK_NetKeyBoardValue.SDK_NET_KEY_RET);
+                mManager.remoteControl(mDevice, SDKCONST.NetKeyBoardValue.SDK_NET_KEY_RET);
             }
         });
 
@@ -70,7 +70,7 @@ public class DeviceRemoteControlActivity extends ActionBarActivity {
             @Override
             public void onClick(View v) {
                 blink(ivUp);
-                mManager.remoteControl(mDevice, SDKCONST.SDK_NetKeyBoardValue.SDK_NET_KEY_UP);
+                mManager.remoteControl(mDevice, SDKCONST.NetKeyBoardValue.SDK_NET_KEY_UP);
             }
         });
 
@@ -78,7 +78,7 @@ public class DeviceRemoteControlActivity extends ActionBarActivity {
             @Override
             public void onClick(View v) {
                 blink(ivDown);
-                mManager.remoteControl(mDevice, SDKCONST.SDK_NetKeyBoardValue.SDK_NET_KEY_DOWN);
+                mManager.remoteControl(mDevice, SDKCONST.NetKeyBoardValue.SDK_NET_KEY_DOWN);
             }
         });
 
@@ -86,7 +86,7 @@ public class DeviceRemoteControlActivity extends ActionBarActivity {
             @Override
             public void onClick(View v) {
                 blink(ivRight);
-                mManager.remoteControl(mDevice, SDKCONST.SDK_NetKeyBoardValue.SDK_NET_KEY_RIGHT);
+                mManager.remoteControl(mDevice, SDKCONST.NetKeyBoardValue.SDK_NET_KEY_RIGHT);
             }
         });
 
@@ -94,7 +94,7 @@ public class DeviceRemoteControlActivity extends ActionBarActivity {
             @Override
             public void onClick(View v) {
                 blink(ivLeft);
-                mManager.remoteControl(mDevice, SDKCONST.SDK_NetKeyBoardValue.SDK_NET_KEY_LEFT);
+                mManager.remoteControl(mDevice, SDKCONST.NetKeyBoardValue.SDK_NET_KEY_LEFT);
             }
         });
 

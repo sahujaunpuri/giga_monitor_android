@@ -14,6 +14,7 @@ import android.widget.Toast;
 import br.inatel.icc.gigasecurity.gigamonitor.R;
 import br.inatel.icc.gigasecurity.gigamonitor.activities.DeviceListActivity;
 import br.inatel.icc.gigasecurity.gigamonitor.core.DeviceManager;
+import br.inatel.icc.gigasecurity.gigamonitor.model.ChannelsManager;
 import br.inatel.icc.gigasecurity.gigamonitor.model.DeviceChannelsManager;
 
 /**
@@ -26,9 +27,10 @@ public class OverlayMenu extends RelativeLayout {
     public ImageView ivHQ, ivPlayPause, ivSnapshot, ivSnapvideo, ivFavorite, ivSendAudio, ivReceiveAudio;
     public TextView ivTitle;
     public DeviceManager mDeviceManager;
-    public DeviceChannelsManager deviceChannelsManager;
+    public ChannelsManager deviceChannelsManager;
+    public boolean isFavoriteMenu;
 
-    public OverlayMenu(Context context, DeviceChannelsManager deviceChannelsManager) {
+    public OverlayMenu(Context context, ChannelsManager deviceChannelsManager) {
         super(context);
         mContext = context;
         this.deviceChannelsManager = deviceChannelsManager;
@@ -69,6 +71,8 @@ public class OverlayMenu extends RelativeLayout {
 
     public void setSurfaceViewComponent(SurfaceViewComponent surfaceViewComponent){
         this.surfaceViewComponent = surfaceViewComponent;
+        if(surfaceViewComponent.mChannelsManager.mDevice.getSerialNumber().equals("Favoritos"))
+            isFavoriteMenu = true;
     }
 
     public void updateIcons(){
@@ -186,6 +190,10 @@ public class OverlayMenu extends RelativeLayout {
             public void onClick(View view) {
                 if(surfaceViewComponent.isFavorite()){
                     mDeviceManager.removeFavorite(surfaceViewComponent);
+                    if(isFavoriteMenu) {
+                        mDeviceManager.getExpandableListAdapter(null, null).notifyDataSetChanged();
+                        surfaceViewComponent.mChannelsManager.mRecyclerAdapter.openOverlayMenu(surfaceViewComponent);
+                    }
                     ivFavorite.clearColorFilter();
                 } else {
                     mDeviceManager.addFavorite(surfaceViewComponent);

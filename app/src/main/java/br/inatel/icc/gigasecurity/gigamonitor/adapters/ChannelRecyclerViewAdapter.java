@@ -14,6 +14,7 @@ import br.inatel.icc.gigasecurity.gigamonitor.R;
 import br.inatel.icc.gigasecurity.gigamonitor.activities.DeviceListActivity;
 import br.inatel.icc.gigasecurity.gigamonitor.core.DeviceManager;
 import br.inatel.icc.gigasecurity.gigamonitor.managers.CustomGridLayoutManager;
+import br.inatel.icc.gigasecurity.gigamonitor.model.ChannelsManager;
 import br.inatel.icc.gigasecurity.gigamonitor.model.Device;
 import br.inatel.icc.gigasecurity.gigamonitor.model.DeviceChannelsManager;
 import br.inatel.icc.gigasecurity.gigamonitor.ui.OverlayMenu;
@@ -31,9 +32,9 @@ public class ChannelRecyclerViewAdapter extends RecyclerView.Adapter<ChannelRecy
     private static int msvSelected = -1;
     public DeviceManager mDeviceManager;
     private DeviceExpandableListAdapter.ChildViewHolder childViewHolder;
-    public final DeviceChannelsManager deviceChannelsManager;
+    public final ChannelsManager deviceChannelsManager;
 
-    public ChannelRecyclerViewAdapter(Context mContext, Device mDevice, DeviceExpandableListAdapter.ChildViewHolder chieldViewHolder, DeviceChannelsManager deviceChannelsManager) {
+    public ChannelRecyclerViewAdapter(Context mContext, Device mDevice, DeviceExpandableListAdapter.ChildViewHolder chieldViewHolder, ChannelsManager deviceChannelsManager) {
         this.mContext = mContext;
         this.mDevice = mDevice;
         this.childViewHolder = chieldViewHolder;

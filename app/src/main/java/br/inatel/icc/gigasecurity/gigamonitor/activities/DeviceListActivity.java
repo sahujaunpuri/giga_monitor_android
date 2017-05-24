@@ -148,14 +148,13 @@ public class DeviceListActivity extends ActionBarActivity {
         mExpandableListView = (ExpandableListView) findViewById(R.id.expandable_list_view2);
         mDeviceManager      = DeviceManager.getInstance();
         mContext            = DeviceListActivity.this;
-        mAdapter            = mDeviceManager.getExpandableListAdapter(mContext);
+        mAdapter            = mDeviceManager.getExpandableListAdapter(mContext, mExpandableListView);
         mDevices            = mDeviceManager.getDevices();
         previousGroup = -1;
         mDeviceManager.currentContext = this;
         mAdapter.mContext = this;
         mAdapter.setDevices(mDevices);
         mAdapter.notifyDataSetChanged();
-
 
         mExpandableListView.setAdapter(mAdapter);
         mAdapter.notifyDataSetChanged();

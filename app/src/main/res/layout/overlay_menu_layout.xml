@@ -37,7 +37,6 @@
         android:layout_width="36dp"
         android:layout_height="36dp"
         android:src="@drawable/ic_star_white_36dp"
-        android:visibility="gone"
         android:id="@+id/iv_favorite_star"
         android:layout_alignParentRight="true"
         android:layout_marginTop="5dp"

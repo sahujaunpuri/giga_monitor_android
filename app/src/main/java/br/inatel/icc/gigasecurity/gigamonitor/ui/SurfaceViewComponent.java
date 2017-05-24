@@ -28,7 +28,7 @@ import br.inatel.icc.gigasecurity.gigamonitor.model.DeviceChannelsManager;
 public class SurfaceViewComponent extends FrameLayout {
     String TAG = "SurfaceViewLayout";
     String TAG2 = "SurfaceViewLayoutTouch";
-    public DeviceChannelsManager mChannelsManager;
+    public ChannelsManager mChannelsManager;
     private DeviceManager mDeviceManager;
     public GLSurfaceView20 mySurfaceView;
     private ProgressBar progressBar;
@@ -58,7 +58,7 @@ public class SurfaceViewComponent extends FrameLayout {
     public boolean isVisible = false;
     public boolean stoppingRec = false;
 
-    public SurfaceViewComponent(Context context, DeviceChannelsManager channelsManager, int id) {
+    public SurfaceViewComponent(Context context, ChannelsManager channelsManager, int id) {
         super(context);
         this.mContext = context;
         this.mySurfaceViewChannelId = id;
@@ -86,7 +86,7 @@ public class SurfaceViewComponent extends FrameLayout {
         mClickListener = new GestureDetector(mContext, new SimpleGestureDetector());
 
         //SurfaceView
-        if(playType == 0) {
+        if(playType == 0 && mySurfaceView == null) {
             mySurfaceView = mChannelsManager.getMySurfaceView(mySurfaceViewChannelId);
 //        mySurfaceView.setRenderMode(GLSurfaceView.RENDERMODE_CONTINUOUSLY);
 

@@ -189,6 +189,7 @@ public class Discovery extends Thread {
                     if (netCommon.has("DvrMac")) device.setMacAddress(netCommon.getString("DvrMac"));
                     if (netCommon.has("SN")) device.setSerialNumber(netCommon.getString("SN"));
                     if (netCommon.has("MAC")) device.setMacAddress(netCommon.getString("MAC"));
+                    if(netCommon.has("ChannelNum")) device.setChannelNumber(netCommon.getInt("ChannelNum"));
 
                     for(Device dev : devices){
                         if(dev.getIpAddress().equals(device.getIpAddress())){

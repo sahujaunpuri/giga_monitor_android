@@ -52,7 +52,9 @@ public abstract class ChannelsManager implements IFunSDKResult {
 
     public FrameLayout.LayoutParams pbParam;
     public FrameLayout.LayoutParams surfaceViewLayout;
+    public ChannelRecyclerViewAdapter mRecyclerAdapter;
 
+    public Device mDevice;
     public int mUserID = -1;
     public PlaybackListener currentPlaybackListener;
     public AudioRecordThread mRecordThread;
@@ -60,11 +62,13 @@ public abstract class ChannelsManager implements IFunSDKResult {
     private int talkHandler;
     public int playType = 0; //0 - live, 1 - playback live
     private H264_DVR_FILE_DATA fileToStart;
+    public int[][] inverseMatrix;
 
-    public ChannelsManager(){
-        if(mUserID == -1){
+    public ChannelsManager(Device mDevice) {
+        if (mUserID == -1) {
             mUserID = FunSDK.RegUser(this);
         }
+        this.mDevice = mDevice;
         this.surfaceViewComponents = new ArrayList<>();
         this.mySurfaceViews = new ArrayList<GLSurfaceView20>();
         this.numQuad = 1;
@@ -75,18 +79,48 @@ public abstract class ChannelsManager implements IFunSDKResult {
         this.lastLastVisibleItem = 0;
         surfaceViewLayout = new FrameLayout.LayoutParams(FrameLayout.LayoutParams.MATCH_PARENT, FrameLayout.LayoutParams.MATCH_PARENT);
         pbParam = new FrameLayout.LayoutParams(FrameLayout.LayoutParams.WRAP_CONTENT, FrameLayout.LayoutParams.WRAP_CONTENT, Gravity.CENTER);
+        channelNumber = mDevice.getChannelNumber();
+        if (channelNumber > 1) {
+            numQuad = 2;
+            lastNumQuad = 2;
+        }
+
+        initMatrix();
+    }
+
+    private void initMatrix() {
+        if (mDevice.getChannelNumber() <= 16) {
+            inverseMatrix = new int[][]{
+                    {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15},
+                    {0, 2, 1, 3, 4, 6, 5, 7, 8, 10, 9, 11, 12, 14, 13, 15},
+                    {0, 3, 6, 1, 4, 7, 2, 5, 8, 9, 12, 15, 10, 13, 11, 14},
+                    {0, 4, 8, 12, 1, 5, 9, 13, 2, 6, 10, 14, 3, 7, 11, 15}
+            };
+        } else
+            inverseMatrix = new int[][]{
+                    {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31},
+                    {0, 2, 1, 3, 4, 6, 5, 7, 8, 10, 9, 11, 12, 14, 13, 15, 16, 18, 17, 19, 20, 22, 21, 23, 24, 26, 25, 27, 28, 30, 29, 31},
+                    {0, 3, 6, 1, 4, 7, 2, 5, 8, 9, 12, 15, 10, 13, 16, 11, 14, 17, 18, 21, 24, 19, 22, 25, 20, 23, 26, 27, 30, 28, 31, 29},
+                    {0, 4, 8, 12, 1, 5, 9, 13, 2, 6, 10, 14, 3, 7, 11, 15, 16, 20, 24, 28, 17, 21, 25, 29, 18, 22, 26, 30, 19, 23, 27, 31}
+            };
     }
 
     public abstract void createComponents();
 
-    public void clearSurfaceViewComponents(){
+    public void clearSurfaceViewComponents() {
         /*for(SurfaceViewComponent svc : surfaceViewComponents)
             svc = null;
         surfaceViewComponents.clear();*/
     }
 
-    public void addSurfaceViewComponent(SurfaceViewComponent svc){
+    public void addSurfaceViewComponent(SurfaceViewComponent svc) {
         surfaceViewComponents.add(svc);
+    }
+
+    public void removeSurfaceViewComponent(SurfaceViewComponent svc) {
+        if (svc.isConnected())
+            onStop(svc);
+        surfaceViewComponents.remove(svc);
     }
 
     public FrameLayout.LayoutParams changeSurfaceViewSize() {
@@ -101,25 +135,27 @@ public abstract class ChannelsManager implements IFunSDKResult {
         surfaceViewLayout.width = surfaceViewWidth;
         surfaceViewLayout.height = surfaceViewHeight;
 
-        pbParam.width = surfaceViewWidth/4;
-        pbParam.height = surfaceViewHeight/4;
+        pbParam.width = surfaceViewWidth / 4;
+        pbParam.height = surfaceViewHeight / 4;
 
         return surfaceViewLayout;
     }
 
-    public GLSurfaceView20 getMySurfaceView(int channelId){
+    public GLSurfaceView20 getMySurfaceView(int channelId) {
         return mySurfaceViews.get(channelId);
     }
 
 
-    /** Grid Functions **/
+    /**
+     * Grid Functions
+     **/
     public abstract void reOrderSurfaceViewComponents();
 
     public abstract int getChannelSelected(int gridPositionSelected);
 
     public int scrollToItem(int currentFirstVisibleItem, int currentLastVisibleItem) {
         int itemToScroll = 0;
-        int totalQuads = numQuad*numQuad;
+        int totalQuads = numQuad * numQuad;
         if (totalQuads > 1) {
             if (currentLastVisibleItem % totalQuads == totalQuads - 1) {
                 itemToScroll = currentLastVisibleItem;
@@ -133,7 +169,7 @@ public abstract class ChannelsManager implements IFunSDKResult {
         } else if (totalQuads == 1) {
             if (lastFirstVisibleItem != currentFirstVisibleItem) {
                 itemToScroll = currentFirstVisibleItem;
-            } else if (lastLastVisibleItem != currentLastVisibleItem){
+            } else if (lastLastVisibleItem != currentLastVisibleItem) {
                 itemToScroll = currentLastVisibleItem;
             }
         }
@@ -143,12 +179,12 @@ public abstract class ChannelsManager implements IFunSDKResult {
         return itemToScroll;
     }
 
-    public void resetScale(){
+    public void resetScale() {
         ((Activity) mContext).runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                for(SurfaceViewComponent svc : surfaceViewComponents){
-                    if(svc.mScaleFactor > 1.F)
+                for (SurfaceViewComponent svc : surfaceViewComponents) {
+                    if (svc.mScaleFactor > 1.F)
                         svc.mySurfaceView.resetScaleInfo();
                 }
             }
@@ -156,13 +192,21 @@ public abstract class ChannelsManager implements IFunSDKResult {
     }
 
 
-    /** Media Control Functions **/
+    /**
+     * Media Control Functions
+     **/
     public void onPlayLive(SurfaceViewComponent svc) {
         mDeviceManager.addToStart(svc);
     }
 
-    abstract public void onStartVideo(final SurfaceViewComponent svc);
-        //svc.mPlayerHandler = FunSDK.MediaRealPlay(mUserID, mDevice.connectionString, svc.mySurfaceViewChannelId, svc.streamType, mySurfaceViews.get(svc.mySurfaceViewChannelId), svc.mySurfaceViewOrderId);
+    public void onStartVideo(final SurfaceViewComponent svc) {
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                svc.mPlayerHandler = FunSDK.MediaRealPlay(mUserID, svc.deviceConnection, svc.mySurfaceViewChannelId, svc.streamType, svc.mySurfaceView, svc.mySurfaceViewOrderId);
+            }
+        }).start();
+    }
 
     // NOT TESTED
     public void onRefreshVideo(final SurfaceViewComponent svc){
@@ -305,15 +349,15 @@ public abstract class ChannelsManager implements IFunSDKResult {
     }
 
     public void stopChannels(final int start){
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
+//        new Thread(new Runnable() {
+//            @Override
+//            public void run() {
                 for(int i = start; i < surfaceViewComponents.size(); i++){
                     if(surfaceViewComponents.get(i).isConnected())
                         onStop(surfaceViewComponents.get(i));
                 }
-            }
-        }).start();
+//            }
+//        }).start();
 
     }
 

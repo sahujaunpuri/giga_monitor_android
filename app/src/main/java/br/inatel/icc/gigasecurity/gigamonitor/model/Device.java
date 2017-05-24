@@ -146,9 +146,9 @@ public class Device implements Serializable {
     }
 
     public void checkConnectionMethod(){
-        if(!ipAddress.isEmpty())
+        if(ipAddress != null && !ipAddress.isEmpty())
             connectionString = ipAddress+":"+tcpPort;
-        else if(!domain.isEmpty())
+        else if(domain != null && !domain.isEmpty())
             connectionString = domain+":"+tcpPort;
         else if(!serialNumber.isEmpty())
             connectionString = serialNumber;
