@@ -70,6 +70,7 @@ public class Device implements Serializable {
     //State
     public boolean isLogged = false;
     public boolean isOnline = false;
+    public boolean isFavorite = false;
 
     private Calendar systemTime;
 

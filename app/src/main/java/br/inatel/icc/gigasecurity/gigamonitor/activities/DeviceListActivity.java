@@ -55,7 +55,7 @@ public class DeviceListActivity extends ActionBarActivity {
 //        Thread.setDefaultUncaughtExceptionHandler(new MyExceptionHandler(this, DeviceListActivity.class));
 
         //if don't have any device registered, start InitialActivity.
-        if(mDevices.size() == 0) {
+        if(mDevices.size() == 1) {
             startInitialActivity();
 //            finish();
         }

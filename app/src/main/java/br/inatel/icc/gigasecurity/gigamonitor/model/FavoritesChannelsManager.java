@@ -1,22 +1,12 @@
 package br.inatel.icc.gigasecurity.gigamonitor.model;
 
-import android.content.Context;
-import android.view.Gravity;
-import android.widget.FrameLayout;
-
-import com.lib.FunSDK;
 import com.lib.IFunSDKResult;
 import com.video.opengl.GLSurfaceView20;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 
-import br.inatel.icc.gigasecurity.gigamonitor.adapters.ChannelRecyclerViewAdapter;
-import br.inatel.icc.gigasecurity.gigamonitor.core.DeviceManager;
-import br.inatel.icc.gigasecurity.gigamonitor.listeners.PlaybackListener;
-import br.inatel.icc.gigasecurity.gigamonitor.task.AudioRecordThread;
 import br.inatel.icc.gigasecurity.gigamonitor.ui.SurfaceViewComponent;
-import br.inatel.icc.gigasecurity.gigamonitor.util.Utils;
 
 /**
  * Created by filipecampos on 02/05/2016.
@@ -42,14 +32,11 @@ public class FavoritesChannelsManager extends ChannelsManager implements IFunSDK
             numQuad = 1;
             lastNumQuad = 1;
         }
-        for(HashMap.Entry<Integer, ArrayList<Integer>> entry : mDeviceManager.favoritesMap.entrySet()){
-            int deviceID = entry.getKey();
-            Device currentDevice = mDeviceManager.findDeviceById(deviceID);
+        for(FavoritePair favorite : mDeviceManager.favoritesList){
+            Device currentDevice = mDeviceManager.findDeviceById(favorite.deviceId);
             ChannelsManager currentManager = mDeviceManager.findSurfaceViewManagerByDevice(currentDevice);
-            for(Integer i : entry.getValue()){
-                createComponent(currentManager, i, position);
-                position++;
-            }
+            createComponent(currentManager, favorite.channelNumber, position);
+            position++;
         }
         changeSurfaceViewSize();
     }

@@ -128,6 +128,8 @@ public class DeviceExpandableListAdapter extends BaseExpandableListAdapter {
         groupView.ivMore.setOnClickListener(createMoreListener(groupPosition));
         groupView.ivQuad.setOnClickListener(createQuadListener(groupPosition));
 
+
+
         groupViewHolder.add(groupView);
 
         return groupView;
@@ -282,22 +284,23 @@ public class DeviceExpandableListAdapter extends BaseExpandableListAdapter {
                 }
                 else if (groupViewHolder.mDevice.getChannelNumber() > 0 && groupViewHolder.mDevice.isLogged) {
                     childViewHolder.recyclerViewChannels.setVisibility(View.VISIBLE);
-                    groupViewHolder.ivMore.setVisibility(View.VISIBLE);
-                    if(groupViewHolder.mDevice.getChannelNumber() > 1)
+                    if(!groupViewHolder.mDevice.getSerialNumber().equals("Favoritos"))
+                        groupViewHolder.ivMore.setVisibility(View.VISIBLE);
+                    if(groupViewHolder.mDevice.getChannelNumber() > 1 )
                         groupViewHolder.ivQuad.setVisibility(View.VISIBLE);
                 }
             }
         });
     }
 
-    @Override
+    /*@Override
     public void onGroupExpanded(int groupPosition){
         super.onGroupExpanded(groupPosition);
         final GroupViewHolder currentGroupViewHolder = groupViewHolder.get(groupPosition);
         if(currentGroupViewHolder.mDevice.isLogged && !mDeviceManager.getDeviceChannelsManagers().get(groupPosition).surfaceViewComponents.isEmpty()) {
             mDeviceManager.getDeviceChannelsManagers().get(groupPosition).createComponents();
         }
-    }
+    }*/
 
     @Override
     public void onGroupCollapsed(int groupPosition){
@@ -380,8 +383,9 @@ public class DeviceExpandableListAdapter extends BaseExpandableListAdapter {
         mDeviceManager.loginDevice(mDevice, new LoginDeviceListener() {
             @Override
             public void onLoginSuccess(Device device) {
-                        mDevice.isLogged = true;
-                        updateChildView(mDevice, groupViewHolder, childViewHolder, position);
+                mDevice.isLogged = true;
+                mDeviceManager.clearStart();
+                updateChildView(mDevice, groupViewHolder, childViewHolder, position);
             }
 
             @Override

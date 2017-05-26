@@ -20,6 +20,7 @@ import com.lib.sdk.struct.H264_DVR_FINDINFO;
 import com.lib.sdk.struct.SDK_CONFIG_NET_COMMON_V2;
 
 
+import org.apache.commons.lang3.tuple.Pair;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -38,6 +39,7 @@ import br.inatel.icc.gigasecurity.gigamonitor.model.ChannelsManager;
 import br.inatel.icc.gigasecurity.gigamonitor.model.Device;
 import br.inatel.icc.gigasecurity.gigamonitor.model.DeviceChannelsManager;
 import br.inatel.icc.gigasecurity.gigamonitor.model.FavoritesChannelsManager;
+import br.inatel.icc.gigasecurity.gigamonitor.model.FavoritePair;
 import br.inatel.icc.gigasecurity.gigamonitor.ui.SurfaceViewComponent;
 import br.inatel.icc.gigasecurity.gigamonitor.util.ComplexPreferences;
 import br.inatel.icc.gigasecurity.gigamonitor.util.Utils;
@@ -57,7 +59,8 @@ public class DeviceManager implements IFunSDKResult{
     private static DeviceManager mInstance = null;
     private int mFunUserHandler;
 
-    public HashMap<Integer, ArrayList<Integer>> favoritesMap;
+//    public HashMap<Integer, ArrayList<Integer>> favoritesList;
+    public ArrayList<FavoritePair> favoritesList;
     private ArrayList<Device> mDevices = new ArrayList<Device>();
     private ArrayList<Device> mLanDevices = new ArrayList<Device>();
     public ArrayList<Device> mFavoriteDevices = new ArrayList<Device>();
@@ -180,6 +183,12 @@ public class DeviceManager implements IFunSDKResult{
                     device.isLogged = true;
 //                    putLoggedDevice(device);
 
+//                    if(favoriteChannels)
+                    if(loginList.containsKey("Favoritos")){
+                        loginList.remove("Favoritos");
+
+                    }
+
                     if(device.getChannelNumber()>0){
                         if(loginList.get(device.connectionString) != null)
                             loginList.get(device.connectionString).onLoginSuccess(device);
@@ -250,7 +259,8 @@ public class DeviceManager implements IFunSDKResult{
                     switch(msgContent.str){
                         case "SystemInfo":{
                             setDeviceInfo(json, device);
-//                            currentLoginListener.onLoginSuccess();
+//                            currentLoginListener.
+// Success();
                             if(loginList.get(device.connectionString) != null) {
                                 loginList.get(device.connectionString).onLoginSuccess(device);
                             }
@@ -382,14 +392,13 @@ public class DeviceManager implements IFunSDKResult{
 
     public void loadSavedData(Context context){
         mDevices = loadDevices(context);
-        favoritesMap = new HashMap<Integer, ArrayList<Integer>>();
-        favoritesMap = loadFavorites(context);
+        favoritesList = new ArrayList<FavoritePair>();
+        favoritesList = loadFavorites(context);
         createFavoriteDevice();
-
         for(Device device : mDevices)
             device.checkConnectionMethod();
-
         loginAllDevices();
+
     }
 
     public void createFavoriteDevice(){
@@ -427,7 +436,7 @@ public class DeviceManager implements IFunSDKResult{
     public void saveData() {
         ComplexPreferences cp = new ComplexPreferences(currentContext, "SHARED_PREFERENCE_LIST", Context.MODE_PRIVATE);
         cp.putObject("DeviceList", new DeviceList(mDevices));
-        cp.putObject("FavoritesMap", favoritesMap);
+        cp.putObject("FavoritesList", favoritesList);
 
         cp.apply();
     }
@@ -443,23 +452,18 @@ public class DeviceManager implements IFunSDKResult{
         return deviceList.getList();
     }
 
-    private HashMap<Integer, ArrayList<Integer>> loadFavorites(Context context) {
+    private ArrayList<FavoritePair> loadFavorites(Context context) {
         ComplexPreferences cp = new ComplexPreferences(context, context.getString(R.string.sheredpreference_list), Context.MODE_PRIVATE);
-        HashMap<String, ArrayList<Double>> hashMap = cp.getObject("FavoritesMap", HashMap.class);
-        if(hashMap != null)
-            for (HashMap.Entry<String, ArrayList<Double>> entry : hashMap.entrySet()){
-                int key = Integer.parseInt(entry.getKey());
-                mFavoriteDevices.add(findDeviceById(key));
-                ArrayList<Integer> arrayList = new ArrayList<Integer>();
-                for(Double i : entry.getValue()){
-                    arrayList.add(i.intValue());
-                    favoriteChannels++;
-                }
-                favoritesMap.remove(entry.getKey());
-                favoritesMap.put(key, arrayList);
+        ArrayList<FavoritePair> list = cp.getObject("FavoritesList", ArrayList.class);
+        if(list != null){
+            for(FavoritePair pair : list){
+                Device device = findDeviceById(pair.deviceId);
+                if(!device.isFavorite)
+                    device.isFavorite = true;
+                favoriteChannels++;
             }
-
-        return favoritesMap;
+        }
+        return list;
     }
 
     public ArrayList<Device> getDevices(){
@@ -814,7 +818,6 @@ public class DeviceManager implements IFunSDKResult{
             deviceChannelsManagers.add(deviceChannelsManager);
         }
         loginList.clear();*/
-//        loginAllDevices();
     }
 
     public void updateSurfaceViewManager(int i){
@@ -1023,19 +1026,14 @@ public class DeviceManager implements IFunSDKResult{
     }
 
     public boolean isFavorite(int deviceId, int channelNumber){
-        return favoritesMap.containsKey(deviceId) && favoritesMap.get(deviceId).contains(channelNumber);
+        FavoritePair pair = new FavoritePair(deviceId, channelNumber);
+        return (favoritesList.contains(pair));
     }
 
     public void addFavorite(SurfaceViewComponent channel){
         Log.d(TAG, "addFavorite: channel " + channel.mySurfaceViewChannelId);
-        ArrayList<Integer> arrayList = new ArrayList<Integer>();
-        if(favoritesMap.containsKey(channel.getDeviceId())){
-            arrayList = favoritesMap.get(channel.getDeviceId());
-            favoritesMap.remove(channel.getDeviceId());
-        }
-        arrayList.add(channel.mySurfaceViewChannelId);
-        favoritesMap.put(channel.getDeviceId(), arrayList);
-        channel.isFavorite = true;
+        favoritesList.add(new FavoritePair(channel.deviceId, channel.mySurfaceViewChannelId));
+        channel.setFavorite(true);
 //        if(favoriteChannels == 0)
 //            expandableListAdapter.notifyDataSetChanged();
         favoriteChannels++;
@@ -1047,13 +1045,8 @@ public class DeviceManager implements IFunSDKResult{
 
     public void removeFavorite(SurfaceViewComponent channel){
         Log.d(TAG, "removeFavorite: channel " + channel.mySurfaceViewChannelId);
-        if(isFavorite(channel.getDeviceId(), channel.mySurfaceViewChannelId)){
-            ArrayList<Integer> arrayList = favoritesMap.get(channel.getDeviceId());
-            arrayList.remove(arrayList.indexOf(channel.mySurfaceViewChannelId));
-            favoritesMap.remove(channel.getDeviceId());
-            if(arrayList.size() > 0)
-                favoritesMap.put(channel.getDeviceId(), arrayList);
-        }
+        FavoritePair favorite = new FavoritePair(channel.deviceId, channel.mySurfaceViewChannelId);
+        favoritesList.remove(favorite);
         channel.setFavorite(false);
         findSurfaceViewManagerByDevice(channel.deviceId).surfaceViewComponents.get(channel.mySurfaceViewChannelId).setFavorite(false);
         favoriteChannels--;

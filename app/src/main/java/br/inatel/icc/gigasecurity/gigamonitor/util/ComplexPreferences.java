@@ -12,7 +12,13 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
 
+import org.apache.commons.lang3.tuple.Pair;
+
 import java.lang.reflect.Type;
+import java.util.ArrayList;
+import java.util.LinkedList;
+
+import br.inatel.icc.gigasecurity.gigamonitor.model.FavoritePair;
 
 public class ComplexPreferences {
 
@@ -48,13 +54,24 @@ public class ComplexPreferences {
         if(object == null){
             throw new IllegalArgumentException("object is null");
         }
-
         if(key.equals("") || key == null){
             throw new IllegalArgumentException("key is empty or null");
         }
 
         editor.putString(key, GSON.toJson(object));
     }
+
+    /*public void putObject(String key, LinkedList<Pair<Integer, Integer>> list) {
+        if(list == null){
+            throw new IllegalArgumentException("object is null");
+        }
+        if(key.equals("") || key == null){
+            throw new IllegalArgumentException("key is empty or null");
+        }
+        Type listType = new TypeToken<LinkedList<Pair>>(){}.getType();
+        editor.putString(key, GSON.toJson(list, listType));
+
+    }*/
 
     public void apply() {
         editor.apply();
@@ -67,7 +84,12 @@ public class ComplexPreferences {
             return null;
         } else {
             try{
-                return GSON.fromJson(gson, a);
+                if(key.equals("FavoritesList")){
+                    Type listType = new TypeToken<ArrayList<FavoritePair>>(){}.getType();
+                    ArrayList<FavoritePair> list = GSON.fromJson(gson, listType);
+                    return GSON.fromJson(gson, listType);
+                }else
+                    return GSON.fromJson(gson, a);
             } catch (Exception e) {
                 throw new IllegalArgumentException("Object storaged with key " + key + " is instanceof other class");
             }
