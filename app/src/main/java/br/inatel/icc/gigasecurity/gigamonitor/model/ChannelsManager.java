@@ -241,10 +241,10 @@ public abstract class ChannelsManager implements IFunSDKResult {
     }
 
     public void restartVideo(SurfaceViewComponent svc){
-        if(svc.isConnected()){
+//        if(svc.isConnected()){
             onStop(svc);
             onStartVideo(svc);
-        }
+//        }
     }
 
     public void toggleReceiveAudio(SurfaceViewComponent svc){

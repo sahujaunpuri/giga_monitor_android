@@ -1,5 +1,6 @@
 package br.inatel.icc.gigasecurity.gigamonitor.model;
 
+import com.lib.FunSDK;
 import com.lib.IFunSDKResult;
 import com.video.opengl.GLSurfaceView20;
 
@@ -55,13 +56,37 @@ public class FavoritesChannelsManager extends ChannelsManager implements IFunSDK
         surfaceViewComponent.deviceConnection = channelsManager.mDevice.connectionString;
         surfaceViewComponent.deviceId = channelsManager.mDevice.getId();
 
-//        if(mDeviceManager.isFavorite(channelsManager.mDevice.getId(), i))
-            surfaceViewComponent.isFavorite = channelsManager.surfaceViewComponents.get(i).isFavorite;
+        if(mDeviceManager.isFavorite(channelsManager.mDevice.getId(), i))
+            surfaceViewComponent.isFavorite = true;
 
 //            surfaceViewComponent.setLayoutParams(new FrameLayout.LayoutParams(FrameLayout.LayoutParams.MATCH_PARENT, FrameLayout.LayoutParams.MATCH_PARENT));
         surfaceViewComponent.setLayoutParams(surfaceViewLayout);
 
         surfaceViewComponents.add(surfaceViewComponent);
+    }
+
+    public void refreshFromDevice(final int deviceId){
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                for(SurfaceViewComponent svc : surfaceViewComponents){
+                    if(svc.deviceId == deviceId && svc.isVisible && !svc.isConnected()){
+                        restartVideo(svc);
+                    }
+                }
+            }
+        }).start();
+    }
+
+    @Override
+    public void onStartVideo(final SurfaceViewComponent svc) {
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                if(mDeviceManager.findDeviceById(svc.deviceId).isLogged)
+                    svc.mPlayerHandler = FunSDK.MediaRealPlay(mUserID, svc.deviceConnection, svc.mySurfaceViewChannelId, svc.streamType, svc.mySurfaceView, svc.mySurfaceViewOrderId);
+            }
+        }).start();
     }
 
     @Override

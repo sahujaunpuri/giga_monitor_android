@@ -27,7 +27,9 @@ import org.json.JSONObject;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.LinkedList;
 
 import br.inatel.icc.gigasecurity.gigamonitor.R;
@@ -134,10 +136,6 @@ public class DeviceManager implements IFunSDKResult{
         loadSavedData(context);
 
         getScreenSize();
-
-
-
-
     }
 
     @Override
@@ -178,17 +176,12 @@ public class DeviceManager implements IFunSDKResult{
                 if(msgContent.seq != 0) {
                     device = findDeviceById(msgContent.seq);
                 }
-                if(msg.arg1 == 0) {
+                if(msg.arg1 == 0 && device != null) {
                     Log.d(TAG, "OnFunSDKResult: Login SUCCESS");
                     device.isLogged = true;
 //                    putLoggedDevice(device);
 
-//                    if(favoriteChannels)
-                    if(loginList.containsKey("Favoritos")){
-                        loginList.remove("Favoritos");
-
-                    }
-
+                    favoriteManager.refreshFromDevice(device.getId());
                     if(device.getChannelNumber()>0){
                         if(loginList.get(device.connectionString) != null)
                             loginList.get(device.connectionString).onLoginSuccess(device);
@@ -392,13 +385,11 @@ public class DeviceManager implements IFunSDKResult{
 
     public void loadSavedData(Context context){
         mDevices = loadDevices(context);
-        favoritesList = new ArrayList<FavoritePair>();
         favoritesList = loadFavorites(context);
         createFavoriteDevice();
         for(Device device : mDevices)
             device.checkConnectionMethod();
         loginAllDevices();
-
     }
 
     public void createFavoriteDevice(){
@@ -457,13 +448,16 @@ public class DeviceManager implements IFunSDKResult{
         ArrayList<FavoritePair> list = cp.getObject("FavoritesList", ArrayList.class);
         if(list != null){
             for(FavoritePair pair : list){
+                Log.d(TAG, "loadFavorites: " + pair.toString());
                 Device device = findDeviceById(pair.deviceId);
                 if(!device.isFavorite)
                     device.isFavorite = true;
                 favoriteChannels++;
             }
-        }
-        return list;
+            return list;
+        } else
+            return new ArrayList<FavoritePair>();
+
     }
 
     public ArrayList<Device> getDevices(){
@@ -1026,8 +1020,12 @@ public class DeviceManager implements IFunSDKResult{
     }
 
     public boolean isFavorite(int deviceId, int channelNumber){
-        FavoritePair pair = new FavoritePair(deviceId, channelNumber);
-        return (favoritesList.contains(pair));
+        /*for(FavoritePair pair : favoritesList){
+            if(pair.deviceId == deviceId)
+                if(pair.channelNumber == channelNumber)
+                    return true;
+        }*/
+        return favoritesList.contains(new FavoritePair(deviceId, channelNumber));
     }
 
     public void addFavorite(SurfaceViewComponent channel){
@@ -1048,13 +1046,30 @@ public class DeviceManager implements IFunSDKResult{
         FavoritePair favorite = new FavoritePair(channel.deviceId, channel.mySurfaceViewChannelId);
         favoritesList.remove(favorite);
         channel.setFavorite(false);
-        findSurfaceViewManagerByDevice(channel.deviceId).surfaceViewComponents.get(channel.mySurfaceViewChannelId).setFavorite(false);
+        int channelPosition = findSurfaceViewManagerByDevice(channel.deviceId).getChannelSelected(channel.mySurfaceViewChannelId);
+        findSurfaceViewManagerByDevice(channel.deviceId).surfaceViewComponents.get(channelPosition).setFavorite(false);
         favoriteChannels--;
         favoriteDevice.setChannelNumber(favoriteChannels);
         favoriteManager.createComponents();
 //        if(favoriteChannels == 0)
 //            expandableListAdapter.notifyDataSetChanged();
         saveData();
+    }
+
+    public void removeDeviceFromFavorite(int deviceId){
+        ArrayList<Integer> toRemove = new ArrayList<>();
+        int i = 0;
+        for(FavoritePair pair : favoritesList) {
+            if (pair.deviceId == deviceId)
+                toRemove.add(i);
+            i++;
+        }
+        for(int j=toRemove.size()-1 ; j>=0; j--) {
+            favoritesList.remove((int) toRemove.get(j));
+            favoriteChannels--;
+        }
+        favoriteDevice.setChannelNumber(favoriteChannels);
+        Log.d(TAG, "removeDeviceFromFavorite: ");
     }
 
 

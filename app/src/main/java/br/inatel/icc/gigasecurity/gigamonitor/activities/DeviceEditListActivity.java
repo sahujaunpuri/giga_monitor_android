@@ -22,7 +22,7 @@ public class DeviceEditListActivity extends ActionBarActivity {
     private DeviceEditAdapter mAdapter;
     private ArrayList<Device> mDevices;
     private DeviceManager mDeviceManager;
-    private ArrayList<Integer> itensRemoved = new ArrayList<Integer>();
+    private ArrayList<Integer> devicesRemoved = new ArrayList<Integer>();
 
     public static DragSortListView lv;
     private boolean modified;
@@ -89,7 +89,9 @@ public class DeviceEditListActivity extends ActionBarActivity {
             new DragSortListView.RemoveListener() {
                 @Override
                 public void remove(int which) {
+                    devicesRemoved.add(((Device)mAdapter.getItem(which)).getId());
                     mDevices.remove(mAdapter.getItem(which));
+
 
 //                    mAdapter.notifyDataSetChanged();
                     mAdapter = new DeviceEditAdapter(DeviceEditListActivity.this, mDevices);
@@ -136,10 +138,11 @@ public class DeviceEditListActivity extends ActionBarActivity {
             if(!modified)
                 finish();
             else {
-
+                for(int i : devicesRemoved)
+                    mDeviceManager.removeDeviceFromFavorite(i);
+                mDeviceManager.saveData();
                 mDeviceManager.invalidateExpandableList();
                 mDeviceManager.updateDevices(null, mDevices);
-
                 mDeviceManager.loadSavedData(DeviceListActivity.mContext);
                 mDeviceManager.updateSurfaceViewManagers();
 //                mDeviceManager.getExpandableListAdapter(null).notifyDataSetChanged();
