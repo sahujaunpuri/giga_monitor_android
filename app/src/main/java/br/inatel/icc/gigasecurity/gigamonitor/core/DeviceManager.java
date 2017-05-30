@@ -671,7 +671,6 @@ public class DeviceManager implements IFunSDKResult{
             currentConfigB.put("Address", "0x0A060001"/*Utils.stringIpToHexString("10.6.0.1")*/);
             currentConfig.put("Server", currentConfigB);
             currentConfigArray.put(0, currentConfig);
-
         }catch (JSONException e){
             e.printStackTrace();
         }
@@ -1036,7 +1035,8 @@ public class DeviceManager implements IFunSDKResult{
 //            expandableListAdapter.notifyDataSetChanged();
         favoriteChannels++;
         favoriteDevice.setChannelNumber(favoriteChannels);
-        favoriteManager.createComponents();
+//        favoriteManager.createComponents();
+        expandableListAdapter.updateGrid(deviceChannelsManagers.indexOf(favoriteManager), favoriteManager);
 
         saveData();
     }
@@ -1050,7 +1050,8 @@ public class DeviceManager implements IFunSDKResult{
         findSurfaceViewManagerByDevice(channel.deviceId).surfaceViewComponents.get(channelPosition).setFavorite(false);
         favoriteChannels--;
         favoriteDevice.setChannelNumber(favoriteChannels);
-        favoriteManager.createComponents();
+//        favoriteManager.createComponents();
+        expandableListAdapter.updateGrid(deviceChannelsManagers.indexOf(favoriteManager), favoriteManager);
 //        if(favoriteChannels == 0)
 //            expandableListAdapter.notifyDataSetChanged();
         saveData();
@@ -1069,7 +1070,19 @@ public class DeviceManager implements IFunSDKResult{
             favoriteChannels--;
         }
         favoriteDevice.setChannelNumber(favoriteChannels);
+        expandableListAdapter.updateGrid(deviceChannelsManagers.indexOf(favoriteManager), favoriteManager);
         Log.d(TAG, "removeDeviceFromFavorite: ");
+    }
+
+    public void cleanFavorites(){
+        for(FavoritePair pair : favoritesList){
+            findSurfaceViewManagerByDevice(pair.deviceId).surfaceViewComponents.get(pair.channelNumber).setFavorite(false);
+        }
+        favoritesList = new ArrayList<FavoritePair>();
+        favoriteChannels = 0;
+        favoriteDevice.setChannelNumber(favoriteChannels);
+        expandableListAdapter.updateGrid(deviceChannelsManagers.indexOf(favoriteManager), favoriteManager);
+        saveData();
     }
 
 

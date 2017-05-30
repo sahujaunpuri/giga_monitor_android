@@ -229,6 +229,7 @@ public class SurfaceViewComponent extends FrameLayout {
     protected void onDetachedFromWindow() {
         super.onDetachedFromWindow();
         isVisible = false;
+        mChannelsManager.mRecyclerAdapter.closeOverlayMenu();
         new Thread(new Runnable() {
             @Override
             public void run() {

@@ -191,10 +191,12 @@ public class ChannelRecyclerViewAdapter extends RecyclerView.Adapter<ChannelRecy
 
     }
 
-
-
-
-
+    public void closeOverlayMenu(){
+        final OverlayMenu overlayMenu = childViewHolder.overlayMenu;
+        if(overlayMenu.getVisibility() == View.VISIBLE) {
+            overlayMenu.setVisibility(View.GONE);
+        }
+    }
 
 
 }

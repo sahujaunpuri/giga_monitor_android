@@ -248,17 +248,20 @@ public class DeviceExpandableListAdapter extends BaseExpandableListAdapter {
         }if(childViewHolder.size() > groupPosition)
             currentChildViewHolder = childViewHolder.get(groupPosition);
         if(currentChildViewHolder != null) {
+            if(currentChildViewHolder.gridLayoutManager == null){
+                initGridRecycler(groupPosition, currentChildViewHolder);
+            }
             if(!currentGroupViewHolder.mDevice.isLogged) {
                 currentChildViewHolder.tvMessage.setText("Conectando...");
                 currentChildViewHolder.tvMessage.setVisibility(View.VISIBLE);
                 currentChildViewHolder.recyclerViewChannels.setVisibility(View.INVISIBLE);
-                initGridRecycler(groupPosition, currentChildViewHolder);
+//                initGridRecycler(groupPosition, currentChildViewHolder);
                 loginDevice(currentGroupViewHolder.mDevice, currentGroupViewHolder, currentChildViewHolder, groupPosition);
             } else if(mDeviceManager.getDeviceChannelsManagers().get(groupPosition).surfaceViewComponents.isEmpty()){
-                initGridRecycler(groupPosition, currentChildViewHolder);
+//                initGridRecycler(groupPosition, currentChildViewHolder);
                 updateChildView(mDevices.get(groupPosition), currentGroupViewHolder, currentChildViewHolder, groupPosition);
             } else {
-                initGridRecycler(groupPosition, currentChildViewHolder);
+//                initGridRecycler(groupPosition, currentChildViewHolder);
                 updateChildView(mDevices.get(groupPosition), currentGroupViewHolder, currentChildViewHolder, groupPosition);
 //                showExpanded(groupPosition, currentGroupViewHolder, currentChildViewHolder);
                 currentChildViewHolder.gridLayoutManager.scrollToPosition(mDeviceManager.getDeviceChannelsManagers().get(groupPosition).lastFirstVisibleItem);
@@ -284,8 +287,7 @@ public class DeviceExpandableListAdapter extends BaseExpandableListAdapter {
                 }
                 else if (groupViewHolder.mDevice.getChannelNumber() > 0 && groupViewHolder.mDevice.isLogged) {
                     childViewHolder.recyclerViewChannels.setVisibility(View.VISIBLE);
-                    if(!groupViewHolder.mDevice.getSerialNumber().equals("Favoritos"))
-                        groupViewHolder.ivMore.setVisibility(View.VISIBLE);
+                    groupViewHolder.ivMore.setVisibility(View.VISIBLE);
                     if(groupViewHolder.mDevice.getChannelNumber() > 1 )
                         groupViewHolder.ivQuad.setVisibility(View.VISIBLE);
                 }
@@ -372,11 +374,19 @@ public class DeviceExpandableListAdapter extends BaseExpandableListAdapter {
             mDeviceManager.getDeviceChannelsManagers().get(position).lastNumQuad = 2;
         }
         if(mDeviceManager.getDeviceChannelsManagers().get(position).mySurfaceViews.isEmpty()) {
-            mDeviceManager.getDeviceChannelsManagers().get(position).createComponents();
+            updateGrid(position, mDeviceManager.getDeviceChannelsManagers().get(position));
         }
-        childViewHolder.gridLayoutManager.setSpanCount(mDeviceManager.getDeviceChannelsManagers().get(position).numQuad);
-        childViewHolder.recyclerViewChannels.getAdapter().notifyDataSetChanged();
+
         showExpanded(position, groupViewHolder, childViewHolder);
+    }
+
+    public void updateGrid(int position, ChannelsManager channelsManager){
+        if(childViewHolder.get(position).gridLayoutManager != null) {
+            channelsManager.createComponents();
+            childViewHolder.get(position).gridLayoutManager.setSpanCount(channelsManager.numQuad);
+            childViewHolder.get(position).recyclerViewChannels.getAdapter().notifyDataSetChanged();
+            notifyDataSetChanged();
+        }
     }
 
     private void loginDevice(final Device mDevice, final GroupViewHolder groupViewHolder, final ChildViewHolder childViewHolder, final int position) {
@@ -386,6 +396,11 @@ public class DeviceExpandableListAdapter extends BaseExpandableListAdapter {
                 mDevice.isLogged = true;
                 mDeviceManager.clearStart();
                 updateChildView(mDevice, groupViewHolder, childViewHolder, position);
+                updateGrid(position, mDeviceManager.getDeviceChannelsManagers().get(position));
+
+//                mDeviceManager.getDeviceChannelsManagers().get(position).createComponents();
+//                childViewHolder.gridLayoutManager.setSpanCount(mDeviceManager.getDeviceChannelsManagers().get(position).numQuad);
+//                childViewHolder.recyclerViewChannels.getAdapter().notifyDataSetChanged();
             }
 
             @Override
@@ -427,31 +442,51 @@ public class DeviceExpandableListAdapter extends BaseExpandableListAdapter {
 
     private void showMoreDialog(final GroupViewHolder groupViewHolder, final int groupPosition) {
         final AlertDialog.Builder builder = new AlertDialog.Builder(mContext);
-        ((DeviceListActivity) mContext).runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                builder.setTitle("")
-                        .setItems(new CharSequence[]{"Configurações", "Controle Remoto", "Playback"},
-                                new DialogInterface.OnClickListener() {
-                                    @Override
-                                    public void onClick(DialogInterface dialog, int which) {
-                                        switch (which) {
-                                            case 0:
-                                                startSettingsActivity(groupViewHolder.mDevice);
-                                                break;
-                                            case 1:
-                                                startDeviceRemoteControlActivity(groupViewHolder.mDevice);
-                                                break;
-                                            case 2:
-                                                onGroupCollapsed(groupPosition);
-                                                startPlaybackActivity(groupViewHolder.mDevice);
-                                                break;
+        if(!groupViewHolder.mDevice.getSerialNumber().equals("Favoritos"))
+            ((DeviceListActivity) mContext).runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    builder.setTitle("")
+                            .setItems(new CharSequence[]{"Configurações", "Controle Remoto", "Playback"},
+                                    new DialogInterface.OnClickListener() {
+                                        @Override
+                                        public void onClick(DialogInterface dialog, int which) {
+                                            switch (which) {
+                                                case 0:
+                                                    startSettingsActivity(groupViewHolder.mDevice);
+                                                    break;
+                                                case 1:
+                                                    startDeviceRemoteControlActivity(groupViewHolder.mDevice);
+                                                    break;
+                                                case 2:
+                                                    onGroupCollapsed(groupPosition);
+                                                    startPlaybackActivity(groupViewHolder.mDevice);
+                                                    break;
+                                            }
                                         }
-                                    }
-                                });
-                builder.show();
-            }
-        });
+                                    });
+                    builder.show();
+                }
+            });
+        else
+            ((DeviceListActivity) mContext).runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    builder.setTitle("")
+                            .setItems(new CharSequence[]{"Limpar Favoritos"},
+                                    new DialogInterface.OnClickListener() {
+                                        @Override
+                                        public void onClick(DialogInterface dialog, int which) {
+                                            switch (which) {
+                                                case 0:
+                                                    mDeviceManager.cleanFavorites();
+                                                    break;
+                                            }
+                                        }
+                                    });
+                    builder.show();
+                }
+            });
 
 
     }

@@ -14,6 +14,7 @@ import java.util.ArrayList;
 import br.inatel.icc.gigasecurity.gigamonitor.R;
 import br.inatel.icc.gigasecurity.gigamonitor.core.DeviceManager;
 import br.inatel.icc.gigasecurity.gigamonitor.model.Device;
+import br.inatel.icc.gigasecurity.gigamonitor.util.Utils;
 
 
 public class DeviceFormActivity extends ActionBarActivity{
@@ -105,6 +106,10 @@ public class DeviceFormActivity extends ActionBarActivity{
         boolean isUsernameFilled = !TextUtils.isEmpty(etUsername.getText().toString());
 
         if(isHostnameFilled && ((isPortFilled && (isIPFilled || isDNSFilled)) || isSerialNumberFilled)) {
+            if(!Utils.isValidIP(etIpAddress.getText().toString())){
+                Toast.makeText(this, "Endereço de IP inválido", Toast.LENGTH_SHORT).show();
+                return false;
+            }
             mDevice.deviceName = etName.getText().toString();
             mDevice.setDomain(etDomain.getText().toString());
             mDevice.setIpAddress(etIpAddress.getText().toString());

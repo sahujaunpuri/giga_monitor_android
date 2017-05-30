@@ -113,6 +113,7 @@
                 android:text="34567"
                 android:textColorHint="@android:color/secondary_text_light_nodisable"
                 android:layout_below="@+id/tvPort"
+                android:digits="0123456789"
                 android:inputType="number"
                 android:imeOptions="actionNext"/>
 
