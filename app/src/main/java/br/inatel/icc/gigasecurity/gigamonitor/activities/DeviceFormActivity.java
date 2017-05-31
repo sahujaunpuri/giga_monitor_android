@@ -106,7 +106,7 @@ public class DeviceFormActivity extends ActionBarActivity{
         boolean isUsernameFilled = !TextUtils.isEmpty(etUsername.getText().toString());
 
         if(isHostnameFilled && ((isPortFilled && (isIPFilled || isDNSFilled)) || isSerialNumberFilled)) {
-            if(!Utils.isValidIP(etIpAddress.getText().toString())){
+            if(isIPFilled && !Utils.isValidIP(etIpAddress.getText().toString())){
                 Toast.makeText(this, "Endereço de IP inválido", Toast.LENGTH_SHORT).show();
                 return false;
             }

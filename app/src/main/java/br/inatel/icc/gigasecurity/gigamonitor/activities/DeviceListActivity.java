@@ -132,6 +132,7 @@ public class DeviceListActivity extends ActionBarActivity {
             mDeviceManager.collapse = -1;
             previousGroup = -1;
         }
+        mDeviceManager.loginAllDevices();
         mAdapter.notifyDataSetChanged();
 //        mExpandableListView.invalidate();
 //        if (previousGroup != -1) mAdapter.playChannels(previousGroup);

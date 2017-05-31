@@ -382,6 +382,7 @@ public class DeviceExpandableListAdapter extends BaseExpandableListAdapter {
 
     public void updateGrid(int position, ChannelsManager channelsManager){
         if(childViewHolder.get(position).gridLayoutManager != null) {
+            initGridRecycler(position, childViewHolder.get(position));
             channelsManager.createComponents();
             childViewHolder.get(position).gridLayoutManager.setSpanCount(channelsManager.numQuad);
             childViewHolder.get(position).recyclerViewChannels.getAdapter().notifyDataSetChanged();

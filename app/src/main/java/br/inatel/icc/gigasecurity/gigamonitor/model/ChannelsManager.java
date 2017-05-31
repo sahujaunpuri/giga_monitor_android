@@ -11,6 +11,7 @@ import android.widget.FrameLayout;
 import android.widget.Toast;
 
 import com.basic.G;
+import com.lib.EPTZCMD;
 import com.lib.EUIMSG;
 import com.lib.FunSDK;
 import com.lib.IFunSDKResult;
@@ -326,9 +327,9 @@ public abstract class ChannelsManager implements IFunSDKResult {
         return 0;
     }
 
-    public void ptzControl(int command, SurfaceViewComponent svc){
+    public void ptzControl(int command, SurfaceViewComponent svc, boolean stop){
         //EPTZCMD
-        FunSDK.DevPTZControl(svc.mPlayerHandler, svc.deviceConnection, svc.mySurfaceViewChannelId, command, 0, 4, svc.mySurfaceViewChannelId);
+        FunSDK.DevPTZControl(svc.mPlayerHandler, svc.deviceConnection, svc.mySurfaceViewChannelId, command, stop?1:0, 4, svc.mySurfaceViewChannelId);
     }
 
     public void handleVisibleChannels() {

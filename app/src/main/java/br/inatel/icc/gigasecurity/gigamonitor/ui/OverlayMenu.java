@@ -24,7 +24,7 @@ import br.inatel.icc.gigasecurity.gigamonitor.model.DeviceChannelsManager;
 public class OverlayMenu extends RelativeLayout {
     private Context mContext;
     public SurfaceViewComponent surfaceViewComponent;
-    public ImageView ivHQ, ivPlayPause, ivSnapshot, ivSnapvideo, ivFavorite, ivSendAudio, ivReceiveAudio;
+    public ImageView ivHQ, ivPlayPause, ivSnapshot, ivSnapvideo, ivFavorite, ivSendAudio, ivReceiveAudio, ivPTZ;
     public TextView ivTitle;
     public DeviceManager mDeviceManager;
     public ChannelsManager deviceChannelsManager;
@@ -54,6 +54,7 @@ public class OverlayMenu extends RelativeLayout {
         inflate(getContext(), R.layout.overlay_menu_layout, this);
 
         ivHQ                 = (ImageView) findViewById(R.id.iv_hq);
+        ivPTZ                = (ImageView) findViewById(R.id.iv_ptz);
         ivPlayPause          = (ImageView) findViewById(R.id.iv_play_pause);
         ivSnapshot           = (ImageView) findViewById(R.id.iv_snapshot);
         ivSnapvideo          = (ImageView) findViewById(R.id.iv_snapvideo);
@@ -85,6 +86,12 @@ public class OverlayMenu extends RelativeLayout {
             ivHQ.setImageDrawable(mContext.getResources().getDrawable(R.drawable.ic_hq_on));
         } else {
             ivHQ.setImageDrawable(mContext.getResources().getDrawable(R.drawable.ic_hq_off));
+        }
+
+        if (surfaceViewComponent.isPTZEnabled()) {
+            ivPTZ.setImageDrawable(mContext.getResources().getDrawable(R.drawable.ic_ptz_on));
+        } else {
+            ivPTZ.setImageDrawable(mContext.getResources().getDrawable(R.drawable.ic_ptz));
         }
 
         if(surfaceViewComponent.isConnected()) {
@@ -156,6 +163,22 @@ public class OverlayMenu extends RelativeLayout {
                     }
                     deviceChannelsManager.restartVideo(surfaceViewComponent);
                 }
+            }
+        });
+
+        ivPTZ.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if(surfaceViewComponent.isPTZEnabled()){
+                    //disableptz
+                    surfaceViewComponent.setPTZEnabled(false);
+                    ivPTZ.setImageDrawable(mContext.getResources().getDrawable(R.drawable.ic_ptz));
+                } else {
+                    //enableptz
+                    surfaceViewComponent.setPTZEnabled(true);
+                    ivPTZ.setImageDrawable(mContext.getResources().getDrawable(R.drawable.ic_ptz_on));
+                }
+
             }
         });
 

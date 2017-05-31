@@ -51,15 +51,26 @@
         android:scaleY="1.6"
         android:layout_centerInParent="true"/>
 
-    <ImageView
-        android:layout_width="46dp"
-        android:layout_height="36dp"
-        android:src="@drawable/ic_hq_off"
-        android:id="@+id/iv_hq"
-        android:scaleX="1.5"
-        android:scaleY="1.5"
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
         android:layout_alignParentBottom="true"
-        android:layout_alignParentLeft="true"/>
+        android:layout_alignParentLeft="true">
+        <ImageView
+            android:layout_width="48dp"
+            android:layout_height="36dp"
+            android:src="@drawable/ic_hq_off"
+            android:id="@+id/iv_hq"
+            android:scaleX="1.5"
+            android:scaleY="1.5" />
+        <ImageView
+            android:layout_width="48dp"
+            android:layout_height="36dp"
+            android:src="@drawable/ic_ptz_on"
+            android:id="@+id/iv_ptz"
+            android:visibility="visible"/>
+    </LinearLayout>
 
     <LinearLayout
         android:layout_width="wrap_content"

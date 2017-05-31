@@ -16,17 +16,10 @@ import br.inatel.icc.gigasecurity.gigamonitor.ui.SurfaceViewComponent;
 public class DeviceChannelsManager extends ChannelsManager implements IFunSDKResult {
     String TAG = "DeviceChannelsManager";
 
-
-
-
-
     public DeviceChannelsManager(Device mDevice) {
         super(mDevice);
         createComponents();
     }
-
-
-
 
     public void createComponents() {
         if(surfaceViewComponents.isEmpty()) {

@@ -26,6 +26,8 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -61,7 +63,6 @@ public class DeviceManager implements IFunSDKResult{
     private static DeviceManager mInstance = null;
     private int mFunUserHandler;
 
-//    public HashMap<Integer, ArrayList<Integer>> favoritesList;
     public ArrayList<FavoritePair> favoritesList;
     private ArrayList<Device> mDevices = new ArrayList<Device>();
     private ArrayList<Device> mLanDevices = new ArrayList<Device>();
@@ -252,8 +253,6 @@ public class DeviceManager implements IFunSDKResult{
                     switch(msgContent.str){
                         case "SystemInfo":{
                             setDeviceInfo(json, device);
-//                            currentLoginListener.
-// Success();
                             if(loginList.get(device.connectionString) != null) {
                                 loginList.get(device.connectionString).onLoginSuccess(device);
                             }
@@ -282,9 +281,9 @@ public class DeviceManager implements IFunSDKResult{
                         }
                         break;
                     }
-                    /*
+
 //                     salvar json como txt
-                    File file = new File("/storage/emulated/0/", "abc.txt");
+                    File file = new File("/storage/emulated/0/", msgContent.str + ".txt");
                     try {
                         FileWriter writer = new FileWriter(file);
                         writer.append(json.toString());
@@ -292,7 +291,7 @@ public class DeviceManager implements IFunSDKResult{
                         writer.close();
                     } catch (IOException e) {
                         e.printStackTrace();
-                    }*/
+                    }
                 } else{
                     Device device = findDeviceById(msgContent.seq);
                     FunSDK.DevGetConfigByJson(getHandler(), device.connectionString, msgContent.str, 4096, -1, 10000, device.getId());
