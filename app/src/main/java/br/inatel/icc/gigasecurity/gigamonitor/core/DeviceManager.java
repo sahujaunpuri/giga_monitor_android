@@ -179,6 +179,7 @@ public class DeviceManager implements IFunSDKResult{
                 }
                 if(msg.arg1 == 0 && device != null) {
                     Log.d(TAG, "OnFunSDKResult: Login SUCCESS");
+//                    FunSDK.DevGetConfigByJson(getHandler(), device.connectionString, "SetPreset", 4096, -1, 10000, device.getId());
                     device.isLogged = true;
 //                    putLoggedDevice(device);
 
@@ -238,7 +239,7 @@ public class DeviceManager implements IFunSDKResult{
             break;
             case EUIMSG.DEV_GET_JSON:
             {
-                if(msg.arg1 >= 0){
+                if(msg.arg1 >= 0 && msgContent.pData != null){
                     Log.d(TAG, "OnFunSDKResult: GETCONFIGJSON SUCCESS");
                     Device device = findDeviceById(msgContent.seq);
                     String jsonText = G.ToStringJson(msgContent.pData);
@@ -283,7 +284,7 @@ public class DeviceManager implements IFunSDKResult{
                     }
 
 //                     salvar json como txt
-                    File file = new File("/storage/emulated/0/", msgContent.str + ".txt");
+                    /*File file = new File("/storage/emulated/0/", msgContent.str + ".txt");
                     try {
                         FileWriter writer = new FileWriter(file);
                         writer.append(json.toString());
@@ -291,7 +292,7 @@ public class DeviceManager implements IFunSDKResult{
                         writer.close();
                     } catch (IOException e) {
                         e.printStackTrace();
-                    }
+                    }*/
                 } else{
                     Device device = findDeviceById(msgContent.seq);
                     FunSDK.DevGetConfigByJson(getHandler(), device.connectionString, msgContent.str, 4096, -1, 10000, device.getId());
@@ -311,7 +312,7 @@ public class DeviceManager implements IFunSDKResult{
                     updateDevicesManagers();
                 } else{
                     Log.d(TAG, "OnFunSDKResult: CONFIG SET ERROR");
-                    currentConfigListener.onError();
+//                    currentConfigListener.onError();
                 }
             }
             break;

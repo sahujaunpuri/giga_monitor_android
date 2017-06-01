@@ -2,6 +2,7 @@ package br.inatel.icc.gigasecurity.gigamonitor.ui;
 
 import android.app.Activity;
 import android.content.Context;
+import android.graphics.Color;
 import android.opengl.GLSurfaceView;
 import android.util.AttributeSet;
 import android.util.Log;
@@ -13,10 +14,13 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import android.widget.ProgressBar;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.lib.EPTZCMD;
 import com.video.opengl.GLSurfaceView20;
+
+import org.w3c.dom.Text;
 
 import br.inatel.icc.gigasecurity.gigamonitor.core.DeviceManager;
 import br.inatel.icc.gigasecurity.gigamonitor.model.ChannelsManager;
@@ -33,6 +37,7 @@ public class SurfaceViewComponent extends FrameLayout {
     private DeviceManager mDeviceManager;
     public GLSurfaceView20 mySurfaceView;
     private ProgressBar progressBar;
+    private TextView label;
 
     private FrameLayout.LayoutParams lp;
     private Context mContext;
@@ -197,7 +202,7 @@ public class SurfaceViewComponent extends FrameLayout {
     }
 
     public void enablePTZ(){
-        if(mChannelsManager.numQuad != 1)
+        /*if(mChannelsManager.numQuad != 1)
             ((Activity) mContext).runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
@@ -209,10 +214,19 @@ public class SurfaceViewComponent extends FrameLayout {
                     }
                     mChannelsManager.mRecyclerAdapter.singleQuad(mySurfaceViewChannelId);
                 }
-            });
+        });*/
+        label = new TextView(mContext);
+        FrameLayout.LayoutParams params = new FrameLayout.LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT, Gravity.START);
+        this.addView(label, params);
+        label.setTextColor(Color.WHITE);
+        label.setTextSize(20);
+        label.setText("");
+
     }
 
     public void disablePTZ(){
+        this.removeView(label);
+        label = null;
     }
 
     public int getMySurfaceViewChannelId() {
@@ -239,6 +253,56 @@ public class SurfaceViewComponent extends FrameLayout {
                 }
             }
         });
+    }
+
+    private void handlePTZ(){
+        int command = -1;
+        int sensitivity = 20;
+        int sensitivityDiagonal = 10;
+        float absDX = Math.abs(dx);
+        float absDY = Math.abs(dy);
+        if(dx>sensitivityDiagonal && dy>sensitivityDiagonal){
+            //direita baixo
+            label.setText(" DB");
+            command = EPTZCMD.PAN_RIGTHDOWN;
+        } else if(dx>sensitivityDiagonal && dy<-sensitivityDiagonal){
+            //direita cima
+            label.setText(" DC");
+            command = EPTZCMD.PAN_RIGTHTOP;
+        } else if(dx<-sensitivityDiagonal && dy>sensitivityDiagonal){
+            //esquerda baixo
+            command = EPTZCMD.PAN_LEFTDOWN;
+            label.setText(" EB");
+        } else if(dx<-sensitivityDiagonal && dy<-sensitivityDiagonal){
+            //esquerda cima
+            command = EPTZCMD.PAN_LEFTTOP;
+            label.setText(" EC");
+        } else if(dx>sensitivity){
+            //direita
+            command = EPTZCMD.PAN_RIGHT;
+            label.setText(" D");
+            Log.d(TAG2, "onInterceptTouchEvent: MOVE RIGHT");
+        }else if(dx<-sensitivity){
+            //esquerda
+            command = EPTZCMD.PAN_LEFT;
+            label.setText(" E");
+            Log.d(TAG2, "onInterceptTouchEvent: MOVE LEFT");
+        } else if(dy>sensitivity){
+            //baixo
+            command = EPTZCMD.TILT_DOWN;
+            label.setText(" B");
+            Log.d(TAG2, "onInterceptTouchEvent: MOVE DOWN");
+        } else if(dy<-sensitivity){
+            //cima
+            command = EPTZCMD.TILT_UP;
+            label.setText(" C");
+            Log.d(TAG2, "onInterceptTouchEvent: MOVE UP");
+        }
+        if(command != -1) {
+            mChannelsManager.ptzControl(command, this, false);
+            dx = dy = 0;
+            previsousPTZCommand = command;
+        }
     }
 
     private void interruptScroll(){
@@ -302,14 +366,15 @@ public class SurfaceViewComponent extends FrameLayout {
 
     @Override
     public boolean onInterceptTouchEvent(MotionEvent ev) {
+        boolean ret = false;
         final int action = ev.getActionMasked();
         if(mScaleFactor > 1.F || isPTZEnabled())
             interruptScroll();
         mySurfaceView.setRenderMode(GLSurfaceView.RENDERMODE_CONTINUOUSLY);
         if(mChannelsManager.mRecyclerAdapter != null)
             mClickListener.onTouchEvent(ev);
-        if(!isPTZEnabled())
-            mScaleDetector.onTouchEvent(ev);
+
+        mScaleDetector.onTouchEvent(ev);
         if(isScaling)
             return false;
 
@@ -318,38 +383,15 @@ public class SurfaceViewComponent extends FrameLayout {
                 if(mScaleFactor == 1.F && !isPTZEnabled()){
                     resumeScroll();
                     return false;
-                } else if(isPTZEnabled()){
-                    int command = -1;
+                } else if(isPTZEnabled() && !isScaling){
                     dx += ev.getX() - previousX;
                     dy += ev.getY() - previousY;
 
-                    float absDX = Math.abs(dx);
-                    float absDY = Math.abs(dy);
-                    if(/*absDX>absDY &&*/ dx>15){
-                        //direita
-                        command = EPTZCMD.PAN_RIGHT;
-                        Log.d(TAG, "onInterceptTouchEvent: MOVE RIGHT");
-                    }else if(/*absDX>absDY &&*/ dx<-15){
-                        //esquerda
-                        command = EPTZCMD.PAN_LEFT;
-                        Log.d(TAG, "onInterceptTouchEvent: MOVE LEFT");
-                    } else if(/*absDY>absDX &&*/ dy>15){
-                        //baixo
-                        command = EPTZCMD.TILT_DOWN;
-                        Log.d(TAG, "onInterceptTouchEvent: MOVE DOWN");
-                    } else if(/*absDY>absDX &&*/ dy<-15){
-                        //cima
-                        command = EPTZCMD.TILT_UP;
-                        Log.d(TAG, "onInterceptTouchEvent: MOVE UP");
-                    }
-                    if(command != -1) {
-                        mChannelsManager.ptzControl(command, this, false);
-                        dx = dy = 0;
-                        previsousPTZCommand = command;
-                    }
 
-                    Log.d(TAG, "onInterceptTouchEvent: MOVE x:" + ev.getX() + " y:" + ev.getY());
-                    Log.d(TAG, "onInterceptTouchEvent: MOVE dx:" + dx + " dy:" + dy);
+                    handlePTZ();
+
+//                    Log.d(TAG2, "onInterceptTouchEvent: MOVE x:" + ev.getX() + " y:" + ev.getY());
+                    Log.d(TAG2, "onInterceptTouchEvent: MOVE dx:" + dx + " dy:" + dy);
                 }
 
                 previousX = ev.getX();
@@ -363,7 +405,7 @@ public class SurfaceViewComponent extends FrameLayout {
             break;
             case MotionEvent.ACTION_UP: {
                 if(isPTZEnabled()){
-                    Log.d(TAG, "onInterceptTouchEvent: UP " + previsousPTZCommand);
+                    Log.d(TAG2, "onInterceptTouchEvent: UP " + previsousPTZCommand);
                     mChannelsManager.ptzControl(previsousPTZCommand, this, true);
                 }
 
@@ -374,7 +416,7 @@ public class SurfaceViewComponent extends FrameLayout {
             case MotionEvent.ACTION_CANCEL: {
             }
         }
-        return false;
+        return ret;
     }
 
     private class ScaleListener extends ScaleGestureDetector.SimpleOnScaleGestureListener {
@@ -414,20 +456,19 @@ public class SurfaceViewComponent extends FrameLayout {
         public boolean onDoubleTap(MotionEvent motionEvent) {
             //switch to quad 1
             Log.d(TAG2, "onDoubleTap: ");
-            if(!isPTZEnabled())
-                ((Activity) mContext).runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        if(isREC){
-                            mChannelsManager.stopRecord(surfaceViewComponent());
-                            isREC = false;
-                            String mensagem = "Gravação finalizada";
-                            Toast.makeText(mContext, mensagem, Toast.LENGTH_SHORT).show();
-                        }
-                        setPTZEnabled(false);
-                        mChannelsManager.mRecyclerAdapter.singleQuad(mySurfaceViewChannelId);
+            ((Activity) mContext).runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    if(isREC){
+                        mChannelsManager.stopRecord(surfaceViewComponent());
+                        isREC = false;
+                        String mensagem = "Gravação finalizada";
+                        Toast.makeText(mContext, mensagem, Toast.LENGTH_SHORT).show();
                     }
-                });
+                    setPTZEnabled(false);
+                    mChannelsManager.mRecyclerAdapter.singleQuad(mySurfaceViewChannelId);
+                }
+            });
 
             return true;
         }

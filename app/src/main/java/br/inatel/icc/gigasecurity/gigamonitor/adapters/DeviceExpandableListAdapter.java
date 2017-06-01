@@ -268,7 +268,7 @@ public class DeviceExpandableListAdapter extends BaseExpandableListAdapter {
             }
             setLayoutSize(groupPosition);
         }
-        return currentChildViewHolder.convertView;
+        return currentChildViewHolder.convertView; //??
     }
 
     private void showExpanded(int groupPosition, final GroupViewHolder groupViewHolder, final ChildViewHolder childViewHolder) {

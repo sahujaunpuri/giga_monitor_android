@@ -58,6 +58,7 @@ public class DeviceChannelsManager extends ChannelsManager implements IFunSDKRes
 
     /** Grid Functions **/
     public void reOrderSurfaceViewComponents() {
+        initMatrix();
         for (SurfaceViewComponent svc : surfaceViewComponents) {
             svc.mySurfaceViewOrderId = inverseMatrix[numQuad - 1][svc.mySurfaceViewChannelId];
         }
