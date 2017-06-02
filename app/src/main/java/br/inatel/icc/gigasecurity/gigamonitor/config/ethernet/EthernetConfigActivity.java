@@ -73,7 +73,7 @@ public class EthernetConfigActivity extends ActionBarActivity implements OnCheck
 
 
             Toast.makeText(getApplicationContext(), messageId, Toast.LENGTH_SHORT).show();
-
+            task.cancel(true);
             finish();
 
         }
@@ -87,6 +87,37 @@ public class EthernetConfigActivity extends ActionBarActivity implements OnCheck
 //            mManager.collapse = mManager.getDevices().indexOf(mDevice);
 
 //            finish();
+        }
+    };
+
+    private ProgressDialog pd = new ProgressDialog(mContext);
+    private AsyncTask<Void, Void, Void> task = new AsyncTask<Void, Void, Void>() {
+        @Override
+        protected void onPreExecute() {
+//                pd = new ProgressDialog(mContext);
+            pd.setTitle("Configurando");
+            pd.setMessage("Aguarde");
+            pd.setCancelable(false);
+            pd.setIndeterminate(true);
+            pd.show();
+        }
+
+        @Override
+        protected Void doInBackground(Void... arg0) {
+            try {
+                mManager.setEthernetConfig(temp, mListener);
+                Thread.sleep(3000);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(Void result) {
+            if(pd.isShowing())
+                pd.dismiss();
+            mListener.onSetConfig();
         }
     };
 
@@ -254,44 +285,7 @@ public class EthernetConfigActivity extends ActionBarActivity implements OnCheck
         //commonConfig.setMac(mMacEditText.getText().toString());
         //commonConfig.setZarg0(mZarg0EditText.getText().toString());
 
-
-
-        final ProgressDialog pd = new ProgressDialog(mContext);
-
-        AsyncTask<Void, Void, Void> task = new AsyncTask<Void, Void, Void>() {
-
-            @Override
-            protected void onPreExecute() {
-//                pd = new ProgressDialog(mContext);
-                pd.setTitle("Configurando");
-                pd.setMessage("Aguarde");
-                pd.setCancelable(false);
-                pd.setIndeterminate(true);
-                pd.show();
-            }
-
-            @Override
-            protected Void doInBackground(Void... arg0) {
-                try {
-                    mManager.setEthernetConfig(temp, mListener);
-                    Thread.sleep(3000);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-                return null;
-            }
-
-            @Override
-            protected void onPostExecute(Void result) {
-                if(pd.isShowing())
-                    pd.dismiss();
-                mListener.onSetConfig();
-            }
-
-        };
         task.execute((Void[])null);
-
-
     }
 
     private void startDeviceListActivity() {
