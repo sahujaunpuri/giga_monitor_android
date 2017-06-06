@@ -20,18 +20,13 @@ import com.lib.sdk.struct.H264_DVR_FINDINFO;
 import com.lib.sdk.struct.SDK_CONFIG_NET_COMMON_V2;
 
 
-import org.apache.commons.lang3.tuple.Pair;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.LinkedList;
 
 import br.inatel.icc.gigasecurity.gigamonitor.R;
@@ -389,6 +384,7 @@ public class DeviceManager implements IFunSDKResult{
         createFavoriteDevice();
         for(Device device : mDevices)
             device.checkConnectionMethod();
+        getDeviceChannelsManagers();
         loginAllDevices();
     }
 
@@ -744,6 +740,10 @@ public class DeviceManager implements IFunSDKResult{
         return expandableListAdapter;
     }
 
+    public DeviceExpandableListAdapter getExpandableListAdapter(){
+        return expandableListAdapter;
+    }
+
     public void invalidateExpandableList(){
         expandableListAdapter = null;
     }
@@ -765,21 +765,21 @@ public class DeviceManager implements IFunSDKResult{
         return deviceChannelsManagers;
     }
 
-    public ChannelsManager findSurfaceViewManagerByDevice(Device device){
+    public ChannelsManager findChannelManagerByDevice(Device device){
         for(ChannelsManager svm : deviceChannelsManagers){
             if(device.getId() == svm.mDevice.getId())
                 return svm;
         }
-        Log.e(TAG, "findSurfaceViewManagerByDevice: DeviceChannelsManager Not Found");
+        Log.e(TAG, "findChannelManagerByDevice: DeviceChannelsManager Not Found");
         return null;
     }
 
-    public ChannelsManager findSurfaceViewManagerByDevice(int deviceId){
+    public ChannelsManager findChannelManagerByDevice(int deviceId){
         for(ChannelsManager svm : deviceChannelsManagers){
             if(deviceId == svm.mDevice.getId())
                 return svm;
         }
-        Log.e(TAG, "findSurfaceViewManagerByDevice: DeviceChannelsManager Not Found");
+        Log.e(TAG, "findChannelManagerByDevice: DeviceChannelsManager Not Found");
         return null;
     }
 
@@ -1046,8 +1046,8 @@ public class DeviceManager implements IFunSDKResult{
         FavoritePair favorite = new FavoritePair(channel.deviceId, channel.mySurfaceViewChannelId);
         favoritesList.remove(favorite);
         channel.setFavorite(false);
-        int channelPosition = findSurfaceViewManagerByDevice(channel.deviceId).getChannelSelected(channel.mySurfaceViewChannelId);
-        findSurfaceViewManagerByDevice(channel.deviceId).surfaceViewComponents.get(channelPosition).setFavorite(false);
+        int channelPosition = findChannelManagerByDevice(channel.deviceId).getChannelSelected(channel.mySurfaceViewChannelId);
+        findChannelManagerByDevice(channel.deviceId).surfaceViewComponents.get(channelPosition).setFavorite(false);
         favoriteChannels--;
         favoriteDevice.setChannelNumber(favoriteChannels);
 //        favoriteManager.createComponents();
@@ -1076,7 +1076,7 @@ public class DeviceManager implements IFunSDKResult{
 
     public void cleanFavorites(){
         for(FavoritePair pair : favoritesList){
-            findSurfaceViewManagerByDevice(pair.deviceId).surfaceViewComponents.get(pair.channelNumber).setFavorite(false);
+            findChannelManagerByDevice(pair.deviceId).surfaceViewComponents.get(pair.channelNumber).setFavorite(false);
         }
         favoritesList = new ArrayList<FavoritePair>();
         favoriteChannels = 0;

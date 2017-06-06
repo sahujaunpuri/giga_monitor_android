@@ -30,17 +30,15 @@ public class OverlayMenu extends RelativeLayout {
     public ChannelsManager deviceChannelsManager;
     public boolean isFavoriteMenu;
 
-    public OverlayMenu(Context context, ChannelsManager deviceChannelsManager) {
+    public OverlayMenu(Context context) {
         super(context);
         mContext = context;
-        this.deviceChannelsManager = deviceChannelsManager;
         init();
     }
 
-    public OverlayMenu(Context context, AttributeSet attrs,  DeviceChannelsManager deviceChannelsManager) {
+    public OverlayMenu(Context context, AttributeSet attrs) {
         super(context, attrs);
         this.mContext = context;
-        this.deviceChannelsManager = deviceChannelsManager;
         init();
     }
 
@@ -48,6 +46,10 @@ public class OverlayMenu extends RelativeLayout {
         super(context, attrs, defStyleAttr);
         this.mContext = context;
         init();
+    }
+
+    public void setDeviceChannelsManager(ChannelsManager deviceChannelsManager) {
+        this.deviceChannelsManager = deviceChannelsManager;
     }
 
     private void init(){

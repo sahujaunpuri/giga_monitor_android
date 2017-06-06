@@ -64,6 +64,7 @@ public abstract class ChannelsManager implements IFunSDKResult {
     public int playType = 0; //0 - live, 1 - playback live
     private H264_DVR_FILE_DATA fileToStart;
     public int[][] inverseMatrix;
+    private int startTry;
 
     public ChannelsManager(Device mDevice) {
         if (mUserID == -1) {
@@ -402,14 +403,20 @@ public abstract class ChannelsManager implements IFunSDKResult {
                 if(svc!=null) {
                     if (msg.arg1 == 0) {
                         svc.setConnected(true);
-                        if (svc.playType == 0) {
+                        /*if (svc.playType == 0) {
                             mDeviceManager.requestStart();
-                        }
+                        }*/
                         Log.i(TAG, "START SUCCESS " + (svc.getMySurfaceViewChannelId()+1));
                     } else {
                         if(svc.playType == 0) {
                             svc.setConnected(false);
-                            mDeviceManager.addToStart(svc);
+                            if(startTry++ < 4)
+                                onStartVideo(svc);
+                            else {
+                                startTry = 0;
+                                mDeviceManager.logoutDevice(mDevice);
+                            }
+//                            mDeviceManager.addToStart(svc);
                         } else{
                             onPlayPlayback(fileToStart, svc);
                         }

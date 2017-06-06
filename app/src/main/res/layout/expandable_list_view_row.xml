@@ -72,16 +72,6 @@
                     android:src="@drawable/ic_more"
                     android:id="@+id/iv_device_more" />
 
-                <ProgressBar
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center"
-                    android:layout_marginLeft="10dp"
-                    android:layout_marginRight="10dp"
-                    android:visibility="gone"
-                    android:id="@+id/pb_expandable_list" />
-
-
             </TableRow>
         </TableLayout>
 

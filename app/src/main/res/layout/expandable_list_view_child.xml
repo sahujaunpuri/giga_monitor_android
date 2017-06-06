@@ -31,5 +31,11 @@
         android:text="Conectando..."
         android:id="@+id/tv_message_connecting" />
 
+    <br.inatel.icc.gigasecurity.gigamonitor.ui.OverlayMenu
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:visibility="gone"
+        android:id="@+id/overlay_menu"/>
+
 
 </FrameLayout>

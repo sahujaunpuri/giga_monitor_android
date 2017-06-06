@@ -130,6 +130,19 @@ public class DeviceEditListActivity extends ActionBarActivity {
         return true;
     }
 
+    private void exitAndSave(){
+        for(int i : devicesRemoved)
+            mDeviceManager.removeDeviceFromFavorite(i);
+        mDeviceManager.saveData();
+        mDeviceManager.invalidateExpandableList();
+        mDeviceManager.updateDevices(null, mDevices);
+        mDeviceManager.loadSavedData(DeviceListActivity.mContext);
+        mDeviceManager.updateSurfaceViewManagers();
+//        mDeviceManager.getExpandableListAdapter().notifyDataSetChanged();
+
+        startDeviceListActivity();
+    }
+
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
@@ -138,16 +151,7 @@ public class DeviceEditListActivity extends ActionBarActivity {
             if(!modified)
                 finish();
             else {
-                for(int i : devicesRemoved)
-                    mDeviceManager.removeDeviceFromFavorite(i);
-                mDeviceManager.saveData();
-                mDeviceManager.invalidateExpandableList();
-                mDeviceManager.updateDevices(null, mDevices);
-                mDeviceManager.loadSavedData(DeviceListActivity.mContext);
-                mDeviceManager.updateSurfaceViewManagers();
-//                mDeviceManager.getExpandableListAdapter(null).notifyDataSetChanged();
-
-                startDeviceListActivity();
+                exitAndSave();
             }
             return true;
 
@@ -172,6 +176,8 @@ public class DeviceEditListActivity extends ActionBarActivity {
         alert.setPositiveButton("Salvar", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialogInterface, int which) {
+                exitAndSave();
+                /*
                 mDeviceManager.invalidateExpandableList();
                 mDeviceManager.updateDevices(DeviceEditListActivity.this, mDevices);
 
@@ -180,7 +186,7 @@ public class DeviceEditListActivity extends ActionBarActivity {
                 mDeviceManager.updateSurfaceViewManagers();
 //                mDeviceManager.getExpandableListAdapter(null).notifyDataSetChanged();
 
-                startDeviceListActivity();
+                startDeviceListActivity();*/
             }
             });
         alert.setNeutralButton("Não Salvar", new DialogInterface.OnClickListener() {

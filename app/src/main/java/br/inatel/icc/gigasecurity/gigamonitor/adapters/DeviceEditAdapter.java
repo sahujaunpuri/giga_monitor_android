@@ -62,6 +62,8 @@ public class DeviceEditAdapter extends BaseAdapter {
 
             tvDeviceName = (TextView) convertView.findViewById(R.id.tv_item_edit_device);
             ivDeleteDevice = (ImageView) convertView.findViewById(R.id.iv_delete_device);
+            if(mDevices.get(position).connectionString.equals("Favoritos"))
+                ivDeleteDevice.setVisibility(View.INVISIBLE);
         }
 
         tvDeviceName.setText(mDevices.get(position).deviceName);

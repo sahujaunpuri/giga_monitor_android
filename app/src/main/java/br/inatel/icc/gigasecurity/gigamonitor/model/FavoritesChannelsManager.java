@@ -4,9 +4,6 @@ import com.lib.FunSDK;
 import com.lib.IFunSDKResult;
 import com.video.opengl.GLSurfaceView20;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-
 import br.inatel.icc.gigasecurity.gigamonitor.ui.SurfaceViewComponent;
 
 /**
@@ -35,7 +32,7 @@ public class FavoritesChannelsManager extends ChannelsManager implements IFunSDK
         }
         for(FavoritePair favorite : mDeviceManager.favoritesList){
             Device currentDevice = mDeviceManager.findDeviceById(favorite.deviceId);
-            ChannelsManager currentManager = mDeviceManager.findSurfaceViewManagerByDevice(currentDevice);
+            ChannelsManager currentManager = mDeviceManager.findChannelManagerByDevice(currentDevice);
             createComponent(currentManager, favorite.channelNumber, position);
             position++;
         }

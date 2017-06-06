@@ -147,7 +147,7 @@ public class DevicePlaybackVideoActivity extends ActionBarActivity {
         Bundle extras = getIntent().getExtras();
         mDevice = (Device) extras.getSerializable("device");
         mFileData = (FileData) extras.getSerializable("fileData");
-        //*mDeviceChannelsManager = DeviceManager.getInstance().findSurfaceViewManagerByDevice(mDevice);
+        //*mDeviceChannelsManager = DeviceManager.getInstance().findChannelManagerByDevice(mDevice);
         mDeviceChannelsManager = new DeviceChannelsManager(mDevice);
 
         // Find views
