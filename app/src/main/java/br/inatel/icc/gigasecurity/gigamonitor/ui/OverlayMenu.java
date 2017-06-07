@@ -214,10 +214,10 @@ public class OverlayMenu extends RelativeLayout {
             @Override
             public void onClick(View view) {
                 if(surfaceViewComponent.isFavorite()){
-                    mDeviceManager.removeFavorite(surfaceViewComponent);
                     if(isFavoriteMenu) {
                         surfaceViewComponent.mChannelsManager.mRecyclerAdapter.openOverlayMenu(surfaceViewComponent);
                     }
+                    mDeviceManager.removeFavorite(surfaceViewComponent);
                     ivFavorite.clearColorFilter();
                 } else {
                     mDeviceManager.addFavorite(surfaceViewComponent);

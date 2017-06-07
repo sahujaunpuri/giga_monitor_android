@@ -90,36 +90,8 @@ public class EthernetConfigActivity extends ActionBarActivity implements OnCheck
         }
     };
 
-    private ProgressDialog pd = new ProgressDialog(mContext);
-    private AsyncTask<Void, Void, Void> task = new AsyncTask<Void, Void, Void>() {
-        @Override
-        protected void onPreExecute() {
-//                pd = new ProgressDialog(mContext);
-            pd.setTitle("Configurando");
-            pd.setMessage("Aguarde");
-            pd.setCancelable(false);
-            pd.setIndeterminate(true);
-            pd.show();
-        }
-
-        @Override
-        protected Void doInBackground(Void... arg0) {
-            try {
-                mManager.setEthernetConfig(temp, mListener);
-                Thread.sleep(3000);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-            return null;
-        }
-
-        @Override
-        protected void onPostExecute(Void result) {
-            if(pd.isShowing())
-                pd.dismiss();
-            mListener.onSetConfig();
-        }
-    };
+    private ProgressDialog pd;
+    private AsyncTask<Void, Void, Void> task;
 
     @Override
     protected void onCreate(final Bundle savedInstanceState) {
@@ -127,12 +99,44 @@ public class EthernetConfigActivity extends ActionBarActivity implements OnCheck
         setContentView(R.layout.activity_ethernet_config);
         findViews();
         mContext = this;
+        pd = new ProgressDialog(mContext);
         mManager = DeviceManager.getInstance();
 
         mDevice = mManager.findDeviceById((int) getIntent().getExtras().getSerializable("device"));
         position = mManager.getDevicePosition(mDevice);
         temp = new Device(mDevice);
         mManager.getJsonConfig(mDevice, "NetWork.NetCommon", mListener);
+
+        task = new AsyncTask<Void, Void, Void>() {
+            @Override
+            protected void onPreExecute() {
+//                pd = new ProgressDialog(mContext);
+                pd.setTitle("Configurando");
+                pd.setMessage("Aguarde");
+                pd.setCancelable(false);
+                pd.setIndeterminate(true);
+                pd.show();
+            }
+
+            @Override
+            protected Void doInBackground(Void... arg0) {
+                try {
+                    mManager.setEthernetConfig(temp, mListener);
+                    Thread.sleep(3000);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+                return null;
+            }
+
+            @Override
+            protected void onPostExecute(Void result) {
+                if(pd.isShowing())
+                    pd.dismiss();
+                mListener.onSetConfig();
+            }
+        };
+
     }
 
     @Override

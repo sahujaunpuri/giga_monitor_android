@@ -71,6 +71,7 @@ public class Device implements Serializable {
     public boolean isLogged = false;
     public boolean isOnline = false;
     public boolean isFavorite = false;
+    public int connectionMethod = -1; //0 - IP:port, 1 - DDNS:port, 2 - SerialNumber
 
     private Calendar systemTime;
 
@@ -132,7 +133,7 @@ public class Device implements Serializable {
         this.gigaCode = gigaCode;
         this.username = "admin";
         this.password = "";
-        checkConnectionMethod();
+//        checkConnectionMethod();
     }
 
     public Device(SDK_CONFIG_NET_COMMON_V2 comm) {
@@ -143,16 +144,41 @@ public class Device implements Serializable {
         this.username = "admin";
         this.password = "";
         this.tcpPort = comm.st_05_TCPPort;
-        checkConnectionMethod();
+//        checkConnectionMethod();
     }
 
-    public void checkConnectionMethod(){
+/*    public void checkConnectionMethod(){
         if(ipAddress != null && !ipAddress.isEmpty())
             connectionString = ipAddress+":"+tcpPort;
         else if(domain != null && !domain.isEmpty())
             connectionString = domain+":"+tcpPort;
         else if(!serialNumber.isEmpty())
             connectionString = serialNumber;
+    }*/
+
+    public int setConnectionString(int connectionMethod){
+        this.connectionMethod = connectionMethod;
+        switch (connectionMethod){
+            case 0: {     //IP:port
+                if(ipAddress != null && !ipAddress.isEmpty())
+                    connectionString = ipAddress + ":" + tcpPort;
+                else
+                    return -1;
+            }break;
+            case 1: {     //domain:port
+                if(domain != null && !domain.isEmpty())
+                    connectionString = domain + ":" + tcpPort;
+                else
+                    return -1;
+            }break;
+            case 2: {     //cloud
+                if(!serialNumber.isEmpty())
+                    connectionString = serialNumber;
+                else
+                    return -1;
+            }break;
+        }
+        return 1;
     }
 
     /*
@@ -167,15 +193,15 @@ public class Device implements Serializable {
 
     @Override
     public int hashCode() {
-        if ( null != this.connectionString ) {
-            return (this.connectionString).hashCode();
+        if ( null != this.serialNumber ) {
+            return (this.serialNumber).hashCode();
         }
 
         return super.hashCode();
     }
 
     public int getId() {
-        return (this.connectionString).hashCode();
+        return (this.serialNumber).hashCode();
     }
 
     public boolean hasLogin(){

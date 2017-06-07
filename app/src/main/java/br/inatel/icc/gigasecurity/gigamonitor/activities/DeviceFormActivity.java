@@ -122,7 +122,7 @@ public class DeviceFormActivity extends ActionBarActivity{
                 mDevice.setUsername("admin");
 
             mDevice.setPassword(etPassword.getText().toString());
-            mDevice.checkConnectionMethod();
+//            mDevice.checkConnectionMethod();
             return true;
         }
 
@@ -161,7 +161,8 @@ public class DeviceFormActivity extends ActionBarActivity{
                         checkEdit();
                         mDevice.isLogged = false;
                         mDevice.setChannelNumber(0);
-                        mDevice.checkConnectionMethod();
+//                        mDevice.checkConnectionMethod();
+                        deviceManager.logoutDevice(mDevice);
                         deviceManager.addDevice(mDevice, editPosition);
                         deviceManager.updateSurfaceViewManager(editPosition);
                         deviceManager.collapse = editPosition;

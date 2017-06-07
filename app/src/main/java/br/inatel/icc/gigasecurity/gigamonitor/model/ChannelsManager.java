@@ -403,20 +403,20 @@ public abstract class ChannelsManager implements IFunSDKResult {
                 if(svc!=null) {
                     if (msg.arg1 == 0) {
                         svc.setConnected(true);
-                        /*if (svc.playType == 0) {
+                        if (svc.playType == 0) {
                             mDeviceManager.requestStart();
-                        }*/
+                        }
                         Log.i(TAG, "START SUCCESS " + (svc.getMySurfaceViewChannelId()+1));
                     } else {
                         if(svc.playType == 0) {
                             svc.setConnected(false);
-                            if(startTry++ < 4)
+//                            if(startTry++ < 4)
                                 onStartVideo(svc);
-                            else {
+                            /*else {
                                 startTry = 0;
                                 mDeviceManager.logoutDevice(mDevice);
-                            }
-//                            mDeviceManager.addToStart(svc);
+                            }*/
+                            mDeviceManager.addToStart(svc);
                         } else{
                             onPlayPlayback(fileToStart, svc);
                         }

@@ -102,9 +102,9 @@ public class ChannelRecyclerViewAdapter extends RecyclerView.Adapter<ChannelRecy
 
 
             if(mDevice.isLogged) {
-//                deviceChannelsManager.onPlayLive(currentSurfaceView);
-                currentSurfaceView.isLoading(true);
-                deviceChannelsManager.onStartVideo(currentSurfaceView);
+                deviceChannelsManager.onPlayLive(currentSurfaceView);
+//                currentSurfaceView.isLoading(true);
+//                deviceChannelsManager.onStartVideo(currentSurfaceView);
             }
 
             myViewHolder.frameLayout.addView(currentSurfaceView);

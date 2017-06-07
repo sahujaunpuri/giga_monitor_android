@@ -122,6 +122,7 @@ public class DeviceExpandableListAdapter extends BaseExpandableListAdapter {
         groupViewHolder.ivIndicator  = (ImageView) convertView.findViewById(R.id.iv_indicator);
         groupViewHolder.tvDeviceName = (TextView) convertView.findViewById(R.id.tv_hostname_list_device);
         groupViewHolder.mDevice      = mDevices.get(groupPosition);
+        groupViewHolder.position    = groupPosition;
         groupViewHolder.tvDeviceName.setText(groupViewHolder.mDevice.deviceName);
         groupViewHolder.ivMore.setOnClickListener(createMoreListener(groupPosition));
         groupViewHolder.ivQuad.setOnClickListener(createQuadListener(groupPosition));
@@ -188,7 +189,6 @@ public class DeviceExpandableListAdapter extends BaseExpandableListAdapter {
                         deviceChannelsManager.reOrderSurfaceViewComponents();
                     }
                 });
-
             }
         };
     }
@@ -217,7 +217,7 @@ public class DeviceExpandableListAdapter extends BaseExpandableListAdapter {
 
     @Override
     public View getGroupView(final int groupPosition, final boolean isExpanded, View convertView, ViewGroup parent) {
-        if(convertView == null){
+        if(convertView == null || groupViewHolder.size() <= groupPosition){
             convertView = mInflater.inflate(R.layout.expandable_list_view_row, parent, false);
             GroupViewHolder groupViewHolder = initGroupViewHolder(groupPosition, convertView, parent);
             groupViewHolder.blank.setTag(groupViewHolder);
@@ -225,6 +225,8 @@ public class DeviceExpandableListAdapter extends BaseExpandableListAdapter {
             childViewHolder.add(new ChildViewHolder());
         }
         GroupViewHolder groupViewHolder = (GroupViewHolder) convertView.getTag();
+        if(groupViewHolder.position != groupPosition)
+            groupViewHolder = this.groupViewHolder.get(groupPosition);
         if((mContext.getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE && DeviceListActivity.previousGroup != -1)){
             return groupViewHolder.blank;
         } else {
@@ -372,7 +374,7 @@ public class DeviceExpandableListAdapter extends BaseExpandableListAdapter {
             channelsManager.createComponents();
             childViewHolder.get(position).gridLayoutManager.setSpanCount(channelsManager.numQuad);
             childViewHolder.get(position).recyclerViewChannels.getAdapter().notifyDataSetChanged();
-            notifyDataSetChanged();
+//            notifyDataSetChanged();
         }
     }
 
@@ -384,6 +386,7 @@ public class DeviceExpandableListAdapter extends BaseExpandableListAdapter {
                 mDeviceManager.clearStart();
                 updateChildView(mDevice, groupViewHolder, childViewHolder, position);
                 updateGrid(position, mDeviceManager.getDeviceChannelsManagers().get(position));
+                showExpanded(position, groupViewHolder, childViewHolder);
 
 //                mDeviceManager.getDeviceChannelsManagers().get(position).createComponents();
 //                childViewHolder.gridLayoutManager.setSpanCount(mDeviceManager.getDeviceChannelsManagers().get(position).numQuad);
@@ -573,6 +576,7 @@ public class DeviceExpandableListAdapter extends BaseExpandableListAdapter {
         public ImageView ivQuad;
         public View convertView;
         public View blank;
+        public int position;
     }
 
     public class ChildViewHolder {

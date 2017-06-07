@@ -135,8 +135,8 @@ public class DeviceEditListActivity extends ActionBarActivity {
             mDeviceManager.removeDeviceFromFavorite(i);
         mDeviceManager.saveData();
         mDeviceManager.invalidateExpandableList();
-        mDeviceManager.updateDevices(null, mDevices);
-        mDeviceManager.loadSavedData(DeviceListActivity.mContext);
+        mDeviceManager.updateDevices(mDevices);
+//        mDeviceManager.loadSavedData(DeviceListActivity.mContext);
         mDeviceManager.updateSurfaceViewManagers();
 //        mDeviceManager.getExpandableListAdapter().notifyDataSetChanged();
 
@@ -192,11 +192,12 @@ public class DeviceEditListActivity extends ActionBarActivity {
         alert.setNeutralButton("Não Salvar", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
-                mDeviceManager.invalidateExpandableList();
+                /*mDeviceManager.invalidateExpandableList();
                 mDeviceManager.loadSavedData(mDeviceManager.currentContext);
                 DeviceListActivity.mDevices = null;
-                mDeviceManager.updateSurfaceViewManagers();
-                startDeviceListActivity();
+                mDeviceManager.updateSurfaceViewManagers();*/
+//                startDeviceListActivity();
+                finish();
             }
         });
         alert.setNegativeButton("Cancelar", new DialogInterface.OnClickListener() {
