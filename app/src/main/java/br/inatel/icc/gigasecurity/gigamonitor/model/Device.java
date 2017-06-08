@@ -72,6 +72,7 @@ public class Device implements Serializable {
     public boolean isOnline = false;
     public boolean isFavorite = false;
     public int connectionMethod = -1; //0 - IP:port, 1 - DDNS:port, 2 - SerialNumber
+    public int loginAttempt = 0;
 
     private Calendar systemTime;
 
@@ -193,15 +194,20 @@ public class Device implements Serializable {
 
     @Override
     public int hashCode() {
-        if ( null != this.serialNumber ) {
+        if ( null != this.serialNumber && !this.serialNumber.equals("")) {
             return (this.serialNumber).hashCode();
-        }
+        } else
+            return (this.hostname).hashCode();
 
-        return super.hashCode();
+//        return super.hashCode();
     }
 
     public int getId() {
-        return (this.serialNumber).hashCode();
+//        return (this.serialNumber).hashCode();
+        if ( null != this.serialNumber && !this.serialNumber.equals("")) {
+            return (this.serialNumber).hashCode();
+        } else
+            return (this.hostname).hashCode();
     }
 
     public boolean hasLogin(){

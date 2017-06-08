@@ -47,8 +47,8 @@ public class DeviceExpandableListAdapter extends BaseExpandableListAdapter {
     public Context mContext;
     private DeviceManager mDeviceManager;
     public ArrayList<GroupViewHolder> groupViewHolder;
-    private ArrayList<ChildViewHolder> childViewHolder;
-    public ExpandableListView mExpandableListView;
+    public ArrayList<ChildViewHolder> childViewHolder;
+    private ExpandableListView mExpandableListView;
 
     public DeviceExpandableListAdapter(Context mContext, ArrayList<Device> mDevices, ExpandableListView mExpandableListView) {
         this.mContext            = mContext;
@@ -312,7 +312,7 @@ public class DeviceExpandableListAdapter extends BaseExpandableListAdapter {
 
         mDeviceManager.getDeviceChannelsManagers().get(groupPosition).clearSurfaceViewComponents();
 
-        mDeviceManager.removeLoginListener(currentGroupViewHolder.mDevice.connectionString);
+        mDeviceManager.removeLoginListener(currentGroupViewHolder.mDevice.getId());
         mDeviceManager.clearStart();
 
 //        onChangeOrientation(groupPosition);
