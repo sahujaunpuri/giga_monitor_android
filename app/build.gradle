@@ -10,6 +10,7 @@ android {
         targetSdkVersion 21
         versionCode 3
         versionName "1.0.2b"
+        testInstrumentationRunner 'android.support.test.runner.AndroidJUnitRunner'
     }
 
     buildTypes {
@@ -61,5 +62,8 @@ dependencies {
     compile files('libs/zbar.jar')
     compile('com.crashlytics.sdk.android:crashlytics:2.6.8@aar') {
         transitive = true;
+    }
+    androidTestCompile 'com.android.support.test.espresso:espresso-core:2.2.2', {
+        exclude group: 'com.android.support', module: 'support-annotations'
     }
 }

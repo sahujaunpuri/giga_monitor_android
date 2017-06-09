@@ -59,9 +59,11 @@ public class DevicePlaybackActivity extends ActionBarActivity
         layoutListPlayback = (LinearLayout) findViewById(R.id.linear_layout_list_playback);
         mListView.setOnItemClickListener(this);
 
+
         mActivity = this;
-        mDevice = (Device) getIntent().getExtras().getSerializable("device");
         mManager = DeviceManager.getInstance();
+        mDevice = mManager.findDeviceById((int) getIntent().getExtras().getSerializable("device"));
+
         mSystemTime = Calendar.getInstance();
 
         tvDate.setOnClickListener(new View.OnClickListener() {

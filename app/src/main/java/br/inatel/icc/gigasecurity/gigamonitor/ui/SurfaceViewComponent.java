@@ -215,18 +215,18 @@ public class SurfaceViewComponent extends FrameLayout {
                     mChannelsManager.mRecyclerAdapter.singleQuad(mySurfaceViewChannelId);
                 }
         });*/
-        label = new TextView(mContext);
-        FrameLayout.LayoutParams params = new FrameLayout.LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT, Gravity.START);
-        this.addView(label, params);
-        label.setTextColor(Color.WHITE);
-        label.setTextSize(20);
-        label.setText("");
+//        label = new TextView(mContext);
+//        FrameLayout.LayoutParams params = new FrameLayout.LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT, Gravity.START);
+//        this.addView(label, params);
+//        label.setTextColor(Color.WHITE);
+//        label.setTextSize(20);
+//        label.setText("");
 
     }
 
     public void disablePTZ(){
-        this.removeView(label);
-        label = null;
+//        this.removeView(label);
+//        label = null;
     }
 
     public int getMySurfaceViewChannelId() {
@@ -263,39 +263,39 @@ public class SurfaceViewComponent extends FrameLayout {
         float absDY = Math.abs(dy);
         if(dx>sensitivityDiagonal && dy>sensitivityDiagonal){
             //direita baixo
-            label.setText(" DB");
+//            label.setText(" DB");
             command = EPTZCMD.PAN_RIGTHDOWN;
         } else if(dx>sensitivityDiagonal && dy<-sensitivityDiagonal){
             //direita cima
-            label.setText(" DC");
+//            label.setText(" DC");
             command = EPTZCMD.PAN_RIGTHTOP;
         } else if(dx<-sensitivityDiagonal && dy>sensitivityDiagonal){
             //esquerda baixo
             command = EPTZCMD.PAN_LEFTDOWN;
-            label.setText(" EB");
+//            label.setText(" EB");
         } else if(dx<-sensitivityDiagonal && dy<-sensitivityDiagonal){
             //esquerda cima
             command = EPTZCMD.PAN_LEFTTOP;
-            label.setText(" EC");
+//            label.setText(" EC");
         } else if(dx>sensitivity){
             //direita
             command = EPTZCMD.PAN_RIGHT;
-            label.setText(" D");
+//            label.setText(" D");
             Log.d(TAG2, "onInterceptTouchEvent: MOVE RIGHT");
         }else if(dx<-sensitivity){
             //esquerda
             command = EPTZCMD.PAN_LEFT;
-            label.setText(" E");
+//            label.setText(" E");
             Log.d(TAG2, "onInterceptTouchEvent: MOVE LEFT");
         } else if(dy>sensitivity){
             //baixo
             command = EPTZCMD.TILT_DOWN;
-            label.setText(" B");
+//            label.setText(" B");
             Log.d(TAG2, "onInterceptTouchEvent: MOVE DOWN");
         } else if(dy<-sensitivity){
             //cima
             command = EPTZCMD.TILT_UP;
-            label.setText(" C");
+//            label.setText(" C");
             Log.d(TAG2, "onInterceptTouchEvent: MOVE UP");
         }
         if(command != -1) {
@@ -328,7 +328,8 @@ public class SurfaceViewComponent extends FrameLayout {
     protected void onDetachedFromWindow() {
         super.onDetachedFromWindow();
         isVisible = false;
-        mChannelsManager.mRecyclerAdapter.closeOverlayMenu();
+        if(playType == 0)
+            mChannelsManager.mRecyclerAdapter.closeOverlayMenu();
         new Thread(new Runnable() {
             @Override
             public void run() {

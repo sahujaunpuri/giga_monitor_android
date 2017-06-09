@@ -62,7 +62,7 @@ public class DeviceEditAdapter extends BaseAdapter {
 
             tvDeviceName = (TextView) convertView.findViewById(R.id.tv_item_edit_device);
             ivDeleteDevice = (ImageView) convertView.findViewById(R.id.iv_delete_device);
-            if(mDevices.get(position).connectionString.equals("Favoritos"))
+            if(mDevices.get(position).getId() == ("Favoritos").hashCode())
                 ivDeleteDevice.setVisibility(View.INVISIBLE);
         }
 
@@ -75,12 +75,13 @@ public class DeviceEditAdapter extends BaseAdapter {
             }
         });
 
-        tvDeviceName.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                startDeviceFormActivity(position);
-            }
-        });
+        if(mDevices.get(position).getId() != ("Favoritos").hashCode())
+            tvDeviceName.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    startDeviceFormActivity(position);
+                }
+            });
 
         return convertView;
     }

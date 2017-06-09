@@ -33,6 +33,7 @@ import java.net.InetAddress;
 import java.net.InterfaceAddress;
 import java.net.NetworkInterface;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.LinkedList;
 
@@ -190,6 +191,7 @@ public class DeviceManager implements IFunSDKResult{
 //                    FunSDK.DevGetConfigByJson(getHandler(), device.connectionString, "SetPreset", 4096, -1, 10000, device.getId());
                     device.isLogged = true;
                     device.loginAttempt = 0;
+                    device.connectionMethod = -1;
 
                     favoriteManager.refreshFromDevice(device.getId());
                     /*if(loginList.get(device.connectionString) != null)
@@ -197,9 +199,11 @@ public class DeviceManager implements IFunSDKResult{
                     loginList.remove(device.connectionString);*/
                     FunSDK.DevGetConfigByJson(getHandler(), device.connectionString, "SystemInfo", 4096, -1, 10000, device.getId());
                } else if(msg.arg1 == -11301 ) {
-                    if (device != null && loginList.get(device.getId()) != null) {
-                        loginList.get(device.getId()).onLoginError(msg.arg1, device);
+                    if(device != null){
+                        if (loginList.get(device.getId()) != null)
+                            loginList.get(device.getId()).onLoginError(msg.arg1, device);
                         loginList.remove(device.getId());
+                        device.connectionMethod = -1;
                     }
                 /*} else if(msg.arg1 == -11307 && device.loginAttempt == 9){
                     if(device != null && loginList.get(device.connectionString) != null) {
@@ -607,7 +611,8 @@ public class DeviceManager implements IFunSDKResult{
                 device.setDdnsEnable(json.getBoolean("Enable"));
             if(json.has("HostName")) {
                 device.setDdnsDomain(json.getString("HostName"));
-                device.setDomain(json.getString("HostName") + ".gigaddns.com.br");
+                if(device.isDdnsEnable())
+                    device.setDomain(json.getString("HostName") + ".gigaddns.com.br");
             }
             if(json.has("Server"))
                 json = json.getJSONObject("Server");
@@ -683,6 +688,8 @@ public class DeviceManager implements IFunSDKResult{
         try{
             currentConfig.put("DDNSKey", "Giga DDNS");
             currentConfig.put("Enable", device.isDdnsEnable());
+            if(!device.isDdnsEnable())
+                device.setDomain("");
             currentConfig.put("HostName", device.getDdnsDomain());
             currentConfig.put("Online", "true");
             currentConfigB.put("UserName", device.getDdnsUserName());
@@ -740,20 +747,16 @@ public class DeviceManager implements IFunSDKResult{
     }
 
     public void remoteControl(Device device, int command){
-        JSONObject j = new JSONObject();
         JSONObject jsonObj = new JSONObject();
         try {
-            j.put("Name", "OPNetKeyboard");
             jsonObj.put("Value", command);
             jsonObj.put("Status", 0);
-//            j.put("SessionID", "0x3");
-            j.put("OPNetKeyboard", jsonObj);
         } catch (JSONException e) {
             e.printStackTrace();
         }
         Log.d(TAG, "remoteControl: " + jsonObj.toString());
-//        Log.d(TAG, "remoteControl: " + jsonObj.toString().getBytes());
-        FunSDK.DevCmdGeneral(getHandler(), device.connectionString, 1550, "OPNetKeyboard", 0, 10000, j.toString().getBytes(), -1, device.getId());
+        Log.d(TAG, "remoteControl: " + Arrays.toString(jsonObj.toString().getBytes()));
+        FunSDK.DevCmdGeneral(getHandler(), device.connectionString, 1550, jsonObj.toString(), 0, 10000, jsonObj.toString().getBytes(), -1, 0);
     }
 
     public DeviceExpandableListAdapter getExpandableListAdapter(Context context, ExpandableListView mExpandableListView){
@@ -779,6 +782,7 @@ public class DeviceManager implements IFunSDKResult{
                 if(device.getSerialNumber().equals("Favoritos")) {
                     favoriteManager = new FavoritesChannelsManager(device);
                     deviceChannelsManager = favoriteManager;
+                    favoriteDevice.channelsManager = favoriteManager;
                 }else
                     deviceChannelsManager = new DeviceChannelsManager(device);
                 deviceChannelsManagers.add(deviceChannelsManager);
@@ -811,6 +815,7 @@ public class DeviceManager implements IFunSDKResult{
             getDeviceChannelsManagers();
         DeviceChannelsManager deviceChannelsManager = new DeviceChannelsManager(device);
         deviceChannelsManagers.add(deviceChannelsManager);
+        device.channelsManager = deviceChannelsManager;
     }
 
     public void updateDevicesManagers(){
@@ -837,8 +842,9 @@ public class DeviceManager implements IFunSDKResult{
     }
 
     public void updateSurfaceViewManager(int i){
-        deviceChannelsManagers.remove(i);
-        deviceChannelsManagers.add(i, new DeviceChannelsManager(mDevices.get(i)));
+//        deviceChannelsManagers.remove(i);
+//        deviceChannelsManagers.add(i, new DeviceChannelsManager(mDevices.get(i)));
+        deviceChannelsManagers.get(i).mDevice = mDevices.get(i);
         expandableListAdapter.notifyDataSetChanged();
     }
 
@@ -1102,6 +1108,7 @@ public class DeviceManager implements IFunSDKResult{
         favoriteChannels--;
         favoriteDevice.setChannelNumber(favoriteChannels);
 //        favoriteManager.createComponents();
+        favoriteManager.clearSurfaceViewComponents();
         expandableListAdapter.updateGrid(deviceChannelsManagers.indexOf(favoriteManager), favoriteManager);
 //        if(favoriteChannels == 0)
 //            expandableListAdapter.notifyDataSetChanged();

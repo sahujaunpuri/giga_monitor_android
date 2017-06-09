@@ -155,15 +155,13 @@ public class OverlayMenu extends RelativeLayout {
                 if(surfaceViewComponent.isREC){
                     Toast.makeText(mContext, "Finalize a gravação.", Toast.LENGTH_SHORT).show();
                 } else {
-                    surfaceViewComponent.isLoading(true);
                     if (!surfaceViewComponent.isHD()) {
-                        surfaceViewComponent.setStreamType(0);
+                        deviceChannelsManager.enableHD(surfaceViewComponent);
                         ivHQ.setImageDrawable(mContext.getResources().getDrawable(R.drawable.ic_hq_on));
                     } else {
-                        surfaceViewComponent.setStreamType(1);
+                        deviceChannelsManager.disableHD(surfaceViewComponent);
                         ivHQ.setImageDrawable(mContext.getResources().getDrawable(R.drawable.ic_hq_off));
                     }
-                    deviceChannelsManager.restartVideo(surfaceViewComponent);
                 }
             }
         });

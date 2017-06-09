@@ -141,6 +141,7 @@ public class DeviceExpandableListAdapter extends BaseExpandableListAdapter {
         currentChildViewHolder.tvMessage                =  (TextView) currentChildViewHolder.convertView.findViewById(R.id.tv_message_connecting);
         currentChildViewHolder.overlayMenu              =  (OverlayMenu) currentChildViewHolder.convertView.findViewById(R.id.overlay_menu);
         currentChildViewHolder.tvMessage                =  (TextView) currentChildViewHolder.convertView.findViewById(R.id.tv_message_connecting);
+        currentChildViewHolder.position                 =   groupPosition;
         currentChildViewHolder.overlayMenu.setDeviceChannelsManager(mDeviceManager.getDeviceChannelsManagers().get(groupPosition));
         currentChildViewHolder.overlayMenu.setLayoutParams(currentChildViewHolder.recyclerViewChannels.getLayoutParams());
 
@@ -237,25 +238,30 @@ public class DeviceExpandableListAdapter extends BaseExpandableListAdapter {
     @Override
     public View getChildView(final int groupPosition, int childPosition, boolean isLastChild, View convertView, ViewGroup parent) {
         ChildViewHolder childViewHolder;
-//        if(convertView == null){
+        if(convertView == null || this.childViewHolder.get(groupPosition).recyclerViewChannels == null){
             childViewHolder = initChildViewHolder(parent, groupPosition);
             convertView = childViewHolder.convertView;
             initGridRecycler(groupPosition, childViewHolder);
             convertView.setTag(childViewHolder);
-//        }
+        } else /*if(((ChildViewHolder) convertView.getTag()).position != groupPosition)*/{
+            childViewHolder = this.childViewHolder.get(groupPosition);
+            convertView = childViewHolder.convertView;
+        } /*else{
+            childViewHolder = (ChildViewHolder) convertView.getTag();
+            initGridRecycler(groupPosition, childViewHolder);
+        }*/
 
-        ChildViewHolder currentChildViewHolder = (ChildViewHolder) convertView.getTag();
         GroupViewHolder currentGroupViewHolder = groupViewHolder.get(groupPosition);
 
         if(!currentGroupViewHolder.mDevice.isLogged) {
-            loginDevice(currentGroupViewHolder.mDevice, currentGroupViewHolder, currentChildViewHolder, groupPosition);
+            loginDevice(currentGroupViewHolder.mDevice, currentGroupViewHolder, childViewHolder, groupPosition);
         } else {
-            updateChildView(mDevices.get(groupPosition), currentGroupViewHolder, currentChildViewHolder, groupPosition);
-            currentChildViewHolder.gridLayoutManager.scrollToPosition(mDeviceManager.getDeviceChannelsManagers().get(groupPosition).lastFirstVisibleItem);
-            showExpanded(groupPosition, currentGroupViewHolder, currentChildViewHolder);
+            updateChildView(mDevices.get(groupPosition), currentGroupViewHolder, childViewHolder, groupPosition);
+            childViewHolder.gridLayoutManager.scrollToPosition(mDeviceManager.getDeviceChannelsManagers().get(groupPosition).lastFirstVisibleItem);
+            showExpanded(groupPosition, currentGroupViewHolder, childViewHolder);
         }
 
-        setLayoutSize(groupPosition, currentChildViewHolder);
+        setLayoutSize(groupPosition, childViewHolder);
         return convertView;
     }
 
@@ -307,10 +313,11 @@ public class DeviceExpandableListAdapter extends BaseExpandableListAdapter {
                 currentChildViewHolder.recyclerViewChannels.setVisibility(View.INVISIBLE);
                 currentChildViewHolder.overlayMenu.setVisibility(View.GONE);
                 currentChildViewHolder.recyclerViewChannels.removeAllViewsInLayout();
+//                currentChildViewHolder.recyclerViewChannels = null;
             }
         });
 
-        mDeviceManager.getDeviceChannelsManagers().get(groupPosition).clearSurfaceViewComponents();
+//        mDeviceManager.getDeviceChannelsManagers().get(groupPosition).clearSurfaceViewComponents();
 
         mDeviceManager.removeLoginListener(currentGroupViewHolder.mDevice.getId());
         mDeviceManager.clearStart();
@@ -357,10 +364,10 @@ public class DeviceExpandableListAdapter extends BaseExpandableListAdapter {
     }
 
     private void updateChildView(Device mDevice, GroupViewHolder groupViewHolder, ChildViewHolder childViewHolder, int position){
-        if(mDevice.getChannelNumber()>1){
+        /*if(mDevice.getChannelNumber()>1){
             mDeviceManager.getDeviceChannelsManagers().get(position).numQuad = 2;
             mDeviceManager.getDeviceChannelsManagers().get(position).lastNumQuad = 2;
-        }
+        }*/
         if(mDeviceManager.getDeviceChannelsManagers().get(position).mySurfaceViews.isEmpty()) {
             updateGrid(position, mDeviceManager.getDeviceChannelsManagers().get(position));
         }
@@ -449,7 +456,7 @@ public class DeviceExpandableListAdapter extends BaseExpandableListAdapter {
                                                     startDeviceRemoteControlActivity(groupViewHolder.mDevice);
                                                     break;
                                                 case 2:
-                                                    onGroupCollapsed(groupPosition);
+                                                    mExpandableListView.collapseGroup(groupPosition);
                                                     startPlaybackActivity(groupViewHolder.mDevice);
                                                     break;
                                             }
@@ -495,7 +502,8 @@ public class DeviceExpandableListAdapter extends BaseExpandableListAdapter {
 
     private void startPlaybackActivity(Device mDevice) {
         Bundle extras = new Bundle();
-        extras.putSerializable("device", mDevice);
+//        extras.putSerializable("device", mDevice);
+        extras.putSerializable("device", mDevice.getId());
 
         Intent intent = new Intent(mContext, DevicePlaybackActivity.class);
         intent.putExtras(extras);
@@ -586,6 +594,7 @@ public class DeviceExpandableListAdapter extends BaseExpandableListAdapter {
         public TextView tvMessage;
         public ChannelRecyclerViewAdapter mRecyclerAdapter;
         public CustomGridLayoutManager gridLayoutManager;
+        public int position;
     }
 
 }

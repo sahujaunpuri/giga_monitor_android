@@ -37,7 +37,7 @@ public class DeviceRemoteControlActivity extends ActionBarActivity {
             @Override
             public void onClick(View v) {
                 blink(ivEsc);
-                mManager.remoteControl(mDevice, SDKCONST.SDK_NetKeyBoardValue.SDK_NET_KEY_ESC);
+                mManager.remoteControl(mDevice, SDKCONST.NetKeyBoardValue.SDK_NET_KEY_ESC);
             }
         });
 

@@ -73,6 +73,7 @@ public class Device implements Serializable {
     public boolean isFavorite = false;
     public int connectionMethod = -1; //0 - IP:port, 1 - DDNS:port, 2 - SerialNumber
     public int loginAttempt = 0;
+    public ChannelsManager channelsManager;
 
     private Calendar systemTime;
 
@@ -197,7 +198,7 @@ public class Device implements Serializable {
         if ( null != this.serialNumber && !this.serialNumber.equals("")) {
             return (this.serialNumber).hashCode();
         } else
-            return (this.hostname).hashCode();
+            return (this.deviceName).hashCode();
 
 //        return super.hashCode();
     }
@@ -207,7 +208,7 @@ public class Device implements Serializable {
         if ( null != this.serialNumber && !this.serialNumber.equals("")) {
             return (this.serialNumber).hashCode();
         } else
-            return (this.hostname).hashCode();
+            return (this.deviceName).hashCode();
     }
 
     public boolean hasLogin(){
@@ -317,6 +318,13 @@ public class Device implements Serializable {
 
     public void setChannelNumber(int channelNumber) {
         this.channelNumber = channelNumber;
+        if (channelsManager != null && channelNumber > 1) {
+            this.channelsManager.numQuad = 2;
+            this.channelsManager.lastNumQuad = 2;
+        } else if(channelsManager != null){
+            this.channelsManager.numQuad = 1;
+            this.channelsManager.lastNumQuad = 1;
+        }
     }
 
     public int getNumberOfAlarmsIn() {

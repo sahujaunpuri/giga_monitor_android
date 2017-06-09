@@ -65,6 +65,7 @@ public abstract class ChannelsManager implements IFunSDKResult {
     private H264_DVR_FILE_DATA fileToStart;
     public int[][] inverseMatrix;
     private int startTry;
+    public int hdChannel = -1;
 
     public ChannelsManager(Device mDevice) {
         if (mUserID == -1) {
@@ -110,9 +111,9 @@ public abstract class ChannelsManager implements IFunSDKResult {
     public abstract void createComponents();
 
     public void clearSurfaceViewComponents() {
-        /*for(SurfaceViewComponent svc : surfaceViewComponents)
+        for(SurfaceViewComponent svc : surfaceViewComponents)
             svc = null;
-        surfaceViewComponents.clear();*/
+        surfaceViewComponents.clear();
     }
 
     public void addSurfaceViewComponent(SurfaceViewComponent svc) {
@@ -202,12 +203,7 @@ public abstract class ChannelsManager implements IFunSDKResult {
     }
 
     public void onStartVideo(final SurfaceViewComponent svc) {
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                svc.mPlayerHandler = FunSDK.MediaRealPlay(mUserID, svc.deviceConnection, svc.mySurfaceViewChannelId, svc.streamType, svc.mySurfaceView, svc.mySurfaceViewOrderId);
-            }
-        }).start();
+        svc.mPlayerHandler = FunSDK.MediaRealPlay(mUserID, mDevice.connectionString, svc.mySurfaceViewChannelId, svc.streamType, svc.mySurfaceView, svc.mySurfaceViewOrderId);
     }
 
     // NOT TESTED
@@ -243,10 +239,26 @@ public abstract class ChannelsManager implements IFunSDKResult {
     }
 
     public void restartVideo(SurfaceViewComponent svc){
+        svc.isLoading(true);
 //        if(svc.isConnected()){
             onStop(svc);
             onStartVideo(svc);
 //        }
+    }
+
+    public void enableHD(SurfaceViewComponent svc){
+        if(hdChannel > -1) {
+            disableHD(surfaceViewComponents.get(getChannelSelected(hdChannel)));
+        }
+        hdChannel = svc.mySurfaceViewChannelId;
+        svc.setStreamType(0);
+        restartVideo(svc);
+    }
+
+    public void disableHD(SurfaceViewComponent svc){
+        hdChannel = -1;
+        svc.setStreamType(1);
+        restartVideo(svc);
     }
 
     public void toggleReceiveAudio(SurfaceViewComponent svc){

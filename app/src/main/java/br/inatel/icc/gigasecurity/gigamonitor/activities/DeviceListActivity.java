@@ -128,9 +128,11 @@ public class DeviceListActivity extends ActionBarActivity {
         super.onResume();
         if(mDeviceManager.collapse >=0 && previousGroup == mDeviceManager.collapse) {
             mExpandableListView.collapseGroup(mDeviceManager.collapse);
-            mAdapter.onGroupCollapsed(mDeviceManager.collapse);
+//            mAdapter.onGroupCollapsed(mDeviceManager.collapse);
+            mAdapter.childViewHolder.get(mDeviceManager.collapse).recyclerViewChannels = null;
             mDeviceManager.collapse = -1;
             previousGroup = -1;
+            mAdapter.notifyDataSetChanged();
         }
         mDeviceManager.loginAllDevices();
 //        mAdapter.notifyDataSetChanged();
@@ -215,11 +217,11 @@ public class DeviceListActivity extends ActionBarActivity {
     }
 
     private void startEditActivity() {
-        Bundle extras = new Bundle();
-        extras.putSerializable("devices", mDevices);
+        /*Bundle extras = new Bundle();
+        extras.putSerializable("devices", mDevices);*/
 
         Intent intent = new Intent(mContext, DeviceEditListActivity.class);
-        intent.putExtras(extras);
+//        intent.putExtras(extras);
 
         startActivity(intent);
     }
