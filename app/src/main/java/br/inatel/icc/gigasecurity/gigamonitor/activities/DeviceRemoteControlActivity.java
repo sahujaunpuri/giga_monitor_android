@@ -37,7 +37,9 @@ public class DeviceRemoteControlActivity extends ActionBarActivity {
             @Override
             public void onClick(View v) {
                 blink(ivEsc);
-                mManager.remoteControl(mDevice, SDKCONST.NetKeyBoardValue.SDK_NET_KEY_ESC);
+                mManager.remoteControl(mDevice, "Esc", "KeyDown");
+                mManager.remoteControl(mDevice, "Esc", "KeyUp");
+//                mManager.remoteControl(mDevice, SDKCONST.NetKeyBoardValue.SDK_NET_KEY_ESC);
             }
         });
 
@@ -45,7 +47,9 @@ public class DeviceRemoteControlActivity extends ActionBarActivity {
             @Override
             public void onClick(View v) {
                 blink(ivQuad);
-                mManager.remoteControl(mDevice, SDKCONST.NetKeyBoardValue.SDK_NET_KEY_SPLIT);
+                mManager.remoteControl(mDevice, "Split", "KeyDown");
+                mManager.remoteControl(mDevice, "Split", "KeyUp");
+//                mManager.remoteControl(mDevice, SDKCONST.NetKeyBoardValue.SDK_NET_KEY_SPLIT);
             }
         });
 
@@ -54,7 +58,9 @@ public class DeviceRemoteControlActivity extends ActionBarActivity {
             @Override
             public void onClick(View v) {
                 blink(ivMenu);
-                mManager.remoteControl(mDevice, SDKCONST.NetKeyBoardValue.SDK_NET_KEY_MENU);
+                mManager.remoteControl(mDevice, "Menu", "KeyDown");
+                mManager.remoteControl(mDevice, "Menu", "KeyUp");
+//                mManager.remoteControl(mDevice, SDKCONST.NetKeyBoardValue.SDK_NET_KEY_MENU);
             }
         });
 
@@ -62,7 +68,9 @@ public class DeviceRemoteControlActivity extends ActionBarActivity {
             @Override
             public void onClick(View v) {
                 blink(ivOk);
-                mManager.remoteControl(mDevice, SDKCONST.NetKeyBoardValue.SDK_NET_KEY_RET);
+                mManager.remoteControl(mDevice, "Enter", "KeyDown");
+                mManager.remoteControl(mDevice, "Enter", "KeyUp");
+//                mManager.remoteControl(mDevice, SDKCONST.NetKeyBoardValue.SDK_NET_KEY_RET);
             }
         });
 
@@ -70,7 +78,9 @@ public class DeviceRemoteControlActivity extends ActionBarActivity {
             @Override
             public void onClick(View v) {
                 blink(ivUp);
-                mManager.remoteControl(mDevice, SDKCONST.NetKeyBoardValue.SDK_NET_KEY_UP);
+                mManager.remoteControl(mDevice, "Up", "KeyDown");
+                mManager.remoteControl(mDevice, "Up", "KeyUp");
+//                mManager.remoteControl(mDevice, SDKCONST.NetKeyBoardValue.SDK_NET_KEY_UP);
             }
         });
 
@@ -78,7 +88,9 @@ public class DeviceRemoteControlActivity extends ActionBarActivity {
             @Override
             public void onClick(View v) {
                 blink(ivDown);
-                mManager.remoteControl(mDevice, SDKCONST.NetKeyBoardValue.SDK_NET_KEY_DOWN);
+                mManager.remoteControl(mDevice, "Down", "KeyDown");
+                mManager.remoteControl(mDevice, "Down", "KeyUp");
+//                mManager.remoteControl(mDevice, SDKCONST.NetKeyBoardValue.SDK_NET_KEY_DOWN);
             }
         });
 
@@ -86,7 +98,9 @@ public class DeviceRemoteControlActivity extends ActionBarActivity {
             @Override
             public void onClick(View v) {
                 blink(ivRight);
-                mManager.remoteControl(mDevice, SDKCONST.NetKeyBoardValue.SDK_NET_KEY_RIGHT);
+                mManager.remoteControl(mDevice, "Right", "KeyDown");
+                mManager.remoteControl(mDevice, "Right", "KeyUp");
+//                mManager.remoteControl(mDevice, SDKCONST.NetKeyBoardValue.SDK_NET_KEY_RIGHT);
             }
         });
 
@@ -94,7 +108,9 @@ public class DeviceRemoteControlActivity extends ActionBarActivity {
             @Override
             public void onClick(View v) {
                 blink(ivLeft);
-                mManager.remoteControl(mDevice, SDKCONST.NetKeyBoardValue.SDK_NET_KEY_LEFT);
+                mManager.remoteControl(mDevice, "Left", "KeyDown");
+                mManager.remoteControl(mDevice, "Left", "KeyUp");
+//                mManager.remoteControl(mDevice, SDKCONST.NetKeyBoardValue.SDK_NET_KEY_LEFT);
             }
         });
 
@@ -127,7 +143,7 @@ public class DeviceRemoteControlActivity extends ActionBarActivity {
     public boolean onCreateOptionsMenu(Menu menu) {
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         MenuInflater inflater = getMenuInflater();
-        inflater.inflate(R.menu.main, menu);
+        inflater.inflate(R.menu.simple_menu, menu);
 
         return super.onCreateOptionsMenu(menu);
     }

@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.content.res.Configuration;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -23,7 +24,7 @@ import com.crashlytics.android.Crashlytics;
 import io.fabric.sdk.android.Fabric;
 
 public class DeviceListActivity extends ActionBarActivity {
-
+    private final String TAG = "MainActivity";
     public static Context mContext;
     public static ExpandableListView mExpandableListView;
     public static DeviceExpandableListAdapter mAdapter;
@@ -38,6 +39,7 @@ public class DeviceListActivity extends ActionBarActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_device_list);
         Fabric.with(this, new Crashlytics());
+        Log.d(TAG, "onCreate: 0");
 
 
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
@@ -48,8 +50,11 @@ public class DeviceListActivity extends ActionBarActivity {
 
         Thread.currentThread().setPriority(Thread.MAX_PRIORITY);
 
-        DeviceManager.getInstance().init(this);
+        mDeviceManager = DeviceManager.getInstance();
+        if(mDeviceManager.mFunUserHandler == -1)
+            mDeviceManager.init(this);
 
+        Log.d(TAG, "onCreate: 1");
         initComponents();
 
 //        Thread.setDefaultUncaughtExceptionHandler(new MyExceptionHandler(this, DeviceListActivity.class));
@@ -71,8 +76,8 @@ public class DeviceListActivity extends ActionBarActivity {
                     Toast.makeText(mContext, "Finalize a gravação", Toast.LENGTH_SHORT).show();
                     return true;
                 }else if(previousGroup == groupPosition){
-                    parent.collapseGroup(previousGroup);
-                    previousGroup = -1;
+//                    parent.collapseGroup(previousGroup);
+//                    previousGroup = -1;
                     return true;
                 }else {
                     parent.collapseGroup(previousGroup);
@@ -146,16 +151,17 @@ public class DeviceListActivity extends ActionBarActivity {
     }
 
     private void initComponents() {
+        Log.d(TAG, "initComponents: 0");
         mExpandableListView = (ExpandableListView) findViewById(R.id.expandable_list_view2);
-        mDeviceManager      = DeviceManager.getInstance();
         mContext            = DeviceListActivity.this;
         mAdapter            = mDeviceManager.getExpandableListAdapter(mContext, mExpandableListView);
         mDevices            = mDeviceManager.getDevices();
+        Log.d(TAG, "initComponents: 1");
         previousGroup = -1;
         mDeviceManager.currentContext = this;
         mAdapter.mContext = this;
         mAdapter.setDevices(mDevices);
-        mAdapter.notifyDataSetChanged();
+        Log.d(TAG, "initComponents: 2");
 
         mExpandableListView.setAdapter(mAdapter);
         mAdapter.notifyDataSetChanged();

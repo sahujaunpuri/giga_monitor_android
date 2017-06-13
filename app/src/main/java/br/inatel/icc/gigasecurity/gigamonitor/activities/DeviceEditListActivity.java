@@ -1,10 +1,13 @@
 package br.inatel.icc.gigasecurity.gigamonitor.activities;
 
 import android.app.AlertDialog;
+import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 
@@ -18,21 +21,22 @@ import br.inatel.icc.gigasecurity.gigamonitor.core.DeviceManager;
 import br.inatel.icc.gigasecurity.gigamonitor.model.Device;
 
 public class DeviceEditListActivity extends ActionBarActivity {
-
+    private final String TAG = "DeviceEdit";
     private DeviceEditAdapter mAdapter;
     private ArrayList<Device> mDevices;
     private DeviceManager mDeviceManager;
     private ArrayList<Integer> devicesRemoved = new ArrayList<Integer>();
 
     public static DragSortListView lv;
-    private boolean modified;
+    private boolean deleted, moved;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_edit_device_list);
 
-        this.modified = false;
+        this.deleted = false;
+        this.moved = false;
 
         /*if(getIntent().getExtras() != null){
             mDevices = (ArrayList<Device>) getIntent().getExtras().getSerializable("devices");
@@ -80,7 +84,7 @@ public class DeviceEditListActivity extends ActionBarActivity {
                     lv.setAdapter(mAdapter);
 //                    mAdapter.notifyDataSetChanged();
 
-                    modified = true;
+                    moved = true;
                 }
             };
 
@@ -98,7 +102,7 @@ public class DeviceEditListActivity extends ActionBarActivity {
                     lv.setAdapter(mAdapter);
 
 
-                    modified = true;
+                    deleted = true;
                 }
             };
 
@@ -131,15 +135,14 @@ public class DeviceEditListActivity extends ActionBarActivity {
     }
 
     private void exitAndSave(){
-        for(int i : devicesRemoved)
-            mDeviceManager.removeDeviceFromFavorite(i);
-        mDeviceManager.saveData();
+        if(deleted) {
+            for (int id : devicesRemoved) {
+                mDeviceManager.removeDeviceFromFavorite(id);
+            }
+        }
         mDeviceManager.invalidateExpandableList();
         mDeviceManager.updateDevices(mDevices);
-//        mDeviceManager.loadSavedData(DeviceListActivity.mContext);
         mDeviceManager.updateSurfaceViewManagers();
-//        mDeviceManager.getExpandableListAdapter().notifyDataSetChanged();
-
         startDeviceListActivity();
     }
 
@@ -148,7 +151,7 @@ public class DeviceEditListActivity extends ActionBarActivity {
         int id = item.getItemId();
 
         if (id == R.id.action_finish) {
-            if(!modified)
+            if(!deleted && !moved)
                 finish();
             else {
                 exitAndSave();
@@ -158,7 +161,7 @@ public class DeviceEditListActivity extends ActionBarActivity {
         }
 
         if (id == android.R.id.home) {
-            if (modified) {
+            if (deleted || moved) {
                 showBackConfirmation();
             } else {
                 finish();
@@ -177,26 +180,11 @@ public class DeviceEditListActivity extends ActionBarActivity {
             @Override
             public void onClick(DialogInterface dialogInterface, int which) {
                 exitAndSave();
-                /*
-                mDeviceManager.invalidateExpandableList();
-                mDeviceManager.updateDevices(DeviceEditListActivity.this, mDevices);
-
-                DeviceListActivity.mDevices = null;
-//                DeviceListActivity.loadDevices();
-                mDeviceManager.updateSurfaceViewManagers();
-//                mDeviceManager.getExpandableListAdapter(null).notifyDataSetChanged();
-
-                startDeviceListActivity();*/
             }
             });
         alert.setNeutralButton("Não Salvar", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
-                /*mDeviceManager.invalidateExpandableList();
-                mDeviceManager.loadSavedData(mDeviceManager.currentContext);
-                DeviceListActivity.mDevices = null;
-                mDeviceManager.updateSurfaceViewManagers();*/
-//                startDeviceListActivity();
                 finish();
             }
         });

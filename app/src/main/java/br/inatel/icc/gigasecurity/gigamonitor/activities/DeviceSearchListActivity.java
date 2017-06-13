@@ -126,6 +126,16 @@ public class DeviceSearchListActivity extends ActionBarActivity {
                 }
             });
         }
+
+        @Override
+        public void onFailedSearch() {
+            DeviceSearchListActivity.this.runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    stopAndRefresh();
+                }
+            });
+        }
     };
 
     @Override

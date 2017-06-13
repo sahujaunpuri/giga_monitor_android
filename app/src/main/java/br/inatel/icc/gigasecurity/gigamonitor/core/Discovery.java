@@ -50,6 +50,7 @@ public class Discovery extends Thread {
 
     public interface DiscoveryReceiver {
         void onReceiveDevices(ArrayList<Device> devices);
+        void onFailedSearch();
     }
 
     public Discovery(Context context, DiscoveryReceiver receiver) {
@@ -69,7 +70,8 @@ public class Discovery extends Thread {
             listenForResponses(mSocket);
         } catch (IOException e) {
             Log.e(TAG, "Could not send discovery request", e);
-            run();
+            mReceiver.onFailedSearch();
+//            run();
         }
     }
 

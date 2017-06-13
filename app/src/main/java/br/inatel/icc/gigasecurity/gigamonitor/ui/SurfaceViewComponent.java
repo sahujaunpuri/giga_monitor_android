@@ -13,6 +13,7 @@ import android.view.ScaleGestureDetector;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
+import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -22,6 +23,7 @@ import com.video.opengl.GLSurfaceView20;
 
 import org.w3c.dom.Text;
 
+import br.inatel.icc.gigasecurity.gigamonitor.R;
 import br.inatel.icc.gigasecurity.gigamonitor.core.DeviceManager;
 import br.inatel.icc.gigasecurity.gigamonitor.model.ChannelsManager;
 import br.inatel.icc.gigasecurity.gigamonitor.model.DeviceChannelsManager;
@@ -66,6 +68,7 @@ public class SurfaceViewComponent extends FrameLayout {
     public boolean isPTZEnabled = false;
     private float previousX = 0, previousY = 0, dx, dy;
     private int previsousPTZCommand;
+    private ImageView ivTouch;
 
     public SurfaceViewComponent(Context context, ChannelsManager channelsManager, int id) {
         super(context);
@@ -132,19 +135,10 @@ public class SurfaceViewComponent extends FrameLayout {
     }
 
     public void setViewSize(final int width, final int height){
-//        lp.width = width;
-//        lp.height = height;
-
         FrameLayout.LayoutParams pbParam = new FrameLayout.LayoutParams(width, height, Gravity.CENTER);
         progressBar.setLayoutParams(pbParam);
         FrameLayout.LayoutParams svParam = new FrameLayout.LayoutParams(width, height, Gravity.CENTER);
         mySurfaceView.setLayoutParams(svParam);
-
-//        progressBar.getLayoutParams().height = height/4;
-//        progressBar.getLayoutParams().width = width/4;
-
-//        this.getLayoutParams().height = height;
-//        this.getLayoutParams().width = width;
 
         this.requestLayout();
     }
@@ -222,11 +216,20 @@ public class SurfaceViewComponent extends FrameLayout {
 //        label.setTextSize(20);
 //        label.setText("");
 
+        ivTouch = new ImageView(mContext);
+        ivTouch.setImageResource(R.drawable.ic_touch_white_36dp);
+        FrameLayout.LayoutParams params = new FrameLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT, Gravity.START);
+        this.addView(ivTouch, /*mChannelsManager.pbParam*/params);
+        ivTouch.setScaleX(0.6f);
+        ivTouch.setScaleY(0.6f);
+
     }
 
     public void disablePTZ(){
-//        this.removeView(label);
-//        label = null;
+        if(ivTouch != null) {
+            this.removeView(ivTouch);
+            ivTouch = null;
+        }
     }
 
     public int getMySurfaceViewChannelId() {
@@ -299,6 +302,10 @@ public class SurfaceViewComponent extends FrameLayout {
             Log.d(TAG2, "onInterceptTouchEvent: MOVE UP");
         }
         if(command != -1) {
+            if(ivTouch != null) {
+                this.removeView(ivTouch);
+                ivTouch = null;
+            }
             mChannelsManager.ptzControl(command, this, false);
             dx = dy = 0;
             previsousPTZCommand = command;
@@ -384,15 +391,13 @@ public class SurfaceViewComponent extends FrameLayout {
                 if(mScaleFactor == 1.F && !isPTZEnabled()){
                     resumeScroll();
                     return false;
-                } else if(isPTZEnabled() && !isScaling){
+                } else if(isPTZEnabled() && !isScaling && mScaleFactor == 1.F){
                     dx += ev.getX() - previousX;
                     dy += ev.getY() - previousY;
 
-
                     handlePTZ();
 
-//                    Log.d(TAG2, "onInterceptTouchEvent: MOVE x:" + ev.getX() + " y:" + ev.getY());
-                    Log.d(TAG2, "onInterceptTouchEvent: MOVE dx:" + dx + " dy:" + dy);
+//                    Log.d(TAG2, "onInterceptTouchEvent: MOVE dx:" + dx + " dy:" + dy);
                 }
 
                 previousX = ev.getX();
@@ -406,7 +411,6 @@ public class SurfaceViewComponent extends FrameLayout {
             break;
             case MotionEvent.ACTION_UP: {
                 if(isPTZEnabled()){
-                    Log.d(TAG2, "onInterceptTouchEvent: UP " + previsousPTZCommand);
                     mChannelsManager.ptzControl(previsousPTZCommand, this, true);
                 }
 

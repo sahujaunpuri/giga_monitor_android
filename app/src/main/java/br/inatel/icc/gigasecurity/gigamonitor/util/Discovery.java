@@ -143,11 +143,4 @@ public class Discovery extends Thread {
             Log.d(TAG, "Receive timed out");
         }
     }
-
-
-    public static void main(String[] args) {
-        new Discovery(null).start();
-        while (true) {
-        }
-    }
 }

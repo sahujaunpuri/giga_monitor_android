@@ -150,6 +150,16 @@ public class InitialActivity extends ActionBarActivity implements View.OnClickLi
                 }
             });
         }
+
+        @Override
+        public void onFailedSearch() {
+            InitialActivity.this.runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    stopAndRefresh();
+                }
+            });
+        }
     };
 
     @Override

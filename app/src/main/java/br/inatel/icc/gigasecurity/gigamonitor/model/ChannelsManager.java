@@ -573,6 +573,11 @@ public abstract class ChannelsManager implements IFunSDKResult {
             }
             break;
             case EUIMSG.MEDIA_FRAME_LOSS: {
+                /*if(playType == 0 && msgContent != null){
+                    SurfaceViewComponent svc = findSurfaceByHandler(msgContent.sender);
+                    if(svc != null)
+                        restartVideo(svc);
+                }*/
                 Log.d(TAG, "OnFunSDKResult: Media Frame Loss");
             }
         }

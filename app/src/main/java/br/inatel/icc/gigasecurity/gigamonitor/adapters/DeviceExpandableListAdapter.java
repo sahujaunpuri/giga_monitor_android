@@ -253,6 +253,7 @@ public class DeviceExpandableListAdapter extends BaseExpandableListAdapter {
 
         GroupViewHolder currentGroupViewHolder = groupViewHolder.get(groupPosition);
 
+
         if(!currentGroupViewHolder.mDevice.isLogged) {
             loginDevice(currentGroupViewHolder.mDevice, currentGroupViewHolder, childViewHolder, groupPosition);
         } else {
@@ -274,7 +275,10 @@ public class DeviceExpandableListAdapter extends BaseExpandableListAdapter {
                 groupViewHolder.ivQuad.setVisibility(View.INVISIBLE);
                 groupViewHolder.ivIndicator.setImageDrawable(mContext.getResources().getDrawable(R.drawable.ic_indicator_minus));
                 if (groupViewHolder.mDevice.getChannelNumber() == 0) {
-                    childViewHolder.tvMessage.setText("Nenhum canal encontrado.");
+                    if(groupViewHolder.mDevice.getSerialNumber().equals("Favoritos"))
+                        childViewHolder.tvMessage.setText("Nenhum favorito adicionado.");
+                    else
+                        childViewHolder.tvMessage.setText("Nenhum canal encontrado.");
                     childViewHolder.tvMessage.setVisibility(View.VISIBLE);
                     childViewHolder.recyclerViewChannels.setVisibility(View.GONE);
                     groupViewHolder.ivMore.setVisibility(View.INVISIBLE);

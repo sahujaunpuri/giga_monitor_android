@@ -64,7 +64,7 @@ public class DeviceManager implements IFunSDKResult{
 
     private static String TAG = DeviceManager.class.getSimpleName();
     private static DeviceManager mInstance = null;
-    private int mFunUserHandler;
+    public int mFunUserHandler = -1;
 
     public ArrayList<FavoritePair> favoritesList;
     private ArrayList<Device> mDevices = new ArrayList<Device>();
@@ -188,7 +188,8 @@ public class DeviceManager implements IFunSDKResult{
                 }
                 if(msg.arg1 == 0 && device != null) {
                     Log.d(TAG, "OnFunSDKResult: Login SUCCESS");
-//                    FunSDK.DevGetConfigByJson(getHandler(), device.connectionString, "SetPreset", 4096, -1, 10000, device.getId());
+//                    FunSDK.DevGetConfigByJson(getHandler(), device.connectionString, "ChannelTitle", 4096, -1, 10000, device.getId());
+
                     device.isLogged = true;
                     device.loginAttempt = 0;
                     device.connectionMethod = -1;
@@ -198,7 +199,7 @@ public class DeviceManager implements IFunSDKResult{
                         loginList.get(device.connectionString).onLoginSuccess(device);
                     loginList.remove(device.connectionString);*/
                     FunSDK.DevGetConfigByJson(getHandler(), device.connectionString, "SystemInfo", 4096, -1, 10000, device.getId());
-               } else if(msg.arg1 == -11301 ) {
+               } else if(msg.arg1 == -11301){
                     if(device != null){
                         if (loginList.get(device.getId()) != null)
                             loginList.get(device.getId()).onLoginError(msg.arg1, device);
@@ -259,7 +260,7 @@ public class DeviceManager implements IFunSDKResult{
                     Log.d(TAG, "OnFunSDKResult: GETCONFIGJSON SUCCESS");
                     Device device = findDeviceById(msgContent.seq);
                     String jsonText = G.ToStringJson(msgContent.pData);
-                    Log.d(TAG, "EUIMSG.DEV_GET_JSON --> json: " + jsonText);
+                    Log.d(TAG, "EUIMSG.DEV_GET_JSON --> json: " + device.connectionString + " " + jsonText);
                     JSONObject json = null;
                     try {
                         json = new JSONObject(jsonText);
@@ -297,6 +298,10 @@ public class DeviceManager implements IFunSDKResult{
                             currentConfigListener.onReceivedConfig();
                         }
                         break;
+                        /*case "Uart.PTZ":{
+                            Log.d(TAG, "OnFunSDKResult: Possui ptz" + device.connectionString);
+                        }
+                        break;*/
                     }
 
 //                     salvar json como txt
@@ -310,6 +315,8 @@ public class DeviceManager implements IFunSDKResult{
                         e.printStackTrace();
                     }*/
                 } else{
+//                    if(msgContent != null && msgContent.str.equals("Uart.PTZ"))
+//                        break;
                     Device device = findDeviceById(msgContent.seq);
                     FunSDK.DevGetConfigByJson(getHandler(), device.connectionString, msgContent.str, 4096, -1, 10000, device.getId());
                     Log.d(TAG, "OnFunSDKResult: GETCONFIGJSON ERROR");
@@ -483,6 +490,7 @@ public class DeviceManager implements IFunSDKResult{
     }
 
     public void updateDevices(ArrayList<Device> devices){
+        mDevices = null;
         mDevices = devices;
         saveData();
     }
@@ -746,17 +754,20 @@ public class DeviceManager implements IFunSDKResult{
         FunSDK.DevSendTalkData(device.connectionString, data, size);
     }
 
-    public void remoteControl(Device device, int command){
+    public void remoteControl(Device device, String command, String click){
         JSONObject jsonObj = new JSONObject();
+        JSONObject json = new JSONObject();
         try {
             jsonObj.put("Value", command);
-            jsonObj.put("Status", 0);
+            jsonObj.put("Status", click);
+            json.put("Name", "OPNetKeyboard");
+            json.put("OPNetKeyboard", jsonObj);
         } catch (JSONException e) {
             e.printStackTrace();
         }
         Log.d(TAG, "remoteControl: " + jsonObj.toString());
         Log.d(TAG, "remoteControl: " + Arrays.toString(jsonObj.toString().getBytes()));
-        FunSDK.DevCmdGeneral(getHandler(), device.connectionString, 1550, jsonObj.toString(), 0, 10000, jsonObj.toString().getBytes(), -1, 0);
+        FunSDK.DevCmdGeneral(getHandler(), device.connectionString, 1550, "OPNetKeyboard", 0, 10000, json.toString().getBytes(), -1, 0);
     }
 
     public DeviceExpandableListAdapter getExpandableListAdapter(Context context, ExpandableListView mExpandableListView){
@@ -831,7 +842,7 @@ public class DeviceManager implements IFunSDKResult{
     public void updateSurfaceViewManagers(){
         if(deviceChannelsManagers == null)
             return;
-        deviceChannelsManagers.clear();
+//        deviceChannelsManagers.clear();
         deviceChannelsManagers = null;
         getDeviceChannelsManagers();
         /*for(int i=0; i < mDevices.size(); i++) {
@@ -874,18 +885,22 @@ public class DeviceManager implements IFunSDKResult{
 
     public void loginDevice(final Device device, final LoginDeviceListener loginDeviceListener) {
         if(!loginList.containsKey(device.getId()) /*|| loginList.get(device.connectionString) != null*/){
-            new Thread(new Runnable() {
-                @Override
-                public void run() {
+//            new Thread(new Runnable() {
+//                @Override
+//                public void run() {
                     loginAttempt(device);
-                }
-            }).start();
+//                }
+//            }).start();
         }
 //            FunSDK.SysGetDevState(getHandler(), device.connectionString, device.getId());
         loginList.put(device.getId(), loginDeviceListener);
     }
 
-    private void loginAttempt(Device device){
+    private void loginAttempt(final Device device) throws NullPointerException{
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+
         int nextConnectionType = -1;
         if(device.connectionMethod == -1 || device.connectionMethod == 2) {
             if (networkType == 1)   //wifi connection
@@ -902,6 +917,10 @@ public class DeviceManager implements IFunSDKResult{
             Log.d(TAG, "loginAttempt: " + device.connectionString);
             FunSDK.DevLogin(getHandler(), device.connectionString, device.getUsername(), device.getPassword(), device.getId());
         }
+
+        }
+        }).start();
+
     }
 
     public void removeLoginListener(int id){
@@ -1140,6 +1159,13 @@ public class DeviceManager implements IFunSDKResult{
         favoriteChannels = 0;
         favoriteDevice.setChannelNumber(favoriteChannels);
         expandableListAdapter.updateGrid(deviceChannelsManagers.indexOf(favoriteManager), favoriteManager);
+        saveData();
+    }
+
+    public void removeDevice(int id){
+        removeDeviceFromFavorite(id);
+        deviceChannelsManagers.remove(findChannelManagerByDevice(id));
+        mDevices.remove(findDeviceById(id));
         saveData();
     }
 

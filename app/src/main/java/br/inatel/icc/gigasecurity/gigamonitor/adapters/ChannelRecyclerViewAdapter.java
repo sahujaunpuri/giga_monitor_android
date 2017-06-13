@@ -98,18 +98,17 @@ public class ChannelRecyclerViewAdapter extends RecyclerView.Adapter<ChannelRecy
                 parent.removeAllViews();
             }
 
-//            currentSurfaceView.setLayoutParams(new FrameLayout.LayoutParams(FrameLayout.LayoutParams.MATCH_PARENT, FrameLayout.LayoutParams.MATCH_PARENT));
 
-
-            if(mDevice.isLogged) {
+            if(mDevice.isLogged && !mDevice.getSerialNumber().equals("Favoritos")) {
                 deviceChannelsManager.onPlayLive(currentSurfaceView);
 //                currentSurfaceView.isLoading(true);
 //                deviceChannelsManager.onStartVideo(currentSurfaceView);
+            } else if (mDevice.isLogged){
+                currentSurfaceView.isLoading(true);
+                deviceChannelsManager.onStartVideo(currentSurfaceView);
             }
 
             myViewHolder.frameLayout.addView(currentSurfaceView);
-
-//            deviceChannelsManager.changeSurfaceViewSize();
         } catch (IndexOutOfBoundsException e){
             Log.d(TAG, "onBindViewHolder: " + e.toString());
         }

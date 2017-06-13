@@ -81,8 +81,11 @@ public class OverlayMenu extends RelativeLayout {
     public void updateIcons(){
 
         ivPlayPause.setVisibility(VISIBLE);
-
-        String title = "Canal " + (surfaceViewComponent.getMySurfaceViewChannelId() + 1);
+        String title;
+        if(deviceChannelsManager.mDevice.getSerialNumber().equals("Favoritos"))
+            title = "";
+        else
+            title = "Canal " + (surfaceViewComponent.getMySurfaceViewChannelId() + 1);
         ivTitle.setText(title);
         if (surfaceViewComponent.isHD()) {
             ivHQ.setImageDrawable(mContext.getResources().getDrawable(R.drawable.ic_hq_on));
