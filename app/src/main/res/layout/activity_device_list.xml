@@ -3,7 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@android:color/transparent"
+    android:background="#e6e6e6"
     android:id="@+id/layout_main"
     tools:context=".activities.DeviceListActivity">
 

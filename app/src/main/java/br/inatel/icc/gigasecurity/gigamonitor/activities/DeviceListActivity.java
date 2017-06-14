@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.res.Configuration;
 import android.os.Bundle;
+import android.os.StrictMode;
 import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
 import android.view.Menu;
@@ -70,7 +71,7 @@ public class DeviceListActivity extends ActionBarActivity {
             public boolean onGroupClick(ExpandableListView parent, View v, int groupPosition, long id) {
                 if (previousGroup == -1) {
                     previousGroup = groupPosition;
-                    parent.expandGroup(groupPosition);
+                    parent.expandGroup(groupPosition, true);
                     return true;
                 }else if(mDeviceManager.getDeviceChannelsManagers().get(previousGroup).recCounter > 0){
                     Toast.makeText(mContext, "Finalize a gravação", Toast.LENGTH_SHORT).show();
@@ -78,10 +79,11 @@ public class DeviceListActivity extends ActionBarActivity {
                 }else if(previousGroup == groupPosition){
 //                    parent.collapseGroup(previousGroup);
 //                    previousGroup = -1;
+                    Log.d(TAG, "onGroupClick: ");
                     return true;
                 }else {
                     parent.collapseGroup(previousGroup);
-                    parent.expandGroup(groupPosition);
+                    parent.expandGroup(groupPosition, true);
                     previousGroup = groupPosition;
                     return true;
                 }
@@ -151,17 +153,14 @@ public class DeviceListActivity extends ActionBarActivity {
     }
 
     private void initComponents() {
-        Log.d(TAG, "initComponents: 0");
         mExpandableListView = (ExpandableListView) findViewById(R.id.expandable_list_view2);
         mContext            = DeviceListActivity.this;
         mAdapter            = mDeviceManager.getExpandableListAdapter(mContext, mExpandableListView);
         mDevices            = mDeviceManager.getDevices();
-        Log.d(TAG, "initComponents: 1");
         previousGroup = -1;
         mDeviceManager.currentContext = this;
         mAdapter.mContext = this;
         mAdapter.setDevices(mDevices);
-        Log.d(TAG, "initComponents: 2");
 
         mExpandableListView.setAdapter(mAdapter);
         mAdapter.notifyDataSetChanged();

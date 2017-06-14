@@ -24,6 +24,7 @@ import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
+import java.net.InetSocketAddress;
 import java.net.SocketTimeoutException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -40,7 +41,7 @@ import br.inatel.icc.gigasecurity.gigamonitor.util.Utils;
 public class Discovery extends Thread {
     private static final String TAG = "Discovery";
     private static final int DISCOVERY_PORT = 34569;
-    private static final int TIMEOUT_MS = 5000;
+    private static final int TIMEOUT_MS = 3000;
 
     private WifiManager mWifi;
 
@@ -62,9 +63,13 @@ public class Discovery extends Thread {
 
     public void run() {
         try {
-            mSocket = new DatagramSocket(DISCOVERY_PORT);
-            mSocket.setBroadcast(true);
-            mSocket.setSoTimeout(TIMEOUT_MS);
+            if(mSocket == null) {
+                mSocket = new DatagramSocket(null);
+                mSocket.setReuseAddress(true);
+                mSocket.setBroadcast(true);
+                mSocket.setSoTimeout(TIMEOUT_MS);
+                mSocket.bind(new InetSocketAddress(DISCOVERY_PORT));
+            }
 
             sendDiscoveryRequest(mSocket);
             listenForResponses(mSocket);

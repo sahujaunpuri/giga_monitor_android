@@ -243,13 +243,12 @@ public class DeviceExpandableListAdapter extends BaseExpandableListAdapter {
             convertView = childViewHolder.convertView;
             initGridRecycler(groupPosition, childViewHolder);
             convertView.setTag(childViewHolder);
-        } else /*if(((ChildViewHolder) convertView.getTag()).position != groupPosition)*/{
+        } else if(((ChildViewHolder) convertView.getTag()).position != groupPosition){
             childViewHolder = this.childViewHolder.get(groupPosition);
             convertView = childViewHolder.convertView;
-        } /*else{
+        } else{
             childViewHolder = (ChildViewHolder) convertView.getTag();
-            initGridRecycler(groupPosition, childViewHolder);
-        }*/
+        }
 
         GroupViewHolder currentGroupViewHolder = groupViewHolder.get(groupPosition);
 
@@ -384,8 +383,13 @@ public class DeviceExpandableListAdapter extends BaseExpandableListAdapter {
             initGridRecycler(position, childViewHolder.get(position));
             channelsManager.createComponents();
             childViewHolder.get(position).gridLayoutManager.setSpanCount(channelsManager.numQuad);
+            childViewHolder.get(position).recyclerViewChannels.setVisibility(View.VISIBLE);
             childViewHolder.get(position).recyclerViewChannels.getAdapter().notifyDataSetChanged();
 //            notifyDataSetChanged();
+        }
+        if(channelsManager.surfaceViewComponents.isEmpty()) {
+            childViewHolder.get(position).recyclerViewChannels.setVisibility(View.INVISIBLE);
+            childViewHolder.get(position).tvMessage.setVisibility(View.VISIBLE);
         }
     }
 

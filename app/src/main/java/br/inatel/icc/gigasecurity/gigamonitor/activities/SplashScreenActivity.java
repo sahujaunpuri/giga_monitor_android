@@ -1,6 +1,8 @@
 package br.inatel.icc.gigasecurity.gigamonitor.activities;
 
+import android.content.Context;
 import android.content.Intent;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
 
@@ -22,6 +24,22 @@ public class SplashScreenActivity extends ActionBarActivity {
         } else if (getActionBar() != null ) {
             getActionBar().hide();
         }
+
+
+/*        AsyncTask<Void, Void, Void> task = new AsyncTask<Void, Void, Void>() {
+            @Override
+            protected Void doInBackground(Void... voids) {
+
+                return null;
+            }
+
+            @Override
+            protected void onPostExecute(Void aVoid) {
+                super.onPostExecute(aVoid);
+            }
+        };
+
+        task.execute();*/
 
         new Timer().schedule(new TimerTask() {
 

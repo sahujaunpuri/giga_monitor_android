@@ -61,6 +61,7 @@ public class DeviceSearchListActivity extends ActionBarActivity {
 
                 Bundle extras = new Bundle();
                 extras.putSerializable("device", mDevices.get(i));
+                extras.putInt("index", -2);
 
                 Intent intent = new Intent(DeviceSearchListActivity.this, DeviceFormActivity.class);
                 intent.putExtras(extras);
@@ -96,12 +97,12 @@ public class DeviceSearchListActivity extends ActionBarActivity {
 
         mLoadingDialog = ProgressDialog.show(mContext, "", text, true, true,
                 new DialogInterface.OnCancelListener() {
-            @Override
-            public void onCancel(DialogInterface dialog) {
-                stopAndRefresh();
-                mLoadingDialog.dismiss();
-            }
-        });
+                    @Override
+                    public void onCancel(DialogInterface dialog) {
+                        stopAndRefresh();
+                        mLoadingDialog.dismiss();
+                    }
+                });
     }
 
     private void stopAndRefresh() {

@@ -89,7 +89,7 @@ public class DeviceEditAdapter extends BaseAdapter {
     private void startDeviceFormActivity(int position) {
         Bundle args = new Bundle();
 
-        args.putSerializable("device", mDevices.get(position));
+//        args.putSerializable("device", mDevices.get(position));
         args.putInt("index", position);
 
         Intent intent = new Intent(mContex, DeviceFormActivity.class);

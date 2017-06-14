@@ -43,8 +43,14 @@ public class DeviceFormActivity extends ActionBarActivity{
         initForm();
 
         if(getIntent().getExtras() != null) {
-            mDevice = (Device) getIntent().getExtras().getSerializable("device");
+//            mDevice = (Device) getIntent().getExtras().getSerializable("device");
             editPosition = getIntent().getExtras().getInt("index", -1);
+            if(editPosition > -1)
+                mDevice = deviceManager.getDevices().get(editPosition);
+            else if(editPosition == -2)
+                mDevice = (Device) getIntent().getExtras().getSerializable("device");
+
+
 
             getSupportActionBar().setTitle("Editar Dispositivo");
             setForm(mDevice);
@@ -156,7 +162,7 @@ public class DeviceFormActivity extends ActionBarActivity{
                 return true;
             case R.id.action_save:
                 if(save()) {
-                    if(editPosition != -1){
+                    if(editPosition > -1){
                         deviceManager.logoutDevice(mDevice);
                         checkEdit();
                         mDevice.isLogged = false;

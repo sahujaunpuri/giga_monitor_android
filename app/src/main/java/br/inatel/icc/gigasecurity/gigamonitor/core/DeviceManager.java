@@ -115,14 +115,11 @@ public class DeviceManager implements IFunSDKResult{
         currentContext = context;
         Log.d(TAG, "DeviceManager: INIT");
 
-
         InitParam initparam = new InitParam();
 
 //        FunSDK.InitEx(0, G.ObjToBytes(initparam), "GIGA_", "", 0);
         FunSDK.InitExV2(0, G.ObjToBytes(initparam), 4, "GIGA_", "cloudgiga.com.br", 8765);
         FunSDK.SysSetServerIPPort("MI_SERVER", "cloudgiga.com.br", 80);
-
-
 
 //        FunSDK.Init(0, G.ObjToBytes(initparam));
 
@@ -140,12 +137,10 @@ public class DeviceManager implements IFunSDKResult{
         mFunUserHandler = FunSDK.RegUser(this);
         FunSDK.SetFunIntAttr(EFUN_ATTR.FUN_MSG_HANDLE, mFunUserHandler);
 
+
         loadSavedData(context);
-
         getScreenSize();
-
         networkType = getConnectionMethod();
-//        getNetworkIp(context);
     }
 
     @Override
@@ -900,7 +895,8 @@ public class DeviceManager implements IFunSDKResult{
         new Thread(new Runnable() {
             @Override
             public void run() {
-
+        if(device == null)
+            return;
         int nextConnectionType = -1;
         if(device.connectionMethod == -1 || device.connectionMethod == 2) {
             if (networkType == 1)   //wifi connection

@@ -165,7 +165,7 @@ public class InitialActivity extends ActionBarActivity implements View.OnClickLi
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
 //        getMenuInflater().inflate(R.menu.menu_initial, menu);
-        if(DeviceManager.getInstance().getDevices().isEmpty())
+        if(DeviceManager.getInstance().getDevices().size()<2)
             getSupportActionBar().setDisplayHomeAsUpEnabled(false);
         else
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
