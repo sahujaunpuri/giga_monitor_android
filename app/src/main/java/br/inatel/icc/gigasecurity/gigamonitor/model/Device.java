@@ -11,6 +11,8 @@ import org.json.JSONObject;
 import java.io.Serializable;
 import java.util.Calendar;
 
+import br.inatel.icc.gigasecurity.gigamonitor.core.DeviceManager;
+
 
 /**
  * Created by rinaldo.bueno on 29/08/2014.

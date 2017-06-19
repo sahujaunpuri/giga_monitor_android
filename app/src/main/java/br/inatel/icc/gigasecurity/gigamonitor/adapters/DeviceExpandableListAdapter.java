@@ -292,14 +292,10 @@ public class DeviceExpandableListAdapter extends BaseExpandableListAdapter {
         });
     }
 
-    /*@Override
-    public void onGroupExpanded(int groupPosition){
-        super.onGroupExpanded(groupPosition);
-        final GroupViewHolder currentGroupViewHolder = groupViewHolder.get(groupPosition);
-        if(currentGroupViewHolder.mDevice.isLogged && !mDeviceManager.getDeviceChannelsManagers().get(groupPosition).surfaceViewComponents.isEmpty()) {
-            mDeviceManager.getDeviceChannelsManagers().get(groupPosition).createComponents();
-        }
-    }*/
+//    @Override
+//    public void onGroupExpanded(int groupPosition){
+//        super.onGroupExpanded(groupPosition);
+//    }
 
     @Override
     public void onGroupCollapsed(int groupPosition){
@@ -402,6 +398,7 @@ public class DeviceExpandableListAdapter extends BaseExpandableListAdapter {
                 updateChildView(mDevice, groupViewHolder, childViewHolder, position);
                 updateGrid(position, mDeviceManager.getDeviceChannelsManagers().get(position));
                 showExpanded(position, groupViewHolder, childViewHolder);
+                childViewHolder.gridLayoutManager.scrollToPosition(mDeviceManager.getDeviceChannelsManagers().get(position).lastFirstVisibleItem);
 
 //                mDeviceManager.getDeviceChannelsManagers().get(position).createComponents();
 //                childViewHolder.gridLayoutManager.setSpanCount(mDeviceManager.getDeviceChannelsManagers().get(position).numQuad);
@@ -465,6 +462,7 @@ public class DeviceExpandableListAdapter extends BaseExpandableListAdapter {
                                                     break;
                                                 case 2:
                                                     mExpandableListView.collapseGroup(groupPosition);
+                                                    mDeviceManager.collapse = groupPosition;
                                                     startPlaybackActivity(groupViewHolder.mDevice);
                                                     break;
                                             }

@@ -21,6 +21,7 @@ import com.lib.sdk.struct.SDK_SYSTEM_TIME;
 import java.util.concurrent.TimeUnit;
 
 import br.inatel.icc.gigasecurity.gigamonitor.R;
+import br.inatel.icc.gigasecurity.gigamonitor.core.DeviceManager;
 import br.inatel.icc.gigasecurity.gigamonitor.listeners.PlaybackListener;
 import br.inatel.icc.gigasecurity.gigamonitor.model.Device;
 import br.inatel.icc.gigasecurity.gigamonitor.model.FileData;
@@ -145,7 +146,8 @@ public class DevicePlaybackVideoActivity extends ActionBarActivity {
 
         // Get data from previous activity
         Bundle extras = getIntent().getExtras();
-        mDevice = (Device) extras.getSerializable("device");
+        int deviceID = (int) extras.getSerializable("device");
+        mDevice = DeviceManager.getInstance().findDeviceById(deviceID);
         mFileData = (FileData) extras.getSerializable("fileData");
         //*mDeviceChannelsManager = DeviceManager.getInstance().findChannelManagerByDevice(mDevice);
         mDeviceChannelsManager = new DeviceChannelsManager(mDevice);

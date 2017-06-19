@@ -272,7 +272,10 @@ public class EthernetConfigActivity extends ActionBarActivity implements OnCheck
         temp.setIpAddress(mHostIPEditText.getText().toString());
         temp.setSubmask(mSubmaskEditText.getText().toString());
         temp.setGateway(mGatewayEditText.getText().toString());
-        temp.setTCPPort(Integer.parseInt(mTcpPortEditText.getText().toString()));
+        if(mDevice.getTCPPort() == 0)
+            temp.setTCPPort(Integer.parseInt(mTcpPortEditText.getText().toString()));
+        else
+            temp.setTCPPort(mDevice.getTCPPort());
         temp.setHttpPort(Integer.parseInt(mHttpPortEditText.getText().toString()));
         temp.setSslPort(Integer.parseInt(mSslPortEditText.getText().toString()));
         temp.setUdpPort(Integer.parseInt(mUdpPortEditText.getText().toString()));

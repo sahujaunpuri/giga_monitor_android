@@ -1,7 +1,9 @@
 package br.inatel.icc.gigasecurity.gigamonitor.activities;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.os.Bundle;
 import android.os.StrictMode;
@@ -20,8 +22,11 @@ import java.util.ArrayList;
 import br.inatel.icc.gigasecurity.gigamonitor.R;
 import br.inatel.icc.gigasecurity.gigamonitor.adapters.DeviceExpandableListAdapter;
 import br.inatel.icc.gigasecurity.gigamonitor.core.DeviceManager;
+import br.inatel.icc.gigasecurity.gigamonitor.model.ChannelsManager;
 import br.inatel.icc.gigasecurity.gigamonitor.model.Device;
 import com.crashlytics.android.Crashlytics;
+
+import br.inatel.icc.gigasecurity.gigamonitor.model.StatePreferences;
 import io.fabric.sdk.android.Fabric;
 
 public class DeviceListActivity extends ActionBarActivity {
@@ -34,28 +39,25 @@ public class DeviceListActivity extends ActionBarActivity {
     public static int previousGroup = -1;
     public static int expandedGroups = 0;
     public static boolean running = false;
+    private StatePreferences statePreferences;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_device_list);
         Fabric.with(this, new Crashlytics());
-        Log.d(TAG, "onCreate: 0");
-
 
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
-
         getWindow().setFlags(
                 WindowManager.LayoutParams.FLAG_HARDWARE_ACCELERATED,
                 WindowManager.LayoutParams.FLAG_HARDWARE_ACCELERATED);
-
         Thread.currentThread().setPriority(Thread.MAX_PRIORITY);
 
         mDeviceManager = DeviceManager.getInstance();
         if(mDeviceManager.mFunUserHandler == -1)
             mDeviceManager.init(this);
 
-        Log.d(TAG, "onCreate: 1");
         initComponents();
 
 //        Thread.setDefaultUncaughtExceptionHandler(new MyExceptionHandler(this, DeviceListActivity.class));
@@ -89,6 +91,9 @@ public class DeviceListActivity extends ActionBarActivity {
                 }
             }
         });
+
+        mDeviceManager.setSharedPreferences(mContext.getSharedPreferences("state", MODE_PRIVATE));
+
     }
 
     @Override
@@ -135,21 +140,72 @@ public class DeviceListActivity extends ActionBarActivity {
         super.onResume();
         if(mDeviceManager.collapse >=0 && previousGroup == mDeviceManager.collapse) {
             mExpandableListView.collapseGroup(mDeviceManager.collapse);
-//            mAdapter.onGroupCollapsed(mDeviceManager.collapse);
             mAdapter.childViewHolder.get(mDeviceManager.collapse).recyclerViewChannels = null;
             mDeviceManager.collapse = -1;
             previousGroup = -1;
             mAdapter.notifyDataSetChanged();
         }
+
+        //load last state
+        if(!mDeviceManager.loadedState) {
+            statePreferences = mDeviceManager.loadState();
+            previousGroup = statePreferences.previousGroup;
+            if (previousGroup > -1)
+                mExpandableListView.expandGroup(previousGroup);
+            Log.d(TAG, "onResume: group: " + previousGroup + ", channel: " + statePreferences.previousChannel + ", grid: " + statePreferences.previousGrid + ", HD: " + statePreferences.previousHD);
+            mDeviceManager.loadedState = true;
+        }
+
+//        previousGroup = mPreferences.getInt("previousGroup", -1);
+//        if (previousGroup > -1) {
+//            mExpandableListView.expandGroup(previousGroup);
+//            ChannelsManager channelsManager = mDeviceManager.getDeviceChannelsManagers().get(previousGroup);
+//            previousChannel = mPreferences.getInt("previousChannel", -1);
+//            previousGrid = mPreferences.getInt("previousGrid", -1);
+//            previousLastGrid = mPreferences.getInt("previousLastGrid", -1);
+//            previousHD = mPreferences.getInt("previousHD", -1);
+//            channelsManager.lastFirstVisibleItem = previousChannel;
+//            channelsManager.numQuad = previousGrid;
+//            channelsManager.lastNumQuad = previousLastGrid;
+//            channelsManager.lastFirstItemBeforeSelectChannel = mPreferences.getInt("previousLastVisibleChannel", -1);
+//            channelsManager.changeSurfaceViewSize();
+//            if (previousHD > -1)
+//                channelsManager.enableHD(channelsManager.surfaceViewComponents.get(previousHD));
+//            Log.d(TAG, "onResume: group: " + previousGroup + ", channel: " + previousChannel + ", grid: " + previousGrid + ", HD: " + previousHD);
+//        }
+
         mDeviceManager.loginAllDevices();
-//        mAdapter.notifyDataSetChanged();
     }
 
     @Override
     protected void onPause() {
         super.onPause();
-//        collapseAll();
-//        if (previousGroup != -1) mAdapter.stopChannels(previousGroup);
+
+        statePreferences = new StatePreferences();
+        statePreferences.previousGroup = previousGroup;
+        if(previousGroup > -1) {
+            ChannelsManager channelsManager = mDeviceManager.getDeviceChannelsManagers().get(previousGroup);
+            statePreferences.previousChannel = channelsManager.lastFirstVisibleItem;
+            statePreferences.previousGrid = channelsManager.numQuad;
+            statePreferences.previousLastGrid = channelsManager.lastNumQuad;
+            statePreferences.previousLastVisibleChannel = channelsManager.lastFirstItemBeforeSelectChannel;
+        }
+        mDeviceManager.saveState(statePreferences);
+
+//        SharedPreferences.Editor editor = mPreferences.edit();
+//        editor.putInt("previousGroup", previousGroup);
+//        if(previousGroup != -1) {
+//            ChannelsManager channelsManager = mDeviceManager.getDeviceChannelsManagers().get(previousGroup);
+//            previousChannel = channelsManager.lastFirstVisibleItem;
+//            previousGrid = channelsManager.numQuad;
+//            previousLastGrid = channelsManager.lastNumQuad;
+//            editor.putInt("previousChannel", previousChannel);
+//            editor.putInt("previousGrid", previousGrid);
+//            editor.putInt("previousLastGrid", previousLastGrid);
+//            editor.putInt("previousHD", channelsManager.hdChannel);
+//            editor.putInt("previousLastVisibleChannel", channelsManager.lastFirstItemBeforeSelectChannel);
+//        }
+//        editor.apply();
     }
 
     private void initComponents() {

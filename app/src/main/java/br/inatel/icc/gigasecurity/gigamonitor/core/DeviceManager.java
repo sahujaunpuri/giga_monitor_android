@@ -1,6 +1,7 @@
 package br.inatel.icc.gigasecurity.gigamonitor.core;
 
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.content.res.Resources;
 import android.net.ConnectivityManager;
 import android.net.DhcpInfo;
@@ -47,9 +48,12 @@ import br.inatel.icc.gigasecurity.gigamonitor.model.Device;
 import br.inatel.icc.gigasecurity.gigamonitor.model.DeviceChannelsManager;
 import br.inatel.icc.gigasecurity.gigamonitor.model.FavoritesChannelsManager;
 import br.inatel.icc.gigasecurity.gigamonitor.model.FavoritePair;
+import br.inatel.icc.gigasecurity.gigamonitor.model.StatePreferences;
 import br.inatel.icc.gigasecurity.gigamonitor.ui.SurfaceViewComponent;
 import br.inatel.icc.gigasecurity.gigamonitor.util.ComplexPreferences;
 import br.inatel.icc.gigasecurity.gigamonitor.util.Utils;
+
+import static android.content.Context.MODE_PRIVATE;
 
 /**
  * Created by rinaldo.bueno on 29/08/2014.
@@ -72,7 +76,7 @@ public class DeviceManager implements IFunSDKResult{
     public ArrayList<Device> mFavoriteDevices = new ArrayList<Device>();
     public LinkedList<SurfaceViewComponent> startList = new LinkedList<SurfaceViewComponent>();
     private HashMap<Integer, LoginDeviceListener> loginList = new HashMap<Integer, LoginDeviceListener>();
-
+    private SharedPreferences mPreferences;
 
     private PlaybackSearchListener currentPlaybackSearchListener;
     private ConfigListener currentConfigListener;
@@ -87,6 +91,7 @@ public class DeviceManager implements IFunSDKResult{
     public int favoriteChannels = 0;
 
     private boolean startPlay = false;
+    public boolean loadedState = false;
     public boolean channelOnRec;
     private int loginAttempt = 0;
     public int collapse = -1;
@@ -136,7 +141,6 @@ public class DeviceManager implements IFunSDKResult{
         FunSDK.XMCloundPlatformInit(APP_UUID, APP_KEY, APP_SECRET, APP_MOVECARD);
         mFunUserHandler = FunSDK.RegUser(this);
         FunSDK.SetFunIntAttr(EFUN_ATTR.FUN_MSG_HANDLE, mFunUserHandler);
-
 
         loadSavedData(context);
         getScreenSize();
@@ -275,6 +279,7 @@ public class DeviceManager implements IFunSDKResult{
                         break;
                         case "NetWork.NetCommon":{
                             handleEthernetConfig(json, device);
+                            if(currentConfigListener != null)
                             currentConfigListener.onReceivedConfig();
                         }
                         break;
@@ -285,6 +290,7 @@ public class DeviceManager implements IFunSDKResult{
                         break;
                         case "NetWork.NetDDNS":{
                             handleDDNSConfig(json, device);
+                            if(currentConfigListener != null)
                             currentConfigListener.onReceivedConfig();
                         }
                         break;
@@ -445,15 +451,56 @@ public class DeviceManager implements IFunSDKResult{
     }
 
     public void saveData() {
-        ComplexPreferences cp = new ComplexPreferences(currentContext, "SHARED_PREFERENCE_LIST", Context.MODE_PRIVATE);
+        ComplexPreferences cp = new ComplexPreferences(currentContext, "SHARED_PREFERENCE_LIST", MODE_PRIVATE);
         cp.putObject("DeviceList", new DeviceList(mDevices));
         cp.putObject("FavoritesList", favoritesList);
 
         cp.apply();
     }
 
+    public void setSharedPreferences(SharedPreferences sharedPreferences){
+        mPreferences = sharedPreferences;
+    }
+
+    public StatePreferences loadState(){
+        StatePreferences state = new StatePreferences();
+        state.previousGroup = mPreferences.getInt("previousGroup", -1);
+        if (state.previousGroup > -1) {
+            ChannelsManager channelsManager = getDeviceChannelsManagers().get(state.previousGroup);
+            state.previousChannel = mPreferences.getInt("previousChannel", -1);
+            state.previousGrid = mPreferences.getInt("previousGrid", -1);
+            state.previousLastGrid = mPreferences.getInt("previousLastGrid", -1);
+            state.previousHD = mPreferences.getInt("previousHD", -1);
+            channelsManager.lastFirstVisibleItem = state.previousChannel;
+            channelsManager.numQuad = state.previousGrid;
+            channelsManager.lastNumQuad = state.previousLastGrid;
+            channelsManager.lastFirstItemBeforeSelectChannel = mPreferences.getInt("previousLastVisibleChannel", -1);
+            channelsManager.changeSurfaceViewSize();
+            if (state.previousHD > -1)
+                channelsManager.enableHD(channelsManager.surfaceViewComponents.get(state.previousHD));
+        }
+        return state;
+    }
+
+    public void saveState(StatePreferences state){
+        SharedPreferences.Editor editor = mPreferences.edit();
+        editor.putInt("previousGroup", state.previousGroup);
+        if(state.previousGroup != -1) {
+            ChannelsManager channelsManager = getDeviceChannelsManagers().get(state.previousGroup);
+            state.previousChannel = channelsManager.lastFirstVisibleItem;
+            state.previousGrid = channelsManager.numQuad;
+            state.previousLastGrid = channelsManager.lastNumQuad;
+            editor.putInt("previousChannel", state.previousChannel);
+            editor.putInt("previousGrid", state.previousGrid);
+            editor.putInt("previousLastGrid", state.previousLastGrid);
+            editor.putInt("previousHD", channelsManager.hdChannel);
+            editor.putInt("previousLastVisibleChannel", channelsManager.lastFirstItemBeforeSelectChannel);
+        }
+        editor.apply();
+    }
+
     private ArrayList<Device> loadDevices(Context context) {
-        ComplexPreferences cp = new ComplexPreferences(context, context.getString(R.string.sheredpreference_list), Context.MODE_PRIVATE);
+        ComplexPreferences cp = new ComplexPreferences(context, context.getString(R.string.sheredpreference_list), MODE_PRIVATE);
         DeviceList deviceList = cp.getObject("DeviceList", DeviceList.class);
         if (deviceList == null || deviceList.getList() == null) {
             return new ArrayList<Device>();
@@ -464,7 +511,7 @@ public class DeviceManager implements IFunSDKResult{
     }
 
     private ArrayList<FavoritePair> loadFavorites(Context context) {
-        ComplexPreferences cp = new ComplexPreferences(context, context.getString(R.string.sheredpreference_list), Context.MODE_PRIVATE);
+        ComplexPreferences cp = new ComplexPreferences(context, context.getString(R.string.sheredpreference_list), MODE_PRIVATE);
         ArrayList<FavoritePair> list = cp.getObject("FavoritesList", ArrayList.class);
         if(list != null){
             for(FavoritePair pair : list){
@@ -509,6 +556,10 @@ public class DeviceManager implements IFunSDKResult{
             if(systemInfo.has("VideoInChannel"))
                 device.setChannelNumber(systemInfo.getInt("VideoInChannel"));
             saveData();
+            if(device.getIpAddress() == null || device.getIpAddress().isEmpty())
+                getJsonConfig(device, "NetWork.NetCommon", null);
+            if(device.getDomain() == null || device.getDomain().isEmpty())
+                getJsonConfig(device, "NetWork.NetDDNS", null);
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -559,7 +610,8 @@ public class DeviceManager implements IFunSDKResult{
                 device.setTcpMaxConn(json.getInt("TCPMaxConn"));
             }
             if(json.has("TCPPort")){
-                device.setTCPPort(json.getInt(("TCPPort")));
+                if(device.getTCPPort() == 0)
+                    device.setTCPPort(json.getInt(("TCPPort")));
             }
             if(json.has("TransferPlan")){
                 device.setTransferPlan(json.optInt("TransferPlan"));
@@ -1142,8 +1194,10 @@ public class DeviceManager implements IFunSDKResult{
             favoritesList.remove((int) toRemove.get(j));
             favoriteChannels--;
         }
-        favoriteDevice.setChannelNumber(favoriteChannels);
-        expandableListAdapter.updateGrid(deviceChannelsManagers.indexOf(favoriteManager), favoriteManager);
+        if(!toRemove.isEmpty()) {
+            favoriteDevice.setChannelNumber(favoriteChannels);
+            expandableListAdapter.updateGrid(deviceChannelsManagers.indexOf(favoriteManager), favoriteManager);
+        }
         Log.d(TAG, "removeDeviceFromFavorite: ");
     }
 

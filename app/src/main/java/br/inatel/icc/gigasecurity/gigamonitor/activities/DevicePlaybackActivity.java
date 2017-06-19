@@ -181,7 +181,7 @@ public class DevicePlaybackActivity extends ActionBarActivity
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
         Bundle extras = new Bundle();
-        extras.putSerializable("device", mDevice);
+        extras.putSerializable("device", mDevice.getId());
 
         extras.putSerializable("fileData", (FileData) parent.getItemAtPosition(position));
 
