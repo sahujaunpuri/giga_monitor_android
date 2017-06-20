@@ -11,6 +11,7 @@ import android.os.Bundle;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.DisplayMetrics;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -395,7 +396,6 @@ public class DeviceExpandableListAdapter extends BaseExpandableListAdapter {
             public void onLoginSuccess(Device device) {
                 mDevice.isLogged = true;
                 mDeviceManager.clearStart();
-                updateChildView(mDevice, groupViewHolder, childViewHolder, position);
                 updateGrid(position, mDeviceManager.getDeviceChannelsManagers().get(position));
                 showExpanded(position, groupViewHolder, childViewHolder);
                 childViewHolder.gridLayoutManager.scrollToPosition(mDeviceManager.getDeviceChannelsManagers().get(position).lastFirstVisibleItem);

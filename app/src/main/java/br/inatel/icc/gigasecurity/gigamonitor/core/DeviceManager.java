@@ -931,15 +931,9 @@ public class DeviceManager implements IFunSDKResult{
     }
 
     public void loginDevice(final Device device, final LoginDeviceListener loginDeviceListener) {
-        if(!loginList.containsKey(device.getId()) /*|| loginList.get(device.connectionString) != null*/){
-//            new Thread(new Runnable() {
-//                @Override
-//                public void run() {
-                    loginAttempt(device);
-//                }
-//            }).start();
+        if(!loginList.containsKey(device.getId())){
+            loginAttempt(device);
         }
-//            FunSDK.SysGetDevState(getHandler(), device.connectionString, device.getId());
         loginList.put(device.getId(), loginDeviceListener);
     }
 
