@@ -146,10 +146,20 @@ public class DeviceEditListActivity extends ActionBarActivity {
         startDeviceListActivity();
     }
 
+    private void startInitialActivity() {
+        Intent i = new Intent(this, InitialActivity.class);
+
+        startActivity(i);
+    }
+
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
 
+        if (id == R.id.action_add) {
+            startInitialActivity();
+            return true;
+        }
         if (id == R.id.action_finish) {
             if(!deleted && !moved)
                 finish();
@@ -157,9 +167,7 @@ public class DeviceEditListActivity extends ActionBarActivity {
                 exitAndSave();
             }
             return true;
-
         }
-
         if (id == android.R.id.home) {
             if (deleted || moved) {
                 showBackConfirmation();

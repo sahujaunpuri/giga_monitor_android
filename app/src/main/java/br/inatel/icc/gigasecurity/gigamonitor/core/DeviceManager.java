@@ -1,5 +1,6 @@
 package br.inatel.icc.gigasecurity.gigamonitor.core;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.res.Resources;
@@ -39,6 +40,7 @@ import java.util.HashMap;
 import java.util.LinkedList;
 
 import br.inatel.icc.gigasecurity.gigamonitor.R;
+import br.inatel.icc.gigasecurity.gigamonitor.activities.DeviceListActivity;
 import br.inatel.icc.gigasecurity.gigamonitor.adapters.DeviceExpandableListAdapter;
 import br.inatel.icc.gigasecurity.gigamonitor.listeners.ConfigListener;
 import br.inatel.icc.gigasecurity.gigamonitor.listeners.LoginDeviceListener;
@@ -474,10 +476,14 @@ public class DeviceManager implements IFunSDKResult{
             channelsManager.lastFirstVisibleItem = state.previousChannel;
             channelsManager.numQuad = state.previousGrid;
             channelsManager.lastNumQuad = state.previousLastGrid;
+            channelsManager.reOrderSurfaceViewComponents();
             channelsManager.lastFirstItemBeforeSelectChannel = mPreferences.getInt("previousLastVisibleChannel", -1);
             channelsManager.changeSurfaceViewSize();
-            if (state.previousHD > -1)
+            if (state.previousHD > -1 && channelsManager.surfaceViewComponents.size() > state.previousHD) {
+                if(!mDevices.get(state.previousGroup).getSerialNumber().equals("Favoritos"))
+                    state.previousHD = findChannelManagerByDevice(mDevices.get(state.previousGroup)).getChannelSelected(state.previousHD);
                 channelsManager.enableHD(channelsManager.surfaceViewComponents.get(state.previousHD));
+            }
         }
         return state;
     }
@@ -941,26 +947,40 @@ public class DeviceManager implements IFunSDKResult{
         new Thread(new Runnable() {
             @Override
             public void run() {
-        if(device == null)
-            return;
-        int nextConnectionType = -1;
-        if(device.connectionMethod == -1 || device.connectionMethod == 2) {
-            if (networkType == 1)   //wifi connection
-                nextConnectionType = 0;
-            else
-                nextConnectionType = 1;
-        }else if(device.connectionMethod == 0){
-            nextConnectionType = 1;
-        } else if(device.connectionMethod == 1)
-            nextConnectionType = 2;
-        if(device.setConnectionString(nextConnectionType) < 0)
-            loginAttempt(device);
-        else {
-            Log.d(TAG, "loginAttempt: " + device.connectionString);
-            FunSDK.DevLogin(getHandler(), device.connectionString, device.getUsername(), device.getPassword(), device.getId());
-        }
-
-        }
+                if(device == null)
+                    return;
+                if(device.loginAttempt > 9){
+                    device.loginAttempt = 0;
+                   /* final String msg = "Falha na conexão do dispositivo: " + device.deviceName;
+                    ((DeviceListActivity) currentContext).runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            Toast.makeText(currentContext, msg, Toast.LENGTH_SHORT).show();
+                        }
+                    });*/
+                    expandableListAdapter.setMessage(mDevices.indexOf(device), "Falha na conexão");
+                    return;
+                }
+                int nextConnectionType = -1;
+                if(device.connectionMethod == -1 || device.connectionMethod == 2) {
+                    if (networkType == 1) {   //wifi connection
+                        nextConnectionType = 0;
+                    }else
+                        nextConnectionType = 1;
+                }else if(device.connectionMethod == 0){
+                    nextConnectionType = 1;
+                } else if(device.connectionMethod == 1)
+                    nextConnectionType = 2;
+                if(device.setConnectionString(nextConnectionType) < 0)
+                    loginAttempt(device);
+                else {
+                    Log.d(TAG, "loginAttempt: " + device.loginAttempt + " " + device.connectionString);
+                    device.loginAttempt++;
+                    if(expandableListAdapter != null)
+                        expandableListAdapter.setMessage(mDevices.indexOf(device), device.message);
+                    FunSDK.DevLogin(getHandler(), device.connectionString, device.getUsername(), device.getPassword(), device.getId());
+                }
+            }
         }).start();
 
     }

@@ -42,7 +42,7 @@ import br.inatel.icc.gigasecurity.gigamonitor.ui.SurfaceViewComponent;
  * Created by filipecampos on 30/05/2016.
  */
 public class DeviceExpandableListAdapter extends BaseExpandableListAdapter {
-
+    private final String TAG = "ExpListAdapter";
     private LayoutInflater mInflater;
     public ArrayList<Device> mDevices;
     public Context mContext;
@@ -50,6 +50,7 @@ public class DeviceExpandableListAdapter extends BaseExpandableListAdapter {
     public ArrayList<GroupViewHolder> groupViewHolder;
     public ArrayList<ChildViewHolder> childViewHolder;
     private ExpandableListView mExpandableListView;
+    private int scroll;
 
     public DeviceExpandableListAdapter(Context mContext, ArrayList<Device> mDevices, ExpandableListView mExpandableListView) {
         this.mContext            = mContext;
@@ -148,6 +149,8 @@ public class DeviceExpandableListAdapter extends BaseExpandableListAdapter {
 
         if(groupViewHolder.get(groupPosition).mDevice.getSerialNumber().equals("Favoritos")){
             currentChildViewHolder.tvMessage.setText("Nenhum favorito adicionado.");
+        }else{
+            currentChildViewHolder.tvMessage.setText(groupViewHolder.get(groupPosition).mDevice.message);
         }
 
 //        this.childViewHolder.add(currentChildViewHolder);
@@ -188,6 +191,9 @@ public class DeviceExpandableListAdapter extends BaseExpandableListAdapter {
                         mDeviceManager.clearStart();
 
                         childViewHolder.get(groupPosition).gridLayoutManager.setSpanCount(mDeviceManager.getDeviceChannelsManagers().get(groupPosition).numQuad);
+//                        deviceChannelsManager.currentPage = deviceChannelsManager.pageNumber(deviceChannelsManager.lastFirstVisibleItem);
+//                        childViewHolder.get(groupPosition).gridLayoutManager.scrollToPositionWithOffset(deviceChannelsManager.firstItemOfPage(deviceChannelsManager.currentPage), 0);
+//                        Log.d(TAG, "run: " + deviceChannelsManager.currentPage + " " + deviceChannelsManager.lastFirstVisibleItem + " " + deviceChannelsManager.firstItemOfPage(deviceChannelsManager.currentPage));
                         childViewHolder.get(groupPosition).mRecyclerAdapter.notifyDataSetChanged();
                         deviceChannelsManager.changeSurfaceViewSize();
 
@@ -209,14 +215,42 @@ public class DeviceExpandableListAdapter extends BaseExpandableListAdapter {
 
                 if(newState == 0) {
                     final ChildViewHolder currentChildViewHolder = childViewHolder.get(groupPosition);
-                    final int itemToScroll;
+                    ChannelsManager mChannelManager = mDeviceManager.getDeviceChannelsManagers().get(groupPosition);
+                    int itemToScroll = mChannelManager.lastFirstVisibleItem;
+                    int pageToScroll = mChannelManager.currentPage;
                     final int currentFirstVisibleItem = currentChildViewHolder.gridLayoutManager.findFirstVisibleItemPosition();
                     final int currentLastVisibleItem = currentChildViewHolder.gridLayoutManager.findLastVisibleItemPosition();
-                    ChannelsManager mChannelManager = mDeviceManager.getDeviceChannelsManagers().get(groupPosition);
+
+//                    if(scroll > mDeviceManager.screenWidth/3 /*currentFirstVisibleItem > mChannelManager.lastFirstVisibleItem*/){ //nextpage
+////                        itemToScroll = mChannelManager.lastFirstVisibleItem + (mChannelManager.numQuad*mChannelManager.numQuad);
+//                        pageToScroll++;
+//                    }else if(scroll < -(mDeviceManager.screenWidth/3) /*currentFirstVisibleItem < mChannelManager.lastFirstVisibleItem*/){ //previouspage
+//                        pageToScroll--;
+////                        itemToScroll = mChannelManager.lastFirstVisibleItem - (mChannelManager.numQuad*mChannelManager.numQuad);
+//                    }
+//                    scroll = 0;
+//                    itemToScroll = mChannelManager.firstItemOfPage(pageToScroll);
+//                    mChannelManager.lastFirstVisibleItem = itemToScroll;
+//                    mChannelManager.currentPage = pageToScroll;
+//                    currentChildViewHolder.gridLayoutManager.scrollToPositionWithOffset(itemToScroll, 0);
+//                    currentChildViewHolder.gridLayoutManager.smoothScrollToPosition(currentChildViewHolder.recyclerViewChannels, null, itemToScroll);
                     itemToScroll = mChannelManager.scrollToItem(currentFirstVisibleItem, currentLastVisibleItem);
-                    if(mChannelManager.lastFirstVisibleItem != mChannelManager.lastLastVisibleItem || currentFirstVisibleItem != currentLastVisibleItem)
+                    if(mChannelManager.lastFirstVisibleItem != mChannelManager.lastLastVisibleItem || currentFirstVisibleItem != currentLastVisibleItem) {
                         currentChildViewHolder.gridLayoutManager.smoothScrollToPosition(currentChildViewHolder.recyclerViewChannels, null, itemToScroll);
+                        Log.d(TAG, "onScrollStateChanged: scrolled to " + itemToScroll);
+                    }
+                    scroll = 0;
                 }
+            }
+
+            @Override
+            public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
+                Log.d(TAG, "onScrolled: dx" + dx + " dy" + dy);
+                scroll +=dx;
+//                if(Math.abs(scroll)>mDeviceManager.screenWidth)
+//                    recyclerView.stopScroll();
+
+                super.onScrolled(recyclerView, dx, dy);
             }
         };
     }
@@ -588,6 +622,17 @@ public class DeviceExpandableListAdapter extends BaseExpandableListAdapter {
     public void collapseGroup(int position){
         if(mExpandableListView.isGroupExpanded(position))
             mExpandableListView.collapseGroup(position);
+    }
+
+    public void setMessage(final int position, final String message){
+        if(childViewHolder.size() > position && childViewHolder.get(position).tvMessage != null)
+            ((Activity)mContext).runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    childViewHolder.get(position).tvMessage.setText(message);
+                    childViewHolder.get(position).tvMessage.invalidate();
+                }
+            });
     }
 
 

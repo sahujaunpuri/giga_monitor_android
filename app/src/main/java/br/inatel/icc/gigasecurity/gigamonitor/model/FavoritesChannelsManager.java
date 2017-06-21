@@ -1,5 +1,7 @@
 package br.inatel.icc.gigasecurity.gigamonitor.model;
 
+import android.util.Log;
+
 import com.lib.FunSDK;
 import com.lib.IFunSDKResult;
 import com.video.opengl.GLSurfaceView20;
@@ -10,7 +12,7 @@ import br.inatel.icc.gigasecurity.gigamonitor.ui.SurfaceViewComponent;
  * Created by filipecampos on 02/05/2016.
  */
 public class FavoritesChannelsManager extends ChannelsManager implements IFunSDKResult {
-    String TAG = "FavoritesChannelsManager";
+    String TAG = "FavoritesManager";
 
     public FavoritesChannelsManager(Device mDevice) {
         super(mDevice);
@@ -94,5 +96,23 @@ public class FavoritesChannelsManager extends ChannelsManager implements IFunSDK
     @Override
     public int getChannelSelected(int gridPositionSelected) {
         return 0;
+    }
+
+    public void enableHD(SurfaceViewComponent svc){
+        Log.d(TAG, "enableHD: " + svc.mySurfaceViewOrderId + " disable: " + hdChannel);
+        if(hdChannel > -1) {
+            disableHD(surfaceViewComponents.get(hdChannel));
+        }
+        hdChannel = svc.mySurfaceViewOrderId;
+        svc.setStreamType(0);
+        restartVideo(svc);
+
+    }
+
+    public void disableHD(SurfaceViewComponent svc){
+        Log.d(TAG, "disableHD: " + svc.mySurfaceViewOrderId);
+        hdChannel = -1;
+        svc.setStreamType(1);
+        restartVideo(svc);
     }
 }

@@ -76,6 +76,7 @@ public class Device implements Serializable {
     public int connectionMethod = -1; //0 - IP:port, 1 - DDNS:port, 2 - SerialNumber
     public int loginAttempt = 0;
     public ChannelsManager channelsManager;
+    public String message = "Conectando via IP";
 
     private Calendar systemTime;
 
@@ -164,21 +165,25 @@ public class Device implements Serializable {
         this.connectionMethod = connectionMethod;
         switch (connectionMethod){
             case 0: {     //IP:port
-                if(ipAddress != null && !ipAddress.isEmpty())
+                if(ipAddress != null && !ipAddress.isEmpty()) {
+                    loginAttempt++;
                     connectionString = ipAddress + ":" + tcpPort;
-                else
+                    message = "Conectando via IP";
+                }else
                     return -1;
             }break;
             case 1: {     //domain:port
-                if(domain != null && !domain.isEmpty())
+                if(domain != null && !domain.isEmpty()) {
                     connectionString = domain + ":" + tcpPort;
-                else
+                    message = "Conectando via domínio";
+                }else
                     return -1;
             }break;
             case 2: {     //cloud
-                if(!serialNumber.isEmpty())
+                if(!serialNumber.isEmpty()) {
                     connectionString = serialNumber;
-                else
+                    message = "Conectando via cloud";
+                }else
                     return -1;
             }break;
         }

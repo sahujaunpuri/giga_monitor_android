@@ -49,6 +49,7 @@ public abstract class ChannelsManager implements IFunSDKResult {
     public int lastFirstVisibleItem;
     public int lastLastVisibleItem;
     public int lastFirstItemBeforeSelectChannel;
+    public int currentPage;
     public int channelNumber;
 
     public FrameLayout.LayoutParams pbParam;
@@ -80,6 +81,7 @@ public abstract class ChannelsManager implements IFunSDKResult {
         this.mContext = mDeviceManager.currentContext;
         this.lastFirstVisibleItem = 0;
         this.lastLastVisibleItem = 0;
+        this.currentPage = 0;
         surfaceViewLayout = new FrameLayout.LayoutParams(FrameLayout.LayoutParams.MATCH_PARENT, FrameLayout.LayoutParams.MATCH_PARENT);
         pbParam = new FrameLayout.LayoutParams(FrameLayout.LayoutParams.WRAP_CONTENT, FrameLayout.LayoutParams.WRAP_CONTENT, Gravity.CENTER);
         channelNumber = mDevice.getChannelNumber();
@@ -182,6 +184,14 @@ public abstract class ChannelsManager implements IFunSDKResult {
         return itemToScroll;
     }
 
+    public int pageNumber(int channelNumber){
+        return channelNumber % (numQuad*numQuad);
+    }
+
+    public int firstItemOfPage(int pageNumber){
+        return pageNumber * (numQuad*numQuad);
+    }
+
     public void resetScale() {
         ((Activity) mContext).runOnUiThread(new Runnable() {
             @Override
@@ -246,20 +256,9 @@ public abstract class ChannelsManager implements IFunSDKResult {
 //        }
     }
 
-    public void enableHD(SurfaceViewComponent svc){
-        if(hdChannel > -1) {
-            disableHD(surfaceViewComponents.get(getChannelSelected(hdChannel)));
-        }
-        hdChannel = svc.mySurfaceViewChannelId;
-        svc.setStreamType(0);
-        restartVideo(svc);
-    }
+    public abstract void enableHD(SurfaceViewComponent svc);
 
-    public void disableHD(SurfaceViewComponent svc){
-        hdChannel = -1;
-        svc.setStreamType(1);
-        restartVideo(svc);
-    }
+    public abstract void disableHD(SurfaceViewComponent svc);
 
     public void toggleReceiveAudio(SurfaceViewComponent svc){
         int volume;

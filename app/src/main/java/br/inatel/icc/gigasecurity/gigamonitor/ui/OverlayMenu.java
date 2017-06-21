@@ -156,7 +156,7 @@ public class OverlayMenu extends RelativeLayout {
             @Override
             public void onClick(View v) {
                 if(surfaceViewComponent.isREC){
-                    Toast.makeText(mContext, "Finalize a gravação.", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(mContext, "Finalize a gravação", Toast.LENGTH_SHORT).show();
                 } else {
                     if (!surfaceViewComponent.isHD()) {
                         deviceChannelsManager.enableHD(surfaceViewComponent);
@@ -216,6 +216,10 @@ public class OverlayMenu extends RelativeLayout {
             public void onClick(View view) {
                 if(surfaceViewComponent.isFavorite()){
                     if(isFavoriteMenu) {
+                        if(surfaceViewComponent.isREC()){
+                            Toast.makeText(mContext, "Finalize a gravação", Toast.LENGTH_SHORT).show();
+                            return;
+                        }
                         surfaceViewComponent.mChannelsManager.mRecyclerAdapter.openOverlayMenu(surfaceViewComponent);
                     }
                     mDeviceManager.removeFavorite(surfaceViewComponent);

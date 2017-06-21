@@ -91,4 +91,20 @@ public class DeviceChannelsManager extends ChannelsManager implements IFunSDKRes
         mDeviceManager.addToStart(svc);
     }
 
+    public void enableHD(SurfaceViewComponent svc){
+        if(hdChannel > -1) {
+            disableHD(surfaceViewComponents.get(getChannelSelected(hdChannel)));
+        }
+        hdChannel = svc.mySurfaceViewChannelId;
+        svc.setStreamType(0);
+        restartVideo(svc);
+    }
+
+    public void disableHD(SurfaceViewComponent svc){
+        hdChannel = -1;
+        svc.setStreamType(1);
+        if(svc.isConnected())
+            restartVideo(svc);
+    }
+
 }

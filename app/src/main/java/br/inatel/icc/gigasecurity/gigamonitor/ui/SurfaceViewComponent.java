@@ -471,7 +471,11 @@ public class SurfaceViewComponent extends FrameLayout {
                         Toast.makeText(mContext, mensagem, Toast.LENGTH_SHORT).show();
                     }
                     setPTZEnabled(false);
-                    mChannelsManager.mRecyclerAdapter.singleQuad(mySurfaceViewChannelId);
+                    if(mChannelsManager.mDevice.getSerialNumber().equals("Favoritos")) {
+                        mChannelsManager.mRecyclerAdapter.singleQuad(mySurfaceViewOrderId);
+                    }else {
+                        mChannelsManager.mRecyclerAdapter.singleQuad(mySurfaceViewChannelId);
+                    }
                 }
             });
 
