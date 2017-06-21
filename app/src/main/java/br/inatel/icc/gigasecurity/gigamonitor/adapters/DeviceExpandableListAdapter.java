@@ -146,6 +146,10 @@ public class DeviceExpandableListAdapter extends BaseExpandableListAdapter {
         currentChildViewHolder.overlayMenu.setDeviceChannelsManager(mDeviceManager.getDeviceChannelsManagers().get(groupPosition));
         currentChildViewHolder.overlayMenu.setLayoutParams(currentChildViewHolder.recyclerViewChannels.getLayoutParams());
 
+        if(groupViewHolder.get(groupPosition).mDevice.getSerialNumber().equals("Favoritos")){
+            currentChildViewHolder.tvMessage.setText("Nenhum favorito adicionado.");
+        }
+
 //        this.childViewHolder.add(currentChildViewHolder);
         return currentChildViewHolder;
     }
@@ -384,7 +388,7 @@ public class DeviceExpandableListAdapter extends BaseExpandableListAdapter {
             childViewHolder.get(position).recyclerViewChannels.getAdapter().notifyDataSetChanged();
 //            notifyDataSetChanged();
         }
-        if(channelsManager.surfaceViewComponents.isEmpty()) {
+        if(channelsManager.surfaceViewComponents.isEmpty() && childViewHolder.get(position).recyclerViewChannels != null) {
             childViewHolder.get(position).recyclerViewChannels.setVisibility(View.INVISIBLE);
             childViewHolder.get(position).tvMessage.setVisibility(View.VISIBLE);
         }
@@ -579,6 +583,11 @@ public class DeviceExpandableListAdapter extends BaseExpandableListAdapter {
                 mDeviceManager.getDeviceChannelsManagers().get(groupPosition).onResume(svc);
             }
         }
+    }
+
+    public void collapseGroup(int position){
+        if(mExpandableListView.isGroupExpanded(position))
+            mExpandableListView.collapseGroup(position);
     }
 
 

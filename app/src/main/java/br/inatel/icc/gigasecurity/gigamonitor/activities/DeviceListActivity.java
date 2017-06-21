@@ -139,8 +139,9 @@ public class DeviceListActivity extends ActionBarActivity {
     protected void onResume() {
         super.onResume();
         if(mDeviceManager.collapse >=0 && previousGroup == mDeviceManager.collapse) {
-            mExpandableListView.collapseGroup(mDeviceManager.collapse);
-            mAdapter.childViewHolder.get(mDeviceManager.collapse).recyclerViewChannels = null;
+            if(mExpandableListView.isGroupExpanded(mDeviceManager.collapse))
+                mExpandableListView.collapseGroup(mDeviceManager.collapse);
+//            mAdapter.childViewHolder.get(mDeviceManager.collapse).recyclerViewChannels = null;
             mDeviceManager.collapse = -1;
             previousGroup = -1;
             mAdapter.notifyDataSetChanged();
@@ -155,24 +156,6 @@ public class DeviceListActivity extends ActionBarActivity {
             Log.d(TAG, "onResume: group: " + previousGroup + ", channel: " + statePreferences.previousChannel + ", grid: " + statePreferences.previousGrid + ", HD: " + statePreferences.previousHD);
             mDeviceManager.loadedState = true;
         }
-
-//        previousGroup = mPreferences.getInt("previousGroup", -1);
-//        if (previousGroup > -1) {
-//            mExpandableListView.expandGroup(previousGroup);
-//            ChannelsManager channelsManager = mDeviceManager.getDeviceChannelsManagers().get(previousGroup);
-//            previousChannel = mPreferences.getInt("previousChannel", -1);
-//            previousGrid = mPreferences.getInt("previousGrid", -1);
-//            previousLastGrid = mPreferences.getInt("previousLastGrid", -1);
-//            previousHD = mPreferences.getInt("previousHD", -1);
-//            channelsManager.lastFirstVisibleItem = previousChannel;
-//            channelsManager.numQuad = previousGrid;
-//            channelsManager.lastNumQuad = previousLastGrid;
-//            channelsManager.lastFirstItemBeforeSelectChannel = mPreferences.getInt("previousLastVisibleChannel", -1);
-//            channelsManager.changeSurfaceViewSize();
-//            if (previousHD > -1)
-//                channelsManager.enableHD(channelsManager.surfaceViewComponents.get(previousHD));
-//            Log.d(TAG, "onResume: group: " + previousGroup + ", channel: " + previousChannel + ", grid: " + previousGrid + ", HD: " + previousHD);
-//        }
 
         mDeviceManager.loginAllDevices();
     }

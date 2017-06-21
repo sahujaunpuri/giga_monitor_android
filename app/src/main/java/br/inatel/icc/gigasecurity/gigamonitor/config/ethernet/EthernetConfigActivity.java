@@ -60,16 +60,18 @@ public class EthernetConfigActivity extends ActionBarActivity implements OnCheck
         public void onSetConfig() {
             int messageId = R.string.saved;
 
-//            mDevice = temp;
+            mDevice = temp;
             mManager.logoutDevice(mDevice);
             mManager.getDevices().remove(position);
             mDevice.isLogged = false;
-            mDevice.setChannelNumber(0);
-            temp.isLogged = false;
-            temp.setChannelNumber(0);
+//            mDevice.setChannelNumber(0);
+//            temp.isLogged = false;
+//            temp.setChannelNumber(0);
             mManager.addDevice(temp, position);
-            mManager.updateSurfaceViewManager(position);
+//            mManager.updateSurfaceViewManager(position);
             mManager.collapse = position;
+//            mManager.getExpandableListAdapter().collapseGroup(position);
+//            mManager.getExpandableListAdapter().childViewHolder.get(position).recyclerViewChannels = null;
 
 
             Toast.makeText(getApplicationContext(), messageId, Toast.LENGTH_SHORT).show();
