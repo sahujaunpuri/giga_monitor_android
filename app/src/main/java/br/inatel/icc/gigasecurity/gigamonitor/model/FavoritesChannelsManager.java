@@ -1,18 +1,26 @@
 package br.inatel.icc.gigasecurity.gigamonitor.model;
 
+import android.graphics.Color;
 import android.util.Log;
+import android.view.Gravity;
+import android.view.View;
+import android.widget.FrameLayout;
+import android.widget.ImageView;
+import android.widget.TextView;
 
 import com.lib.FunSDK;
 import com.lib.IFunSDKResult;
 import com.video.opengl.GLSurfaceView20;
 
+import br.inatel.icc.gigasecurity.gigamonitor.R;
+import br.inatel.icc.gigasecurity.gigamonitor.activities.DeviceListActivity;
 import br.inatel.icc.gigasecurity.gigamonitor.ui.SurfaceViewComponent;
 
 /**
  * Created by filipecampos on 02/05/2016.
  */
 public class FavoritesChannelsManager extends ChannelsManager implements IFunSDKResult {
-    String TAG = "FavoritesManager";
+    private final String TAG = "FavoritesManager";
 
     public FavoritesChannelsManager(Device mDevice) {
         super(mDevice);
@@ -72,9 +80,60 @@ public class FavoritesChannelsManager extends ChannelsManager implements IFunSDK
                     if(svc.deviceId == deviceId && svc.isVisible && !svc.isConnected()){
                         restartVideo(svc);
                     }
+                    /*if(svc.deviceId == deviceId){
+//                        removeErrorIcon(svc);
+                    }*/
                 }
             }
         }).start();
+    }
+
+    public void connectionError(final int deviceId){
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                for(SurfaceViewComponent svc : surfaceViewComponents){
+                    if(svc.deviceId == deviceId){
+                        setErrorIcon(svc);
+                    }
+                }
+            }
+        }).start();
+    }
+
+    public void setErrorIcon(final SurfaceViewComponent svc){
+
+        svc.setConnected(false);
+        svc.isLoading(false);
+
+        /*((DeviceListActivity) mDeviceManager.currentContext).runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                if(svc.errorIcon == null) {
+                    svc.errorIcon = new ImageView(mContext);
+                    svc.errorIcon.setImageResource(R.drawable.ic_error_outline_white_36dp);
+                    svc.addView(svc.errorIcon, pbParam);
+                }
+
+                svc.progressBar.setVisibility(View.INVISIBLE);
+                svc.mySurfaceView.setVisibility(View.INVISIBLE);
+                svc.errorIcon.setVisibility(ImageView.VISIBLE);
+            }
+        });*/
+    }
+
+    public void removeErrorIcon(final SurfaceViewComponent svc){
+        /*((DeviceListActivity) mDeviceManager.currentContext).runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                if(svc.errorIcon != null){
+                    svc.mySurfaceView.setVisibility(View.VISIBLE);
+                    svc.errorIcon.setVisibility(ImageView.INVISIBLE);
+//                    svc.removeView(svc.errorIcon);
+//                    svc.errorIcon = null;
+                }
+            }
+        });*/
     }
 
     @Override

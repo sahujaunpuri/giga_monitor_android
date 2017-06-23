@@ -31,6 +31,8 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.net.InetAddress;
 import java.net.InterfaceAddress;
 import java.net.NetworkInterface;
@@ -56,6 +58,7 @@ import br.inatel.icc.gigasecurity.gigamonitor.util.ComplexPreferences;
 import br.inatel.icc.gigasecurity.gigamonitor.util.Utils;
 
 import static android.content.Context.MODE_PRIVATE;
+import static br.inatel.icc.gigasecurity.gigamonitor.activities.DeviceListActivity.previousGroup;
 
 /**
  * Created by rinaldo.bueno on 29/08/2014.
@@ -100,7 +103,7 @@ public class DeviceManager implements IFunSDKResult{
 
     public int screenWidth;
     public int screenHeight;
-    public int networkType; // 1: wifi
+    public int networkType; // -1:offline, 0:3g/4g, 1: wifi
     public String networkIp;
     public int networkMask;
 
@@ -147,6 +150,7 @@ public class DeviceManager implements IFunSDKResult{
         loadSavedData(context);
         getScreenSize();
         networkType = getConnectionMethod();
+        Log.d(TAG, "init: ");
     }
 
     @Override
@@ -189,7 +193,7 @@ public class DeviceManager implements IFunSDKResult{
                 }
                 if(msg.arg1 == 0 && device != null) {
                     Log.d(TAG, "OnFunSDKResult: Login SUCCESS");
-//                    FunSDK.DevGetConfigByJson(getHandler(), device.connectionString, "ChannelTitle", 4096, -1, 10000, device.getId());
+//                    FunSDK.DevGetConfigByJson(getHandler(), device.connectionString, "NetWork", 4096, -1, 10000, device.getId());
 
                     device.isLogged = true;
                     device.loginAttempt = 0;
@@ -200,8 +204,16 @@ public class DeviceManager implements IFunSDKResult{
                         loginList.get(device.connectionString).onLoginSuccess(device);
                     loginList.remove(device.connectionString);*/
                     FunSDK.DevGetConfigByJson(getHandler(), device.connectionString, "SystemInfo", 4096, -1, 10000, device.getId());
-               } else if(msg.arg1 == -11301){
+               } else if(msg.arg1 == -11301){ //wrong password or login
                     if(device != null){
+                        /*final String message = "Login/Senha incorreto(s) no disposivo " + device.deviceName;
+                        ((DeviceListActivity) currentContext).runOnUiThread(new Runnable() {
+                               @Override
+                               public void run() {
+                                   Toast.makeText(currentContext, message, Toast.LENGTH_SHORT).show();
+                               }
+                           });
+                        favoriteManager.connectionError(device.getId());*/
                         if (loginList.get(device.getId()) != null)
                             loginList.get(device.getId()).onLoginError(msg.arg1, device);
                         loginList.remove(device.getId());
@@ -285,7 +297,7 @@ public class DeviceManager implements IFunSDKResult{
                             currentConfigListener.onReceivedConfig();
                         }
                         break;
-                        case "NetWork.Nat" :{
+                        case "NetWork.NetDNS" :{
                             handleDNSConfig(json, device);
                             currentConfigListener.onReceivedConfig();
                         }
@@ -379,7 +391,7 @@ public class DeviceManager implements IFunSDKResult{
             break;
             case EUIMSG.DEV_ON_DISCONNECT:
             {
-                if(msgContent.str != null){
+                /*if(msgContent.str != null){
                     String mensagem = "Dispositivo desconectado";
                     Device device = findDeviceById(msgContent.str.hashCode());
                     if(device != null) {
@@ -388,7 +400,7 @@ public class DeviceManager implements IFunSDKResult{
 //                        FunSDK.SysGetDevState(getHandler(), device.connectionString, device.getId());
                     }
                     Toast.makeText(currentContext, mensagem, Toast.LENGTH_LONG).show();
-                }
+                }*/
             }
             break;
             case EUIMSG.DEV_CMD_EN:
@@ -522,9 +534,7 @@ public class DeviceManager implements IFunSDKResult{
         if(list != null){
             for(FavoritePair pair : list){
                 Log.d(TAG, "loadFavorites: " + pair.toString());
-                Device device = findDeviceById(pair.deviceId);
-                if(!device.isFavorite)
-                    device.isFavorite = true;
+//                Device device = findDeviceById(pair.deviceId);
                 favoriteChannels++;
             }
             return list;
@@ -637,13 +647,13 @@ public class DeviceManager implements IFunSDKResult{
     private void handleDNSConfig(JSONObject jsonObject, Device device){
         try {
             JSONObject json = new JSONObject();
-            if (jsonObject.has("NetWork.Nat"))
-                json = jsonObject.getJSONObject("NetWork.Nat");
+            if (jsonObject.has("NetWork.NetDNS"))
+                json = jsonObject.getJSONObject("NetWork.NetDNS");
 
-            if(json.has("DnsServer1"))
-                device.setPrimaryDNS(Utils.hexStringToIP(json.getString("DnsServer1")));
-            if(json.has("DnsServer2"))
-                device.setSecondaryDNS(Utils.hexStringToIP(json.getString("DnsServer2")));
+            if(json.has("Address"))
+                device.setPrimaryDNS(Utils.hexStringToIP(json.getString("Address")));
+            if(json.has("SpareAddress"))
+                device.setSecondaryDNS(Utils.hexStringToIP(json.getString("SpareAddress")));
 
             currentConfig = json;
         } catch (JSONException e) {
@@ -735,13 +745,13 @@ public class DeviceManager implements IFunSDKResult{
 
     public void setDNSConfig(Device device){
         try{
-            currentConfig.put("DnsServer1", Utils.stringIpToHexString(device.getPrimaryDNS()));
-            currentConfig.put("DnsServer2", Utils.stringIpToHexString(device.getSecondaryDNS()));
+            currentConfig.put("Address", Utils.stringIpToHexString(device.getPrimaryDNS()));
+            currentConfig.put("SpareAddress", Utils.stringIpToHexString(device.getSecondaryDNS()));
         }catch (JSONException e){
             e.printStackTrace();
         }
         Log.d(TAG, "setCurrentConfig: " + currentConfig.toString());
-        FunSDK.DevSetConfigByJson(getHandler(), device.connectionString, "NetWork.Nat", currentConfig.toString(), -1, 15000, device.getId());
+        FunSDK.DevSetConfigByJson(getHandler(), device.connectionString, "NetWork.NetDNS", currentConfig.toString(), -1, 15000, device.getId());
         currentConfig = null;
     }
 
@@ -931,6 +941,22 @@ public class DeviceManager implements IFunSDKResult{
                 for(Device device : mDevices){
                     if(!device.isLogged)
                         loginDevice(device, null);
+                }
+            }
+        }).start();
+    }
+
+    public void setDevicesLogout(){
+        Toast.makeText(currentContext, "Sem conexão com a internet", Toast.LENGTH_SHORT).show();
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                int position = 0;
+                DeviceListActivity.previousGroup = -1;
+                for(Device device : mDevices){
+                    position++;
+                    expandableListAdapter.collapseGroup(position);
+                    device.isLogged = false;
                 }
             }
         }).start();
@@ -1233,11 +1259,13 @@ public class DeviceManager implements IFunSDKResult{
         saveData();
     }
 
-    public int getConnectionMethod(){
+    private int getConnectionMethod(){
         ConnectivityManager cm = (ConnectivityManager) currentContext.getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
-
-        return  activeNetwork.getType() == ConnectivityManager.TYPE_WIFI ? 1 : 0;
+        if(activeNetwork == null)
+            return -1;
+        else
+            return  activeNetwork.getType() == ConnectivityManager.TYPE_WIFI ? 1 : 0;
     }
 
     private void getNetworkIp(Context context){

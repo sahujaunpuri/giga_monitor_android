@@ -209,6 +209,8 @@ public class DeviceExpandableListAdapter extends BaseExpandableListAdapter {
     private RecyclerView.OnScrollListener createOnScrollListener(final int groupPosition){
         return new RecyclerView.OnScrollListener()
         {
+
+
             @Override
             public void onScrollStateChanged(final RecyclerView recyclerView,final int newState) {
                 super.onScrollStateChanged(recyclerView, newState);
@@ -236,17 +238,18 @@ public class DeviceExpandableListAdapter extends BaseExpandableListAdapter {
 //                    currentChildViewHolder.gridLayoutManager.smoothScrollToPosition(currentChildViewHolder.recyclerViewChannels, null, itemToScroll);
                     itemToScroll = mChannelManager.scrollToItem(currentFirstVisibleItem, currentLastVisibleItem);
                     if(mChannelManager.lastFirstVisibleItem != mChannelManager.lastLastVisibleItem || currentFirstVisibleItem != currentLastVisibleItem) {
-                        currentChildViewHolder.gridLayoutManager.smoothScrollToPosition(currentChildViewHolder.recyclerViewChannels, null, itemToScroll);
+//                        currentChildViewHolder.gridLayoutManager.smoothScrollToPosition(currentChildViewHolder.recyclerViewChannels, null, itemToScroll);
+                        currentChildViewHolder.recyclerViewChannels.smoothScrollToPosition(itemToScroll);
                         Log.d(TAG, "onScrollStateChanged: scrolled to " + itemToScroll);
                     }
-                    scroll = 0;
+//                    scroll = 0;
                 }
             }
 
             @Override
             public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
-                Log.d(TAG, "onScrolled: dx" + dx + " dy" + dy);
-                scroll +=dx;
+//                Log.d(TAG, "onScrolled: dx" + dx + " dy" + dy);
+//                scroll +=dx;
 //                if(Math.abs(scroll)>mDeviceManager.screenWidth)
 //                    recyclerView.stopScroll();
 
@@ -619,9 +622,15 @@ public class DeviceExpandableListAdapter extends BaseExpandableListAdapter {
         }
     }
 
-    public void collapseGroup(int position){
+    public void collapseGroup(final int position){
         if(mExpandableListView.isGroupExpanded(position))
-            mExpandableListView.collapseGroup(position);
+            ((Activity)mContext).runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    mExpandableListView.collapseGroup(position);
+                }
+            });
+
     }
 
     public void setMessage(final int position, final String message){

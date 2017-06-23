@@ -4,10 +4,12 @@ import android.app.Activity;
 import android.content.Context;
 import android.graphics.Color;
 import android.opengl.GLSurfaceView;
+import android.os.Handler;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.GestureDetector;
 import android.view.Gravity;
+import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.ScaleGestureDetector;
 import android.view.View;
@@ -38,8 +40,10 @@ public class SurfaceViewComponent extends FrameLayout {
     public ChannelsManager mChannelsManager;
     private DeviceManager mDeviceManager;
     public GLSurfaceView20 mySurfaceView;
-    private ProgressBar progressBar;
-    private TextView label;
+    public ProgressBar progressBar;
+    public TextView message;
+    public ImageView errorIcon;
+    private View ptzOverlay;
 
     private FrameLayout.LayoutParams lp;
     private Context mContext;
@@ -69,6 +73,7 @@ public class SurfaceViewComponent extends FrameLayout {
     private float previousX = 0, previousY = 0, dx, dy;
     private int previsousPTZCommand;
     private ImageView ivTouch;
+    private boolean longPress = false;
 
     public SurfaceViewComponent(Context context, ChannelsManager channelsManager, int id) {
         super(context);
@@ -196,40 +201,23 @@ public class SurfaceViewComponent extends FrameLayout {
     }
 
     public void enablePTZ(){
-        /*if(mChannelsManager.numQuad != 1)
-            ((Activity) mContext).runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    if(isREC){
-                        mChannelsManager.stopRecord(surfaceViewComponent());
-                        isREC = false;
-                        String mensagem = "Gravação finalizada";
-                        Toast.makeText(mContext, mensagem, Toast.LENGTH_SHORT).show();
-                    }
-                    mChannelsManager.mRecyclerAdapter.singleQuad(mySurfaceViewChannelId);
-                }
-        });*/
-//        label = new TextView(mContext);
-//        FrameLayout.LayoutParams params = new FrameLayout.LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT, Gravity.START);
-//        this.addView(label, params);
-//        label.setTextColor(Color.WHITE);
-//        label.setTextSize(20);
-//        label.setText("");
-
         ivTouch = new ImageView(mContext);
         ivTouch.setImageResource(R.drawable.ic_touch_white_36dp);
-        FrameLayout.LayoutParams params = new FrameLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT, Gravity.START);
-        this.addView(ivTouch, /*mChannelsManager.pbParam*/params);
+        FrameLayout.LayoutParams params = new FrameLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT, Gravity.CENTER_HORIZONTAL);
+        this.addView(ivTouch, params);
         ivTouch.setScaleX(0.6f);
         ivTouch.setScaleY(0.6f);
 
+        LayoutInflater inflater = (LayoutInflater)mDeviceManager.currentContext.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        ptzOverlay = inflater.inflate(R.layout.ptz_overlay, null);
+        this.addView(ptzOverlay);
     }
 
     public void disablePTZ(){
-        if(ivTouch != null) {
-            this.removeView(ivTouch);
-            ivTouch = null;
-        }
+        this.removeView(ivTouch);
+        ivTouch = null;
+        this.removeView(ptzOverlay);
+        ptzOverlay = null;
     }
 
     public int getMySurfaceViewChannelId() {
@@ -302,10 +290,6 @@ public class SurfaceViewComponent extends FrameLayout {
             Log.d(TAG2, "onInterceptTouchEvent: MOVE UP");
         }
         if(command != -1) {
-            if(ivTouch != null) {
-                this.removeView(ivTouch);
-                ivTouch = null;
-            }
             mChannelsManager.ptzControl(command, this, false);
             dx = dy = 0;
             previsousPTZCommand = command;
@@ -391,7 +375,7 @@ public class SurfaceViewComponent extends FrameLayout {
                 if(mScaleFactor == 1.F && !isPTZEnabled()){
                     resumeScroll();
                     return false;
-                } else if(isPTZEnabled() && !isScaling && mScaleFactor == 1.F){
+                } else if(isPTZEnabled() && !isScaling && mScaleFactor == 1.F && longPress){
                     dx += ev.getX() - previousX;
                     dy += ev.getY() - previousY;
 
@@ -405,13 +389,18 @@ public class SurfaceViewComponent extends FrameLayout {
             }
             break;
             case MotionEvent.ACTION_DOWN: {
+                handler.postDelayed(mLongPressed, 500);
                 previousX = ev.getX();
                 previousY = ev.getY();
             }
             break;
             case MotionEvent.ACTION_UP: {
-                if(isPTZEnabled()){
+                handler.removeCallbacks(mLongPressed);
+                if(isPTZEnabled() && longPress){
                     mChannelsManager.ptzControl(previsousPTZCommand, this, true);
+                    ivTouch.setVisibility(VISIBLE);
+                    ptzOverlay.setVisibility(INVISIBLE);
+                    longPress = false;
                 }
 
                 previousX = ev.getX();
@@ -423,6 +412,23 @@ public class SurfaceViewComponent extends FrameLayout {
         }
         return ret;
     }
+
+    final Handler handler = new Handler();
+    Runnable mLongPressed = new Runnable() {
+        public void run() {
+            Log.d(TAG2, "onLongPress: ");
+            longPress = true;
+            ((Activity) mContext).runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    if(ivTouch != null && isPTZEnabled()) {
+                        ivTouch.setVisibility(INVISIBLE);
+                        ptzOverlay.setVisibility(VISIBLE);
+                    }
+                }
+            });
+        }
+    };
 
     private class ScaleListener extends ScaleGestureDetector.SimpleOnScaleGestureListener {
         @Override
@@ -481,7 +487,24 @@ public class SurfaceViewComponent extends FrameLayout {
 
             return true;
         }
+
+        /*@Override
+        public void onLongPress(MotionEvent e) {
+            super.onLongPress(e);
+            Log.d(TAG2, "onLongPress: ");
+            longPress = true;
+            ((Activity) mContext).runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    if(ivTouch != null && isPTZEnabled()) {
+                        ivTouch.setVisibility(INVISIBLE);
+                        ptzOverlay.setVisibility(VISIBLE);
+                    }
+                }
+            });
+        }*/
     }
+
 
 
 }

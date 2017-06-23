@@ -72,7 +72,6 @@ public class Device implements Serializable {
     //State
     public boolean isLogged = false;
     public boolean isOnline = false;
-    public boolean isFavorite = false;
     public int connectionMethod = -1; //0 - IP:port, 1 - DDNS:port, 2 - SerialNumber
     public int loginAttempt = 0;
     public ChannelsManager channelsManager;

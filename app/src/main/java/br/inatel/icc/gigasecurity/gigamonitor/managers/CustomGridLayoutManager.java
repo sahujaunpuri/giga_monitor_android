@@ -22,4 +22,6 @@ public class CustomGridLayoutManager extends GridLayoutManager {
     public boolean canScrollHorizontally() {
         return isScrollEnabled && super.canScrollHorizontally();
     }
+
+
 }

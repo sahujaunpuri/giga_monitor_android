@@ -67,7 +67,7 @@ public class DNSConfigActivity extends ActionBarActivity {
         mDevice = mManager.findDeviceById((int) getIntent().getExtras().getSerializable("device"));
         mContext = this;
 
-        mManager.getJsonConfig(mDevice, "NetWork.Nat", listener);
+        mManager.getJsonConfig(mDevice, "NetWork.NetDNS", listener);
 
     }
 

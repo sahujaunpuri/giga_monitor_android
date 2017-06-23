@@ -71,6 +71,8 @@ public class DeviceListActivity extends ActionBarActivity {
         mExpandableListView.setOnGroupClickListener(new ExpandableListView.OnGroupClickListener() {
             @Override
             public boolean onGroupClick(ExpandableListView parent, View v, int groupPosition, long id) {
+                if(mDeviceManager.networkType == -1)
+                    return true;
                 if (previousGroup == -1) {
                     previousGroup = groupPosition;
                     parent.expandGroup(groupPosition, true);
@@ -151,8 +153,10 @@ public class DeviceListActivity extends ActionBarActivity {
         if(!mDeviceManager.loadedState) {
             statePreferences = mDeviceManager.loadState();
             previousGroup = statePreferences.previousGroup;
-            if (previousGroup > -1)
+            if (previousGroup > -1 && mDeviceManager.networkType > -1)
                 mExpandableListView.expandGroup(previousGroup);
+            else if(mDeviceManager.networkType == 1)
+                Toast.makeText(mContext, "Finalize a gravação", Toast.LENGTH_SHORT).show();
             Log.d(TAG, "onResume: group: " + previousGroup + ", channel: " + statePreferences.previousChannel + ", grid: " + statePreferences.previousGrid + ", HD: " + statePreferences.previousHD);
             mDeviceManager.loadedState = true;
         }
@@ -263,10 +267,8 @@ public class DeviceListActivity extends ActionBarActivity {
     private void startEditActivity() {
         /*Bundle extras = new Bundle();
         extras.putSerializable("devices", mDevices);*/
-
         Intent intent = new Intent(mContext, DeviceEditListActivity.class);
 //        intent.putExtras(extras);
-
         startActivity(intent);
     }
 
@@ -277,6 +279,14 @@ public class DeviceListActivity extends ActionBarActivity {
     public static void collapseGroup(int groupPosition){
         mExpandableListView.collapseGroup(groupPosition);
         previousGroup = -1;
+    }
+
+    @Override
+    public void onBackPressed() {
+        Intent setIntent = new Intent(Intent.ACTION_MAIN);
+        setIntent.addCategory(Intent.CATEGORY_HOME);
+        setIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        startActivity(setIntent);
     }
 
 
