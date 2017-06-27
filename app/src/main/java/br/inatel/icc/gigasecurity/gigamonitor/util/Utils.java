@@ -145,15 +145,20 @@ public class Utils {
     public static String getFileTypeName(int type) {
         switch (type) {
             case SDKCONST.FileType.SDK_RECORD_ALL:
-                return "Record All";
+                //return "Record All";
+                return "Todos";
             case SDKCONST.FileType.SDK_RECORD_ALARM:
-                return "Record Alarm";
+                //return "Record Alarm";
+                return "Contínuo";
             case SDKCONST.FileType.SDK_RECORD_DETECT:
-                return "Record Detect";
+                //return "Record Detect";
+                return "Movimento";
             case SDKCONST.FileType.SDK_RECORD_REGULAR:
-                return "Record Regular";
+                //return "Record Regular";
+                return "Regular";
             case SDKCONST.FileType.SDK_RECORD_MANUAL:
-                return "Record Manual";
+                //return "Record Manual";
+                return "Manual";
             case SDKCONST.FileType.SDK_PIC_ALL:
                 return "Pic All"; // MyConfig.FileType.SDK_PIC_ALL
             case SDKCONST.FileType.SDK_PIC_ALARM:

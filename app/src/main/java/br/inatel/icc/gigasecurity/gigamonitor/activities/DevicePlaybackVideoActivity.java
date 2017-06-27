@@ -18,6 +18,9 @@ import android.widget.TextView;
 import com.lib.sdk.struct.H264_DVR_FILE_DATA;
 import com.lib.sdk.struct.SDK_SYSTEM_TIME;
 
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.concurrent.TimeUnit;
 
 import br.inatel.icc.gigasecurity.gigamonitor.R;
@@ -34,7 +37,7 @@ public class DevicePlaybackVideoActivity extends ActionBarActivity {
     private DeviceChannelsManager mDeviceChannelsManager;
     private SeekBar mSeekBar;
     private ProgressBar mProgressBar;
-    private TextView mStatusTextView;
+    private TextView initialTime, mStatusTextView, endTime;
     private ImageView ivPlayPause, ivStop, ivForward, ivBackward;
     private final String TAG = "playback";
     private int currentBar;
@@ -156,7 +159,9 @@ public class DevicePlaybackVideoActivity extends ActionBarActivity {
         mSurfaceView                      = (SurfaceViewComponent) findViewById(R.id.surface_view_test_1);
         mProgressBar                      = (ProgressBar) findViewById(R.id.pb_playback);
         mSeekBar                          = (SeekBar) findViewById(R.id.seek_bar_playback);
+        initialTime                       = (TextView) findViewById(R.id.text_view_playback_initial_time);
         mStatusTextView                   = (TextView) findViewById(R.id.text_view_playback_status);
+        endTime                           = (TextView) findViewById(R.id.text_view_playback_end_time);
         ivPlayPause                       = (ImageView) findViewById(R.id.iv_play_playback);
         ivStop                            = (ImageView) findViewById(R.id.iv_stop_playback);
         ivForward                         = (ImageView) findViewById(R.id.iv_forward_playback);
@@ -168,7 +173,13 @@ public class DevicePlaybackVideoActivity extends ActionBarActivity {
         ivBackward.setVisibility(View.GONE);
         ivForward.setVisibility(View.GONE);
 
-
+        initialTime.setText("00:00");
+        long timeDifference = mFileData.getEndDate().getTime() - mFileData.getBeginDate().getTime();
+        SimpleDateFormat format = new SimpleDateFormat("mm:ss");
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTimeInMillis(timeDifference);
+        String dif = format.format(calendar.getTime());
+        endTime.setText(dif);
 
         // Set listeners
         mDeviceChannelsManager.setCurrentPlaybackListener(mPlaybackListener);
