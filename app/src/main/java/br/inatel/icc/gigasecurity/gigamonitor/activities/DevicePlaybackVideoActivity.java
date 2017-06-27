@@ -17,11 +17,14 @@ import android.widget.TextView;
 
 import com.lib.sdk.struct.H264_DVR_FILE_DATA;
 import com.lib.sdk.struct.SDK_SYSTEM_TIME;
+import com.lib.sdk.struct.Strings;
 
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.concurrent.TimeUnit;
+import java.util.logging.Logger;
 
 import br.inatel.icc.gigasecurity.gigamonitor.R;
 import br.inatel.icc.gigasecurity.gigamonitor.core.DeviceManager;
@@ -63,6 +66,20 @@ public class DevicePlaybackVideoActivity extends ActionBarActivity {
                 public void onChangeProgress(int progress) {
                     if(!mSurfaceView.isSeeking) {
                         mSeekBar.setProgress(progress - mStartSecond);
+                        if (currentProgress != 0 && progress != currentProgress) {
+                            try {
+                                SimpleDateFormat sdf = new SimpleDateFormat("mm:ss");
+                                Date d = sdf.parse(initialTime.getText().toString());
+                                Calendar calendar = Calendar.getInstance();
+                                calendar.setTime(d);
+                                calendar.add(Calendar.SECOND, progress - currentProgress);
+                                String dif = sdf.format(calendar.getTime());
+                                initialTime.setText(dif);
+
+                            } catch (ParseException e) {
+                                e.printStackTrace();
+                            }
+                        }
                         currentProgress = progress;
                         Log.d(TAG, "onChangeProgress: " + currentProgress);
 
@@ -258,6 +275,8 @@ public class DevicePlaybackVideoActivity extends ActionBarActivity {
             stop();
             mSurfaceView.isSeeking = false;
             mSeekBar.setProgress(0);
+            currentProgress = 0;
+            initialTime.setText("00:00");
         }
     }
 

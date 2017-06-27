@@ -59,12 +59,13 @@
                     android:id="@+id/text_view_playback_initial_time"
                     android:layout_width="60dp"
                     android:layout_height="match_parent"
-                    android:layout_marginLeft="13dp"
+                    android:layout_marginLeft="40dp"
+                    android:layout_marginRight="2dp"
                     android:gravity="center" />
 
                 <TextView
                     android:id="@+id/text_view_playback_status"
-                    android:layout_width="100dp"
+                    android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:gravity="center" />
 
@@ -72,7 +73,8 @@
                     android:id="@+id/text_view_playback_end_time"
                     android:layout_width="60dp"
                     android:layout_height="match_parent"
-                    android:layout_marginRight="13dp"
+                    android:layout_marginLeft="2dp"
+                    android:layout_marginRight="40dp"
                     android:gravity="center" />
 
             </LinearLayout>
