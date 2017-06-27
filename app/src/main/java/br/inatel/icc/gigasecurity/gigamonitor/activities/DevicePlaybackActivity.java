@@ -156,11 +156,19 @@ public class DevicePlaybackActivity extends ActionBarActivity
             @Override
             public void onTimeSet(TimePicker timePicker, int hour, int minute) {
                 if (initial) {
-                    tvBeginHour.setText(hour + ":" + minute);
+                    if (minute < 10) {
+                        tvBeginHour.setText(hour + ":0" + minute);
+                    } else {
+                        tvBeginHour.setText(hour + ":" + minute);
+                    }
                     mInitialTime.set(Calendar.HOUR_OF_DAY, hour);
                     mInitialTime.set(Calendar.MINUTE, minute);
                 } else {
-                    tvEndHour.setText(hour + ":" + minute);
+                    if (minute < 10) {
+                        tvEndHour.setText(hour + ":0" + minute);
+                    } else {
+                        tvEndHour.setText(hour + ":" + minute);
+                    }
                     endDate.set(Calendar.HOUR_OF_DAY, hour);
                     endDate.set(Calendar.MINUTE, minute);
                 }

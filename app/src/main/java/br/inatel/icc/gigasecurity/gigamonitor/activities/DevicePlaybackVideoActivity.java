@@ -192,11 +192,15 @@ public class DevicePlaybackVideoActivity extends ActionBarActivity {
 
         initialTime.setText("00:00");
         long timeDifference = mFileData.getEndDate().getTime() - mFileData.getBeginDate().getTime();
-        SimpleDateFormat format = new SimpleDateFormat("mm:ss");
-        Calendar calendar = Calendar.getInstance();
-        calendar.setTimeInMillis(timeDifference);
-        String dif = format.format(calendar.getTime());
-        endTime.setText(dif);
+        if (timeDifference == 3600000) {
+            endTime.setText("59:59");
+        } else {
+            SimpleDateFormat format = new SimpleDateFormat("mm:ss");
+            Calendar calendar = Calendar.getInstance();
+            calendar.setTimeInMillis(timeDifference);
+            String dif = format.format(calendar.getTime());
+            endTime.setText(dif);
+        }
 
         // Set listeners
         mDeviceChannelsManager.setCurrentPlaybackListener(mPlaybackListener);
