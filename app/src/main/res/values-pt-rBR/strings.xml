@@ -237,6 +237,8 @@
     <string name="action_snapshot">Snapshot</string>
     <string name="action_search">Procurar</string>
     <string name="label_date_playback">Data:</string>
+    <string name="label_begin_hour_playback">Início:</string>
+    <string name="label_end_hour_playback">Término:</string>
     <string name="label_channel_playback">Canal:</string>
     <string name="action_delete_confirmation">Você deseja deletar este dispositivo?</string>
     <string name="action_refresh">Atualizar</string>

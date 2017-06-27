@@ -183,7 +183,7 @@ public class DeviceEditListActivity extends ActionBarActivity {
     private void showBackConfirmation() {
         AlertDialog.Builder alert = new AlertDialog.Builder(this);
         alert.setTitle("Atenção");
-        alert.setMessage("Existe alterações não salvas.");
+        alert.setMessage("Existem alterações não salvas.");
         alert.setPositiveButton("Salvar", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialogInterface, int which) {
