@@ -82,6 +82,9 @@ public class DevicePlaybackActivity extends ActionBarActivity
 
         mInitialTime = Calendar.getInstance();
         endDate = Calendar.getInstance();
+        
+        initialTimePicker.setBackgroundColor(0);
+        endTimePicker.setBackgroundColor(0);
 
         tvDate.setOnClickListener(new View.OnClickListener() {
             @Override
