@@ -1,20 +1,38 @@
 package br.inatel.icc.gigasecurity.gigamonitor.activities;
 
+import android.animation.Animator;
+import android.animation.AnimatorListenerAdapter;
+import android.animation.AnimatorSet;
+import android.animation.ObjectAnimator;
+import android.annotation.TargetApi;
 import android.app.Activity;
+import android.content.ClipData;
 import android.content.res.Configuration;
+import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
+import android.support.v7.internal.view.menu.MenuView;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.WindowManager;
+import android.view.animation.AccelerateInterpolator;
+import android.view.animation.AlphaAnimation;
+import android.view.animation.Animation;
+import android.view.animation.AnimationSet;
+import android.view.animation.DecelerateInterpolator;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.SeekBar;
 import android.widget.TextView;
 
+import com.google.android.gms.appindexing.Action;
+import com.google.android.gms.appindexing.AppIndex;
+import com.google.android.gms.appindexing.Thing;
+import com.google.android.gms.common.api.GoogleApiClient;
 import com.lib.sdk.struct.H264_DVR_FILE_DATA;
 import com.lib.sdk.struct.SDK_SYSTEM_TIME;
 import com.lib.sdk.struct.Strings;
@@ -38,6 +56,7 @@ public class DevicePlaybackVideoActivity extends ActionBarActivity {
 
     private SurfaceViewComponent mSurfaceView;
     private DeviceChannelsManager mDeviceChannelsManager;
+    private Menu menu;
     private SeekBar mSeekBar;
     private ProgressBar mProgressBar;
     private TextView initialTime, mStatusTextView, endTime;
@@ -64,7 +83,7 @@ public class DevicePlaybackVideoActivity extends ActionBarActivity {
 
                 @Override
                 public void onChangeProgress(int progress) {
-                    if(!mSurfaceView.isSeeking) {
+                    if (!mSurfaceView.isSeeking) {
                         mSeekBar.setProgress(progress - mStartSecond);
                         if (currentProgress != 0 && progress != currentProgress) {
                             try {
@@ -93,13 +112,13 @@ public class DevicePlaybackVideoActivity extends ActionBarActivity {
                 }
 
                 @Override
-                public void onCompleteSeek(){
+                public void onCompleteSeek() {
                     mSurfaceView.isSeeking = false;
                 }
 
                 @Override
-                public void onPlayState(int state){
-                    if(state == 2 && !mSurfaceView.isSeeking){
+                public void onPlayState(int state) {
+                    if (state == 2 && !mSurfaceView.isSeeking) {
                         progressBarDisabled = false;
                         String text = getResources().getString(R.string.label_playing);
                         updateStatusTextView(text);
@@ -119,7 +138,7 @@ public class DevicePlaybackVideoActivity extends ActionBarActivity {
             new SeekBar.OnSeekBarChangeListener() {
                 @Override
                 public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-                    if(fromUser /*&& (mSurfaceView.isConnected())*/){
+                    if (fromUser /*&& (mSurfaceView.isConnected())*/) {
                         currentBar = progress;
                     }
                 }
@@ -144,6 +163,11 @@ public class DevicePlaybackVideoActivity extends ActionBarActivity {
                     });
                 }
             };
+    /**
+     * ATTENTION: This was auto-generated to implement the App Indexing API.
+     * See https://g.co/AppIndexing/AndroidStudio for more information.
+     */
+    private GoogleApiClient client;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -155,7 +179,7 @@ public class DevicePlaybackVideoActivity extends ActionBarActivity {
                 WindowManager.LayoutParams.FLAG_HARDWARE_ACCELERATED);
 
         //Check Screen Orientation.
-        if(getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE) {
+        if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE) {
             getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
             getSupportActionBar().hide();
         }
@@ -173,16 +197,16 @@ public class DevicePlaybackVideoActivity extends ActionBarActivity {
         mDeviceChannelsManager = new DeviceChannelsManager(mDevice);
 
         // Find views
-        mSurfaceView                      = (SurfaceViewComponent) findViewById(R.id.surface_view_test_1);
-        mProgressBar                      = (ProgressBar) findViewById(R.id.pb_playback);
-        mSeekBar                          = (SeekBar) findViewById(R.id.seek_bar_playback);
-        initialTime                       = (TextView) findViewById(R.id.text_view_playback_initial_time);
-        mStatusTextView                   = (TextView) findViewById(R.id.text_view_playback_status);
-        endTime                           = (TextView) findViewById(R.id.text_view_playback_end_time);
-        ivPlayPause                       = (ImageView) findViewById(R.id.iv_play_playback);
-        ivStop                            = (ImageView) findViewById(R.id.iv_stop_playback);
-        ivForward                         = (ImageView) findViewById(R.id.iv_forward_playback);
-        ivBackward                        = (ImageView) findViewById(R.id.iv_backward_playback);
+        mSurfaceView = (SurfaceViewComponent) findViewById(R.id.surface_view_test_1);
+        mProgressBar = (ProgressBar) findViewById(R.id.pb_playback);
+        mSeekBar = (SeekBar) findViewById(R.id.seek_bar_playback);
+        initialTime = (TextView) findViewById(R.id.text_view_playback_initial_time);
+        mStatusTextView = (TextView) findViewById(R.id.text_view_playback_status);
+        endTime = (TextView) findViewById(R.id.text_view_playback_end_time);
+        ivPlayPause = (ImageView) findViewById(R.id.iv_play_playback);
+        ivStop = (ImageView) findViewById(R.id.iv_stop_playback);
+        ivForward = (ImageView) findViewById(R.id.iv_forward_playback);
+        ivBackward = (ImageView) findViewById(R.id.iv_backward_playback);
 
         ivPlayPause.setImageDrawable(getResources().getDrawable(R.drawable.ic_play_playback));
 
@@ -250,17 +274,20 @@ public class DevicePlaybackVideoActivity extends ActionBarActivity {
         // Configure progress bar
         mSeekBar.setMax((int) mFileData.getTotalTime());
         mStartSecond = (int) mFileData.getStartTime();
-        mSeekBar.setOnTouchListener(new View.OnTouchListener(){
+        mSeekBar.setOnTouchListener(new View.OnTouchListener() {
             @Override
             public boolean onTouch(View v, MotionEvent event) {
                 return progressBarDisabled;
             }
         });
 
-        Log.d(TAG, "onCreate totalTime: " + (int)mFileData.getTotalTime());
+        Log.d(TAG, "onCreate totalTime: " + (int) mFileData.getTotalTime());
         Log.d(TAG, "onCreate startSecond: " + mStartSecond);
 
 
+        // ATTENTION: This was auto-generated to implement the App Indexing API.
+        // See https://g.co/AppIndexing/AndroidStudio for more information.
+        client = new GoogleApiClient.Builder(this).addApi(AppIndex.API).build();
     }
 
     public void playButtonClick() {
@@ -310,6 +337,7 @@ public class DevicePlaybackVideoActivity extends ActionBarActivity {
     private void snapshotPlayback() {
         if (mSurfaceView.isConnected() && mSurfaceView.isPlaying()) {
             mDeviceChannelsManager.takeSnapshot(mSurfaceView);
+            flashView();
         } else {
             Log.v("SNAPSHOT", "The playback is not running to snapshot!");
         }
@@ -319,8 +347,10 @@ public class DevicePlaybackVideoActivity extends ActionBarActivity {
         if (mSurfaceView.isConnected() && mSurfaceView.isPlaying()) {
             if (mSurfaceView.isREC()) {
                 mDeviceChannelsManager.stopRecord(mSurfaceView);
+                menu.getItem(1).setIcon(R.drawable.record);
             } else {
                 mDeviceChannelsManager.startRecord(mSurfaceView);
+                menu.getItem(1).setIcon(R.mipmap.red_record);
             }
         } else {
             Log.v("RECORD", "The playback is not running to record!");
@@ -400,15 +430,36 @@ public class DevicePlaybackVideoActivity extends ActionBarActivity {
         Log.d(TAG, "setPlaybackProgress: time1" + mFileData.getFileData().st_3_beginTime.toString() + " progress:" + progress);
         Log.d(TAG, "setPlaybackProgress: time1" + beginTime.toString());
         SDK_SYSTEM_TIME newTime = mFileData.getFileData().st_3_beginTime;
-        int seconds = beginTime.st_6_second + progress%60%60;
-        newTime.st_6_second = seconds%60;
-        int minutes = beginTime.st_5_minute + (int) TimeUnit.SECONDS.toMinutes(progress) + (seconds/60);
-        newTime.st_5_minute = minutes%60;
-        newTime.st_4_hour = beginTime.st_4_hour + (int) TimeUnit.SECONDS.toHours(progress) + (minutes/60);
+        int seconds = beginTime.st_6_second + progress % 60 % 60;
+        newTime.st_6_second = seconds % 60;
+        int minutes = beginTime.st_5_minute + (int) TimeUnit.SECONDS.toMinutes(progress) + (seconds / 60);
+        newTime.st_5_minute = minutes % 60;
+        newTime.st_4_hour = beginTime.st_4_hour + (int) TimeUnit.SECONDS.toHours(progress) + (minutes / 60);
 
 
         Log.d(TAG, "setPlaybackProgress: time2" + mFileData.getFileData().st_3_beginTime.toString());
         mDeviceChannelsManager.onPlayPlayback(mFileData.getFileData(), mSurfaceView);
+    }
+
+    @TargetApi(Build.VERSION_CODES.HONEYCOMB)
+    private void flashView() {
+        ObjectAnimator fadeOut = ObjectAnimator.ofFloat(mSurfaceView, "alpha", 1f, .3f);
+        fadeOut.setDuration(2000);
+        ObjectAnimator fadeIn = ObjectAnimator.ofFloat(mSurfaceView, "alpha", .3f, 1f);
+        fadeIn.setDuration(2000);
+
+        final AnimatorSet mAnimationSet = new AnimatorSet();
+
+        mAnimationSet.play(fadeIn).after(fadeOut);
+
+        mAnimationSet.addListener(new AnimatorListenerAdapter() {
+            @Override
+            public void onAnimationEnd(Animator animation) {
+                super.onAnimationEnd(animation);
+                mAnimationSet.start();
+            }
+        });
+        mAnimationSet.start();
     }
 
     @Override
@@ -421,7 +472,7 @@ public class DevicePlaybackVideoActivity extends ActionBarActivity {
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.menu_video_playback, menu);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-
+        this.menu = menu;
         return true;
     }
 
@@ -442,8 +493,47 @@ public class DevicePlaybackVideoActivity extends ActionBarActivity {
             case R.id.playback_record:
                 recordPlayback();
                 return true;
+            case R.id.playback_download:
+                Log.v("PLAYBACK", "Download");
+                return true;
             default:
                 return false;
         }
+    }
+
+    /**
+     * ATTENTION: This was auto-generated to implement the App Indexing API.
+     * See https://g.co/AppIndexing/AndroidStudio for more information.
+     */
+    public Action getIndexApiAction() {
+        Thing object = new Thing.Builder()
+                .setName("DevicePlaybackVideo Page") // TODO: Define a title for the content shown.
+                // TODO: Make sure this auto-generated URL is correct.
+                .setUrl(Uri.parse("http://[ENTER-YOUR-URL-HERE]"))
+                .build();
+        return new Action.Builder(Action.TYPE_VIEW)
+                .setObject(object)
+                .setActionStatus(Action.STATUS_TYPE_COMPLETED)
+                .build();
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+
+        // ATTENTION: This was auto-generated to implement the App Indexing API.
+        // See https://g.co/AppIndexing/AndroidStudio for more information.
+        client.connect();
+        AppIndex.AppIndexApi.start(client, getIndexApiAction());
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+
+        // ATTENTION: This was auto-generated to implement the App Indexing API.
+        // See https://g.co/AppIndexing/AndroidStudio for more information.
+        AppIndex.AppIndexApi.end(client, getIndexApiAction());
+        client.disconnect();
     }
 }
