@@ -41,7 +41,7 @@ public class DevicePlaybackVideoActivity extends ActionBarActivity {
     private SeekBar mSeekBar;
     private ProgressBar mProgressBar;
     private TextView initialTime, mStatusTextView, endTime;
-    private ImageView ivPlayPause, ivStop, ivForward, ivBackward, ivSnapshot;
+    private ImageView ivPlayPause, ivStop, ivForward, ivBackward;
     private final String TAG = "playback";
     private int currentBar;
 
@@ -183,7 +183,6 @@ public class DevicePlaybackVideoActivity extends ActionBarActivity {
         ivStop                            = (ImageView) findViewById(R.id.iv_stop_playback);
         ivForward                         = (ImageView) findViewById(R.id.iv_forward_playback);
         ivBackward                        = (ImageView) findViewById(R.id.iv_backward_playback);
-        ivSnapshot                        = (ImageView) findViewById(R.id.iv_snapshot);
 
         ivPlayPause.setImageDrawable(getResources().getDrawable(R.drawable.ic_play_playback));
 
@@ -234,13 +233,6 @@ public class DevicePlaybackVideoActivity extends ActionBarActivity {
 //                backwardButtonClick();
 //            }
 //        });
-
-        ivSnapshot.setOnClickListener(new View.OnClickListener(){
-            @Override
-            public void onClick(View view) {
-                snapshotPlayback();
-            }
-        });
 
         mSurfaceView.deviceConnection = mDevice.connectionString;
         mSurfaceView.playType = 1;
@@ -319,7 +311,19 @@ public class DevicePlaybackVideoActivity extends ActionBarActivity {
         if (mSurfaceView.isConnected() && mSurfaceView.isPlaying()) {
             mDeviceChannelsManager.takeSnapshot(mSurfaceView);
         } else {
-            Log.v("SNAPSHOT", "The playback is not running!");
+            Log.v("SNAPSHOT", "The playback is not running to snapshot!");
+        }
+    }
+
+    private void recordPlayback() {
+        if (mSurfaceView.isConnected() && mSurfaceView.isPlaying()) {
+            if (mSurfaceView.isREC()) {
+                mDeviceChannelsManager.stopRecord(mSurfaceView);
+            } else {
+                mDeviceChannelsManager.startRecord(mSurfaceView);
+            }
+        } else {
+            Log.v("RECORD", "The playback is not running to record!");
         }
     }
 
@@ -415,7 +419,7 @@ public class DevicePlaybackVideoActivity extends ActionBarActivity {
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.simple_menu, menu);
+        getMenuInflater().inflate(R.menu.menu_video_playback, menu);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         return true;
@@ -431,6 +435,12 @@ public class DevicePlaybackVideoActivity extends ActionBarActivity {
 //                mDeviceChannelsManager.playType = 0;
 //                DeviceManager.getInstance().updateSurfaceViewManagers();
                 finish();
+                return true;
+            case R.id.playback_snapshot:
+                snapshotPlayback();
+                return true;
+            case R.id.playback_record:
+                recordPlayback();
                 return true;
             default:
                 return false;

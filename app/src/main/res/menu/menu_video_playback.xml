@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context="br.inatel.icc.gigasecurity.gigamonitor.activities.InitialActivity">
+
+    <item android:id="@+id/playback_snapshot"
+        android:title=""
+        android:icon="@drawable/snapshot"
+        android:orderInCategory="1"
+        app:showAsAction="always|withText" />
+
+    <item android:id="@+id/playback_record"
+        android:title=""
+        android:icon="@drawable/record"
+        android:orderInCategory="1"
+        app:showAsAction="always|withText" />
+
+</menu>
