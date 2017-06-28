@@ -41,7 +41,7 @@ public class DevicePlaybackVideoActivity extends ActionBarActivity {
     private SeekBar mSeekBar;
     private ProgressBar mProgressBar;
     private TextView initialTime, mStatusTextView, endTime;
-    private ImageView ivPlayPause, ivStop, ivForward, ivBackward;
+    private ImageView ivPlayPause, ivStop, ivForward, ivBackward, ivSnapshot;
     private final String TAG = "playback";
     private int currentBar;
 
@@ -183,6 +183,7 @@ public class DevicePlaybackVideoActivity extends ActionBarActivity {
         ivStop                            = (ImageView) findViewById(R.id.iv_stop_playback);
         ivForward                         = (ImageView) findViewById(R.id.iv_forward_playback);
         ivBackward                        = (ImageView) findViewById(R.id.iv_backward_playback);
+        ivSnapshot                        = (ImageView) findViewById(R.id.iv_snapshot);
 
         ivPlayPause.setImageDrawable(getResources().getDrawable(R.drawable.ic_play_playback));
 
@@ -234,6 +235,12 @@ public class DevicePlaybackVideoActivity extends ActionBarActivity {
 //            }
 //        });
 
+        ivSnapshot.setOnClickListener(new View.OnClickListener(){
+            @Override
+            public void onClick(View view) {
+                snapshotPlayback();
+            }
+        });
 
         mSurfaceView.deviceConnection = mDevice.connectionString;
         mSurfaceView.playType = 1;
@@ -307,6 +314,14 @@ public class DevicePlaybackVideoActivity extends ActionBarActivity {
 //            Log.w("Playback Fast", "Error.");
 //        }
 //    }
+
+    private void snapshotPlayback() {
+        if (mSurfaceView.isConnected() && mSurfaceView.isPlaying()) {
+            mDeviceChannelsManager.takeSnapshot(mSurfaceView);
+        } else {
+            Log.v("SNAPSHOT", "The playback is not running!");
+        }
+    }
 
     public void updateStatusTextView(final CharSequence statusText) {
         mActivity.runOnUiThread(new Runnable() {
