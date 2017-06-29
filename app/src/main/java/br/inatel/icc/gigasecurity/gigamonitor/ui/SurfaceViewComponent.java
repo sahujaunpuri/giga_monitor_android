@@ -15,6 +15,7 @@ import android.view.ScaleGestureDetector;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
@@ -73,6 +74,8 @@ public class SurfaceViewComponent extends FrameLayout {
     private float previousX = 0, previousY = 0, dx, dy;
     private int previsousPTZCommand;
     private ImageView ivTouch;
+//    private ImageButton ivZoomIn;
+//    private ImageButton ivZoomOut;
     private boolean longPress = false;
 
     public SurfaceViewComponent(Context context, ChannelsManager channelsManager, int id) {
@@ -133,6 +136,13 @@ public class SurfaceViewComponent extends FrameLayout {
             progressBar.setLayoutParams(mChannelsManager.pbParam);
             this.addView(progressBar);
         }
+
+//        ivZoomIn.setOnClickListener(new View.OnClickListener(){
+//            @Override
+//            public void onClick(View view) {
+//
+//            }
+//        });
     }
 
     public SurfaceViewComponent surfaceViewComponent(){
@@ -207,6 +217,20 @@ public class SurfaceViewComponent extends FrameLayout {
         this.addView(ivTouch, params);
         ivTouch.setScaleX(0.6f);
         ivTouch.setScaleY(0.6f);
+
+//        ivZoomIn = new ImageButton(mContext);
+//        ivZoomIn.setImageResource(R.mipmap.zoom_in);
+//        FrameLayout.LayoutParams params2 = new FrameLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT, Gravity.RIGHT);
+//        this.addView(ivZoomIn, params2);
+//        ivZoomIn.setScaleX(0.6f);
+//        ivZoomIn.setScaleY(0.6f);
+//
+//        ivZoomOut = new ImageButton(mContext);
+//        ivZoomOut.setImageResource(R.mipmap.zoom_out);
+//        FrameLayout.LayoutParams params3 = new FrameLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT, Gravity.LEFT);
+//        this.addView(ivZoomOut, params3);
+//        ivZoomOut.setScaleX(0.6f);
+//        ivZoomOut.setScaleY(0.6f);
 
         LayoutInflater inflater = (LayoutInflater)mDeviceManager.currentContext.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         ptzOverlay = inflater.inflate(R.layout.ptz_overlay, null);
