@@ -119,6 +119,7 @@
                     android:layout_marginRight="13dp"
                     android:src="@drawable/ic_forward"
                     android:id="@+id/iv_forward_playback" />
+
             </LinearLayout>
 
         </LinearLayout>

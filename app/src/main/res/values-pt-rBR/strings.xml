@@ -156,7 +156,7 @@
     <string name="title_activity_alarm_test">Opções de Alarme</string>
     <string name="title_activity_device">Opções do dispositivo</string>
     <string name="title_activity_device_playback">Playback</string>
-    <string name="title_activity_device_playback_video">Playback Video</string>
+    <string name="title_activity_device_playback_video">Vídeo</string>
     <string name="title_activity_wifi_search">Procurar Wifi</string>
     <string name="title_activity_bidirectional_talk_test">Voice Intercom</string>
     <string name="title_search_list">Procurar Dispositivo</string>
