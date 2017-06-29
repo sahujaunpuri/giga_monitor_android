@@ -28,6 +28,7 @@ import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.SeekBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.android.gms.appindexing.Action;
 import com.google.android.gms.appindexing.AppIndex;
@@ -244,19 +245,19 @@ public class DevicePlaybackVideoActivity extends ActionBarActivity {
             }
         });
 
-//        ivForward.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                forwardButtonClick();
-//            }
-//        });
+        ivForward.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                forwardButtonClick();
+            }
+        });
 
-//        ivBackward.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                backwardButtonClick();
-//            }
-//        });
+        ivBackward.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                backwardButtonClick();
+            }
+        });
 
         mSurfaceView.deviceConnection = mDevice.connectionString;
         mSurfaceView.playType = 1;
@@ -310,7 +311,7 @@ public class DevicePlaybackVideoActivity extends ActionBarActivity {
         }
     }
 
-//    public void backwardButtonClick() {
+    public void backwardButtonClick() {
 //        if(mManager.playbackSlow(mDevice.getPlaybackHandle(), mSurfaceView)){
 //            Log.w("Playback Slow", "Success.");
 //
@@ -320,9 +321,9 @@ public class DevicePlaybackVideoActivity extends ActionBarActivity {
 //        } else {
 //            Log.w("Playback Slow", "Error.");
 //        }
-//    }
+    }
 
-//    public void forwardButtonClick() {
+    public void forwardButtonClick() {
 //        if(mManager.playbackFaster(mDevice.getPlaybackHandle(), mSurfaceView)) {
 //            Log.w("Playback Fast", "Success.");
 //
@@ -332,14 +333,14 @@ public class DevicePlaybackVideoActivity extends ActionBarActivity {
 //        } else {
 //            Log.w("Playback Fast", "Error.");
 //        }
-//    }
+    }
 
     private void snapshotPlayback() {
         if (mSurfaceView.isConnected() && mSurfaceView.isPlaying()) {
             mDeviceChannelsManager.takeSnapshot(mSurfaceView);
             flashView();
         } else {
-            Log.v("SNAPSHOT", "The playback is not running to snapshot!");
+            Toast.makeText(this, "O vídeo precisa estar em andamento para que a foto seja tirada!", Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -353,7 +354,7 @@ public class DevicePlaybackVideoActivity extends ActionBarActivity {
                 menu.getItem(1).setIcon(R.mipmap.red_record);
             }
         } else {
-            Log.v("RECORD", "The playback is not running to record!");
+            Toast.makeText(this, "O vídeo precisa estar em andamento para que a gravação seja iniciada!", Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -387,6 +388,9 @@ public class DevicePlaybackVideoActivity extends ActionBarActivity {
     }
 
     public void stop() {
+        if (mSurfaceView.isREC()) {
+            recordPlayback();
+        }
         mDeviceChannelsManager.onStop(mSurfaceView);
 
         String text = getResources().getString(R.string.label_stopped);
@@ -407,18 +411,21 @@ public class DevicePlaybackVideoActivity extends ActionBarActivity {
     }
 
     public void pause() {
-        mDeviceChannelsManager.onPause(mSurfaceView);
+        if (mSurfaceView.isREC()) {
+            Toast.makeText(this, "O vídeo está sendo gravado. Pare a gravação para parar o vídeo!", Toast.LENGTH_SHORT).show();
+        } else {
+            mDeviceChannelsManager.onPause(mSurfaceView);
 
-        String text = getResources().getString(R.string.label_paused);
-        updateStatusTextView(text);
+            String text = getResources().getString(R.string.label_paused);
+            updateStatusTextView(text);
 
-        mActivity.runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                ivPlayPause.setImageDrawable(getResources().getDrawable(R.drawable.ic_play_playback));
-            }
-        });
-
+            mActivity.runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    ivPlayPause.setImageDrawable(getResources().getDrawable(R.drawable.ic_play_playback));
+                }
+            });
+        }
     }
 
     public void setPlaybackProgress(int progress) {
@@ -441,24 +448,16 @@ public class DevicePlaybackVideoActivity extends ActionBarActivity {
         mDeviceChannelsManager.onPlayPlayback(mFileData.getFileData(), mSurfaceView);
     }
 
-    @TargetApi(Build.VERSION_CODES.HONEYCOMB)
     private void flashView() {
         ObjectAnimator fadeOut = ObjectAnimator.ofFloat(mSurfaceView, "alpha", 1f, .3f);
-        fadeOut.setDuration(2000);
+        fadeOut.setDuration(100);
         ObjectAnimator fadeIn = ObjectAnimator.ofFloat(mSurfaceView, "alpha", .3f, 1f);
-        fadeIn.setDuration(2000);
+        fadeIn.setDuration(100);
 
         final AnimatorSet mAnimationSet = new AnimatorSet();
 
         mAnimationSet.play(fadeIn).after(fadeOut);
 
-        mAnimationSet.addListener(new AnimatorListenerAdapter() {
-            @Override
-            public void onAnimationEnd(Animator animation) {
-                super.onAnimationEnd(animation);
-                mAnimationSet.start();
-            }
-        });
         mAnimationSet.start();
     }
 
@@ -492,9 +491,6 @@ public class DevicePlaybackVideoActivity extends ActionBarActivity {
                 return true;
             case R.id.playback_record:
                 recordPlayback();
-                return true;
-            case R.id.playback_download:
-                Log.v("PLAYBACK", "Download");
                 return true;
             default:
                 return false;

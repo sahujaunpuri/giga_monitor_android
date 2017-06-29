@@ -89,6 +89,14 @@
                 android:orientation="horizontal">
 
                 <ImageView
+                    android:layout_width="50dp"
+                    android:layout_height="50dp"
+                    android:layout_marginLeft="13dp"
+                    android:layout_marginRight="13dp"
+                    android:src="@drawable/ic_backward"
+                    android:id="@+id/iv_backward_playback" />
+
+                <ImageView
                     android:layout_width="45dp"
                     android:layout_height="45dp"
                     android:layout_marginLeft="13dp"
@@ -103,14 +111,6 @@
                     android:layout_marginRight="13dp"
                     android:src="@drawable/ic_stop_playback"
                     android:id="@+id/iv_stop_playback" />
-
-                <ImageView
-                    android:layout_width="50dp"
-                    android:layout_height="50dp"
-                    android:layout_marginLeft="13dp"
-                    android:layout_marginRight="13dp"
-                    android:src="@drawable/ic_backward"
-                    android:id="@+id/iv_backward_playback" />
 
                 <ImageView
                     android:layout_width="50dp"

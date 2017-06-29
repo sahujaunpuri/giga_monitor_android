@@ -16,10 +16,4 @@
         android:orderInCategory="1"
         app:showAsAction="always|withText" />
 
-    <item android:id="@+id/playback_download"
-        android:title=""
-        android:icon="@drawable/download"
-        android:orderInCategory="1"
-        app:showAsAction="always|withText" />
-
 </menu>
