@@ -45,11 +45,11 @@ public class DeviceFormActivity extends ActionBarActivity{
         if(getIntent().getExtras() != null) {
 //            mDevice = (Device) getIntent().getExtras().getSerializable("device");
             editPosition = getIntent().getExtras().getInt("index", -1);
-            if(editPosition > -1)
+            if(editPosition > -1) {
                 mDevice = deviceManager.getDevices().get(editPosition);
-            else if(editPosition == -2)
+            } else if (editPosition == -2) {
                 mDevice = (Device) getIntent().getExtras().getSerializable("device");
-
+            }
 
 
             getSupportActionBar().setTitle("Editar Dispositivo");
@@ -80,7 +80,7 @@ public class DeviceFormActivity extends ActionBarActivity{
     }
 
     private void setForm(Device device) {
-        etName.setText(device.deviceName);
+        etName.setText(device.getDeviceName());
         etSerial.setText(device.getSerialNumber());
         etIpAddress.setText(device.getIpAddress());
         etDomain.setText(device.getDomain());
@@ -96,7 +96,7 @@ public class DeviceFormActivity extends ActionBarActivity{
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if(requestCode == SEARCH_ACTIVITY_REQUEST && resultCode == RESULT_OK){
+        if(requestCode == SEARCH_ACTIVITY_REQUEST && resultCode == RESULT_OK) {
             Device device = (Device) data.getSerializableExtra("device");
             setForm(device);
         }
@@ -105,13 +105,10 @@ public class DeviceFormActivity extends ActionBarActivity{
 
     public boolean save() {
         boolean isHostnameFilled = !TextUtils.isEmpty(etName.getText().toString());
-        boolean isPortFilled = !TextUtils.isEmpty(etPort.getText().toString());
-        boolean isSerialNumberFilled = !TextUtils.isEmpty(etSerial.getText().toString());
         boolean isIPFilled = !TextUtils.isEmpty(etIpAddress.getText().toString());
-        boolean isDNSFilled = !TextUtils.isEmpty(etDomain.getText().toString());
         boolean isUsernameFilled = !TextUtils.isEmpty(etUsername.getText().toString());
 
-        if(isHostnameFilled && ((isPortFilled && (isIPFilled || isDNSFilled)) || isSerialNumberFilled)) {
+        if(isHostnameFilled && areConfigurationFieldsOk(isIPFilled)) {
             if(isIPFilled && !Utils.isValidIP(etIpAddress.getText().toString())){
                 Toast.makeText(this, "Endereço de IP inválido", Toast.LENGTH_SHORT).show();
                 return false;
@@ -120,7 +117,11 @@ public class DeviceFormActivity extends ActionBarActivity{
             mDevice.setDomain(etDomain.getText().toString());
             mDevice.setIpAddress(etIpAddress.getText().toString());
             mDevice.setSerialNumber(etSerial.getText().toString());
-            mDevice.setTCPPort(Integer.parseInt(etPort.getText().toString()));
+            if (etPort.getText().toString().isEmpty()) {
+                mDevice.setTCPPort(0);
+            } else {
+                mDevice.setTCPPort(Integer.parseInt(etPort.getText().toString()));
+            }
 
             if(isUsernameFilled)
                 mDevice.setUsername(etUsername.getText().toString());
@@ -132,6 +133,22 @@ public class DeviceFormActivity extends ActionBarActivity{
             return true;
         }
 
+        return false;
+    }
+
+    private boolean areConfigurationFieldsOk(boolean isIPFilled) {
+        boolean isPortFilled = !TextUtils.isEmpty(etPort.getText().toString());
+        boolean isSerialNumberFilled = !TextUtils.isEmpty(etSerial.getText().toString());
+        boolean isDNSFilled = !TextUtils.isEmpty(etDomain.getText().toString());
+
+        if ((isIPFilled || isDNSFilled) && isPortFilled) {
+            Integer port = Integer.valueOf(etPort.getText().toString());
+            if (port > 0) {
+                return true;
+            }
+        } else if (isSerialNumberFilled) {
+            return true;
+        }
         return false;
     }
 

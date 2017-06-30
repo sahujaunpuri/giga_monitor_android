@@ -168,9 +168,9 @@ public class Device implements Serializable {
                     loginAttempt++;
                     connectionString = ipAddress + ":" + tcpPort;
                     message = "Conectando via IP";
-                }else
+                } else
                     return -1;
-            }break;
+            } break;
             case 1: {     //domain:port
                 if(domain != null && !domain.isEmpty()) {
                     connectionString = domain + ":" + tcpPort;
@@ -236,6 +236,14 @@ public class Device implements Serializable {
        Log.d("deviceInfo","Alarm Out:  "+ getNumberOfAlarmsOut());
        //Log.d("deviceInfo","Device Type: "+ g.deviceTye == SDK_DEVICE_TYPE_IPC ? @"IPC" : @"DVR");
        Log.d("deviceInfo","================================================");
+    }
+
+    public String getDeviceName() {
+        return deviceName;
+    }
+
+    public void setDeviceName(String deviceName) {
+        this.deviceName = deviceName;
     }
 
     public String getHostname() {
