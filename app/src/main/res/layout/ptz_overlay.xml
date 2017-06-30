@@ -2,40 +2,78 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent" android:layout_height="match_parent" android:id="@+id/ptz_overlay" android:visibility="gone">
 
-    <ImageView
+    <ImageButton
+        android:id="@+id/zoom_in"
+        android:src="@mipmap/zoom_in"
+        android:layout_width="48dp"
+        android:layout_height="36dp"
+        android:background="@android:color/transparent"
+        android:layout_marginTop="5dp"
+        android:layout_marginLeft="5dp"
+        />
+
+    <ImageButton
+        android:id="@+id/arrow_down"
         android:src="@drawable/ic_arrow_down_36dp"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:scaleX="1.5"
         android:layout_centerHorizontal="true"
         android:layout_alignParentBottom="true"
+        android:background="@android:color/transparent"
         />
 
-    <ImageView
+    <ImageButton
+        android:id="@+id/arrow_up"
         android:src="@drawable/ic_arrow_up_36dp"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:scaleX="1.5"
         android:layout_centerHorizontal="true"
         android:layout_alignParentTop="true"
+        android:background="@android:color/transparent"
         />
 
-    <ImageView
+    <ImageButton
+        android:id="@+id/arrow_left"
         android:src="@drawable/ic_arrow_left_36dp"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:scaleY="1.5"
         android:layout_centerVertical="true"
         android:layout_alignParentLeft="true"
+        android:background="@android:color/transparent"
         />
 
-    <ImageView
+    <ImageButton
+        android:id="@+id/arrow_right"
         android:src="@drawable/ic_arrow_right_36dp"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:scaleY="1.5"
         android:layout_centerVertical="true"
         android:layout_alignParentRight="true"
+        android:background="@android:color/transparent"
+        />
+
+    <ImageButton
+        android:id="@+id/zoom_out"
+        android:src="@mipmap/zoom_out"
+        android:layout_width="48dp"
+        android:layout_height="36dp"
+        android:layout_marginTop="5dp"
+        android:layout_marginRight="5dp"
+        android:background="@android:color/transparent"
+        />
+
+    <ImageButton
+        android:id="@+id/ptz_on"
+        android:src="@drawable/ic_ptz_on"
+        android:layout_alignParentBottom="true"
+        android:layout_marginLeft="5dp"
+        android:layout_width="48dp"
+        android:layout_height="36dp"
+        android:background="@android:color/transparent"
         />
 
 </RelativeLayout>

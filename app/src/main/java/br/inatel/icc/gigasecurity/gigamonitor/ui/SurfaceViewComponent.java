@@ -74,8 +74,9 @@ public class SurfaceViewComponent extends FrameLayout {
     private float previousX = 0, previousY = 0, dx, dy;
     private int previsousPTZCommand;
     private ImageView ivTouch;
-//    private ImageButton ivZoomIn;
-//    private ImageButton ivZoomOut;
+//    private ImageButton ibZoomIn;
+//    private ImageButton ibZoomOut;
+    private boolean ptzZoom;
     private boolean longPress = false;
 
     public SurfaceViewComponent(Context context, ChannelsManager channelsManager, int id) {
@@ -137,12 +138,8 @@ public class SurfaceViewComponent extends FrameLayout {
             this.addView(progressBar);
         }
 
-//        ivZoomIn.setOnClickListener(new View.OnClickListener(){
-//            @Override
-//            public void onClick(View view) {
-//
-//            }
-//        });
+        ptzZoom = false;
+
     }
 
     public SurfaceViewComponent surfaceViewComponent(){
@@ -218,28 +215,56 @@ public class SurfaceViewComponent extends FrameLayout {
         ivTouch.setScaleX(0.6f);
         ivTouch.setScaleY(0.6f);
 
-//        ivZoomIn = new ImageButton(mContext);
-//        ivZoomIn.setImageResource(R.mipmap.zoom_in);
+//        ibZoomIn = new ImageButton(mContext);
+//        ibZoomIn.setImageResource(R.mipmap.zoom_in);
 //        FrameLayout.LayoutParams params2 = new FrameLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT, Gravity.RIGHT);
-//        this.addView(ivZoomIn, params2);
-//        ivZoomIn.setScaleX(0.6f);
-//        ivZoomIn.setScaleY(0.6f);
+//        this.addView(ibZoomIn, params2);
+//        ibZoomIn.setScaleX(0.6f);
+//        ibZoomIn.setScaleY(0.6f);
+//        ibZoomIn.setBackgroundColor(0x00000000);
 //
-//        ivZoomOut = new ImageButton(mContext);
-//        ivZoomOut.setImageResource(R.mipmap.zoom_out);
+//        ibZoomOut = new ImageButton(mContext);
+//        ibZoomOut.setImageResource(R.mipmap.zoom_out);
 //        FrameLayout.LayoutParams params3 = new FrameLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT, Gravity.LEFT);
-//        this.addView(ivZoomOut, params3);
-//        ivZoomOut.setScaleX(0.6f);
-//        ivZoomOut.setScaleY(0.6f);
+//        this.addView(ibZoomOut, params3);
+//        ibZoomOut.setScaleX(0.6f);
+//        ibZoomOut.setScaleY(0.6f);
+//        ibZoomOut.setBackgroundColor(0x00000000);
+//
+//        ibZoomIn.setOnClickListener(new View.OnClickListener(){
+//            @Override
+//            public void onClick(View view) {
+//                Log.d("ZOOM IN", "zoom in");
+//                int command = EPTZCMD.ZOOM_IN;
+//                ptz(command);
+//            }
+//        });
+//
+//        ibZoomOut.setOnClickListener(new View.OnClickListener(){
+//            @Override
+//            public void onClick(View view) {
+//                Log.d("ZOOM OUT", "zoom out");
+//                int command = EPTZCMD.ZOOM_OUT;
+//                ptz(command);
+//            }
+//        });
 
         LayoutInflater inflater = (LayoutInflater)mDeviceManager.currentContext.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         ptzOverlay = inflater.inflate(R.layout.ptz_overlay, null);
         this.addView(ptzOverlay);
     }
 
+    private void ptz(int command) {
+        mChannelsManager.ptzControl(command, this, false);
+    }
+
     public void disablePTZ(){
         this.removeView(ivTouch);
         ivTouch = null;
+//        this.removeView(ibZoomIn);
+//        ibZoomIn = null;
+//        this.removeView(ibZoomOut);
+//        ibZoomOut = null;
         this.removeView(ptzOverlay);
         ptzOverlay = null;
     }
