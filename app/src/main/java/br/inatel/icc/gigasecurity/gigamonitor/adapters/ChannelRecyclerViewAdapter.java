@@ -18,6 +18,7 @@ import br.inatel.icc.gigasecurity.gigamonitor.model.ChannelsManager;
 import br.inatel.icc.gigasecurity.gigamonitor.model.Device;
 import br.inatel.icc.gigasecurity.gigamonitor.model.DeviceChannelsManager;
 import br.inatel.icc.gigasecurity.gigamonitor.ui.OverlayMenu;
+import br.inatel.icc.gigasecurity.gigamonitor.ui.OverlayPTZ;
 import br.inatel.icc.gigasecurity.gigamonitor.ui.SurfaceViewComponent;
 
 
@@ -181,10 +182,22 @@ public class ChannelRecyclerViewAdapter extends RecyclerView.Adapter<ChannelRecy
             public void run() {
                 if(overlayMenu.getVisibility() == View.VISIBLE) {
                     overlayMenu.setVisibility(View.GONE);
+                    if (surfaceViewComponent.isPTZEnabled()) {
+                        final OverlayPTZ overlayPTZ = childViewHolder.overlayPTZ;
+                        surfaceViewComponent.setIvTouch(View.VISIBLE);
+                        overlayPTZ.setSurfaceViewComponent(surfaceViewComponent);
+                        overlayPTZ.setVisibility(View.VISIBLE);
+                    }
                 }else {
                     overlayMenu.setSurfaceViewComponent(surfaceViewComponent);
                     overlayMenu.updateIcons();
                     overlayMenu.setVisibility(View.VISIBLE);
+                    if (surfaceViewComponent.isPTZEnabled()) {
+                        final OverlayPTZ overlayPTZ = childViewHolder.overlayPTZ;
+                        surfaceViewComponent.setIvTouch(View.GONE);
+                        overlayPTZ.setSurfaceViewComponent(surfaceViewComponent);
+                        overlayPTZ.setVisibility(View.GONE);
+                    }
                 }
             }
         });
@@ -193,8 +206,12 @@ public class ChannelRecyclerViewAdapter extends RecyclerView.Adapter<ChannelRecy
 
     public void closeOverlayMenu(){
         final OverlayMenu overlayMenu = childViewHolder.overlayMenu;
+        final OverlayPTZ overlayPTZ = childViewHolder.overlayPTZ;
         if(overlayMenu.getVisibility() == View.VISIBLE) {
             overlayMenu.setVisibility(View.GONE);
+        }
+        if (overlayPTZ.getVisibility() == View.VISIBLE) {
+            overlayPTZ.setVisibility(View.GONE);
         }
     }
 

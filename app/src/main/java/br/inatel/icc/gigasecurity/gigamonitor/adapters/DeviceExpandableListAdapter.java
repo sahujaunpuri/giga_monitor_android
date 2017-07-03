@@ -17,9 +17,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseExpandableListAdapter;
 import android.widget.ExpandableListView;
-import android.widget.FrameLayout;
 import android.widget.ImageView;
-import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import java.util.ArrayList;
@@ -34,8 +32,8 @@ import br.inatel.icc.gigasecurity.gigamonitor.listeners.LoginDeviceListener;
 import br.inatel.icc.gigasecurity.gigamonitor.managers.CustomGridLayoutManager;
 import br.inatel.icc.gigasecurity.gigamonitor.model.ChannelsManager;
 import br.inatel.icc.gigasecurity.gigamonitor.model.Device;
-import br.inatel.icc.gigasecurity.gigamonitor.model.DeviceChannelsManager;
 import br.inatel.icc.gigasecurity.gigamonitor.ui.OverlayMenu;
+import br.inatel.icc.gigasecurity.gigamonitor.ui.OverlayPTZ;
 import br.inatel.icc.gigasecurity.gigamonitor.ui.SurfaceViewComponent;
 
 /**
@@ -142,10 +140,13 @@ public class DeviceExpandableListAdapter extends BaseExpandableListAdapter {
         currentChildViewHolder.recyclerViewChannels     =  (RecyclerView) currentChildViewHolder.convertView.findViewById(R.id.recycler_view_channels);
         currentChildViewHolder.tvMessage                =  (TextView) currentChildViewHolder.convertView.findViewById(R.id.tv_message_connecting);
         currentChildViewHolder.overlayMenu              =  (OverlayMenu) currentChildViewHolder.convertView.findViewById(R.id.overlay_menu);
+        currentChildViewHolder.overlayPTZ               =  (OverlayPTZ) currentChildViewHolder.convertView.findViewById(R.id.ptz_overlay_menu);
         currentChildViewHolder.tvMessage                =  (TextView) currentChildViewHolder.convertView.findViewById(R.id.tv_message_connecting);
         currentChildViewHolder.position                 =   groupPosition;
         currentChildViewHolder.overlayMenu.setDeviceChannelsManager(mDeviceManager.getDeviceChannelsManagers().get(groupPosition));
+//        currentChildViewHolder.overlayPTZ.setDeviceChannelsManager(mDeviceManager.getDeviceChannelsManagers().get(groupPosition));
         currentChildViewHolder.overlayMenu.setLayoutParams(currentChildViewHolder.recyclerViewChannels.getLayoutParams());
+        currentChildViewHolder.overlayPTZ.setLayoutParams(currentChildViewHolder.recyclerViewChannels.getLayoutParams());
 
         if(groupViewHolder.get(groupPosition).mDevice.getSerialNumber().equals("Favoritos")){
             currentChildViewHolder.tvMessage.setText("Nenhum favorito adicionado.");
@@ -206,7 +207,7 @@ public class DeviceExpandableListAdapter extends BaseExpandableListAdapter {
     }
 
 
-    private RecyclerView.OnScrollListener createOnScrollListener(final int groupPosition){
+    private RecyclerView.OnScrollListener createOnScrollListener(final int groupPosition) {
         return new RecyclerView.OnScrollListener()
         {
 
@@ -353,6 +354,7 @@ public class DeviceExpandableListAdapter extends BaseExpandableListAdapter {
                 currentGroupViewHolder.ivQuad.setVisibility(View.INVISIBLE);
                 currentChildViewHolder.recyclerViewChannels.setVisibility(View.INVISIBLE);
                 currentChildViewHolder.overlayMenu.setVisibility(View.GONE);
+                currentChildViewHolder.overlayPTZ.setVisibility(View.GONE);
                 currentChildViewHolder.recyclerViewChannels.removeAllViewsInLayout();
 //                currentChildViewHolder.recyclerViewChannels = null;
             }
@@ -418,7 +420,6 @@ public class DeviceExpandableListAdapter extends BaseExpandableListAdapter {
 
     public void updateGrid(int position, ChannelsManager channelsManager){
         if(childViewHolder.get(position).gridLayoutManager != null) {
-            initGridRecycler(position, childViewHolder.get(position));
             channelsManager.createComponents();
             childViewHolder.get(position).gridLayoutManager.setSpanCount(channelsManager.numQuad);
             childViewHolder.get(position).recyclerViewChannels.setVisibility(View.VISIBLE);
@@ -660,6 +661,7 @@ public class DeviceExpandableListAdapter extends BaseExpandableListAdapter {
         public View convertView;
         public RecyclerView recyclerViewChannels;
         public OverlayMenu overlayMenu;
+        public OverlayPTZ overlayPTZ;
         public TextView tvMessage;
         public ChannelRecyclerViewAdapter mRecyclerAdapter;
         public CustomGridLayoutManager gridLayoutManager;
