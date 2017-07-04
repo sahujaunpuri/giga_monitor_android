@@ -6,6 +6,7 @@ import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -122,7 +123,7 @@ public class DevicePlaybackActivity extends ActionBarActivity
         return playbacks;
     }
 
-    private void findPlaybacks() {
+    private void findPlaybacks(final H264_DVR_FINDINFO info) {
         String title = getResources().getString(R.string.label_searching_files);
         String msg = getResources().getString(R.string.label_please_wait);
         ArrayList<FileData> playbacks;
@@ -134,22 +135,6 @@ public class DevicePlaybackActivity extends ActionBarActivity
 
             @Override
             public void run() {
-                H264_DVR_FINDINFO info = new H264_DVR_FINDINFO();
-                info.st_1_nFileType = SDKCONST.FileType.SDK_RECORD_ALL;
-                info.st_2_startTime.st_0_dwYear = mSystemTime.get(Calendar.YEAR);
-                info.st_2_startTime.st_1_dwMonth = mSystemTime.get(Calendar.MONTH) + 1;
-                info.st_2_startTime.st_2_dwDay = mSystemTime.get(Calendar.DAY_OF_MONTH);
-                info.st_2_startTime.st_3_dwHour = 0;
-                info.st_2_startTime.st_4_dwMinute = 0;
-                info.st_2_startTime.st_5_dwSecond = 0;
-                info.st_3_endTime.st_0_dwYear = mSystemTime.get(Calendar.YEAR);
-                info.st_3_endTime.st_1_dwMonth = mSystemTime.get(Calendar.MONTH) + 1;
-                info.st_3_endTime.st_2_dwDay = mSystemTime.get(Calendar.DAY_OF_MONTH);
-                info.st_3_endTime.st_3_dwHour = 23;
-                info.st_3_endTime.st_4_dwMinute = 59;
-                info.st_3_endTime.st_5_dwSecond = 59;
-                info.st_0_nChannelN0 = nbChannel.getValue() - 1;
-                info.st_6_StreamType = 2;
 
                 mManager.findPlaybackList(mDevice, info, new PlaybackSearchListener() {
                     @Override
@@ -213,7 +198,23 @@ public class DevicePlaybackActivity extends ActionBarActivity
                 return true;
 
             case R.id.menu_search:
-                findPlaybacks();
+                H264_DVR_FINDINFO info = new H264_DVR_FINDINFO();
+                info.st_1_nFileType = SDKCONST.FileType.SDK_RECORD_ALL;
+                info.st_2_startTime.st_0_dwYear = mSystemTime.get(Calendar.YEAR);
+                info.st_2_startTime.st_1_dwMonth = mSystemTime.get(Calendar.MONTH) + 1;
+                info.st_2_startTime.st_2_dwDay = mSystemTime.get(Calendar.DAY_OF_MONTH);
+                info.st_2_startTime.st_3_dwHour = 00;
+                info.st_2_startTime.st_4_dwMinute = 00;
+                info.st_2_startTime.st_5_dwSecond = 00;
+                info.st_3_endTime.st_0_dwYear = mSystemTime.get(Calendar.YEAR);
+                info.st_3_endTime.st_1_dwMonth = mSystemTime.get(Calendar.MONTH) + 1;
+                info.st_3_endTime.st_2_dwDay = mSystemTime.get(Calendar.DAY_OF_MONTH);
+                info.st_3_endTime.st_3_dwHour = 23;
+                info.st_3_endTime.st_4_dwMinute = 59;
+                info.st_3_endTime.st_5_dwSecond = 00;
+                info.st_0_nChannelN0 = nbChannel.getValue() - 1;
+                info.st_6_StreamType = SDKCONST.SDK_File_Type.SDK_RECORD_ALL;//2;
+                findPlaybacks(info);
                 return true;
 
             default:

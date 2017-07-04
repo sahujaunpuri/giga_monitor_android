@@ -1179,7 +1179,7 @@ public class DeviceManager implements IFunSDKResult{
 
     public void findPlaybackList(Device device, H264_DVR_FINDINFO info, PlaybackSearchListener listener){
         currentPlaybackSearchListener = listener;
-        FunSDK.DevFindFile(getHandler(), device.connectionString, G.ObjToBytes(info), 64, 20000, device.getId());
+        FunSDK.DevFindFile(getHandler(), device.connectionString, G.ObjToBytes(info), 1000, 20000, device.getId());
     }
 
     public boolean isFavorite(int deviceId, int channelNumber){
