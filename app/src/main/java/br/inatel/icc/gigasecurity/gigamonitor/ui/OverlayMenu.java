@@ -129,7 +129,7 @@ public class OverlayMenu extends RelativeLayout {
 
         if(!surfaceViewComponent.isReceiveAudioEnabled && !surfaceViewComponent.isSendAudioEnabled){
             ivReceiveAudio.setImageDrawable(mContext.getResources().getDrawable(R.drawable.ic_volume_mute_white_36dp));
-        }else if(!surfaceViewComponent.isSendAudioEnabled){
+        } else if(!surfaceViewComponent.isSendAudioEnabled){
             ivReceiveAudio.setImageDrawable(mContext.getResources().getDrawable(R.drawable.ic_volume_up_white_36dp));
         } else{
             ivReceiveAudio.setImageDrawable(mContext.getResources().getDrawable(R.drawable.ic_volume_off_white_36dp));

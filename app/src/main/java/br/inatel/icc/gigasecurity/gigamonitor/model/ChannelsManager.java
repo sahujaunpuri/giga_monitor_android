@@ -237,12 +237,17 @@ public abstract class ChannelsManager implements IFunSDKResult {
     }
 
     public void onStop(SurfaceViewComponent svc){
-        if ( svc.isConnected() ) {
-            if(svc.isREC) {
+        if (svc.isConnected()) {
+            if (svc.isReceiveAudioEnabled) {
+                int volume = -1;
+                FunSDK.MediaSetSound(svc.mPlayerHandler, volume, svc.mySurfaceViewOrderId);
+                svc.isReceiveAudioEnabled = false;
+            } else if(svc.isREC) {
                 svc.stoppingRec = true;
                 stopRecord(svc);
-            } else
+            } else {
                 FunSDK.MediaStop(svc.mPlayerHandler);
+            }
             svc.setConnected(false);
         }
         svc.isPlaying = false;
@@ -304,6 +309,7 @@ public abstract class ChannelsManager implements IFunSDKResult {
     public void stopRecord(SurfaceViewComponent svc){
         if(svc.isConnected()) {
             FunSDK.MediaStopRecord(svc.mPlayerHandler, 0);
+            recCounter--;
         }
     }
 
@@ -525,7 +531,7 @@ public abstract class ChannelsManager implements IFunSDKResult {
                 } else{
                     Toast.makeText(mContext, "Falha na gravação", Toast.LENGTH_SHORT).show();
                 }
-                recCounter--;
+//                recCounter--;
             }
             break;
             case EUIMSG.ON_PLAY_INFO: {
