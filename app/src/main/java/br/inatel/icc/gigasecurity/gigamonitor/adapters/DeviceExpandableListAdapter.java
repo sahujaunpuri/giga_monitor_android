@@ -285,10 +285,10 @@ public class DeviceExpandableListAdapter extends BaseExpandableListAdapter {
             convertView = childViewHolder.convertView;
             initGridRecycler(groupPosition, childViewHolder);
             convertView.setTag(childViewHolder);
-        } else if(((ChildViewHolder) convertView.getTag()).position != groupPosition){
+        } else if (((ChildViewHolder) convertView.getTag()).position != groupPosition){
             childViewHolder = this.childViewHolder.get(groupPosition);
             convertView = childViewHolder.convertView;
-        } else{
+        } else {
             childViewHolder = (ChildViewHolder) convertView.getTag();
         }
 
