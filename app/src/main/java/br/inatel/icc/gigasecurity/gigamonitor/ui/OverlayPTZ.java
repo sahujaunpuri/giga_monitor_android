@@ -22,7 +22,7 @@ public class OverlayPTZ extends RelativeLayout implements View.OnTouchListener  
 
     private Context mContext;
     public SurfaceViewComponent surfaceViewComponent;
-    private ImageView topLeftArrow, leftArrow, rightArrow, upArrow, downArrow, zoomIn, zoomOut, ptz;
+    private ImageView topLeftArrow, leftArrow, rightArrow, topRightArrow, upArrow, downLeftArrow, downArrow, downRightArrow, zoomIn, zoomOut, ptz;
     private DeviceManager deviceManager;
 
     public OverlayPTZ(Context context) {
@@ -50,12 +50,18 @@ public class OverlayPTZ extends RelativeLayout implements View.OnTouchListener  
         topLeftArrow.setOnTouchListener(this);
         leftArrow = (ImageView) findViewById(R.id.arrow_left);
         leftArrow.setOnTouchListener(this);
+        topRightArrow = (ImageView) findViewById(R.id.arrow_top_right);
+        topRightArrow.setOnTouchListener(this);
         rightArrow = (ImageView) findViewById(R.id.arrow_right);
         rightArrow.setOnTouchListener(this);
         upArrow = (ImageView) findViewById(R.id.arrow_up);
         upArrow.setOnTouchListener(this);
+        downLeftArrow = (ImageView) findViewById(R.id.arrow_down_left);
+        downLeftArrow.setOnTouchListener(this);
         downArrow = (ImageView) findViewById(R.id.arrow_down);
         downArrow.setOnTouchListener(this);
+        downRightArrow = (ImageView) findViewById(R.id.arrow_down_right);
+        downRightArrow.setOnTouchListener(this);
         zoomIn = (ImageView) findViewById(R.id.zoom_in);
         zoomIn.setOnTouchListener(this);
         zoomOut = (ImageView) findViewById(R.id.zoom_out);
@@ -98,6 +104,10 @@ public class OverlayPTZ extends RelativeLayout implements View.OnTouchListener  
                 int leftCommand = EPTZCMD.PAN_LEFT;
                 manageImageTouch(motionEvent, leftCommand);
                 return true;
+            case R.id.arrow_top_right:
+                int topRightCommand = EPTZCMD.PAN_RIGTHTOP;
+                manageImageTouch(motionEvent, topRightCommand);
+                return true;
             case R.id.arrow_right:
                 int rightCommand = EPTZCMD.PAN_RIGHT;
                 manageImageTouch(motionEvent, rightCommand);
@@ -106,9 +116,17 @@ public class OverlayPTZ extends RelativeLayout implements View.OnTouchListener  
                 int upCommand = EPTZCMD.TILT_UP;
                 manageImageTouch(motionEvent, upCommand);
                 return true;
+            case R.id.arrow_down_left:
+                int downLeftCommand = EPTZCMD.PAN_LEFTDOWN;
+                manageImageTouch(motionEvent, downLeftCommand);
+                return true;
             case R.id.arrow_down:
                 int downCommand = EPTZCMD.TILT_DOWN;
                 manageImageTouch(motionEvent, downCommand);
+                return true;
+            case R.id.arrow_down_right:
+                int downRightCommand = EPTZCMD.PAN_RIGTHDOWN;
+                manageImageTouch(motionEvent, downRightCommand);
                 return true;
             case R.id.zoom_in:
                 int zoomInCommand = EPTZCMD.ZOOM_IN;
