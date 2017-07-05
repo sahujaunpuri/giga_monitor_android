@@ -11,6 +11,7 @@ import android.content.res.Configuration;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v7.internal.view.menu.MenuView;
 import android.util.Log;
@@ -53,6 +54,8 @@ import br.inatel.icc.gigasecurity.gigamonitor.model.FileData;
 import br.inatel.icc.gigasecurity.gigamonitor.model.DeviceChannelsManager;
 import br.inatel.icc.gigasecurity.gigamonitor.ui.SurfaceViewComponent;
 
+import static android.R.attr.value;
+
 public class DevicePlaybackVideoActivity extends ActionBarActivity {
 
     private SurfaceViewComponent mSurfaceView;
@@ -73,6 +76,8 @@ public class DevicePlaybackVideoActivity extends ActionBarActivity {
     private int mStartSecond;
     private int currentProgress = 0;
     public boolean progressBarDisabled = true;
+    private Handler mHandler;
+    private Runnable mAction;
 
     private PlaybackListener mPlaybackListener =
             new PlaybackListener() {
@@ -212,8 +217,8 @@ public class DevicePlaybackVideoActivity extends ActionBarActivity {
         ivPlayPause.setImageDrawable(getResources().getDrawable(R.drawable.ic_play_playback));
 
         //(SDK ANTIGA)botões desabilitados a pedido da giga, videos curtos estavam pulando muitos frames e encerrando a exibição
-        ivBackward.setVisibility(View.GONE);
-        ivForward.setVisibility(View.GONE);
+        //ivBackward.setVisibility(View.GONE);
+        //ivForward.setVisibility(View.GONE);
 
         initialTime.setText("00:00");
         long timeDifference = mFileData.getEndDate().getTime() - mFileData.getBeginDate().getTime();
@@ -245,17 +250,41 @@ public class DevicePlaybackVideoActivity extends ActionBarActivity {
             }
         });
 
-        ivForward.setOnClickListener(new View.OnClickListener() {
+        ivForward.setOnTouchListener(new View.OnTouchListener() {
             @Override
-            public void onClick(View v) {
-                forwardButtonClick();
+            public boolean onTouch(View view, MotionEvent motionEvent) {
+                populateRunnable(3);
+                switch (motionEvent.getAction()) {
+                    case MotionEvent.ACTION_DOWN:
+                        if (mHandler != null) {
+                            return true;
+                        }
+                        mHandler = new Handler();
+                        mHandler.postDelayed(mAction, 500);
+                        return true;
+                    case MotionEvent.ACTION_UP:
+                        if (mHandler == null) {
+                            return true;
+                        }
+                        mHandler.removeCallbacks(mAction);
+                        mHandler = null;
+                        break;
+                }
+                return false;
             }
         });
 
-        ivBackward.setOnClickListener(new View.OnClickListener() {
+        ivBackward.setOnTouchListener(new View.OnTouchListener() {
             @Override
-            public void onClick(View v) {
-                backwardButtonClick();
+            public boolean onTouch(View view, MotionEvent motionEvent) {
+                populateRunnable(-3);
+                if (mHandler != null) {
+                    return true;
+                }
+                mHandler = new Handler();
+                mHandler.postDelayed(mAction, 500);
+//                backwardButtonClick(motionEvent, -3);
+                return false;
             }
         });
 
@@ -291,6 +320,20 @@ public class DevicePlaybackVideoActivity extends ActionBarActivity {
         client = new GoogleApiClient.Builder(this).addApi(AppIndex.API).build();
     }
 
+    private void populateRunnable(final int value) {
+        mAction = new Runnable() {
+            @Override
+            public void run() {
+                if (value > 0) {
+                    forwardButtonClick(value);
+                } else{
+                    backwardButtonClick(value);
+                }
+                mHandler.postDelayed(this, 500);
+            }
+        };
+    }
+
     public void playButtonClick() {
         if (mSurfaceView.isConnected() && !mSurfaceView.isPlaying()) {
             resume();
@@ -311,28 +354,20 @@ public class DevicePlaybackVideoActivity extends ActionBarActivity {
         }
     }
 
-    public void backwardButtonClick() {
-//        if(mManager.playbackSlow(mDevice.getPlaybackHandle(), mSurfaceView)){
-//            Log.w("Playback Slow", "Success.");
-//
-//            String text = getResources().getString(R.string.label_playing_slow);
-//
-//            updateStatusTextView(text);
-//        } else {
-//            Log.w("Playback Slow", "Error.");
-//        }
+    public void backwardButtonClick(int value) {
+        setPlaybackSpeed(value);
     }
 
-    public void forwardButtonClick() {
-//        if(mManager.playbackFaster(mDevice.getPlaybackHandle(), mSurfaceView)) {
-//            Log.w("Playback Fast", "Success.");
-//
-//            String text = getResources().getString(R.string.label_playing_fast);
-//
-//            updateStatusTextView(text);
-//        } else {
-//            Log.w("Playback Fast", "Error.");
-//        }
+    public void forwardButtonClick(int value) {
+        setPlaybackSpeed(value);
+    }
+
+    private void setPlaybackSpeed(int value) {
+        if (mSurfaceView.isConnected() && mSurfaceView.isPlaying()) {
+            mDeviceChannelsManager.advancePlaybackVideo(mSurfaceView, value);
+        } else {
+            Toast.makeText(this, "O vídeo deve estar em andamento para adiantá-lo ou atrasá-lo!", Toast.LENGTH_SHORT).show();
+        }
     }
 
     private void snapshotPlayback() {

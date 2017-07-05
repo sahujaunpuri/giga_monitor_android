@@ -339,6 +339,10 @@ public abstract class ChannelsManager implements IFunSDKResult {
         return 0;
     }
 
+    public void advancePlaybackVideo(final SurfaceViewComponent svc, final int value) {
+        FunSDK.MediaSetPlaySpeed(svc.mPlayerHandler, value, 0);
+    }
+
     public void ptzControl(int command, SurfaceViewComponent svc, boolean stop){
         //EPTZCMD
         FunSDK.DevPTZControl(svc.mPlayerHandler, svc.deviceConnection, svc.mySurfaceViewChannelId, command, stop?1:0, 3, svc.mySurfaceViewChannelId);
@@ -579,6 +583,11 @@ public abstract class ChannelsManager implements IFunSDKResult {
                 }*/
                 Log.d(TAG, "OnFunSDKResult: Media Frame Loss");
             }
+            case EUIMSG.SET_PLAY_SPEED: {
+                String speed = String.valueOf(msg.arg1);
+                Log.e("Play speed:", speed);
+            }
+            break;
         }
         return 0;
     }
