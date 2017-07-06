@@ -239,10 +239,9 @@ public abstract class ChannelsManager implements IFunSDKResult {
     public void onStop(SurfaceViewComponent svc){
         if (svc.isConnected()) {
             if (svc.isReceiveAudioEnabled) {
-                int volume = -1;
-                FunSDK.MediaSetSound(svc.mPlayerHandler, volume, svc.mySurfaceViewOrderId);
-                svc.isReceiveAudioEnabled = false;
-            } else if(svc.isREC) {
+                stopReceivingAudio(svc);
+            }
+            if(svc.isREC) {
                 svc.stoppingRec = true;
                 stopRecord(svc);
             } else {
@@ -266,12 +265,23 @@ public abstract class ChannelsManager implements IFunSDKResult {
     public abstract void disableHD(SurfaceViewComponent svc);
 
     public void toggleReceiveAudio(SurfaceViewComponent svc){
-        int volume;
-        if(svc.isReceiveAudioEnabled)
-            volume = 100;
-        else
-            volume = -1;
+        if(svc.isReceiveAudioEnabled) {
+            stopReceivingAudio(svc);
+        } else {
+            startReceivingAudio(svc);
+        }
+    }
+
+    private void startReceivingAudio(SurfaceViewComponent svc) {
+        int volume = 100;
         FunSDK.MediaSetSound(svc.mPlayerHandler, volume, svc.mySurfaceViewOrderId);
+        svc.isReceiveAudioEnabled = true;
+    }
+
+    private void stopReceivingAudio(SurfaceViewComponent svc) {
+        int volume = -1;
+        FunSDK.MediaSetSound(svc.mPlayerHandler, volume, svc.mySurfaceViewOrderId);
+        svc.isReceiveAudioEnabled = false;
     }
 
     public void enableSendAudio(SurfaceViewComponent svc){
