@@ -1,30 +1,19 @@
 package br.inatel.icc.gigasecurity.gigamonitor.activities;
 
-import android.animation.Animator;
-import android.animation.AnimatorListenerAdapter;
 import android.animation.AnimatorSet;
 import android.animation.ObjectAnimator;
-import android.annotation.TargetApi;
 import android.app.Activity;
-import android.content.ClipData;
 import android.content.res.Configuration;
 import android.net.Uri;
-import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v7.app.ActionBarActivity;
-import android.support.v7.internal.view.menu.MenuView;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.WindowManager;
-import android.view.animation.AccelerateInterpolator;
-import android.view.animation.AlphaAnimation;
-import android.view.animation.Animation;
-import android.view.animation.AnimationSet;
-import android.view.animation.DecelerateInterpolator;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.SeekBar;
@@ -35,16 +24,13 @@ import com.google.android.gms.appindexing.Action;
 import com.google.android.gms.appindexing.AppIndex;
 import com.google.android.gms.appindexing.Thing;
 import com.google.android.gms.common.api.GoogleApiClient;
-import com.lib.sdk.struct.H264_DVR_FILE_DATA;
 import com.lib.sdk.struct.SDK_SYSTEM_TIME;
-import com.lib.sdk.struct.Strings;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.concurrent.TimeUnit;
-import java.util.logging.Logger;
 
 import br.inatel.icc.gigasecurity.gigamonitor.R;
 import br.inatel.icc.gigasecurity.gigamonitor.core.DeviceManager;
@@ -54,8 +40,6 @@ import br.inatel.icc.gigasecurity.gigamonitor.model.FileData;
 import br.inatel.icc.gigasecurity.gigamonitor.model.DeviceChannelsManager;
 import br.inatel.icc.gigasecurity.gigamonitor.ui.SurfaceViewComponent;
 
-import static android.R.attr.value;
-
 public class DevicePlaybackVideoActivity extends ActionBarActivity {
 
     private SurfaceViewComponent mSurfaceView;
@@ -63,6 +47,7 @@ public class DevicePlaybackVideoActivity extends ActionBarActivity {
     private Menu menu;
     private SeekBar mSeekBar;
     private ProgressBar mProgressBar;
+    private String initialTimeVideo;
     private TextView initialTime, mStatusTextView, endTime;
     private ImageView ivPlayPause, ivStop, ivForward, ivBackward;
     private final String TAG = "playback";
@@ -78,6 +63,7 @@ public class DevicePlaybackVideoActivity extends ActionBarActivity {
     public boolean progressBarDisabled = true;
     private Handler mHandler;
     private Runnable mAction;
+    private boolean isAdvancing = false;
 
     private PlaybackListener mPlaybackListener =
             new PlaybackListener() {
@@ -90,21 +76,7 @@ public class DevicePlaybackVideoActivity extends ActionBarActivity {
                 @Override
                 public void onChangeProgress(int progress) {
                     if (!mSurfaceView.isSeeking) {
-                        mSeekBar.setProgress(progress - mStartSecond);
-                        if (currentProgress != 0 && progress != currentProgress) {
-                            try {
-                                SimpleDateFormat sdf = new SimpleDateFormat("mm:ss");
-                                Date d = sdf.parse(initialTime.getText().toString());
-                                Calendar calendar = Calendar.getInstance();
-                                calendar.setTime(d);
-                                calendar.add(Calendar.SECOND, progress - currentProgress);
-                                String dif = sdf.format(calendar.getTime());
-                                initialTime.setText(dif);
-
-                            } catch (ParseException e) {
-                                e.printStackTrace();
-                            }
-                        }
+                        advanceSeek(progress);
                         currentProgress = progress;
                         Log.d(TAG, "onChangeProgress: " + currentProgress);
 
@@ -220,17 +192,9 @@ public class DevicePlaybackVideoActivity extends ActionBarActivity {
         //ivBackward.setVisibility(View.GONE);
         //ivForward.setVisibility(View.GONE);
 
-        initialTime.setText("00:00");
-        long timeDifference = mFileData.getEndDate().getTime() - mFileData.getBeginDate().getTime();
-        if (timeDifference == 3600000) {
-            endTime.setText("59:59");
-        } else {
-            SimpleDateFormat format = new SimpleDateFormat("mm:ss");
-            Calendar calendar = Calendar.getInstance();
-            calendar.setTimeInMillis(timeDifference);
-            String dif = format.format(calendar.getTime());
-            endTime.setText(dif);
-        }
+        initialTime.setText(mFileData.getBeginTimeStr());
+        initialTimeVideo = initialTime.getText().toString();
+        endTime.setText(mFileData.getEndTimeStr());
 
         // Set listeners
         mDeviceChannelsManager.setCurrentPlaybackListener(mPlaybackListener);
@@ -252,23 +216,21 @@ public class DevicePlaybackVideoActivity extends ActionBarActivity {
 
         ivForward.setOnTouchListener(new View.OnTouchListener() {
             @Override
-            public boolean onTouch(View view, MotionEvent motionEvent) {
-                populateRunnable(3);
-                switch (motionEvent.getAction()) {
-                    case MotionEvent.ACTION_DOWN:
-                        if (mHandler != null) {
-                            return true;
-                        }
-                        mHandler = new Handler();
-                        mHandler.postDelayed(mAction, 500);
+            public boolean onTouch(View view, MotionEvent event) {
+                if (event.getAction() == MotionEvent.ACTION_DOWN) {
+                    if (mHandler != null) {
                         return true;
-                    case MotionEvent.ACTION_UP:
-                        if (mHandler == null) {
-                            return true;
-                        }
-                        mHandler.removeCallbacks(mAction);
-                        mHandler = null;
-                        break;
+                    }
+                    int valueOfSecondsToAdvance = 2;
+                    String text = ">> 2x";
+                    advanceOrDelayVideo(text, valueOfSecondsToAdvance);
+                    return true;
+                } else if (event.getAction() == event.ACTION_UP) {
+                    if (mHandler == null) {
+                        return true;
+                    }
+                    stopAdvancingVideoAndPlay();
+                    return true;
                 }
                 return false;
             }
@@ -276,14 +238,22 @@ public class DevicePlaybackVideoActivity extends ActionBarActivity {
 
         ivBackward.setOnTouchListener(new View.OnTouchListener() {
             @Override
-            public boolean onTouch(View view, MotionEvent motionEvent) {
-                populateRunnable(-3);
-                if (mHandler != null) {
+            public boolean onTouch(View view, MotionEvent event) {
+                if (event.getAction() == MotionEvent.ACTION_DOWN) {
+                    if (mHandler != null) {
+                        return true;
+                    }
+                    String text = "<< 2x";
+                    int valueOfSecondsToBack = -2;
+                    advanceOrDelayVideo(text, valueOfSecondsToBack);
+                    return true;
+                } else if (event.getAction() == event.ACTION_UP) {
+                    if (mHandler == null) {
+                        return true;
+                    }
+                    stopAdvancingVideoAndPlay();
                     return true;
                 }
-                mHandler = new Handler();
-                mHandler.postDelayed(mAction, 500);
-//                backwardButtonClick(motionEvent, -3);
                 return false;
             }
         });
@@ -320,18 +290,71 @@ public class DevicePlaybackVideoActivity extends ActionBarActivity {
         client = new GoogleApiClient.Builder(this).addApi(AppIndex.API).build();
     }
 
+    private void showMessage() {
+        Toast.makeText(this, "O vídeo precisa estar em andamento!", Toast.LENGTH_SHORT).show();
+    }
+
+    private void advanceOrDelayVideo(String text, int value) {
+        if (mSurfaceView.isPlaying()) {
+            mDeviceChannelsManager.onStop(mSurfaceView);
+            mSurfaceView.isSeeking = true;
+            updateStatusTextView(text);
+            populateRunnable(value);
+            mHandler = new Handler();
+            mHandler.postDelayed(mAction, 500);
+            isAdvancing = true;
+        } else {
+            Toast.makeText(this, "O vídeo deve estar em andamento!", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    private void stopAdvancingVideoAndPlay() {
+        if (isAdvancing) {
+            isAdvancing = false;
+            mHandler.removeCallbacks(mAction);
+            mHandler = null;
+            mSurfaceView.isSeeking = false;
+            try {
+                SimpleDateFormat sdf = new SimpleDateFormat("hh:mm:ss");
+                Date d = sdf.parse(initialTime.getText().toString());
+                Calendar calendar = Calendar.getInstance();
+                calendar.setTime(d);
+                mFileData.getFileData().st_3_beginTime.st_6_second = calendar.get(Calendar.SECOND);
+                mFileData.getFileData().st_3_beginTime.st_5_minute = calendar.get(Calendar.MINUTE);
+                mFileData.getFileData().st_3_beginTime.st_4_hour = calendar.get(Calendar.HOUR_OF_DAY);
+                currentProgress = 0;
+                play();
+            } catch (ParseException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
     private void populateRunnable(final int value) {
         mAction = new Runnable() {
-            @Override
-            public void run() {
-                if (value > 0) {
-                    forwardButtonClick(value);
-                } else{
-                    backwardButtonClick(value);
-                }
+            @Override public void run() {
+                advanceSeek(currentProgress + value);
+                currentProgress += value;
                 mHandler.postDelayed(this, 500);
             }
         };
+    }
+
+    private void advanceSeek(int progress) {
+        mSeekBar.setProgress(progress - mStartSecond);
+        if (currentProgress != 0 && progress != currentProgress) {
+            try {
+                SimpleDateFormat sdf = new SimpleDateFormat("hh:mm:ss");
+                Date d = sdf.parse(initialTime.getText().toString());
+                Calendar calendar = Calendar.getInstance();
+                calendar.setTime(d);
+                calendar.add(Calendar.SECOND, progress - currentProgress);
+                String dif = sdf.format(calendar.getTime());
+                initialTime.setText(dif);
+            } catch (ParseException e) {
+                e.printStackTrace();
+            }
+        }
     }
 
     public void playButtonClick() {
@@ -350,23 +373,7 @@ public class DevicePlaybackVideoActivity extends ActionBarActivity {
             mSurfaceView.isSeeking = false;
             mSeekBar.setProgress(0);
             currentProgress = 0;
-            initialTime.setText("00:00");
-        }
-    }
-
-    public void backwardButtonClick(int value) {
-        setPlaybackSpeed(value);
-    }
-
-    public void forwardButtonClick(int value) {
-        setPlaybackSpeed(value);
-    }
-
-    private void setPlaybackSpeed(int value) {
-        if (mSurfaceView.isConnected() && mSurfaceView.isPlaying()) {
-            mDeviceChannelsManager.advancePlaybackVideo(mSurfaceView, value);
-        } else {
-            Toast.makeText(this, "O vídeo deve estar em andamento para adiantá-lo ou atrasá-lo!", Toast.LENGTH_SHORT).show();
+            initialTime.setText(initialTimeVideo);
         }
     }
 
@@ -409,7 +416,7 @@ public class DevicePlaybackVideoActivity extends ActionBarActivity {
         mProgressBar.setVisibility(View.VISIBLE);
         mSurfaceView.isLoading(true);
         mDeviceChannelsManager.onPlayPlayback(mFileData.getFileData(), mSurfaceView);
-        mSeekBar.setProgress(0);
+        mSeekBar.setProgress(currentProgress);
     }
 
     public void resume() {
