@@ -315,7 +315,7 @@ public class DevicePlaybackVideoActivity extends ActionBarActivity {
             mHandler = null;
             mSurfaceView.isSeeking = false;
             try {
-                SimpleDateFormat sdf = new SimpleDateFormat("hh:mm:ss");
+                SimpleDateFormat sdf = new SimpleDateFormat("HH:mm:ss");
                 Date d = sdf.parse(initialTime.getText().toString());
                 Calendar calendar = Calendar.getInstance();
                 calendar.setTime(d);
@@ -344,7 +344,7 @@ public class DevicePlaybackVideoActivity extends ActionBarActivity {
         mSeekBar.setProgress(progress - mStartSecond);
         if (currentProgress != 0 && progress != currentProgress) {
             try {
-                SimpleDateFormat sdf = new SimpleDateFormat("hh:mm:ss");
+                SimpleDateFormat sdf = new SimpleDateFormat("HH:mm:ss");
                 Date d = sdf.parse(initialTime.getText().toString());
                 Calendar calendar = Calendar.getInstance();
                 calendar.setTime(d);
