@@ -11,7 +11,7 @@ import android.media.MediaMetadataRetriever;
 import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.AsyncTask;
-import android.os.Environment;  
+import android.os.Environment;
 import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
