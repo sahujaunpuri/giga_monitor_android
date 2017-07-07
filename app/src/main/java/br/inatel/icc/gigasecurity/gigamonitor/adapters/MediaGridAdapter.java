@@ -9,11 +9,9 @@ import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.media.MediaMetadataRetriever;
 import android.media.MediaPlayer;
-import android.media.ThumbnailUtils;
 import android.net.Uri;
 import android.os.AsyncTask;
-import android.os.Environment;
-import android.provider.MediaStore;
+import android.os.Environment;  
 import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
@@ -74,10 +72,9 @@ public class MediaGridAdapter extends BaseAdapter {
         getImgFiles();
         getVideoFiles();
 
-
-
         Bitmap blankBitmap = Bitmap.createBitmap(1, 1, Bitmap.Config.ARGB_8888);
         blankDrawable = new BitmapDrawable(mContext.getResources(), blankBitmap);
+
     }
 
     private void getImgFiles() {
@@ -153,33 +150,27 @@ public class MediaGridAdapter extends BaseAdapter {
 
     @Override
     public View getView(final int position, View convertView, ViewGroup parent) {
+
         TextView imageView = null;
         TextView videoView = null;
 
         if (convertView == null) {
 
             if(this.pictureMode) {
-
                 imageView = new TextView(mContext);
                 imageView.setLayoutParams(new GridView.LayoutParams(GridView.AUTO_FIT, 120));
                 //imageView.setScaleType(ImageView.ScaleType.CENTER_CROP);
-
             } else {
-
                 videoView = new TextView(mContext);
                 videoView.setLayoutParams(new GridView.LayoutParams(GridView.AUTO_FIT, 120));
                 //videoView.setScaleType(ImageView.ScaleType.CENTER_CROP);
-
             }
-
         } else {
-
             if(this.pictureMode) {
                 imageView = (TextView) convertView;
             } else {
                 videoView = (TextView) convertView;
             }
-
         }
 
         if(this.pictureMode) {
@@ -208,7 +199,6 @@ public class MediaGridAdapter extends BaseAdapter {
                                 ((MediaActivity) mContext).runOnUiThread(new Runnable() {
                                     @Override
                                     public void run() {
-
                                         fImageView.setText("");
                                         fImageView.setBackground(drawable);
                                     }
@@ -274,8 +264,6 @@ public class MediaGridAdapter extends BaseAdapter {
                     new AsyncTask<Void, Void, Drawable>() {
                         @Override
                         protected Drawable doInBackground(Void... params) {
-
-
                             return getVideoDrawable(position);
                         }
 
@@ -300,13 +288,10 @@ public class MediaGridAdapter extends BaseAdapter {
             fVideoView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-
                             Intent intent = new Intent();
                             intent.setAction(Intent.ACTION_VIEW);
                             intent.setDataAndType(getVideoUri(position), "video/*");
                             mContext.startActivity(intent);
-
-
                 }
             });
 
@@ -324,6 +309,7 @@ public class MediaGridAdapter extends BaseAdapter {
                                         public void onClick(DialogInterface dialog, int which) {
                                             if (which == 0) {
                                                 mVideoFiles.get(position).delete();
+                                                mVideoDrawables.remove(position);
                                                 notifyDataSetChanged();
 
                                                 Intent intent = new Intent(mContext, MediaActivity.class);
@@ -331,8 +317,6 @@ public class MediaGridAdapter extends BaseAdapter {
                                                 intent.putExtra("imageSelected", false);
 
                                                 mContext.startActivity(intent);
-
-
                                             }
                                         }
                                     });
@@ -361,17 +345,20 @@ public class MediaGridAdapter extends BaseAdapter {
     }
 
     public Drawable getVideoDrawable(int position) {
-        if (mVideoDrawables.get(position) == null) {
-            MediaMetadataRetriever retriever = new MediaMetadataRetriever();
-            retriever.setDataSource(mVideoFiles.get(position).getPath());
-            Bitmap bitmap = retriever.getFrameAtTime(1000, MediaMetadataRetriever.OPTION_CLOSEST_SYNC);
-//            Bitmap bitmap = ThumbnailUtils.createVideoThumbnail(mVideoFiles.get(position).getPath(), MediaStore.Images.Thumbnails.MINI_KIND);
-            if (bitmap != null) {
-                mVideoDrawables.add(position,new BitmapDrawable(mContext.getResources(), bitmap));
+        try {
+            if (mVideoDrawables.get(position) == null) {
+                MediaMetadataRetriever retriever = new MediaMetadataRetriever();
+                retriever.setDataSource(mVideoFiles.get(position).getPath());
+                Bitmap bitmap = retriever.getFrameAtTime(1000, MediaMetadataRetriever.OPTION_CLOSEST);
+                if (bitmap != null) {
+                    mVideoDrawables.add(position, new BitmapDrawable(mContext.getResources(), bitmap));
+                }
+                tridToGetVideoThumbnail.add(position, true);
             }
-            tridToGetVideoThumbnail.add(position,true);
-
+        } catch (Exception e) {
+            e.printStackTrace();
         }
+
         return mVideoDrawables.get(position);
     }
 
@@ -403,6 +390,5 @@ public class MediaGridAdapter extends BaseAdapter {
     public void changeGridMode(boolean pictureMode) {
         this.pictureMode = pictureMode;
     }
-
 
 }

@@ -534,7 +534,7 @@ public abstract class ChannelsManager implements IFunSDKResult {
                             onStop(svc);
                             svc.stoppingRec = false;
                         }
-                    }else{
+                    } else {
                         file.delete();
                         Toast.makeText(mContext, "Falha na captura da imagem", Toast.LENGTH_SHORT).show();
                     }
