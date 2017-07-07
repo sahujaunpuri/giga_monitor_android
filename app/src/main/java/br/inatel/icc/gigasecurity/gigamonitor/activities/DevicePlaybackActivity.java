@@ -12,12 +12,14 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.NumberPicker;
+import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.TimePicker;
 import android.widget.Toast;
@@ -33,6 +35,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.List;
 
 import br.inatel.icc.gigasecurity.gigamonitor.R;
 import br.inatel.icc.gigasecurity.gigamonitor.adapters.DevicePlaybacksAdapter;
@@ -41,9 +44,15 @@ import br.inatel.icc.gigasecurity.gigamonitor.listeners.PlaybackSearchListener;
 import br.inatel.icc.gigasecurity.gigamonitor.model.Device;
 import br.inatel.icc.gigasecurity.gigamonitor.model.FileData;
 import br.inatel.icc.gigasecurity.gigamonitor.ui.DatePickerFragment;
+import br.inatel.icc.gigasecurity.gigamonitor.util.Utils;
 
 public class DevicePlaybackActivity extends ActionBarActivity
         implements AdapterView.OnItemClickListener{
+
+    private static final String continuousType = "Contínuo";
+    private static final String allType = "Todos";
+    private static final String alarmType = "Alarme";
+    private static final String movimentType = "Movimento";
 
     private DeviceManager mManager;
     private Calendar mInitialTime;
@@ -57,7 +66,9 @@ public class DevicePlaybackActivity extends ActionBarActivity
     private ImageButton endTimePicker;
     private Activity mActivity;
     private NumberPicker nbChannel;
-    private LinearLayout layoutFindPlayback, layoutListPlayback;
+    private LinearLayout layoutFindPlayback, layoutListPlayback, layout_spinner;
+    private Spinner spinner;
+    private TextView playbackType;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -73,8 +84,10 @@ public class DevicePlaybackActivity extends ActionBarActivity
         nbChannel          = (NumberPicker) findViewById(R.id.nb_playback);
         layoutFindPlayback = (LinearLayout) findViewById(R.id.linear_layout_find_playback);
         layoutListPlayback = (LinearLayout) findViewById(R.id.linear_layout_list_playback);
+        layout_spinner     = (LinearLayout) findViewById(R.id.linear_layout_spinner);
+        playbackType       = (TextView) findViewById(R.id.spinnerValue);
+        spinner               = (Spinner) findViewById(R.id.playback_filter);
         mListView.setOnItemClickListener(this);
-
 
         mActivity = this;
         mManager = DeviceManager.getInstance();
@@ -116,6 +129,21 @@ public class DevicePlaybackActivity extends ActionBarActivity
         nbChannel.setMaxValue(maxValueNumberPick);
 
         setDateButtonText(mInitialTime.getTime());
+
+        spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
+                String selectedType = spinner.getSelectedItem().toString();
+                playbackType.setText(selectedType);
+                callFindPlaybacks(selectedType);
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> adapterView) {
+
+            }
+        });
+
     }
 
     public void setDateButtonText(Date date) {
@@ -186,7 +214,21 @@ public class DevicePlaybackActivity extends ActionBarActivity
         return playbacks;
     }
 
-    private void findPlaybacks() {
+    private void callFindPlaybacks(String playType) {
+        Integer type = 0;
+        if (playType.equals(continuousType)) {
+            type = SDKCONST.FileType.SDK_RECORD_REGULAR;
+        } else if (playType.equals(alarmType)) {
+            type = SDKCONST.FileType.SDK_RECORD_ALARM;
+        } else if (playType.equals(movimentType)) {
+            type = SDKCONST.FileType.SDK_RECORD_DETECT;
+        } else if (playType.equals(allType)) {
+            type = SDKCONST.FileType.SDK_RECORD_ALL;
+        }
+        findPlaybacks(type);
+    }
+
+    private void findPlaybacks(final Integer type) {
         String title = getResources().getString(R.string.label_searching_files);
         String msg = getResources().getString(R.string.label_please_wait);
         ArrayList<FileData> playbacks;
@@ -214,14 +256,18 @@ public class DevicePlaybackActivity extends ActionBarActivity
                 info.st_3_endTime.st_5_dwSecond = 59;
                 info.st_0_nChannelN0 = nbChannel.getValue() - 1;
                 info.st_6_StreamType = 2;
+                info.st_1_nFileType = type;
 
                 mManager.findPlaybackList(mDevice, info, new PlaybackSearchListener() {
                     @Override
                     public void onFindList(H264_DVR_FILE_DATA files[]) {
                         ArrayList<FileData> playbacks = infoToArray(files);
                         layoutFindPlayback.setVisibility(View.GONE);
+                        layout_spinner.setVisibility(View.VISIBLE);
                         layoutListPlayback.setVisibility(View.VISIBLE);
 
+                        Spinner spinner = (Spinner) findViewById(R.id.playback_filter);
+                        TextView playbackType = (TextView) findViewById(R.id.spinnerValue);
                         mListView.setAdapter(new DevicePlaybacksAdapter(mActivity, playbacks));
 
                         progressDialog.dismiss();
@@ -232,6 +278,9 @@ public class DevicePlaybackActivity extends ActionBarActivity
                             @Override
                             public void run() {
                                 String msg = getResources().getString(R.string.label_no_records);
+                                layoutListPlayback.setVisibility(View.GONE);
+                                TextView text = (TextView) findViewById(R.id.text_view_no_registers);
+                                text.setVisibility(View.VISIBLE);
                                 Toast.makeText(DevicePlaybackActivity.this, msg, Toast.LENGTH_SHORT).show();
                                 progressDialog.dismiss();
                             }
@@ -269,6 +318,7 @@ public class DevicePlaybackActivity extends ActionBarActivity
             case android.R.id.home:
                 if(layoutListPlayback.getVisibility() == View.VISIBLE) {
                     layoutFindPlayback.setVisibility(View.VISIBLE);
+                    layout_spinner.setVisibility(View.GONE);
                     layoutListPlayback.setVisibility(View.GONE);
                 } else {
                     finish();
@@ -277,7 +327,7 @@ public class DevicePlaybackActivity extends ActionBarActivity
                 return true;
 
             case R.id.menu_search:
-                findPlaybacks();
+                findPlaybacks(SDKCONST.FileType.SDK_RECORD_ALL);
                 return true;
 
             default:

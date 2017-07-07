@@ -10,7 +10,35 @@
     android:focusableInTouchMode="true"
     tools:context="br.inatel.icc.gigasecurity.gigamonitor.activities.DevicePlaybackActivity">
 
+    <LinearLayout
+        android:id="@+id/linear_layout_spinner"
+        android:orientation="horizontal"
+        android:visibility="gone"
+        android:layout_width="match_parent"
+        android:layout_height="50dp">
 
+        <TextView
+            android:id="@+id/spinnerTitle"
+            android:layout_width="wrap_content"
+            android:layout_height="50dp"
+            android:paddingLeft="20dp"
+            android:text="Tipo de playback: "
+            android:textAppearance="?android:attr/textAppearanceMedium" />
+
+        <TextView
+            android:id="@+id/spinnerValue"
+            android:layout_width="wrap_content"
+            android:layout_height="50dp"
+            android:textAppearance="?android:attr/textAppearanceMedium" />
+
+        <Spinner
+            android:id="@+id/playback_filter"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:drawSelectorOnTop="true"
+            android:entries="@array/playback_types" />
+
+    </LinearLayout>
 
     <LinearLayout
         android:orientation="vertical"
@@ -174,11 +202,17 @@
             android:text="@string/label_video_type"
             android:textSize="16sp" />
 
-
         <ListView
             android:id="@+id/list_view_playbacks"
             android:layout_width="match_parent"
             android:layout_height="wrap_content" />
     </LinearLayout>
+
+    <TextView
+        android:id="@+id/text_view_no_registers"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:gravity="center"
+        android:text="Não há registros desse tipo!"/>
 
 </LinearLayout>

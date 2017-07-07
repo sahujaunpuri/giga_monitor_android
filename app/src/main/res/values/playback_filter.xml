@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="playback_prompt">Tipos de playback</string>
+    <string-array name="playback_types">
+        <item>Todos</item>
+        <item>Contínuo</item>
+        <item>Alarme</item>
+        <item>Movimento</item>
+    </string-array>
+</resources>
