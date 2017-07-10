@@ -4,11 +4,13 @@ import android.app.Activity;
 import android.app.DatePickerDialog;
 import android.app.ProgressDialog;
 import android.app.TimePickerDialog;
+import android.content.ClipData;
 import android.content.Intent;
 import android.media.Image;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
 import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
@@ -69,6 +71,7 @@ public class DevicePlaybackActivity extends ActionBarActivity
     private LinearLayout layoutFindPlayback, layoutListPlayback, layout_spinner;
     private Spinner spinner;
     private TextView playbackType;
+    private MenuItem menuItem;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -87,6 +90,7 @@ public class DevicePlaybackActivity extends ActionBarActivity
         layout_spinner     = (LinearLayout) findViewById(R.id.linear_layout_spinner);
         playbackType       = (TextView) findViewById(R.id.spinnerValue);
         spinner               = (Spinner) findViewById(R.id.playback_filter);
+
         mListView.setOnItemClickListener(this);
 
         mActivity = this;
@@ -263,6 +267,7 @@ public class DevicePlaybackActivity extends ActionBarActivity
                     public void onFindList(H264_DVR_FILE_DATA files[]) {
                         ArrayList<FileData> playbacks = infoToArray(files);
                         layoutFindPlayback.setVisibility(View.GONE);
+                        menuItem.setVisible(false);
                         layout_spinner.setVisibility(View.VISIBLE);
                         layoutListPlayback.setVisibility(View.VISIBLE);
 
@@ -279,8 +284,6 @@ public class DevicePlaybackActivity extends ActionBarActivity
                             public void run() {
                                 String msg = getResources().getString(R.string.label_no_records);
                                 layoutListPlayback.setVisibility(View.GONE);
-                                TextView text = (TextView) findViewById(R.id.text_view_no_registers);
-                                text.setVisibility(View.VISIBLE);
                                 Toast.makeText(DevicePlaybackActivity.this, msg, Toast.LENGTH_SHORT).show();
                                 progressDialog.dismiss();
                             }
@@ -307,7 +310,7 @@ public class DevicePlaybackActivity extends ActionBarActivity
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.menu_playback, menu);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-
+        menuItem = menu.findItem(R.id.menu_search);
         return true;
     }
 
@@ -318,6 +321,7 @@ public class DevicePlaybackActivity extends ActionBarActivity
             case android.R.id.home:
                 if(layoutListPlayback.getVisibility() == View.VISIBLE) {
                     layoutFindPlayback.setVisibility(View.VISIBLE);
+                    menuItem.setVisible(true);
                     layout_spinner.setVisibility(View.GONE);
                     layoutListPlayback.setVisibility(View.GONE);
                 } else {
