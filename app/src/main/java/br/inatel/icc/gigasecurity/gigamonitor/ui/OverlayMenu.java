@@ -267,10 +267,10 @@ public class OverlayMenu extends RelativeLayout {
             @Override
             public void onClick(View view) {
                 if(surfaceViewComponent.isReceiveAudioEnabled){
-                    surfaceViewComponent.isReceiveAudioEnabled = false;
+//                    surfaceViewComponent.isReceiveAudioEnabled = false;
                     ivReceiveAudio.setImageDrawable(mContext.getResources().getDrawable(R.drawable.ic_volume_mute_white_36dp));
                 }else {
-                    surfaceViewComponent.isReceiveAudioEnabled = true;
+//                    surfaceViewComponent.isReceiveAudioEnabled = true;
                     ivReceiveAudio.setImageDrawable(mContext.getResources().getDrawable(R.drawable.ic_volume_up_white_36dp));
                 }
                 deviceChannelsManager.toggleReceiveAudio(surfaceViewComponent);
