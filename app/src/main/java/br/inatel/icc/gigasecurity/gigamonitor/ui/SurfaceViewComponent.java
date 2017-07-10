@@ -194,13 +194,15 @@ public class SurfaceViewComponent extends FrameLayout {
 
     public void setPTZEnabled(boolean PTZEnabled) {
         isPTZEnabled = PTZEnabled;
-        if(isPTZEnabled)
+        if(isPTZEnabled) {
             enablePTZ();
-        else
+        } else {
             disablePTZ();
+        }
     }
 
-    public void enablePTZ(){
+    public void enablePTZ() {
+
         ivTouch = new ImageView(mContext);
         ivTouch.setImageResource(R.drawable.ic_touch_white_36dp);
         FrameLayout.LayoutParams params = new FrameLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT, Gravity.CENTER_HORIZONTAL);
@@ -213,7 +215,7 @@ public class SurfaceViewComponent extends FrameLayout {
         this.addView(ptzOverlay);
     }
 
-    public void disablePTZ(){
+    public void disablePTZ() {
         this.removeView(ivTouch);
         ivTouch = null;
         this.removeView(ptzOverlay);
@@ -410,13 +412,16 @@ public class SurfaceViewComponent extends FrameLayout {
             case MotionEvent.ACTION_CANCEL: {
             }
         }
+
+        if (isPTZEnabled() && ptzOverlay.getVisibility() == INVISIBLE) {
+            return true;
+        }
         return ret;
     }
 
     final Handler handler = new Handler();
     Runnable mLongPressed = new Runnable() {
         public void run() {
-            Log.d(TAG2, "onLongPress: ");
             longPress = true;
             ((Activity) mContext).runOnUiThread(new Runnable() {
                 @Override
