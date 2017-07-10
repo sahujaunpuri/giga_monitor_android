@@ -1,15 +1,21 @@
 package br.inatel.icc.gigasecurity.gigamonitor.adapters;
 
 import android.content.Context;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.BaseAdapter;
+import android.widget.Filter;
+import android.widget.Filterable;
 import android.widget.LinearLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
 
+import com.lib.SDKCONST;
+
+import java.io.File;
 import java.util.ArrayList;
 
 import br.inatel.icc.gigasecurity.gigamonitor.R;
@@ -27,14 +33,26 @@ import br.inatel.icc.gigasecurity.gigamonitor.util.Utils;
  * All rights are reserved. Reproduction in whole or part is
  * prohibited without the written consent of the copyright owner.
  */
-public class DevicePlaybacksAdapter extends BaseAdapter {
-    private ArrayList<FileData> mFileDataList;
+public class DevicePlaybacksAdapter extends BaseAdapter implements Filterable{
 
+    private static final String continuousType = "Contínuo";
+    private static final String allType = "Todos";
+    private static final String alarmType = "Alarme";
+    private static final String movimentType = "Movimento";
+
+    private ArrayList<FileData> mFileDataList;
     private LayoutInflater mInflater;
+    private ArrayList<FileData> allFiles;
 
     public DevicePlaybacksAdapter(Context context, ArrayList<FileData> fileDataList) {
         mInflater     = LayoutInflater.from(context);
+        allFiles      = fileDataList;
         mFileDataList = fileDataList;
+    }
+
+    @Override
+    public void notifyDataSetChanged() {
+        super.notifyDataSetChanged();
     }
 
     @Override
@@ -71,7 +89,7 @@ public class DevicePlaybacksAdapter extends BaseAdapter {
         String endTime = mFileDataList.get(position).mFileEndTime;
         String videoType = Utils.getFileTypeName(fileData.mFileType);
         String videoQuality = "";
-        if(mFileDataList.get(position).getStreamType() == 0){
+        if (mFileDataList.get(position).getStreamType() == 0) {
             videoQuality = "HD";
         } else
             videoQuality = "SD";
@@ -82,5 +100,39 @@ public class DevicePlaybacksAdapter extends BaseAdapter {
         ((TextView) view.findViewById(R.id.text_video_quality)).setText(videoQuality);
 
         return view;
+    }
+
+    @Override
+    public Filter getFilter() {
+        Filter filter = new Filter() {
+            @Override
+            protected FilterResults performFiltering(CharSequence cs) {
+                FilterResults results = new FilterResults();
+                if (cs == null || cs.length() == 0) {
+                    results.count = allFiles.size();
+                    results.values = allFiles;
+                } else {
+//                    cs = cs.toString();
+//                    int type = Utils.getIntFileType(cs.toString());
+                    mFileDataList = new ArrayList<FileData>();
+                    for (int i=0; i<allFiles.size(); i++) {
+                        if (allFiles.get(i).mFileType == Integer.valueOf(cs.toString())) {
+                            mFileDataList.add(allFiles.get(i));
+                        }
+                    }
+                    results.count = mFileDataList.size();
+                    results.values = mFileDataList;
+                }
+                return results;
+            }
+
+            @Override
+            protected void publishResults(CharSequence charSequence, FilterResults filterResults) {
+                mFileDataList = (ArrayList<FileData>) filterResults.values;
+                notifyDataSetChanged();
+            }
+        };
+
+        return filter;
     }
 }

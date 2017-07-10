@@ -9,12 +9,14 @@ import android.content.Intent;
 import android.media.Image;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.BaseAdapter;
 import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.ImageButton;
@@ -57,6 +59,9 @@ public class DevicePlaybackActivity extends ActionBarActivity
     private static final String movimentType = "Movimento";
 
     private DeviceManager mManager;
+    private ArrayList<FileData> allPlaybacks = new ArrayList<>();
+    private ArrayList<FileData> playbacksShowed = new ArrayList<>();
+    private DevicePlaybacksAdapter arrayAdapter = null;
     private Calendar mInitialTime;
     private Calendar endDate;
     private Device mDevice;
@@ -139,12 +144,23 @@ public class DevicePlaybackActivity extends ActionBarActivity
             public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
                 String selectedType = spinner.getSelectedItem().toString();
                 playbackType.setText(selectedType);
-                callFindPlaybacks(selectedType);
+//                filterPlaybacks(selectedType);
+                String type = "0";
+                if (selectedType.equals(continuousType)) {
+                    type = "1";
+                } else if (selectedType.equals(movimentType)) {
+                    type = "2";
+                } else if (selectedType.equals(alarmType)) {
+                    type = "3";
+                } else if (selectedType.equals(allType)) {
+                    type = "0";
+                }
+                arrayAdapter.getFilter().filter(type);
             }
 
             @Override
             public void onNothingSelected(AdapterView<?> adapterView) {
-
+                Log.d("NothingSelected", "Nada Selecionado");
             }
         });
 
@@ -218,24 +234,16 @@ public class DevicePlaybackActivity extends ActionBarActivity
         return playbacks;
     }
 
-    private void callFindPlaybacks(String playType) {
-        Integer type = 0;
-        if (playType.equals(continuousType)) {
-            type = SDKCONST.FileType.SDK_RECORD_REGULAR;
-        } else if (playType.equals(alarmType)) {
-            type = SDKCONST.FileType.SDK_RECORD_ALARM;
-        } else if (playType.equals(movimentType)) {
-            type = SDKCONST.FileType.SDK_RECORD_DETECT;
-        } else if (playType.equals(allType)) {
-            type = SDKCONST.FileType.SDK_RECORD_ALL;
-        }
-        findPlaybacks(type);
-    }
+//    private void filterPlaybacks(final String playType) {
+//        if (arrayAdapter != null) {
+//            arrayAdapter.notifyDataSetChanged();
+//            arrayAdapter.filterPlaybacks(playType);
+//        }
+//    }
 
     private void findPlaybacks(final Integer type) {
         String title = getResources().getString(R.string.label_searching_files);
         String msg = getResources().getString(R.string.label_please_wait);
-        ArrayList<FileData> playbacks;
 
         final ProgressDialog progressDialog = ProgressDialog.show(mActivity, title,
                 msg);
@@ -265,15 +273,17 @@ public class DevicePlaybackActivity extends ActionBarActivity
                 mManager.findPlaybackList(mDevice, info, new PlaybackSearchListener() {
                     @Override
                     public void onFindList(H264_DVR_FILE_DATA files[]) {
-                        ArrayList<FileData> playbacks = infoToArray(files);
+                        allPlaybacks = infoToArray(files);
+                        playbacksShowed = allPlaybacks;
                         layoutFindPlayback.setVisibility(View.GONE);
                         menuItem.setVisible(false);
                         layout_spinner.setVisibility(View.VISIBLE);
                         layoutListPlayback.setVisibility(View.VISIBLE);
 
-                        Spinner spinner = (Spinner) findViewById(R.id.playback_filter);
-                        TextView playbackType = (TextView) findViewById(R.id.spinnerValue);
-                        mListView.setAdapter(new DevicePlaybacksAdapter(mActivity, playbacks));
+                        if (arrayAdapter == null) {
+                            arrayAdapter = new DevicePlaybacksAdapter(mActivity, playbacksShowed);
+                        }
+                        mListView.setAdapter(arrayAdapter);
 
                         progressDialog.dismiss();
                     }
