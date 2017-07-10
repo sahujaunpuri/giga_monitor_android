@@ -156,14 +156,19 @@ public class OverlayMenu extends RelativeLayout {
             @Override
             public void onClick(View v) {
                 if(surfaceViewComponent.isREC){
-                    Toast.makeText(mContext, "Finalize a gravação", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(mContext, "Finalize a gravação!", Toast.LENGTH_SHORT).show();
                 } else {
-                    if (!surfaceViewComponent.isHD()) {
-                        deviceChannelsManager.enableHD(surfaceViewComponent);
-                        ivHQ.setImageDrawable(mContext.getResources().getDrawable(R.drawable.ic_hq_on));
+                    boolean hasRecording = deviceChannelsManager.verifyIfSomeChannelIsRecording();
+                    if (!hasRecording) {
+                        if (!surfaceViewComponent.isHD()) {
+                            deviceChannelsManager.enableHD(surfaceViewComponent);
+                            ivHQ.setImageDrawable(mContext.getResources().getDrawable(R.drawable.ic_hq_on));
+                        } else {
+                            deviceChannelsManager.disableHD(surfaceViewComponent);
+                            ivHQ.setImageDrawable(mContext.getResources().getDrawable(R.drawable.ic_hq_off));
+                        }
                     } else {
-                        deviceChannelsManager.disableHD(surfaceViewComponent);
-                        ivHQ.setImageDrawable(mContext.getResources().getDrawable(R.drawable.ic_hq_off));
+                        Toast.makeText(mContext, "Finalize a gravação do outro canal!", Toast.LENGTH_SHORT).show();
                     }
                 }
             }

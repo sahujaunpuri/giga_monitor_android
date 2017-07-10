@@ -390,6 +390,16 @@ public abstract class ChannelsManager implements IFunSDKResult {
 
     }
 
+    public boolean verifyIfSomeChannelIsRecording() {
+        boolean hasRecording = false;
+        for (int i=0; i<surfaceViewComponents.size(); i++) {
+            if (surfaceViewComponents.get(i).isREC()) {
+                hasRecording = true;
+                break;
+            }
+        }
+        return hasRecording;
+    }
 
     /***************/
     public SurfaceViewComponent findSurfaceByHandler(int handler){
