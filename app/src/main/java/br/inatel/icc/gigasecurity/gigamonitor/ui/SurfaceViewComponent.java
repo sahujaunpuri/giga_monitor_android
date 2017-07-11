@@ -13,6 +13,7 @@ import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.ScaleGestureDetector;
 import android.view.View;
+import android.view.ViewConfiguration;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
@@ -362,6 +363,7 @@ public class SurfaceViewComponent extends FrameLayout {
     public boolean onInterceptTouchEvent(MotionEvent ev) {
         boolean ret = false;
         final int action = ev.getActionMasked();
+
         if(mScaleFactor > 1.F || isPTZEnabled())
             interruptScroll();
         mySurfaceView.setRenderMode(GLSurfaceView.RENDERMODE_CONTINUOUSLY);
@@ -411,11 +413,26 @@ public class SurfaceViewComponent extends FrameLayout {
             break;
             case MotionEvent.ACTION_CANCEL: {
             }
+            case MotionEvent.ACTION_POINTER_INDEX_SHIFT:{
+                Log.e("ZOOM", "IndexShift");
+            }
+            break;
+            case MotionEvent.ACTION_POINTER_INDEX_MASK:{
+                Log.e("ZOOM", "IndexMask");
+            }
+            break;
+            case MotionEvent.ACTION_POINTER_DOWN:{
+                Log.e("ZOOM", "PointerDown");
+            }
+            break;
+            case MotionEvent.ACTION_POINTER_UP: {
+                Log.e("ZOOM", "PointerUp");
+                if (isPTZEnabled()) {
+                    return false;
+                }
+            }
         }
 
-        if (isPTZEnabled() && ptzOverlay.getVisibility() == INVISIBLE) {
-            return true;
-        }
         return ret;
     }
 
@@ -436,6 +453,7 @@ public class SurfaceViewComponent extends FrameLayout {
     };
 
     private class ScaleListener extends ScaleGestureDetector.SimpleOnScaleGestureListener {
+
         @Override
         public boolean onScaleBegin(ScaleGestureDetector scaleGestureDetector) {
             Log.d(TAG2, "onScaleBegin: ");
@@ -455,6 +473,7 @@ public class SurfaceViewComponent extends FrameLayout {
         public boolean onScale(ScaleGestureDetector scaleGestureDetector) {
             return true;
         }
+
     }
 
     private class SimpleGestureDetector extends GestureDetector.SimpleOnGestureListener{
