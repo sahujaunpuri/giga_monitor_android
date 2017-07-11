@@ -34,6 +34,12 @@ import java.util.Locale;
  */
 public class Utils {
 
+    private static final String CONTINUOUSTYPE = "Contínuo";
+    private static final String ALLTYPE = "Todos";
+    private static final String ALARMTYPE = "Alarme";
+    private static final String MOVIMENTTYPE = "Movimento";
+    private static final String MANUALTYPE = "Manual";
+
     public static String getApplicationName(Context context) {
         final int stringId = context.getApplicationInfo().labelRes;
         return context.getString(stringId);
@@ -140,6 +146,22 @@ public class Utils {
     public static String ipToHexString( final String ip ) {
 
         return String.format( "0x%08X", Utils.stringToHexIP( ip ) );
+    }
+
+    public static int getRecordFileType(String type) {
+        int recordType = -1;
+        if (type.equals(ALLTYPE)) {
+            recordType = SDKCONST.FileType.SDK_RECORD_ALL;
+        } else if (type.equals(CONTINUOUSTYPE)) {
+            recordType = SDKCONST.FileType.SDK_RECORD_ALARM;
+        } else if (type.equals(MOVIMENTTYPE)) {
+            recordType = SDKCONST.FileType.SDK_RECORD_DETECT;
+        } else if (type.equals(ALARMTYPE)) {
+            recordType = SDKCONST.FileType.SDK_RECORD_REGULAR;
+        } else if (type.equals(MANUALTYPE)) {
+            recordType = SDKCONST.FileType.SDK_RECORD_MANUAL;
+        }
+        return recordType;
     }
 
     public static String getFileTypeName(int type) {

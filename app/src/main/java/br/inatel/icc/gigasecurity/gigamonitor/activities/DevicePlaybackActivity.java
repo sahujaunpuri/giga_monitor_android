@@ -53,10 +53,11 @@ import br.inatel.icc.gigasecurity.gigamonitor.util.Utils;
 public class DevicePlaybackActivity extends ActionBarActivity
         implements AdapterView.OnItemClickListener{
 
-    private static final String continuousType = "Contínuo";
-    private static final String allType = "Todos";
-    private static final String alarmType = "Alarme";
-    private static final String movimentType = "Movimento";
+    private static final String CONTINUOUSTYPE = "Contínuo";
+    private static final String ALLTYPE = "Todos";
+    private static final String ALARMTYPE = "Alarme";
+    private static final String MOVIMENTTYPE = "Movimento";
+    private static final String MANUALTYPE = "Manual";
 
     private DeviceManager mManager;
     private ArrayList<FileData> allPlaybacks = new ArrayList<>();
@@ -145,17 +146,16 @@ public class DevicePlaybackActivity extends ActionBarActivity
                 String selectedType = spinner.getSelectedItem().toString();
                 playbackType.setText(selectedType);
 //                filterPlaybacks(selectedType);
-                String type = "0";
-                if (selectedType.equals(continuousType)) {
-                    type = "1";
-                } else if (selectedType.equals(movimentType)) {
-                    type = "2";
-                } else if (selectedType.equals(alarmType)) {
-                    type = "3";
-                } else if (selectedType.equals(allType)) {
-                    type = "0";
+                int type = SDKCONST.FileType.SDK_RECORD_ALL;
+                if (selectedType.equals(CONTINUOUSTYPE)) {
+                    type = SDKCONST.FileType.SDK_RECORD_ALARM;
+                } else if (selectedType.equals(MOVIMENTTYPE)) {
+                    type = SDKCONST.FileType.SDK_RECORD_DETECT;
+                } else if (selectedType.equals(ALARMTYPE)) {
+                    type = SDKCONST.FileType.SDK_RECORD_REGULAR;
                 }
-                arrayAdapter.getFilter().filter(type);
+                String stringType = String.valueOf(type);
+                arrayAdapter.getFilter().filter(stringType);
             }
 
             @Override

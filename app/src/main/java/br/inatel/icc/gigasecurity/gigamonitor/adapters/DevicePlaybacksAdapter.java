@@ -12,6 +12,7 @@ import android.widget.Filterable;
 import android.widget.LinearLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.lib.SDKCONST;
 
@@ -35,16 +36,13 @@ import br.inatel.icc.gigasecurity.gigamonitor.util.Utils;
  */
 public class DevicePlaybacksAdapter extends BaseAdapter implements Filterable{
 
-    private static final String continuousType = "Contínuo";
-    private static final String allType = "Todos";
-    private static final String alarmType = "Alarme";
-    private static final String movimentType = "Movimento";
-
+    private Context mContext;
     private ArrayList<FileData> mFileDataList;
     private LayoutInflater mInflater;
     private ArrayList<FileData> allFiles;
 
     public DevicePlaybacksAdapter(Context context, ArrayList<FileData> fileDataList) {
+        mContext = context;
         mInflater     = LayoutInflater.from(context);
         allFiles      = fileDataList;
         mFileDataList = fileDataList;
@@ -108,7 +106,8 @@ public class DevicePlaybacksAdapter extends BaseAdapter implements Filterable{
             @Override
             protected FilterResults performFiltering(CharSequence cs) {
                 FilterResults results = new FilterResults();
-                if (cs == null || cs.length() == 0) {
+                int type = Integer.valueOf(cs.toString());
+                if (cs == null || cs.length() == 0 || type == 0) {
                     results.count = allFiles.size();
                     results.values = allFiles;
                 } else {
@@ -116,12 +115,15 @@ public class DevicePlaybacksAdapter extends BaseAdapter implements Filterable{
 //                    int type = Utils.getIntFileType(cs.toString());
                     mFileDataList = new ArrayList<FileData>();
                     for (int i=0; i<allFiles.size(); i++) {
-                        if (allFiles.get(i).mFileType == Integer.valueOf(cs.toString())) {
+                        if (allFiles.get(i).mFileType == type) {
                             mFileDataList.add(allFiles.get(i));
                         }
                     }
                     results.count = mFileDataList.size();
                     results.values = mFileDataList;
+                }
+                if (results.count < 1) {
+                    Toast.makeText(mContext, "Não há registros desse tipo!", Toast.LENGTH_SHORT).show();
                 }
                 return results;
             }
