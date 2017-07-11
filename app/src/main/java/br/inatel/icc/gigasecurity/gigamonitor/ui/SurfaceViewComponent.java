@@ -348,6 +348,12 @@ public class SurfaceViewComponent extends FrameLayout {
         @Override
         public void onScale(float v, View view, MotionEvent motionEvent) {
             mScaleFactor = v;
+            if (mScaleFactor > 1.0 && isPTZEnabled()) {
+                ivTouch.setVisibility(INVISIBLE);
+                ptzOverlay.setVisibility(INVISIBLE);
+            } else if (isPTZEnabled()) {
+                ivTouch.setVisibility(VISIBLE);
+            }
         }
 
         @Override
@@ -363,6 +369,7 @@ public class SurfaceViewComponent extends FrameLayout {
     public boolean onInterceptTouchEvent(MotionEvent ev) {
         boolean ret = false;
         final int action = ev.getActionMasked();
+        final int pointerCount = ev.getPointerCount();
 
         if(mScaleFactor > 1.F || isPTZEnabled())
             interruptScroll();
@@ -379,7 +386,7 @@ public class SurfaceViewComponent extends FrameLayout {
                 if(mScaleFactor == 1.F && !isPTZEnabled()){
                     resumeScroll();
                     return false;
-                } else if(isPTZEnabled() && !isScaling && mScaleFactor == 1.F && longPress){
+                } else if(isPTZEnabled() && !isScaling && mScaleFactor == 1.F && longPress && pointerCount == 1){
                     dx += ev.getX() - previousX;
                     dy += ev.getY() - previousY;
 
@@ -400,7 +407,7 @@ public class SurfaceViewComponent extends FrameLayout {
             break;
             case MotionEvent.ACTION_UP: {
                 handler.removeCallbacks(mLongPressed);
-                if(isPTZEnabled() && longPress){
+                if(isPTZEnabled() && longPress && pointerCount == 1){
                     mChannelsManager.ptzControl(previsousPTZCommand, this, true);
                     ivTouch.setVisibility(VISIBLE);
                     ptzOverlay.setVisibility(INVISIBLE);
@@ -412,24 +419,6 @@ public class SurfaceViewComponent extends FrameLayout {
             }
             break;
             case MotionEvent.ACTION_CANCEL: {
-            }
-            case MotionEvent.ACTION_POINTER_INDEX_SHIFT:{
-                Log.e("ZOOM", "IndexShift");
-            }
-            break;
-            case MotionEvent.ACTION_POINTER_INDEX_MASK:{
-                Log.e("ZOOM", "IndexMask");
-            }
-            break;
-            case MotionEvent.ACTION_POINTER_DOWN:{
-                Log.e("ZOOM", "PointerDown");
-            }
-            break;
-            case MotionEvent.ACTION_POINTER_UP: {
-                Log.e("ZOOM", "PointerUp");
-                if (isPTZEnabled()) {
-                    return false;
-                }
             }
         }
 
