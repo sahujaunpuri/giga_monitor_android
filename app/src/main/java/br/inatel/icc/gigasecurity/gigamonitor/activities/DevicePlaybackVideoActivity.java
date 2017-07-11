@@ -3,11 +3,14 @@ package br.inatel.icc.gigasecurity.gigamonitor.activities;
 import android.animation.AnimatorSet;
 import android.animation.ObjectAnimator;
 import android.app.Activity;
+import android.content.pm.ActivityInfo;
 import android.content.res.Configuration;
+import android.content.res.Resources;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v7.app.ActionBarActivity;
+import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -33,6 +36,7 @@ import java.util.Date;
 import java.util.concurrent.TimeUnit;
 
 import br.inatel.icc.gigasecurity.gigamonitor.R;
+import br.inatel.icc.gigasecurity.gigamonitor.adapters.DeviceExpandableListAdapter;
 import br.inatel.icc.gigasecurity.gigamonitor.core.DeviceManager;
 import br.inatel.icc.gigasecurity.gigamonitor.listeners.PlaybackListener;
 import br.inatel.icc.gigasecurity.gigamonitor.model.Device;
@@ -150,19 +154,21 @@ public class DevicePlaybackVideoActivity extends ActionBarActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_device_playback_video);
 
+        setContentView(R.layout.activity_device_playback_video);
+        getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
         getWindow().setFlags(
                 WindowManager.LayoutParams.FLAG_HARDWARE_ACCELERATED,
                 WindowManager.LayoutParams.FLAG_HARDWARE_ACCELERATED);
 
         //Check Screen Orientation.
-        if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE) {
-            getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
-            getSupportActionBar().hide();
-        }
-
-        getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+//        if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE) {
+//            landscapeLayout();
+//        } else {
+//            portraitLayout();
+//        }
+//
+//        getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
 
         mActivity = this;
 
@@ -501,6 +507,53 @@ public class DevicePlaybackVideoActivity extends ActionBarActivity {
         mAnimationSet.play(fadeIn).after(fadeOut);
 
         mAnimationSet.start();
+    }
+
+    @Override
+    public void onConfigurationChanged(Configuration newConfig) {
+        super.onConfigurationChanged(newConfig);
+
+        if(getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE) {
+            getWindow().clearFlags(WindowManager.LayoutParams.FLAG_FORCE_NOT_FULLSCREEN);
+            getWindow().addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
+            getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
+            getSupportActionBar().hide();
+        } else {
+            getWindow().clearFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
+            setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+            getWindow().addFlags(WindowManager.LayoutParams.FLAG_FORCE_NOT_FULLSCREEN);
+            getSupportActionBar().show();
+        }
+        setLayoutSize();
+//        mDeviceChannelsManager.changeSurfaceViewSize();
+    }
+
+    private void setLayoutSize() {
+        DisplayMetrics displayMetrics = Resources.getSystem().getDisplayMetrics();
+        int viewWidth = displayMetrics.widthPixels;
+        int viewHeight;
+
+        if(displayMetrics.widthPixels%2 != 0)
+            viewWidth -= 1;
+
+        if(getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE) {
+            viewHeight = displayMetrics.heightPixels;
+        } else{
+            viewHeight = ((displayMetrics.heightPixels / 3)+10);
+        }
+
+        final int width = viewWidth;
+        final int height = viewHeight;
+
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                mSurfaceView.getLayoutParams().height = height;
+                mSurfaceView.getLayoutParams().width = width;
+
+//                mDeviceManager.getDeviceChannelsManagers().get(groupPosition).resetScale();
+            }
+        });
     }
 
     @Override

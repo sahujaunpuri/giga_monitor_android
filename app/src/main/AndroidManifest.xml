@@ -85,7 +85,7 @@
         <activity
             android:name=".activities.DevicePlaybackVideoActivity"
             android:label="@string/title_activity_device_playback_video"
-            android:screenOrientation="portrait"
+            android:configChanges="orientation|keyboardHidden|screenSize"
             android:parentActivityName=".activities.DevicePlaybackActivity">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
