@@ -253,7 +253,8 @@ public class DevicePlaybackActivity extends ActionBarActivity
             @Override
             public void run() {
                 H264_DVR_FINDINFO info = new H264_DVR_FINDINFO();
-                info.st_1_nFileType = SDKCONST.FileType.SDK_RECORD_ALL;
+                info.st_0_nChannelN0 = nbChannel.getValue() - 1;
+                info.st_1_nFileType = type;
                 info.st_2_startTime.st_0_dwYear = mInitialTime.get(Calendar.YEAR);
                 info.st_2_startTime.st_1_dwMonth = mInitialTime.get(Calendar.MONTH) + 1;
                 info.st_2_startTime.st_2_dwDay = mInitialTime.get(Calendar.DAY_OF_MONTH);
@@ -266,9 +267,7 @@ public class DevicePlaybackActivity extends ActionBarActivity
                 info.st_3_endTime.st_3_dwHour = endDate.get(Calendar.HOUR_OF_DAY);
                 info.st_3_endTime.st_4_dwMinute = endDate.get(Calendar.MINUTE);
                 info.st_3_endTime.st_5_dwSecond = 59;
-                info.st_0_nChannelN0 = nbChannel.getValue() - 1;
                 info.st_6_StreamType = 2;
-                info.st_1_nFileType = type;
 
                 mManager.findPlaybackList(mDevice, info, new PlaybackSearchListener() {
                     @Override

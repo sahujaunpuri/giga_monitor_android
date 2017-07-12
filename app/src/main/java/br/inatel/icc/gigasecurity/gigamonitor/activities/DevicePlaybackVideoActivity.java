@@ -18,7 +18,10 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.ProgressBar;
+import android.widget.RelativeLayout;
+import android.widget.ScrollView;
 import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -48,6 +51,10 @@ public class DevicePlaybackVideoActivity extends ActionBarActivity {
 
     private SurfaceViewComponent mSurfaceView;
     private DeviceChannelsManager mDeviceChannelsManager;
+    private RelativeLayout playbackLayout;
+    private ScrollView scrollView;
+    private LinearLayout playbackControls;
+    private LinearLayout playbackStatus;
     private Menu menu;
     private SeekBar mSeekBar;
     private ProgressBar mProgressBar;
@@ -68,6 +75,9 @@ public class DevicePlaybackVideoActivity extends ActionBarActivity {
     private Handler mHandler;
     private Runnable mAction;
     private boolean isAdvancing = false;
+
+    private int surfaceViewHeight;
+    private int seekBarHeight;
 
     private PlaybackListener mPlaybackListener =
             new PlaybackListener() {
@@ -156,16 +166,16 @@ public class DevicePlaybackVideoActivity extends ActionBarActivity {
         super.onCreate(savedInstanceState);
 
         setContentView(R.layout.activity_device_playback_video);
-        getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
-        getWindow().setFlags(
-                WindowManager.LayoutParams.FLAG_HARDWARE_ACCELERATED,
-                WindowManager.LayoutParams.FLAG_HARDWARE_ACCELERATED);
-
-        //Check Screen Orientation.
+//        getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+//        getWindow().setFlags(
+//                WindowManager.LayoutParams.FLAG_HARDWARE_ACCELERATED,
+//                WindowManager.LayoutParams.FLAG_HARDWARE_ACCELERATED);
+//
+//        //Check Screen Orientation.
 //        if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE) {
-//            landscapeLayout();
+//            Log.e(TAG, "LandscapeOnCreate");
 //        } else {
-//            portraitLayout();
+//            Log.e(TAG, "PortraitOnCreate");
 //        }
 //
 //        getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
@@ -181,8 +191,12 @@ public class DevicePlaybackVideoActivity extends ActionBarActivity {
         mDeviceChannelsManager = new DeviceChannelsManager(mDevice);
 
         // Find views
+        playbackLayout = (RelativeLayout) findViewById(R.id.playback_relative_layout);
+        scrollView = (ScrollView) findViewById(R.id.scroll_view_playback);
         mSurfaceView = (SurfaceViewComponent) findViewById(R.id.surface_view_test_1);
         mProgressBar = (ProgressBar) findViewById(R.id.pb_playback);
+        playbackControls = (LinearLayout) findViewById(R.id.view_playback_controls);
+        playbackStatus = (LinearLayout) findViewById(R.id.view_playback_status);
         mSeekBar = (SeekBar) findViewById(R.id.seek_bar_playback);
         initialTime = (TextView) findViewById(R.id.text_view_playback_initial_time);
         mStatusTextView = (TextView) findViewById(R.id.text_view_playback_status);
@@ -191,12 +205,14 @@ public class DevicePlaybackVideoActivity extends ActionBarActivity {
         ivStop = (ImageView) findViewById(R.id.iv_stop_playback);
         ivForward = (ImageView) findViewById(R.id.iv_forward_playback);
         ivBackward = (ImageView) findViewById(R.id.iv_backward_playback);
-
         ivPlayPause.setImageDrawable(getResources().getDrawable(R.drawable.ic_play_playback));
 
         //(SDK ANTIGA)botões desabilitados a pedido da giga, videos curtos estavam pulando muitos frames e encerrando a exibição
         //ivBackward.setVisibility(View.GONE);
         //ivForward.setVisibility(View.GONE);
+
+        surfaceViewHeight = mSurfaceView.getLayoutParams().height;
+        seekBarHeight = mSeekBar.getLayoutParams().height;
 
         initialTime.setText(mFileData.getBeginTimeStr());
         initialTimeVideo = initialTime.getText().toString();
@@ -294,6 +310,11 @@ public class DevicePlaybackVideoActivity extends ActionBarActivity {
         // ATTENTION: This was auto-generated to implement the App Indexing API.
         // See https://g.co/AppIndexing/AndroidStudio for more information.
         client = new GoogleApiClient.Builder(this).addApi(AppIndex.API).build();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
     }
 
     private void showMessage() {
@@ -511,21 +532,31 @@ public class DevicePlaybackVideoActivity extends ActionBarActivity {
 
     @Override
     public void onConfigurationChanged(Configuration newConfig) {
-        super.onConfigurationChanged(newConfig);
 
         if(getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE) {
-            getWindow().clearFlags(WindowManager.LayoutParams.FLAG_FORCE_NOT_FULLSCREEN);
+            Log.e(TAG, "Landscape");
+            getWindow().clearFlags(WindowManager.LayoutParams.FLAG_FORCE_NOT_FULLSCREEN);//FLAG_FORCE_NOT_FULLSCREEN);
             getWindow().addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
-            getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
+//            getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
+            changeVisibility(View.GONE);
             getSupportActionBar().hide();
+//            mSurfaceView.addView(mSeekBar);
         } else {
+            Log.e(TAG, "Portrait");
             getWindow().clearFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
-            setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
             getWindow().addFlags(WindowManager.LayoutParams.FLAG_FORCE_NOT_FULLSCREEN);
+            changeVisibility(View.VISIBLE);
             getSupportActionBar().show();
+//            mSurfaceView.removeView(mSeekBar);
         }
         setLayoutSize();
-//        mDeviceChannelsManager.changeSurfaceViewSize();
+
+        super.onConfigurationChanged(newConfig);
+    }
+
+    private void changeVisibility(int visibility) {
+        playbackControls.setVisibility(visibility);
+        playbackStatus.setVisibility(visibility);
     }
 
     private void setLayoutSize() {
@@ -538,20 +569,26 @@ public class DevicePlaybackVideoActivity extends ActionBarActivity {
 
         if(getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE) {
             viewHeight = displayMetrics.heightPixels;
-        } else{
+            playbackLayout.setPadding(0, 0, 0, 0);
+        } else {
             viewHeight = ((displayMetrics.heightPixels / 3)+10);
+            playbackLayout.setPadding(16, 16, 16, 16);
         }
-
         final int width = viewWidth;
         final int height = viewHeight;
 
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                mSurfaceView.getLayoutParams().height = height;
+                if(getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE) {
+                    mSurfaceView.getLayoutParams().height = (height / 22) * 20;
+                    mSeekBar.getLayoutParams().height = (height / 22) * 2;
+                } else {
+                    mSurfaceView.getLayoutParams().height = surfaceViewHeight;
+                    mSeekBar.getLayoutParams().height = seekBarHeight;
+                }
                 mSurfaceView.getLayoutParams().width = width;
-
-//                mDeviceManager.getDeviceChannelsManagers().get(groupPosition).resetScale();
+                mDeviceChannelsManager.resetScale();
             }
         });
     }
