@@ -17,6 +17,8 @@ import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.WindowManager;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
@@ -57,6 +59,7 @@ public class DevicePlaybackVideoActivity extends ActionBarActivity {
     private LinearLayout playbackStatus;
     private Menu menu;
     private SeekBar mSeekBar;
+    private TextView seekBarTextView;
     private ProgressBar mProgressBar;
     private String initialTimeVideo;
     private TextView initialTime, mStatusTextView, endTime;
@@ -131,6 +134,22 @@ public class DevicePlaybackVideoActivity extends ActionBarActivity {
                 @Override
                 public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
                     if (fromUser /*&& (mSurfaceView.isConnected())*/) {
+                        try {
+                            SimpleDateFormat sdf = new SimpleDateFormat("HH:mm:ss");
+                            Date d = sdf.parse(initialTime.getText().toString());
+                            Calendar calendar = Calendar.getInstance();
+                            calendar.setTime(d);
+                            calendar.add(Calendar.SECOND, progress - currentProgress);
+                            Calendar newCalendar = calendar;
+                            String seekBarTime = sdf.format(calendar.getTime());
+                            seekBarTextView.setText(seekBarTime);
+
+                            int val = (progress * (seekBar.getWidth() - 2 * seekBar.getThumbOffset())) / seekBar.getMax();
+                            seekBarTextView.setX(seekBar.getX() + val + seekBar.getThumbOffset() / 2);
+
+                        } catch (ParseException e) {
+                            e.printStackTrace();
+                        }
                         currentBar = progress;
                     }
                 }
@@ -140,11 +159,16 @@ public class DevicePlaybackVideoActivity extends ActionBarActivity {
 //                    mSurfaceView.setVisibility(View.INVISIBLE);
                     mDeviceChannelsManager.onStop(mSurfaceView);
                     mSurfaceView.isSeeking = true;
+                    seekBarTextView.setVisibility(View.VISIBLE);
                 }
 
                 @Override
                 public void onStopTrackingTouch(SeekBar seekBar) {
+                    final Animation animationFadeIn = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.abc_slide_out_top);
+                    seekBarTextView.startAnimation(animationFadeIn);
+
                     setPlaybackProgress(currentBar);
+                    seekBarTextView.setVisibility(View.INVISIBLE);
                     progressBarDisabled = true;
                     updateStatusTextView("Buscando");
                     mActivity.runOnUiThread(new Runnable() {
@@ -198,6 +222,7 @@ public class DevicePlaybackVideoActivity extends ActionBarActivity {
         playbackControls = (LinearLayout) findViewById(R.id.view_playback_controls);
         playbackStatus = (LinearLayout) findViewById(R.id.view_playback_status);
         mSeekBar = (SeekBar) findViewById(R.id.seek_bar_playback);
+        seekBarTextView = (TextView) findViewById(R.id.thumbnail_text_view2);
         initialTime = (TextView) findViewById(R.id.text_view_playback_initial_time);
         mStatusTextView = (TextView) findViewById(R.id.text_view_playback_status);
         endTime = (TextView) findViewById(R.id.text_view_playback_end_time);
@@ -310,6 +335,7 @@ public class DevicePlaybackVideoActivity extends ActionBarActivity {
         // ATTENTION: This was auto-generated to implement the App Indexing API.
         // See https://g.co/AppIndexing/AndroidStudio for more information.
         client = new GoogleApiClient.Builder(this).addApi(AppIndex.API).build();
+        seekBarTextView.setVisibility(View.INVISIBLE);
     }
 
     @Override
