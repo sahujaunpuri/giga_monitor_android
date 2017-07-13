@@ -10,6 +10,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v7.app.ActionBarActivity;
+import android.text.format.Time;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.Menu;
@@ -135,14 +136,12 @@ public class DevicePlaybackVideoActivity extends ActionBarActivity {
                 public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
                     if (fromUser /*&& (mSurfaceView.isConnected())*/) {
                         try {
-                            SimpleDateFormat sdf = new SimpleDateFormat("HH:mm:ss");
-                            Date d = sdf.parse(initialTime.getText().toString());
-                            Calendar calendar = Calendar.getInstance();
-                            calendar.setTime(d);
-                            calendar.add(Calendar.SECOND, progress - currentProgress);
-                            Calendar newCalendar = calendar;
-                            String seekBarTime = sdf.format(calendar.getTime());
-                            seekBarTextView.setText(seekBarTime);
+                            SimpleDateFormat simpleDateFormat = new SimpleDateFormat("HH:mm:ss");
+                            Date dt = simpleDateFormat.parse(initialTime.getText().toString());
+                            Calendar cal = Calendar.getInstance();
+                            cal.setTime(dt);
+                            cal.add(Calendar.SECOND, progress);
+                            seekBarTextView.setText(simpleDateFormat.format(cal.getTime()));
 
                             int val = (progress * (seekBar.getWidth() - 2 * seekBar.getThumbOffset())) / seekBar.getMax();
                             seekBarTextView.setX(seekBar.getX() + val + seekBar.getThumbOffset() / 2);
@@ -239,8 +238,8 @@ public class DevicePlaybackVideoActivity extends ActionBarActivity {
         surfaceViewHeight = mSurfaceView.getLayoutParams().height;
         seekBarHeight = mSeekBar.getLayoutParams().height;
 
+        initialTimeVideo = mFileData.getBeginTimeStr();
         initialTime.setText(mFileData.getBeginTimeStr());
-        initialTimeVideo = initialTime.getText().toString();
         endTime.setText(mFileData.getEndTimeStr());
 
         // Set listeners
@@ -426,7 +425,7 @@ public class DevicePlaybackVideoActivity extends ActionBarActivity {
             mSurfaceView.isSeeking = false;
             mSeekBar.setProgress(0);
             currentProgress = 0;
-            initialTime.setText(initialTimeVideo);
+            initialTime.setText(initialTimeVideo.substring(12));
         }
     }
 
