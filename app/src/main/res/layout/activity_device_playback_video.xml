@@ -42,12 +42,6 @@
                     android:id="@+id/pb_playback" />
             </RelativeLayout>
 
-            <TextView
-                android:id="@+id/thumbnail_text_view2"
-                android:background="@color/result_minor_text"
-                android:layout_width="60dp"
-                android:layout_height="20dp" />
-
             <SeekBar
                 android:id="@+id/seek_bar_playback"
                 android:layout_width="match_parent"

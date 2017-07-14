@@ -1,18 +1,28 @@
 package br.inatel.icc.gigasecurity.gigamonitor.activities;
 
+import android.animation.Animator;
 import android.animation.AnimatorSet;
 import android.animation.ObjectAnimator;
 import android.app.Activity;
+import android.content.Context;
 import android.content.pm.ActivityInfo;
 import android.content.res.Configuration;
 import android.content.res.Resources;
+import android.graphics.BitmapFactory;
+import android.graphics.Color;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.ShapeDrawable;
+import android.graphics.drawable.shapes.RectShape;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarActivity;
 import android.text.format.Time;
 import android.util.DisplayMetrics;
 import android.util.Log;
+import android.view.Gravity;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.MotionEvent;
@@ -55,12 +65,12 @@ public class DevicePlaybackVideoActivity extends ActionBarActivity {
     private SurfaceViewComponent mSurfaceView;
     private DeviceChannelsManager mDeviceChannelsManager;
     private RelativeLayout playbackLayout;
-    private ScrollView scrollView;
     private LinearLayout playbackControls;
     private LinearLayout playbackStatus;
     private Menu menu;
     private SeekBar mSeekBar;
     private TextView seekBarTextView;
+    private float seekBarTextPosition;
     private ProgressBar mProgressBar;
     private String initialTimeVideo;
     private TextView initialTime, mStatusTextView, endTime;
@@ -137,11 +147,18 @@ public class DevicePlaybackVideoActivity extends ActionBarActivity {
                     if (fromUser /*&& (mSurfaceView.isConnected())*/) {
                         try {
                             SimpleDateFormat simpleDateFormat = new SimpleDateFormat("HH:mm:ss");
-                            Date dt = simpleDateFormat.parse(initialTime.getText().toString());
+                            Date dt = simpleDateFormat.parse(initialTimeVideo);
                             Calendar cal = Calendar.getInstance();
                             cal.setTime(dt);
                             cal.add(Calendar.SECOND, progress);
                             seekBarTextView.setText(simpleDateFormat.format(cal.getTime()));
+
+//                            seekBar.setThumb(new BitmapDrawable((BitmapFactory.decodeResource(getResources(), R.drawable.seekbar_progress_thumb))));
+//                            ShapeDrawable thumb = new ShapeDrawable(new RectShape());
+//                            thumb.getPaint().setColor(Color.rgb(0, 0, 0));
+//                            thumb.setIntrinsicHeight(-80);
+//                            thumb.setIntrinsicWidth(30);
+//                            seekBar.setThumb(thumb);
 
                             int val = (progress * (seekBar.getWidth() - 2 * seekBar.getThumbOffset())) / seekBar.getMax();
                             seekBarTextView.setX(seekBar.getX() + val + seekBar.getThumbOffset() / 2);
@@ -158,7 +175,8 @@ public class DevicePlaybackVideoActivity extends ActionBarActivity {
 //                    mSurfaceView.setVisibility(View.INVISIBLE);
                     mDeviceChannelsManager.onStop(mSurfaceView);
                     mSurfaceView.isSeeking = true;
-                    seekBarTextView.setVisibility(View.VISIBLE);
+//                    seekBarTextView.setVisibility(View.VISIBLE);
+                    playbackLayout.addView(seekBarTextView);
                 }
 
                 @Override
@@ -167,7 +185,8 @@ public class DevicePlaybackVideoActivity extends ActionBarActivity {
                     seekBarTextView.startAnimation(animationFadeIn);
 
                     setPlaybackProgress(currentBar);
-                    seekBarTextView.setVisibility(View.INVISIBLE);
+//                    seekBarTextView.setVisibility(View.GONE);
+                    playbackLayout.removeView(seekBarTextView);
                     progressBarDisabled = true;
                     updateStatusTextView("Buscando");
                     mActivity.runOnUiThread(new Runnable() {
@@ -189,19 +208,6 @@ public class DevicePlaybackVideoActivity extends ActionBarActivity {
         super.onCreate(savedInstanceState);
 
         setContentView(R.layout.activity_device_playback_video);
-//        getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
-//        getWindow().setFlags(
-//                WindowManager.LayoutParams.FLAG_HARDWARE_ACCELERATED,
-//                WindowManager.LayoutParams.FLAG_HARDWARE_ACCELERATED);
-//
-//        //Check Screen Orientation.
-//        if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE) {
-//            Log.e(TAG, "LandscapeOnCreate");
-//        } else {
-//            Log.e(TAG, "PortraitOnCreate");
-//        }
-//
-//        getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
 
         mActivity = this;
 
@@ -210,18 +216,15 @@ public class DevicePlaybackVideoActivity extends ActionBarActivity {
         int deviceID = (int) extras.getSerializable("device");
         mDevice = DeviceManager.getInstance().findDeviceById(deviceID);
         mFileData = (FileData) extras.getSerializable("fileData");
-        //*mDeviceChannelsManager = DeviceManager.getInstance().findChannelManagerByDevice(mDevice);
         mDeviceChannelsManager = new DeviceChannelsManager(mDevice);
 
         // Find views
         playbackLayout = (RelativeLayout) findViewById(R.id.playback_relative_layout);
-        scrollView = (ScrollView) findViewById(R.id.scroll_view_playback);
         mSurfaceView = (SurfaceViewComponent) findViewById(R.id.surface_view_test_1);
         mProgressBar = (ProgressBar) findViewById(R.id.pb_playback);
         playbackControls = (LinearLayout) findViewById(R.id.view_playback_controls);
         playbackStatus = (LinearLayout) findViewById(R.id.view_playback_status);
         mSeekBar = (SeekBar) findViewById(R.id.seek_bar_playback);
-        seekBarTextView = (TextView) findViewById(R.id.thumbnail_text_view2);
         initialTime = (TextView) findViewById(R.id.text_view_playback_initial_time);
         mStatusTextView = (TextView) findViewById(R.id.text_view_playback_status);
         endTime = (TextView) findViewById(R.id.text_view_playback_end_time);
@@ -231,9 +234,13 @@ public class DevicePlaybackVideoActivity extends ActionBarActivity {
         ivBackward = (ImageView) findViewById(R.id.iv_backward_playback);
         ivPlayPause.setImageDrawable(getResources().getDrawable(R.drawable.ic_play_playback));
 
-        //(SDK ANTIGA)botões desabilitados a pedido da giga, videos curtos estavam pulando muitos frames e encerrando a exibição
-        //ivBackward.setVisibility(View.GONE);
-        //ivForward.setVisibility(View.GONE);
+        setSeekBarTextViewPosition();
+
+        seekBarTextView = new TextView(this);//TextView) findViewById(R.id.thumbnail_text_view2);
+        seekBarTextView.setBackgroundResource(R.drawable.playback_time_box);
+        seekBarTextView.setY(seekBarTextPosition);
+        seekBarTextView.setLayoutParams(new ActionBar.LayoutParams(120, 35));
+        seekBarTextView.setGravity(Gravity.CENTER);
 
         surfaceViewHeight = mSurfaceView.getLayoutParams().height;
         seekBarHeight = mSeekBar.getLayoutParams().height;
@@ -334,7 +341,7 @@ public class DevicePlaybackVideoActivity extends ActionBarActivity {
         // ATTENTION: This was auto-generated to implement the App Indexing API.
         // See https://g.co/AppIndexing/AndroidStudio for more information.
         client = new GoogleApiClient.Builder(this).addApi(AppIndex.API).build();
-        seekBarTextView.setVisibility(View.INVISIBLE);
+//        thumbnailView.setVisibility(View.INVISIBLE);
     }
 
     @Override
@@ -344,6 +351,10 @@ public class DevicePlaybackVideoActivity extends ActionBarActivity {
 
     private void showMessage() {
         Toast.makeText(this, "O vídeo precisa estar em andamento!", Toast.LENGTH_SHORT).show();
+    }
+
+    private void setSeekBarTextViewPosition() {
+        seekBarTextPosition = mSurfaceView.getY() + mSurfaceView.getLayoutParams().height - 40;
     }
 
     private void advanceOrDelayVideo(String text, int value) {
@@ -425,7 +436,7 @@ public class DevicePlaybackVideoActivity extends ActionBarActivity {
             mSurfaceView.isSeeking = false;
             mSeekBar.setProgress(0);
             currentProgress = 0;
-            initialTime.setText(initialTimeVideo.substring(12));
+            initialTime.setText(initialTimeVideo);
         }
     }
 
@@ -560,19 +571,16 @@ public class DevicePlaybackVideoActivity extends ActionBarActivity {
 
         if(getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE) {
             Log.e(TAG, "Landscape");
-            getWindow().clearFlags(WindowManager.LayoutParams.FLAG_FORCE_NOT_FULLSCREEN);//FLAG_FORCE_NOT_FULLSCREEN);
+            getWindow().clearFlags(WindowManager.LayoutParams.FLAG_FORCE_NOT_FULLSCREEN);
             getWindow().addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
-//            getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
             changeVisibility(View.GONE);
             getSupportActionBar().hide();
-//            mSurfaceView.addView(mSeekBar);
         } else {
             Log.e(TAG, "Portrait");
             getWindow().clearFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
             getWindow().addFlags(WindowManager.LayoutParams.FLAG_FORCE_NOT_FULLSCREEN);
             changeVisibility(View.VISIBLE);
             getSupportActionBar().show();
-//            mSurfaceView.removeView(mSeekBar);
         }
         setLayoutSize();
 
@@ -613,6 +621,8 @@ public class DevicePlaybackVideoActivity extends ActionBarActivity {
                     mSeekBar.getLayoutParams().height = seekBarHeight;
                 }
                 mSurfaceView.getLayoutParams().width = width;
+                setSeekBarTextViewPosition();
+                seekBarTextView.setY(seekBarTextPosition);
                 mDeviceChannelsManager.resetScale();
             }
         });

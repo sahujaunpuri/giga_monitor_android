@@ -5,14 +5,11 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <br.inatel.icc.gigasecurity.gigamonitor.ui.ThumbTextView
-        android:id="@+id/thumbnail_text_view"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent" />
-
-    <SeekBar
-        android:id="@+id/playback_seek_bar"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content" />
+    <TextView
+        android:id="@+id/thumbnail_text_view2"
+        android:background="@drawable/playback_time_box"
+        android:gravity="center"
+        android:layout_width="60dp"
+        android:layout_height="25dp" />
 
 </LinearLayout>
