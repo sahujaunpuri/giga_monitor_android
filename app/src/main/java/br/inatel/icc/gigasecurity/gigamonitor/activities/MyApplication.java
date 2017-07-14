@@ -1,8 +1,13 @@
 package br.inatel.icc.gigasecurity.gigamonitor.activities;
 
 import android.app.Application;
+import android.content.ComponentCallbacks;
+import android.content.ComponentName;
+import android.content.pm.PackageManager;
 import android.content.res.Configuration;
 import android.util.Log;
+
+import br.inatel.icc.gigasecurity.gigamonitor.core.ConnectionReceiver;
 
 /**
  * Created by zappts on 4/5/17.

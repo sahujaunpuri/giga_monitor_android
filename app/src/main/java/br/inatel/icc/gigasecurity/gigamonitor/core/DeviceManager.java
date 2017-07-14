@@ -1065,8 +1065,9 @@ public class DeviceManager implements IFunSDKResult{
     private Device addLanDevice(SDK_CONFIG_NET_COMMON_V2 comm) {
         Device device = null;
         synchronized (mLanDevices) {
+            Log.e(TAG, "Vai passar pelo G.toString");
             String devSn = G.ToString(comm.st_14_sSn);
-
+            Log.e(TAG, "Passou pelo G.toString");
             if (null != devSn) {
                 if (findLanDevice(devSn) == null) {
                     device = new Device(comm);
