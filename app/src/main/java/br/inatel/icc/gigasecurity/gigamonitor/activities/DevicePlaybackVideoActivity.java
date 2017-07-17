@@ -8,13 +8,16 @@ import android.content.Context;
 import android.content.pm.ActivityInfo;
 import android.content.res.Configuration;
 import android.content.res.Resources;
+import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.ShapeDrawable;
 import android.graphics.drawable.shapes.RectShape;
+import android.media.Image;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Environment;
 import android.os.Handler;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarActivity;
@@ -27,6 +30,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
@@ -39,14 +43,22 @@ import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.basic.G;
 import com.google.android.gms.appindexing.Action;
 import com.google.android.gms.appindexing.AppIndex;
 import com.google.android.gms.appindexing.Thing;
 import com.google.android.gms.common.api.GoogleApiClient;
+import com.lib.FunSDK;
+import com.lib.SDKCONST;
+import com.lib.sdk.bean.OPCompressPicBean;
+import com.lib.sdk.struct.H264_DVR_FILE_DATA;
+import com.lib.sdk.struct.H264_DVR_FINDINFO;
 import com.lib.sdk.struct.SDK_SYSTEM_TIME;
+import com.lib.sdk.struct.SDK_SearchByTime;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.concurrent.TimeUnit;
@@ -55,10 +67,13 @@ import br.inatel.icc.gigasecurity.gigamonitor.R;
 import br.inatel.icc.gigasecurity.gigamonitor.adapters.DeviceExpandableListAdapter;
 import br.inatel.icc.gigasecurity.gigamonitor.core.DeviceManager;
 import br.inatel.icc.gigasecurity.gigamonitor.listeners.PlaybackListener;
+import br.inatel.icc.gigasecurity.gigamonitor.listeners.PlaybackSearchListener;
 import br.inatel.icc.gigasecurity.gigamonitor.model.Device;
 import br.inatel.icc.gigasecurity.gigamonitor.model.FileData;
 import br.inatel.icc.gigasecurity.gigamonitor.model.DeviceChannelsManager;
 import br.inatel.icc.gigasecurity.gigamonitor.ui.SurfaceViewComponent;
+import br.inatel.icc.gigasecurity.gigamonitor.util.OPCompressPic;
+import br.inatel.icc.gigasecurity.gigamonitor.util.Utils;
 
 public class DevicePlaybackVideoActivity extends ActionBarActivity {
 
@@ -71,6 +86,7 @@ public class DevicePlaybackVideoActivity extends ActionBarActivity {
     private SeekBar mSeekBar;
     private TextView seekBarTextView;
     private float seekBarTextPosition;
+    private ImageView thumbnail;
     private ProgressBar mProgressBar;
     private String initialTimeVideo;
     private TextView initialTime, mStatusTextView, endTime;
@@ -79,9 +95,11 @@ public class DevicePlaybackVideoActivity extends ActionBarActivity {
     private int currentBar;
 
     private Device mDevice;
+    private DeviceManager mDeviceManager;
     private FileData mFileData;
     private Activity mActivity;
     private SDK_SYSTEM_TIME beginTime;
+    private ArrayList<FileData> thumbnailsList = new ArrayList<>();
 
     private int mStartSecond;
     private int currentProgress = 0;
@@ -177,6 +195,13 @@ public class DevicePlaybackVideoActivity extends ActionBarActivity {
                     mSurfaceView.isSeeking = true;
 //                    seekBarTextView.setVisibility(View.VISIBLE);
                     playbackLayout.addView(seekBarTextView);
+                    thumbnail = new ImageView(mActivity);
+//                    FileData fileData = thumbnailsList.get(0);
+//                    Utils.savePictureFile(fileData.getFileName());
+//                    Bitmap bitmap = BitmapFactory.decodeFile(fileData.getFileName(), );
+//                    thumbnail.setImageBitmap(bitmap);
+//                    playbackLayout.addView(thumbnail);
+//                    thumbnail.setVisibility(View.VISIBLE);
                 }
 
                 @Override
@@ -187,6 +212,8 @@ public class DevicePlaybackVideoActivity extends ActionBarActivity {
                     setPlaybackProgress(currentBar);
 //                    seekBarTextView.setVisibility(View.GONE);
                     playbackLayout.removeView(seekBarTextView);
+//                    playbackLayout.removeView(thumbnail);
+//                    thumbnail.setVisibility(View.GONE);
                     progressBarDisabled = true;
                     updateStatusTextView("Buscando");
                     mActivity.runOnUiThread(new Runnable() {
@@ -210,6 +237,7 @@ public class DevicePlaybackVideoActivity extends ActionBarActivity {
         setContentView(R.layout.activity_device_playback_video);
 
         mActivity = this;
+        mDeviceManager = DeviceManager.getInstance();
 
         // Get data from previous activity
         Bundle extras = getIntent().getExtras();
@@ -241,6 +269,11 @@ public class DevicePlaybackVideoActivity extends ActionBarActivity {
         seekBarTextView.setY(seekBarTextPosition);
         seekBarTextView.setLayoutParams(new ActionBar.LayoutParams(120, 35));
         seekBarTextView.setGravity(Gravity.CENTER);
+
+        thumbnail = new ImageView(this);
+        thumbnail.setY(seekBarTextPosition + 35);
+        thumbnail.setLayoutParams(new ActionBar.LayoutParams(160, 100));
+        thumbnail.setVisibility(View.GONE);
 
         surfaceViewHeight = mSurfaceView.getLayoutParams().height;
         seekBarHeight = mSeekBar.getLayoutParams().height;
@@ -337,7 +370,7 @@ public class DevicePlaybackVideoActivity extends ActionBarActivity {
         Log.d(TAG, "onCreate totalTime: " + (int) mFileData.getTotalTime());
         Log.d(TAG, "onCreate startSecond: " + mStartSecond);
 
-
+        requestDeviceSearchPicture();
         // ATTENTION: This was auto-generated to implement the App Indexing API.
         // See https://g.co/AppIndexing/AndroidStudio for more information.
         client = new GoogleApiClient.Builder(this).addApi(AppIndex.API).build();
@@ -461,6 +494,13 @@ public class DevicePlaybackVideoActivity extends ActionBarActivity {
         } else {
             Toast.makeText(this, "O vídeo precisa estar em andamento para que a gravação seja iniciada!", Toast.LENGTH_SHORT).show();
         }
+    }
+
+    private void downloadFile() {
+        byte[] file = G.ObjToBytes(mFileData);
+//        String path = Environment.getExternalStorageDirectory().getPath() + "/Pictures/Giga Monitor/" + Utils.currentDateTime() + ".jpg";
+        String path = Environment.getExternalStorageDirectory().getPath() + "/Movies/Giga Monitor/" + Utils.currentDateTime() + ".mp4";
+        mDeviceManager.downloadFile(mDevice, file, path);
     }
 
     public void updateStatusTextView(final CharSequence statusText) {
@@ -659,6 +699,9 @@ public class DevicePlaybackVideoActivity extends ActionBarActivity {
             case R.id.playback_record:
                 recordPlayback();
                 return true;
+            case R.id.download:
+                downloadFile();
+                return true;
             default:
                 return false;
         }
@@ -698,5 +741,68 @@ public class DevicePlaybackVideoActivity extends ActionBarActivity {
         // See https://g.co/AppIndexing/AndroidStudio for more information.
         AppIndex.AppIndexApi.end(client, getIndexApiAction());
         client.disconnect();
+    }
+
+    private ArrayList<FileData> infoToArray(H264_DVR_FILE_DATA files[]){
+        ArrayList<FileData> playbacks = new ArrayList<FileData>();
+        for (H264_DVR_FILE_DATA file : files) {
+            FileData funFileData = new FileData(file, null);
+            playbacks.add(funFileData);
+        }
+        return playbacks;
+    }
+
+    private void requestDeviceSearchPicture() {
+//        String path = Environment.getExternalStorageDirectory().getPath() + "/Pictures/Giga Monitor/" + Utils.currentDateTime() + ".jpg";
+//        H264_DVR_FILE_DATA info = mFileData.getFileData();
+//        OPCompressPic opCompressPic = new OPCompressPic();
+//        opCompressPic.setPicName("Thumbnail");
+//        opCompressPic.setHeight(100);
+//        opCompressPic.setWidth(160);
+//        opCompressPic.setIsGeo(1);
+//        int result = FunSDK.DevSearchPicture(mDeviceManager.getHandler(),                  //获取缩略图该接口只提供运动相机使用 A interface só está disponível para câmeras de movimento
+//                mDevice.connectionString,
+//                COMPRESS_PICTURE_REQ, 50000, 2000,
+//                opCompressPic.getSendMsg().getBytes(),
+//                20, -1,
+//                path, 145);
+//        return (result == 0);
+        H264_DVR_FINDINFO info = new H264_DVR_FINDINFO();
+
+        info.st_0_nChannelN0 = mFileData.getFileData().st_0_ch;
+        info.st_1_nFileType = SDKCONST.PicFileType.PIC_KEY;
+        Date beginDate = mFileData.getBeginDate();
+        Calendar beginCalendar = Calendar.getInstance();
+        beginCalendar.setTime(beginDate);
+        Date finalDate = mFileData.getEndDate();
+        Calendar endCalendar = Calendar.getInstance();
+        endCalendar.setTime(finalDate);
+        info.st_2_startTime.st_0_dwYear = beginCalendar.get(Calendar.YEAR);
+        info.st_2_startTime.st_1_dwMonth = beginCalendar.get(Calendar.MONTH) + 1;
+        info.st_2_startTime.st_2_dwDay = beginCalendar.get(Calendar.DAY_OF_MONTH);
+        info.st_2_startTime.st_3_dwHour = beginCalendar.get(Calendar.HOUR_OF_DAY);
+        info.st_2_startTime.st_4_dwMinute = beginCalendar.get(Calendar.MINUTE);
+        info.st_2_startTime.st_5_dwSecond = 0;
+        info.st_3_endTime.st_0_dwYear = endCalendar.get(Calendar.YEAR);
+        info.st_3_endTime.st_1_dwMonth = endCalendar.get(Calendar.MONTH) + 1;
+        info.st_3_endTime.st_2_dwDay = endCalendar.get(Calendar.DAY_OF_MONTH);
+        info.st_3_endTime.st_3_dwHour = endCalendar.get(Calendar.HOUR_OF_DAY);
+        info.st_3_endTime.st_4_dwMinute = endCalendar.get(Calendar.MINUTE);
+        info.st_3_endTime.st_5_dwSecond = 59;
+        info.st_6_StreamType = 2;
+
+        mDeviceManager.findThumbnailList(mDevice, info, new PlaybackSearchListener() {
+            @Override
+            public void onEmptyListFound() {
+                Log.e("ThumbnailList", "Empty");
+            }
+
+            @Override
+            public void onFindList(H264_DVR_FILE_DATA[] files) {
+                thumbnailsList = infoToArray(files);
+                String numberOfFiles = String.valueOf(thumbnailsList.size());
+                Log.e("ThumbnailList", numberOfFiles);
+            }
+        });
     }
 }

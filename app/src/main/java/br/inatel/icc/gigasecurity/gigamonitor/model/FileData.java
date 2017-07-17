@@ -10,6 +10,7 @@ import java.io.Serializable;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
+import br.inatel.icc.gigasecurity.gigamonitor.util.OPCompressPic;
 import br.inatel.icc.gigasecurity.gigamonitor.util.Utils;
 
 /**
@@ -26,9 +27,11 @@ public class FileData implements Serializable{
     public String mFileEndTime;
 
     private H264_DVR_FILE_DATA mFileData = null;
+    private OPCompressPic mFileOpComPic = null;
 
-    public FileData(H264_DVR_FILE_DATA fileData) {
+    public FileData(H264_DVR_FILE_DATA fileData, OPCompressPic op) {
         this.parseFromData(fileData);
+        mFileOpComPic = op;
     }
 
     public void parseFromData(H264_DVR_FILE_DATA fileData) {
@@ -174,5 +177,13 @@ public class FileData implements Serializable{
 
     public long getStartTime(){
         return mFileData.getLongStartTime();
+    }
+
+    public OPCompressPic getmFileOpComPic() {
+        return mFileOpComPic;
+    }
+
+    public void setmFileOpComPic(OPCompressPic mFileOpComPic) {
+        this.mFileOpComPic = mFileOpComPic;
     }
 }

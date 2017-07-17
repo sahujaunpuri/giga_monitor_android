@@ -55,6 +55,7 @@ import br.inatel.icc.gigasecurity.gigamonitor.model.FavoritePair;
 import br.inatel.icc.gigasecurity.gigamonitor.model.StatePreferences;
 import br.inatel.icc.gigasecurity.gigamonitor.ui.SurfaceViewComponent;
 import br.inatel.icc.gigasecurity.gigamonitor.util.ComplexPreferences;
+import br.inatel.icc.gigasecurity.gigamonitor.util.OPCompressPic;
 import br.inatel.icc.gigasecurity.gigamonitor.util.Utils;
 
 import static android.content.Context.MODE_PRIVATE;
@@ -64,6 +65,9 @@ import static br.inatel.icc.gigasecurity.gigamonitor.activities.DeviceListActivi
  * Created by rinaldo.bueno on 29/08/2014.
  */
 public class DeviceManager implements IFunSDKResult{
+
+    private int COMPRESS_PICTURE_REQ = 1448;
+    private int COMPRESS_PICTURE_RSP = 1449;
     private static final String APP_UUID = "e29c9d4ac9fa41fab19413885818ca54";
     private static final String APP_KEY = "d55b6614829f4d1c84d3ab2a9193234b";
     private static final String APP_SECRET = "7a58fdbc242b4f6ba95652b7a3502b91";
@@ -411,7 +415,26 @@ public class DeviceManager implements IFunSDKResult{
                 }
             }
             break;
-
+            case EUIMSG.DEV_SEARCH_PIC:
+            {
+                Log.e("SEARCHPIC", "OK");
+            }
+            break;
+            case EUIMSG.ON_FILE_DOWNLOAD:
+            {
+                Log.e("Download", "Started");
+            }
+            break;
+            case EUIMSG.ON_FILE_DLD_COMPLETE:
+            {
+                Log.e("Download", "Complete");
+            }
+            break;
+            case EUIMSG.ON_FILE_DLD_POS:
+            {
+                Log.e("Download", "Position");
+            }
+            break;
         }
         return 0;
     }
@@ -579,6 +602,10 @@ public class DeviceManager implements IFunSDKResult{
         } catch (JSONException e) {
             e.printStackTrace();
         }
+    }
+
+    public void downloadFile(Device device, byte[] fileData, String path) {
+        FunSDK.DevDowonLoadByFile(getHandler(), device.connectionString, fileData, path, 0);
     }
 
     public void getJsonConfig(Device device, String configString, ConfigListener configListener){
@@ -1180,6 +1207,25 @@ public class DeviceManager implements IFunSDKResult{
     public void findPlaybackList(Device device, H264_DVR_FINDINFO info, PlaybackSearchListener listener) {
         currentPlaybackSearchListener = listener;
         FunSDK.DevFindFile(getHandler(), device.connectionString, G.ObjToBytes(info), 64, 20000, device.getId());
+    }
+
+    public void findThumbnailList(Device device, H264_DVR_FINDINFO info, PlaybackSearchListener listener) {
+        currentPlaybackSearchListener = listener;
+        String path = Environment.getExternalStorageDirectory().getPath() + "/Pictures/Giga Monitor/" + Utils.currentDateTime() + ".jpg";
+        FunSDK.DevFindFile(getHandler(), device.connectionString, G.ObjToBytes(info), 0, 20000, device.getId());
+//        OPCompressPic opCompressPic = new OPCompressPic();
+//        opCompressPic.setPicName(info.st_4_fileName.toString());
+//        opCompressPic.setWidth(160);
+//        opCompressPic.setHeight(100);
+//        opCompressPic.setIsGeo(1);
+//        int result = FunSDK.DevSearchPicture(getHandler(),                  //获取缩略图该接口只提供运动相机使用
+//                device.connectionString,
+//                COMPRESS_PICTURE_REQ, 50000, 10000,
+//                opCompressPic.getSendMsg().getBytes(),
+//                2000, -1,
+//                path, 0);
+//        String result1 = String.valueOf(result);
+//        Log.e("PICSEARCH", result1);
     }
 
     public boolean isFavorite(int deviceId, int channelNumber) {
