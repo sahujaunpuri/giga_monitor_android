@@ -274,7 +274,7 @@ public abstract class ChannelsManager implements IFunSDKResult {
         mRecordThread = new AudioRecordThread(mDeviceManager.findDeviceById(svc.deviceId));
     }
 
-    public void disableSendAudio(){
+    public void disableSendAudio() {
         mRecordThread.Stop();
         mRecordThread.Pause(true);
         mRecordThread = null;
@@ -282,7 +282,7 @@ public abstract class ChannelsManager implements IFunSDKResult {
         FunSDK.DevStopTalk(talkHandler);
     }
 
-    public void takeSnapshot(SurfaceViewComponent svc, String archiveName){
+    public void takeSnapshot(SurfaceViewComponent svc, String archiveName) {
         if(svc.isConnected()){
             String path = Environment.getExternalStorageDirectory().getPath() + "/Pictures/Giga Monitor/" + archiveName + ".jpg";
             int result = FunSDK.MediaSnapImage(svc.mPlayerHandler, path, 0);
@@ -292,7 +292,7 @@ public abstract class ChannelsManager implements IFunSDKResult {
         }
     }
 
-    public void startRecord(SurfaceViewComponent svc, String archiveName){
+    public void startRecord(SurfaceViewComponent svc, String archiveName) {
         if(svc.isConnected()) {
             recCounter++;
             svc.recordFileName = Environment.getExternalStorageDirectory().getPath() + "/Movies/Giga Monitor/" + archiveName + ".mp4";
@@ -301,7 +301,7 @@ public abstract class ChannelsManager implements IFunSDKResult {
         }
     }
 
-    public void stopRecord(SurfaceViewComponent svc){
+    public void stopRecord(SurfaceViewComponent svc) {
         if(svc.isConnected()) {
             FunSDK.MediaStopRecord(svc.mPlayerHandler, 0);
         }

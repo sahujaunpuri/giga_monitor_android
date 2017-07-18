@@ -74,8 +74,6 @@ public class MediaGridAdapter extends BaseAdapter {
         getImgFiles();
         getVideoFiles();
 
-
-
         Bitmap blankBitmap = Bitmap.createBitmap(1, 1, Bitmap.Config.ARGB_8888);
         blankDrawable = new BitmapDrawable(mContext.getResources(), blankBitmap);
     }
@@ -94,6 +92,7 @@ public class MediaGridAdapter extends BaseAdapter {
             mImgDrawables.add(null);
             tridToGetImgThumbnail.add(false);
         }
+
         Collections.sort(mImageFiles, new Comparator<File>() {
             public int compare(File img1, File img2) {
                 Date dateimg1 = new Date(img1.lastModified());
@@ -240,15 +239,7 @@ public class MediaGridAdapter extends BaseAdapter {
                                         @Override
                                         public void onClick(DialogInterface dialog, int which) {
                                             if (which == 0) {
-
-                                                mImageFiles.get(position).delete();
-
-                                                Intent intent = new Intent(mContext, MediaActivity.class);
-                                                intent.putExtra("imageSelected", true);
-                                                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                                                mContext.startActivity(intent);
-
-
+                                                removeItem(position);
                                             }
                                         }
                                     });
@@ -323,16 +314,7 @@ public class MediaGridAdapter extends BaseAdapter {
                                         @Override
                                         public void onClick(DialogInterface dialog, int which) {
                                             if (which == 0) {
-                                                mVideoFiles.get(position).delete();
-                                                notifyDataSetChanged();
-
-                                                Intent intent = new Intent(mContext, MediaActivity.class);
-                                                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                                                intent.putExtra("imageSelected", false);
-
-                                                mContext.startActivity(intent);
-
-
+                                                removeItem(position);
                                             }
                                         }
                                     });
@@ -404,5 +386,19 @@ public class MediaGridAdapter extends BaseAdapter {
         this.pictureMode = pictureMode;
     }
 
+    public void removeItem(final int position) {
+        if (pictureMode) {
+            mImageFiles.remove(position);
+            mImageUris.remove(position);
+            mImgDrawables.remove(position);
+            tridToGetImgThumbnail.remove(position);
+        } else {
+            mVideoFiles.remove(position);
+            mVideoUris.remove(position);
+            mVideoDrawables.remove(position);
+            tridToGetVideoThumbnail.remove(position);
+        }
+        notifyDataSetChanged();
+    }
 
 }
