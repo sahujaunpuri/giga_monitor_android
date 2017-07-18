@@ -40,6 +40,4 @@
         android:gravity="center"
         android:layout_margin="10px"/>
 
-
-
 </LinearLayout>

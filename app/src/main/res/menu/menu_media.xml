@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context="br.inatel.icc.gigasecurity.gigamonitor.activities.MediaActivity">
+
+    <item android:id="@+id/delete_medias"
+        android:title=""
+        android:icon="@mipmap/trash"
+        android:visible="false"
+        android:orderInCategory="1"
+        app:showAsAction="always|withText" />
+
+    <item android:id="@+id/select_media"
+        android:title="Selecionar"
+        android:orderInCategory="1"
+        app:showAsAction="always|withText" />
+
+</menu>

@@ -5,6 +5,9 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.graphics.Color;
+import android.graphics.PorterDuff;
+import android.graphics.drawable.AnimationDrawable;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.media.MediaMetadataRetriever;
@@ -21,6 +24,8 @@ import android.widget.BaseAdapter;
 import android.widget.GridView;
 import android.widget.TextView;
 
+import com.lib.sdk.bean.VideoWidgetBean;
+
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
@@ -28,6 +33,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
+import java.util.concurrent.ExecutionException;
 
 import br.inatel.icc.gigasecurity.gigamonitor.R;
 import br.inatel.icc.gigasecurity.gigamonitor.activities.MediaActivity;
@@ -52,9 +58,12 @@ public class MediaGridAdapter extends BaseAdapter {
     private ArrayList<Boolean> tridToGetImgThumbnail;
     private ArrayList<Boolean> tridToGetVideoThumbnail;
 
+    private ArrayList<Integer> toDelete;
+
     public long videoClickDownTime = 0;
     private String path = Environment.getExternalStorageDirectory().getPath();
     private boolean pictureMode;
+    public boolean selectItems;
 
     public static Drawable blankDrawable;
 
@@ -71,11 +80,15 @@ public class MediaGridAdapter extends BaseAdapter {
         mVideoDrawables = new ArrayList<Drawable>();
         tridToGetVideoThumbnail = new ArrayList<Boolean>();
 
+        toDelete = new ArrayList<>();
+
         getImgFiles();
         getVideoFiles();
 
         Bitmap blankBitmap = Bitmap.createBitmap(1, 1, Bitmap.Config.ARGB_8888);
         blankDrawable = new BitmapDrawable(mContext.getResources(), blankBitmap);
+
+        selectItems = false;
     }
 
     private void getImgFiles() {
@@ -222,30 +235,38 @@ public class MediaGridAdapter extends BaseAdapter {
             fImageView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    Intent intent = new Intent();
-                    intent.setAction(Intent.ACTION_VIEW);
-                    intent.setDataAndType(getImageUri(position), "image/*");
-                    mContext.startActivity(intent);
+                    if (!selectItems) {
+                        Intent intent = new Intent();
+                        intent.setAction(Intent.ACTION_VIEW);
+                        intent.setDataAndType(getImageUri(position), "image/*");
+                        mContext.startActivity(intent);
+                    } else {
+                        setImgDrawable(position);
+                    }
                 }
             });
 
             fImageView.setOnLongClickListener(new View.OnLongClickListener() {
                 @Override
                 public boolean onLongClick(View v) {
-                    AlertDialog.Builder builder = new AlertDialog.Builder(mContext);
-                    builder.setTitle(mContext.getResources().getString(R.string.label_action))
-                            .setItems(new CharSequence[]{"Deletar", "Cancelar"},
-                                    new DialogInterface.OnClickListener() {
-                                        @Override
-                                        public void onClick(DialogInterface dialog, int which) {
-                                            if (which == 0) {
-                                                removeItem(position);
+                    if (!selectItems) {
+                        AlertDialog.Builder builder = new AlertDialog.Builder(mContext);
+                        builder.setTitle(mContext.getResources().getString(R.string.label_action))
+                                .setItems(new CharSequence[]{"Deletar", "Cancelar"},
+                                        new DialogInterface.OnClickListener() {
+                                            @Override
+                                            public void onClick(DialogInterface dialog, int which) {
+                                                if (which == 0) {
+                                                    removeItem(position);
+                                                }
                                             }
-                                        }
-                                    });
-                    builder.show();
+                                        });
+                        builder.show();
 
-                    return true;
+                        return true;
+                    } else {
+                        return false;
+                    }
                 }
             });;
             return fImageView;
@@ -342,6 +363,34 @@ public class MediaGridAdapter extends BaseAdapter {
         return mImgDrawables.get(position);
     }
 
+    private void setImgDrawable(Integer position) {
+        try {
+            Drawable drawable = mImgDrawables.get(position);
+            if (toDelete.contains(position)) {
+                drawable.setAlpha(255);
+//                drawable.setColorFilter(null);
+                toDelete.remove(position);
+            } else {
+                drawable.setAlpha(128);
+//                drawable.setColorFilter(Color.DKGRAY, PorterDuff.Mode.OVERLAY);
+                toDelete.add(position);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void setAllImgDrawableClear() {
+        try {
+            for (int i = 0; i < mImgDrawables.size(); i++) {
+                Drawable drawable = mImgDrawables.get(i);
+                drawable.setAlpha(255);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
     public Drawable getVideoDrawable(int position) {
         if (mVideoDrawables.get(position) == null) {
             MediaMetadataRetriever retriever = new MediaMetadataRetriever();
@@ -401,6 +450,19 @@ public class MediaGridAdapter extends BaseAdapter {
             tridToGetVideoThumbnail.remove(position);
         }
         notifyDataSetChanged();
+    }
+
+    public int getNumberOfMediasToDelete() {
+        return toDelete.size();
+    }
+
+    public void deleteSelectedMedias() {
+        for (int i=0; i<toDelete.size(); i++) {
+            Integer itemToDelete = toDelete.get(i);
+            removeItem(itemToDelete);
+        }
+        toDelete.clear();
+        setAllImgDrawableClear();
     }
 
 }
