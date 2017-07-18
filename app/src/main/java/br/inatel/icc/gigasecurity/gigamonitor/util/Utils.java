@@ -379,4 +379,40 @@ public class Utils {
                 ((addr >>>= 8) & 0xFF));
     }
 
+    public static int getOrderNum(String fileName, int type) {
+        int index_0, index_1, index_2;
+        String num = "";
+        if (fileName == null) {
+            return 0;
+        } else {
+            switch (type) {
+                case 0:
+                    index_0 = fileName.indexOf('[');
+                    index_1 = fileName.indexOf('[', index_0 + 1);
+                    index_2 = fileName.indexOf("]", index_1);
+                    if (index_1 == index_2) {
+                        return 0;
+                    }
+                    num = fileName.substring(index_1 + 1, index_2);
+                    break;
+                case 1:
+                    index_0 = fileName.lastIndexOf("]");
+                    index_1 = fileName.lastIndexOf("[");
+                    if (index_0 == index_1) {
+                        return 0;
+                    }
+                    num = fileName.substring(index_1 + 1, index_0);
+                    break;
+                default:
+                    break;
+            }
+
+            try {
+                return Integer.parseInt(num);
+            } catch (Exception e) {
+                return 0;
+            }
+        }
+    }
+
 }

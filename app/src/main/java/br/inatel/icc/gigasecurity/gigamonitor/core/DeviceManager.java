@@ -16,6 +16,7 @@ import android.widget.Toast;
 
 import com.basic.G;
 import com.google.gson.annotations.Expose;
+import com.lib.EDEV_JSON_ID;
 import com.lib.EFUN_ATTR;
 import com.lib.EUIMSG;
 import com.lib.FunSDK;
@@ -24,6 +25,7 @@ import com.lib.MsgContent;
 import com.lib.sdk.struct.H264_DVR_FILE_DATA;
 import com.lib.sdk.struct.H264_DVR_FINDINFO;
 import com.lib.sdk.struct.SDK_CONFIG_NET_COMMON_V2;
+import com.lib.sdk.struct.SDK_SYSTEM_TIME;
 
 
 import org.json.JSONArray;
@@ -52,9 +54,11 @@ import br.inatel.icc.gigasecurity.gigamonitor.model.Device;
 import br.inatel.icc.gigasecurity.gigamonitor.model.DeviceChannelsManager;
 import br.inatel.icc.gigasecurity.gigamonitor.model.FavoritesChannelsManager;
 import br.inatel.icc.gigasecurity.gigamonitor.model.FavoritePair;
+import br.inatel.icc.gigasecurity.gigamonitor.model.FileData;
 import br.inatel.icc.gigasecurity.gigamonitor.model.StatePreferences;
 import br.inatel.icc.gigasecurity.gigamonitor.ui.SurfaceViewComponent;
 import br.inatel.icc.gigasecurity.gigamonitor.util.ComplexPreferences;
+import br.inatel.icc.gigasecurity.gigamonitor.util.FunLog;
 import br.inatel.icc.gigasecurity.gigamonitor.util.OPCompressPic;
 import br.inatel.icc.gigasecurity.gigamonitor.util.Utils;
 
@@ -155,288 +159,6 @@ public class DeviceManager implements IFunSDKResult{
         getScreenSize();
         networkType = getConnectionMethod();
         Log.d(TAG, "init: ");
-    }
-
-    @Override
-    public int OnFunSDKResult(Message msg, MsgContent msgContent){
-        Log.d(TAG, "msg.what : " + msg.what);
-        Log.d(TAG, "msg.arg1 : " + msg.arg1);
-        Log.d(TAG, "msg.arg2 : " + msg.arg2);
-        if (null != msgContent) {
-            Log.d(TAG, "msgContent.sender : " + msgContent.sender);
-            Log.d(TAG, "msgContent.seq : " + msgContent.seq);
-            Log.d(TAG, "msgContent.str : " + msgContent.str);
-            Log.d(TAG, "msgContent.arg3 : " + msgContent.arg3);
-            Log.d(TAG, "msgContent.pData : " + msgContent.pData);
-        }
-        switch (msg.what) {
-            case EUIMSG.DEV_SEARCH_DEVICES:
-            {
-                int length = msg.arg2;
-                if (length > 0) {
-                    SDK_CONFIG_NET_COMMON_V2[] searchResult = new SDK_CONFIG_NET_COMMON_V2[length];
-                    for (int i = 0; i < searchResult.length; i++) {
-                        searchResult[i] = new SDK_CONFIG_NET_COMMON_V2();
-                    }
-                    G.BytesToObj(searchResult, msgContent.pData);
-                    for (int i = 0; i < searchResult.length; i++) {
-                        Log.d(TAG, "DATA: " + searchResult[i].toString());
-                    }
-
-                    updateLanDeviceList(searchResult);
-                } else {
-                    updateLanDeviceList(null);
-                }
-            }
-            break;
-            case EUIMSG.DEV_LOGIN:
-            {
-                Device device = null;
-                if(msgContent.seq != 0) {
-                    device = findDeviceById(msgContent.seq);
-                }
-                if(msg.arg1 == 0 && device != null) {
-                    Log.d(TAG, "OnFunSDKResult: Login SUCCESS");
-//                    FunSDK.DevGetConfigByJson(getHandler(), device.connectionString, "NetWork", 4096, -1, 10000, device.getId());
-
-                    device.isLogged = true;
-                    device.loginAttempt = 0;
-                    device.connectionMethod = -1;
-
-                    favoriteManager.refreshFromDevice(device.getId());
-                    /*if(loginList.get(device.connectionString) != null)
-                        loginList.get(device.connectionString).onLoginSuccess(device);
-                    loginList.remove(device.connectionString);*/
-                    FunSDK.DevGetConfigByJson(getHandler(), device.connectionString, "SystemInfo", 4096, -1, 10000, device.getId());
-               } else if(msg.arg1 == -11301){ //wrong password or login
-                    if(device != null){
-                        /*final String message = "Login/Senha incorreto(s) no disposivo " + device.deviceName;
-                        ((DeviceListActivity) currentContext).runOnUiThread(new Runnable() {
-                               @Override
-                               public void run() {
-                                   Toast.makeText(currentContext, message, Toast.LENGTH_SHORT).show();
-                               }
-                           });
-                        favoriteManager.connectionError(device.getId());*/
-                        if (loginList.get(device.getId()) != null)
-                            loginList.get(device.getId()).onLoginError(msg.arg1, device);
-                        loginList.remove(device.getId());
-                        device.connectionMethod = -1;
-                    }
-                /*} else if(msg.arg1 == -11307 && device.loginAttempt == 9){
-                    if(device != null && loginList.get(device.connectionString) != null) {
-                        device.loginAttempt = 0;
-                        loginList.get(device.connectionString).onLoginError(msg.arg1, device);
-                        loginList.remove(device.connectionString);
-                    }*/
-                /*} else if(device != null && loginAttempt < 2){
-                    FunSDK.DevLogin(getHandler(), device.connectionString, device.getUsername(), device.getPassword(), device.getId());
-                    loginAttempt++;*/
-
-                } else{ /*if(loginAttempt == 2){*/
-//                    device.loginAttempt++;
-                    //next connection method
-                    loginAttempt(device);
-                    Log.d(TAG, "OnFunSDKResult: Login ERROR");
-                }
-            }
-            break;
-            /*case EUIMSG.SYS_GET_DEV_STATE:
-            {
-                Device device = null;
-                if(!msgContent.str.equals("0")) {
-//                    device = findDeviceBySN(msgContent.str);
-                    device = findDeviceById((msgContent.str).hashCode());
-                }
-                if(device != null) {
-                    if (msg.arg1 > 0) {
-                        Log.d(TAG, "OnFunSDKResult: Device ONLINE");
-                        device.isOnline = true;
-                        FunSDK.DevLogin(getHandler(), device.connectionString, device.getUsername(), device.getPassword(), device.getId());
-                    } else {
-                        Log.i(TAG, "OnFunSDKResult: Device OFFLINE");
-
-                        if(loginAttempt>3 ) {
-                            if(loginList.get(device.connectionString) != null) {
-                                loginList.get(device.connectionString).onLoginError(-1, device);
-                                loginList.remove(device.connectionString);
-                            }
-                            device.isOnline = false;
-                            loginAttempt = 0;
-                        } else{
-                            FunSDK.SysGetDevState(getHandler(), device.connectionString, device.getId());
-                            loginAttempt++;
-                        }
-                    }
-                }
-            }
-            break;*/
-            case EUIMSG.DEV_GET_JSON:
-            {
-                if(msg.arg1 >= 0 && msgContent.pData != null){
-                    Log.d(TAG, "OnFunSDKResult: GETCONFIGJSON SUCCESS");
-                    Device device = findDeviceById(msgContent.seq);
-                    String jsonText = G.ToStringJson(msgContent.pData);
-                    Log.d(TAG, "EUIMSG.DEV_GET_JSON --> json: " + device.connectionString + " " + jsonText);
-                    JSONObject json = null;
-                    try {
-                        json = new JSONObject(jsonText);
-                    } catch (JSONException e) {
-                        e.printStackTrace();
-                    }
-
-                    switch(msgContent.str){
-                        case "SystemInfo":{
-                            setDeviceInfo(json, device);
-                            if(loginList.get(device.getId()) != null) {
-                                loginList.get(device.getId()).onLoginSuccess(device);
-                            }
-                            loginList.remove(device.getId());
-
-                        }
-                        break;
-                        case "NetWork.NetCommon":{
-                            handleEthernetConfig(json, device);
-                            if(currentConfigListener != null)
-                            currentConfigListener.onReceivedConfig();
-                        }
-                        break;
-                        case "NetWork.NetDNS" :{
-                            handleDNSConfig(json, device);
-                            currentConfigListener.onReceivedConfig();
-                        }
-                        break;
-                        case "NetWork.NetDDNS":{
-                            handleDDNSConfig(json, device);
-                            if(currentConfigListener != null)
-                            currentConfigListener.onReceivedConfig();
-                        }
-                        break;
-                        case "NetWork.Upnp":{
-                            handleUPnPConfig(json, device);
-                            currentConfigListener.onReceivedConfig();
-                        }
-                        break;
-                        /*case "Uart.PTZ":{
-                            Log.d(TAG, "OnFunSDKResult: Possui ptz" + device.connectionString);
-                        }
-                        break;*/
-                    }
-
-//                     salvar json como txt
-                    /*File file = new File("/storage/emulated/0/", msgContent.str + ".txt");
-                    try {
-                        FileWriter writer = new FileWriter(file);
-                        writer.append(json.toString());
-                        writer.flush();
-                        writer.close();
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }*/
-                } else{
-//                    if(msgContent != null && msgContent.str.equals("Uart.PTZ"))
-//                        break;
-                    Device device = findDeviceById(msgContent.seq);
-                    FunSDK.DevGetConfigByJson(getHandler(), device.connectionString, msgContent.str, 4096, -1, 10000, device.getId());
-                    Log.d(TAG, "OnFunSDKResult: GETCONFIGJSON ERROR");
-                }
-            }
-            break;
-            case EUIMSG.DEV_SET_JSON:
-            {
-                if(msg.arg1 >= 0){
-                    Log.d(TAG, "OnFunSDKResult: CONFIG SET SUCCESS");
-                    if(currentConfigListener != null) {
-                        currentConfigListener.onSetConfig();
-                        currentConfigListener = null;
-                    }
-                    expandableListAdapter.notifyDataSetChanged();
-                    updateDevicesManagers();
-                } else{
-                    Log.d(TAG, "OnFunSDKResult: CONFIG SET ERROR");
-//                    currentConfigListener.onError();
-                }
-            }
-            break;
-            case EUIMSG.DEV_GET_CONFIG:
-            {
-                if(msg.arg1 >= 0){
-                    Log.d(TAG, "OnFunSDKResult: GETCONFIG SUCCESS");
-                    String data = G.ToString(msgContent.pData);
-                    Log.d(TAG, "--> DATA: " + data);
-                } else{
-                    Log.d(TAG, "OnFunSDKResult: GETCONFIG ERROR");
-                }
-            }
-            break;
-            case EUIMSG.DEV_GET_CHN_NAME:
-            {
-                Log.d(TAG, "OnFunSDKResult: DEV_GET_CHN_NAME");
-            }
-            break;
-            case EUIMSG.DEV_FIND_FILE:
-            {
-                Log.d(TAG, "OnFunSDKResult: DEV_FIND_FILE");
-                Device device = findDeviceById(msgContent.seq);
-                int fileNum = msg.arg1;
-                if (fileNum < 0) {
-                    Log.d(TAG, "OnFunSDKResult: NENHUM ARQUIVO ENCONTRADO");
-                    currentPlaybackSearchListener.onEmptyListFound();
-                } else {
-                    H264_DVR_FILE_DATA files[] = new H264_DVR_FILE_DATA[msg.arg1];
-                    for (int i = 0; i < files.length; i++) {
-                        files[i] = new H264_DVR_FILE_DATA();
-                    }
-                    G.BytesToObj(files, msgContent.pData);
-                    currentPlaybackSearchListener.onFindList(files);
-
-                }
-            }
-            break;
-            case EUIMSG.DEV_ON_DISCONNECT:
-            {
-                /*if(msgContent.str != null){
-                    String mensagem = "Dispositivo desconectado";
-                    Device device = findDeviceById(msgContent.str.hashCode());
-                    if(device != null) {
-                        mensagem = mensagem.concat(" (" + device.connectionString + ")");
-                        device.isLogged = false;
-//                        FunSDK.SysGetDevState(getHandler(), device.connectionString, device.getId());
-                    }
-                    Toast.makeText(currentContext, mensagem, Toast.LENGTH_LONG).show();
-                }*/
-            }
-            break;
-            case EUIMSG.DEV_CMD_EN:
-            {
-                if(msgContent != null){
-                    String data = G.ToString(msgContent.pData);
-                    Log.d(TAG, "--> DATA: " + data);
-                }
-            }
-            break;
-            case EUIMSG.DEV_SEARCH_PIC:
-            {
-                Log.e("SEARCHPIC", "OK");
-            }
-            break;
-            case EUIMSG.ON_FILE_DOWNLOAD:
-            {
-                Log.e("Download", "Started");
-            }
-            break;
-            case EUIMSG.ON_FILE_DLD_COMPLETE:
-            {
-                Log.e("Download", "Complete");
-            }
-            break;
-            case EUIMSG.ON_FILE_DLD_POS:
-            {
-                Log.e("Download", "Position");
-            }
-            break;
-        }
-        return 0;
     }
 
     public void getScreenSize(){
@@ -605,7 +327,7 @@ public class DeviceManager implements IFunSDKResult{
     }
 
     public void downloadFile(Device device, byte[] fileData, String path) {
-        FunSDK.DevDowonLoadByFile(getHandler(), device.connectionString, fileData, path, 0);
+        FunSDK.DevDowonLoadByFile(getHandler(), device.connectionString, fileData, path, device.getId());
     }
 
     public void getJsonConfig(Device device, String configString, ConfigListener configListener){
@@ -1209,23 +931,57 @@ public class DeviceManager implements IFunSDKResult{
         FunSDK.DevFindFile(getHandler(), device.connectionString, G.ObjToBytes(info), 64, 20000, device.getId());
     }
 
-    public void findThumbnailList(Device device, H264_DVR_FINDINFO info, PlaybackSearchListener listener) {
+    public void findThumbnailList(Device device, FileData info, PlaybackSearchListener listener) {
         currentPlaybackSearchListener = listener;
-        String path = Environment.getExternalStorageDirectory().getPath() + "/Pictures/Giga Monitor/" + Utils.currentDateTime() + ".jpg";
-        FunSDK.DevFindFile(getHandler(), device.connectionString, G.ObjToBytes(info), 0, 20000, device.getId());
-//        OPCompressPic opCompressPic = new OPCompressPic();
-//        opCompressPic.setPicName(info.st_4_fileName.toString());
-//        opCompressPic.setWidth(160);
-//        opCompressPic.setHeight(100);
-//        opCompressPic.setIsGeo(1);
-//        int result = FunSDK.DevSearchPicture(getHandler(),                  //获取缩略图该接口只提供运动相机使用
-//                device.connectionString,
-//                COMPRESS_PICTURE_REQ, 50000, 10000,
-//                opCompressPic.getSendMsg().getBytes(),
-//                2000, -1,
-//                path, 0);
-//        String result1 = String.valueOf(result);
-//        Log.e("PICSEARCH", result1);
+        H264_DVR_FILE_DATA info2 = info.getFileData();
+        String path = Environment.getExternalStorageDirectory().getPath() + "/Pictures/Giga Monitor/";
+        String thumb_path = path + File.separator + getDownloadFileNameByData(info2, 1, true);
+        OPCompressPic opCompressPic = new OPCompressPic();
+        opCompressPic.setPicName(G.ToString(info2.st_2_fileName));
+        opCompressPic.setWidth(160);
+        opCompressPic.setHeight(100);
+        opCompressPic.setIsGeo(1);
+        String opCompressPicJson = opCompressPic.getSendMsg();
+        int result = FunSDK.DevSearchPicture(getHandler(), device.getSerialNumber(), EDEV_JSON_ID.COMPRESS_PICTURE_REQ, 200, 10000, opCompressPicJson.getBytes(), 200, -1, thumb_path, 12);
+        String result1 = String.valueOf(result);
+        Log.e("PICSEARCH", result1);
+    }
+
+    public static String getDownloadFileNameByData(H264_DVR_FILE_DATA data, int type, boolean bThumbnail) {
+        StringBuffer sb = new StringBuffer();
+        if (null != data) {
+            sb.append(getTime(data.st_3_beginTime, 0));
+            sb.append("_");
+            sb.append(getTime(data.st_4_endTime, 0));
+            if (type == 1) {
+                sb.append("_");
+                int orderNum = Utils.getOrderNum(G.ToString(data.st_2_fileName), 1);
+                sb.append(orderNum);
+                if (bThumbnail) {
+                    sb.append("_thumb");
+                }
+                sb.append(".jpg");
+            } else if (type == 0) {
+                sb.append("_");
+                sb.append(data.st_6_StreamType);
+                if (bThumbnail)
+                    sb.append("_thumb");
+                sb.append(".mp4");
+            }
+        }
+        return sb.toString();
+    }
+
+    public static String getTime(SDK_SYSTEM_TIME tm, int type) {
+        if (type == 0) {
+            return String.format("%04d%02d%02d%02d%02d%02d", tm.st_0_year,
+                    tm.st_1_month, tm.st_2_day, tm.st_4_hour, tm.st_5_minute, tm.st_6_second);
+        } else if (type == 1) {
+            return String.format("%04d-%02d-%02d %02d:%02d:%02d", tm.st_0_year,
+                    tm.st_1_month, tm.st_2_day, tm.st_4_hour, tm.st_5_minute, tm.st_6_second);
+        } else {
+            return "";
+        }
     }
 
     public boolean isFavorite(int deviceId, int channelNumber) {
@@ -1473,6 +1229,296 @@ public class DeviceManager implements IFunSDKResult{
         public void setList(ArrayList<Device> list) {
             this.list = list;
         }
+    }
+
+    @Override
+    public int OnFunSDKResult(Message msg, MsgContent msgContent){
+        Log.d(TAG, "msg.what : " + msg.what);
+        Log.d(TAG, "msg.arg1 : " + msg.arg1);
+        Log.d(TAG, "msg.arg2 : " + msg.arg2);
+        if (null != msgContent) {
+            Log.d(TAG, "msgContent.sender : " + msgContent.sender);
+            Log.d(TAG, "msgContent.seq : " + msgContent.seq);
+            Log.d(TAG, "msgContent.str : " + msgContent.str);
+            Log.d(TAG, "msgContent.arg3 : " + msgContent.arg3);
+            Log.d(TAG, "msgContent.pData : " + msgContent.pData);
+        }
+        switch (msg.what) {
+            case EUIMSG.DEV_SEARCH_DEVICES:
+            {
+                int length = msg.arg2;
+                if (length > 0) {
+                    SDK_CONFIG_NET_COMMON_V2[] searchResult = new SDK_CONFIG_NET_COMMON_V2[length];
+                    for (int i = 0; i < searchResult.length; i++) {
+                        searchResult[i] = new SDK_CONFIG_NET_COMMON_V2();
+                    }
+                    G.BytesToObj(searchResult, msgContent.pData);
+                    for (int i = 0; i < searchResult.length; i++) {
+                        Log.d(TAG, "DATA: " + searchResult[i].toString());
+                    }
+
+                    updateLanDeviceList(searchResult);
+                } else {
+                    updateLanDeviceList(null);
+                }
+            }
+            break;
+            case EUIMSG.DEV_LOGIN:
+            {
+                Device device = null;
+                if(msgContent.seq != 0) {
+                    device = findDeviceById(msgContent.seq);
+                }
+                if(msg.arg1 == 0 && device != null) {
+                    Log.d(TAG, "OnFunSDKResult: Login SUCCESS");
+//                    FunSDK.DevGetConfigByJson(getHandler(), device.connectionString, "NetWork", 4096, -1, 10000, device.getId());
+
+                    device.isLogged = true;
+                    device.loginAttempt = 0;
+                    device.connectionMethod = -1;
+
+                    favoriteManager.refreshFromDevice(device.getId());
+                    /*if(loginList.get(device.connectionString) != null)
+                        loginList.get(device.connectionString).onLoginSuccess(device);
+                    loginList.remove(device.connectionString);*/
+                    FunSDK.DevGetConfigByJson(getHandler(), device.connectionString, "SystemInfo", 4096, -1, 10000, device.getId());
+                } else if(msg.arg1 == -11301){ //wrong password or login
+                    if(device != null){
+                        /*final String message = "Login/Senha incorreto(s) no disposivo " + device.deviceName;
+                        ((DeviceListActivity) currentContext).runOnUiThread(new Runnable() {
+                               @Override
+                               public void run() {
+                                   Toast.makeText(currentContext, message, Toast.LENGTH_SHORT).show();
+                               }
+                           });
+                        favoriteManager.connectionError(device.getId());*/
+                        if (loginList.get(device.getId()) != null)
+                            loginList.get(device.getId()).onLoginError(msg.arg1, device);
+                        loginList.remove(device.getId());
+                        device.connectionMethod = -1;
+                    }
+                /*} else if(msg.arg1 == -11307 && device.loginAttempt == 9){
+                    if(device != null && loginList.get(device.connectionString) != null) {
+                        device.loginAttempt = 0;
+                        loginList.get(device.connectionString).onLoginError(msg.arg1, device);
+                        loginList.remove(device.connectionString);
+                    }*/
+                /*} else if(device != null && loginAttempt < 2){
+                    FunSDK.DevLogin(getHandler(), device.connectionString, device.getUsername(), device.getPassword(), device.getId());
+                    loginAttempt++;*/
+
+                } else{ /*if(loginAttempt == 2){*/
+//                    device.loginAttempt++;
+                    //next connection method
+                    loginAttempt(device);
+                    Log.d(TAG, "OnFunSDKResult: Login ERROR");
+                }
+            }
+            break;
+            /*case EUIMSG.SYS_GET_DEV_STATE:
+            {
+                Device device = null;
+                if(!msgContent.str.equals("0")) {
+//                    device = findDeviceBySN(msgContent.str);
+                    device = findDeviceById((msgContent.str).hashCode());
+                }
+                if(device != null) {
+                    if (msg.arg1 > 0) {
+                        Log.d(TAG, "OnFunSDKResult: Device ONLINE");
+                        device.isOnline = true;
+                        FunSDK.DevLogin(getHandler(), device.connectionString, device.getUsername(), device.getPassword(), device.getId());
+                    } else {
+                        Log.i(TAG, "OnFunSDKResult: Device OFFLINE");
+
+                        if(loginAttempt>3 ) {
+                            if(loginList.get(device.connectionString) != null) {
+                                loginList.get(device.connectionString).onLoginError(-1, device);
+                                loginList.remove(device.connectionString);
+                            }
+                            device.isOnline = false;
+                            loginAttempt = 0;
+                        } else{
+                            FunSDK.SysGetDevState(getHandler(), device.connectionString, device.getId());
+                            loginAttempt++;
+                        }
+                    }
+                }
+            }
+            break;*/
+            case EUIMSG.DEV_GET_JSON:
+            {
+                if(msg.arg1 >= 0 && msgContent.pData != null){
+                    Log.d(TAG, "OnFunSDKResult: GETCONFIGJSON SUCCESS");
+                    Device device = findDeviceById(msgContent.seq);
+                    String jsonText = G.ToStringJson(msgContent.pData);
+                    Log.d(TAG, "EUIMSG.DEV_GET_JSON --> json: " + device.connectionString + " " + jsonText);
+                    JSONObject json = null;
+                    try {
+                        json = new JSONObject(jsonText);
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+
+                    switch(msgContent.str){
+                        case "SystemInfo":{
+                            setDeviceInfo(json, device);
+                            if(loginList.get(device.getId()) != null) {
+                                loginList.get(device.getId()).onLoginSuccess(device);
+                            }
+                            loginList.remove(device.getId());
+
+                        }
+                        break;
+                        case "NetWork.NetCommon":{
+                            handleEthernetConfig(json, device);
+                            if(currentConfigListener != null)
+                                currentConfigListener.onReceivedConfig();
+                        }
+                        break;
+                        case "NetWork.NetDNS" :{
+                            handleDNSConfig(json, device);
+                            currentConfigListener.onReceivedConfig();
+                        }
+                        break;
+                        case "NetWork.NetDDNS":{
+                            handleDDNSConfig(json, device);
+                            if(currentConfigListener != null)
+                                currentConfigListener.onReceivedConfig();
+                        }
+                        break;
+                        case "NetWork.Upnp":{
+                            handleUPnPConfig(json, device);
+                            currentConfigListener.onReceivedConfig();
+                        }
+                        break;
+                        /*case "Uart.PTZ":{
+                            Log.d(TAG, "OnFunSDKResult: Possui ptz" + device.connectionString);
+                        }
+                        break;*/
+                    }
+
+//                     salvar json como txt
+                    /*File file = new File("/storage/emulated/0/", msgContent.str + ".txt");
+                    try {
+                        FileWriter writer = new FileWriter(file);
+                        writer.append(json.toString());
+                        writer.flush();
+                        writer.close();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }*/
+                } else{
+//                    if(msgContent != null && msgContent.str.equals("Uart.PTZ"))
+//                        break;
+                    Device device = findDeviceById(msgContent.seq);
+                    FunSDK.DevGetConfigByJson(getHandler(), device.connectionString, msgContent.str, 4096, -1, 10000, device.getId());
+                    Log.d(TAG, "OnFunSDKResult: GETCONFIGJSON ERROR");
+                }
+            }
+            break;
+            case EUIMSG.DEV_SET_JSON:
+            {
+                if(msg.arg1 >= 0){
+                    Log.d(TAG, "OnFunSDKResult: CONFIG SET SUCCESS");
+                    if(currentConfigListener != null) {
+                        currentConfigListener.onSetConfig();
+                        currentConfigListener = null;
+                    }
+                    expandableListAdapter.notifyDataSetChanged();
+                    updateDevicesManagers();
+                } else{
+                    Log.d(TAG, "OnFunSDKResult: CONFIG SET ERROR");
+//                    currentConfigListener.onError();
+                }
+            }
+            break;
+            case EUIMSG.DEV_GET_CONFIG:
+            {
+                if(msg.arg1 >= 0){
+                    Log.d(TAG, "OnFunSDKResult: GETCONFIG SUCCESS");
+                    String data = G.ToString(msgContent.pData);
+                    Log.d(TAG, "--> DATA: " + data);
+                } else{
+                    Log.d(TAG, "OnFunSDKResult: GETCONFIG ERROR");
+                }
+            }
+            break;
+            case EUIMSG.DEV_GET_CHN_NAME:
+            {
+                Log.d(TAG, "OnFunSDKResult: DEV_GET_CHN_NAME");
+            }
+            break;
+            case EUIMSG.DEV_FIND_FILE:
+            {
+                Log.d(TAG, "OnFunSDKResult: DEV_FIND_FILE");
+                Device device = findDeviceById(msgContent.seq);
+                int fileNum = msg.arg1;
+                if (fileNum < 0) {
+                    Log.d(TAG, "OnFunSDKResult: NENHUM ARQUIVO ENCONTRADO");
+                    currentPlaybackSearchListener.onEmptyListFound();
+                } else {
+                    H264_DVR_FILE_DATA files[] = new H264_DVR_FILE_DATA[msg.arg1];
+                    for (int i = 0; i < files.length; i++) {
+                        files[i] = new H264_DVR_FILE_DATA();
+                    }
+                    G.BytesToObj(files, msgContent.pData);
+                    currentPlaybackSearchListener.onFindList(files);
+
+                }
+            }
+            break;
+            case EUIMSG.DEV_ON_DISCONNECT:
+            {
+                /*if(msgContent.str != null){
+                    String mensagem = "Dispositivo desconectado";
+                    Device device = findDeviceById(msgContent.str.hashCode());
+                    if(device != null) {
+                        mensagem = mensagem.concat(" (" + device.connectionString + ")");
+                        device.isLogged = false;
+//                        FunSDK.SysGetDevState(getHandler(), device.connectionString, device.getId());
+                    }
+                    Toast.makeText(currentContext, mensagem, Toast.LENGTH_LONG).show();
+                }*/
+            }
+            break;
+            case EUIMSG.DEV_CMD_EN:
+            {
+                if(msgContent != null){
+                    String data = G.ToString(msgContent.pData);
+                    Log.d(TAG, "--> DATA: " + data);
+                }
+            }
+            break;
+            case EUIMSG.DEV_SEARCH_PIC:
+            {
+                if (msg.arg1 == 0) {
+                    Log.e("SEARCHPIC", "OK");
+                }
+            }
+            break;
+            case EUIMSG.ON_FILE_DOWNLOAD:
+            {
+                if (msg.arg1 >= 0) {
+                    Log.e("Download", "Started");
+                }
+            }
+            break;
+            case EUIMSG.ON_FILE_DLD_COMPLETE:
+            {
+                if (msg.arg1 >= 0) {
+                    Log.e("Download", "Complete");
+                }
+            }
+            break;
+            case EUIMSG.ON_FILE_DLD_POS:
+            {
+                if (msg.arg1 >= 0) {
+                    Log.e("Download", "Position");
+                }
+            }
+            break;
+        }
+        return 0;
     }
 
 }
