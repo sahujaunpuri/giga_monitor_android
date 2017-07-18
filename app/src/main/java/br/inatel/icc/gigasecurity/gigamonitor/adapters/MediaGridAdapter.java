@@ -388,11 +388,13 @@ public class MediaGridAdapter extends BaseAdapter {
 
     public void removeItem(final int position) {
         if (pictureMode) {
+            mImageFiles.get(position).delete();
             mImageFiles.remove(position);
             mImageUris.remove(position);
             mImgDrawables.remove(position);
             tridToGetImgThumbnail.remove(position);
         } else {
+            mVideoFiles.get(position).delete();
             mVideoFiles.remove(position);
             mVideoUris.remove(position);
             mVideoDrawables.remove(position);
