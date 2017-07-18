@@ -16,6 +16,7 @@ import br.inatel.icc.gigasecurity.gigamonitor.activities.DeviceListActivity;
 import br.inatel.icc.gigasecurity.gigamonitor.core.DeviceManager;
 import br.inatel.icc.gigasecurity.gigamonitor.model.ChannelsManager;
 import br.inatel.icc.gigasecurity.gigamonitor.model.DeviceChannelsManager;
+import br.inatel.icc.gigasecurity.gigamonitor.util.Utils;
 
 /**
  * Created by zappts on 3/24/17.
@@ -188,7 +189,8 @@ public class OverlayMenu extends RelativeLayout {
         ivSnapshot.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                deviceChannelsManager.takeSnapshot(surfaceViewComponent);
+                String archiveName = Utils.currentDateTime();
+                deviceChannelsManager.takeSnapshot(surfaceViewComponent, archiveName);
                 startAnimationBlink(surfaceViewComponent);
             }
         });
@@ -201,7 +203,8 @@ public class OverlayMenu extends RelativeLayout {
                 } else if(!surfaceViewComponent.isREC()){
                     surfaceViewComponent.setREC(true);
                     mDeviceManager.channelOnRec = true;
-                    deviceChannelsManager.startRecord(surfaceViewComponent);
+                    String archiveName = Utils.currentDateTime();
+                    deviceChannelsManager.startRecord(surfaceViewComponent, archiveName);
                     ivSnapvideo.setImageDrawable(mContext.getResources().getDrawable(R.drawable.ic_snapvideo_on));
                 } else {
                     surfaceViewComponent.setREC(false);

@@ -475,7 +475,8 @@ public class DevicePlaybackVideoActivity extends ActionBarActivity {
 
     private void snapshotPlayback() {
         if (mSurfaceView.isConnected() && mSurfaceView.isPlaying()) {
-            mDeviceChannelsManager.takeSnapshot(mSurfaceView);
+            String playbackName = actualTime();
+            mDeviceChannelsManager.takeSnapshot(mSurfaceView, playbackName);
             flashView();
         } else {
             Toast.makeText(this, "O vídeo precisa estar em andamento para que a foto seja tirada!", Toast.LENGTH_SHORT).show();
@@ -488,12 +489,24 @@ public class DevicePlaybackVideoActivity extends ActionBarActivity {
                 mDeviceChannelsManager.stopRecord(mSurfaceView);
                 menu.getItem(1).setIcon(R.drawable.record);
             } else {
-                mDeviceChannelsManager.startRecord(mSurfaceView);
+                String playbackRecordName = actualTime();
+                mDeviceChannelsManager.startRecord(mSurfaceView, playbackRecordName);
                 menu.getItem(1).setIcon(R.mipmap.red_record);
             }
         } else {
             Toast.makeText(this, "O vídeo precisa estar em andamento para que a gravação seja iniciada!", Toast.LENGTH_SHORT).show();
         }
+    }
+
+    private String actualTime() {
+        String playbackDate = String.format("%s-%s-%s", mFileData.getBeginDateStr().substring(8),
+                mFileData.getBeginDateStr().substring(5, 7),
+                mFileData.getBeginDateStr().substring(0, 4));
+        String playbackTime = String.format("%s_%s_%s", initialTime.getText().toString().substring(0, 2),
+                initialTime.getText().toString().substring(3, 5),
+                initialTime.getText().toString().substring(6));
+        String playbackName = playbackDate + " " + playbackTime;
+        return playbackName;
     }
 
     private void downloadFile() {

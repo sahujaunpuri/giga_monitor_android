@@ -282,9 +282,9 @@ public abstract class ChannelsManager implements IFunSDKResult {
         FunSDK.DevStopTalk(talkHandler);
     }
 
-    public void takeSnapshot(SurfaceViewComponent svc){
+    public void takeSnapshot(SurfaceViewComponent svc, String archiveName){
         if(svc.isConnected()){
-            String path = Environment.getExternalStorageDirectory().getPath() + "/Pictures/Giga Monitor/" + Utils.currentDateTime() + ".jpg";
+            String path = Environment.getExternalStorageDirectory().getPath() + "/Pictures/Giga Monitor/" + archiveName + ".jpg";
             int result = FunSDK.MediaSnapImage(svc.mPlayerHandler, path, 0);
             if(result == 0){
                 Utils.savePictureFile(path);
@@ -292,10 +292,10 @@ public abstract class ChannelsManager implements IFunSDKResult {
         }
     }
 
-    public void startRecord(SurfaceViewComponent svc){
+    public void startRecord(SurfaceViewComponent svc, String archiveName){
         if(svc.isConnected()) {
             recCounter++;
-            svc.recordFileName = Environment.getExternalStorageDirectory().getPath() + "/Movies/Giga Monitor/" + Utils.currentDateTime() + ".mp4";
+            svc.recordFileName = Environment.getExternalStorageDirectory().getPath() + "/Movies/Giga Monitor/" + archiveName + ".mp4";
             FunSDK.MediaStartRecord(svc.mPlayerHandler, svc.recordFileName, 0);
             svc.isREC = true;
         }
