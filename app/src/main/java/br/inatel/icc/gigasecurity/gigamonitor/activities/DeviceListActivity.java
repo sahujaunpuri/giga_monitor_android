@@ -5,6 +5,8 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.os.StrictMode;
 import android.support.v7.app.ActionBarActivity;
@@ -67,6 +69,19 @@ public class DeviceListActivity extends ActionBarActivity {
             startInitialActivity();
 //            finish();
         }
+
+        //Verify Connection Name if Wi-Fi
+//        ConnectivityManager cm =
+//                (ConnectivityManager)mContext.getSystemService(Context.CONNECTIVITY_SERVICE);
+//
+//        NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
+//        boolean isConnected = activeNetwork != null &&
+//                activeNetwork.isConnectedOrConnecting();
+//        boolean isWiFi = activeNetwork.getType() == ConnectivityManager.TYPE_WIFI;
+//        J connectionName = activeNetwork.toString();
+//        int index = connectionName.toString().indexOf("extra");
+//        Log.e("NETWORK NAME", "YES");
+
 
         mExpandableListView.setOnGroupClickListener(new ExpandableListView.OnGroupClickListener() {
             @Override

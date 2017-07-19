@@ -4,6 +4,12 @@
     xmlns:tools="http://schemas.android.com/tools"
     tools:context="br.inatel.icc.gigasecurity.gigamonitor.activities.InitialActivity">
 
+    <item android:id="@+id/playback_download"
+        android:title=""
+        android:icon="@drawable/download"
+        android:orderInCategory="1"
+        app:showAsAction="always|withText" />
+
     <item android:id="@+id/playback_snapshot"
         android:title=""
         android:icon="@drawable/snapshot"

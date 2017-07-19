@@ -159,7 +159,7 @@ public class MediaActivity extends ActionBarActivity {
             case R.id.select_media:{
                 if (!mAdapter.selectItems) {
                     changeButtonsVisibility(true);
-                    gvMedia.setChoiceMode(GridView.CHOICE_MODE_MULTIPLE);
+                    gvMedia.setChoiceMode(GridView.CHOICE_MODE_MULTIPLE_MODAL);
                 } else {
                     changeButtonsVisibility(false);
                     gvMedia.setChoiceMode(GridView.CHOICE_MODE_SINGLE);

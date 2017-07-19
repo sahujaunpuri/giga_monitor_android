@@ -511,7 +511,6 @@ public class DevicePlaybackVideoActivity extends ActionBarActivity {
 
     private void downloadFile() {
         byte[] file = G.ObjToBytes(mFileData.getFileData());
-//        String path = Environment.getExternalStorageDirectory().getPath() + "/Pictures/Giga Monitor/" + Utils.currentDateTime() + ".jpg";
         String path = Environment.getExternalStorageDirectory().getPath() + "/Movies/Giga Monitor/" + Utils.currentDateTime() + ".mp4";
         mDeviceManager.downloadFile(mDevice, file, path);
     }
@@ -711,6 +710,9 @@ public class DevicePlaybackVideoActivity extends ActionBarActivity {
                 return true;
             case R.id.playback_record:
                 recordPlayback();
+                return true;
+            case R.id.playback_download:
+                downloadFile();
                 return true;
             default:
                 return false;

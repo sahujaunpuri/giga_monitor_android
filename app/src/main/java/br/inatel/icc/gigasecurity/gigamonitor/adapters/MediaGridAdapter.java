@@ -26,6 +26,7 @@ import android.provider.MediaStore;
 import android.support.v7.app.ActionBar;
 import android.view.Display;
 import android.view.Gravity;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
@@ -34,6 +35,7 @@ import android.view.animation.AnimationUtils;
 import android.widget.BaseAdapter;
 import android.widget.GridView;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.lib.sdk.bean.VideoWidgetBean;
@@ -185,6 +187,9 @@ public class MediaGridAdapter extends BaseAdapter {
             if(this.pictureMode) {
                 imageView = new TextView(mContext);
                 imageView.setLayoutParams(new GridView.LayoutParams(GridView.AUTO_FIT, 120));
+
+                imageView = new TextView(mContext);
+                imageView.setLayoutParams(new GridView.LayoutParams(GridView.AUTO_FIT, 120));
             } else {
                 videoView = new TextView(mContext);
                 videoView.setLayoutParams(new GridView.LayoutParams(GridView.AUTO_FIT, 120));
@@ -235,7 +240,7 @@ public class MediaGridAdapter extends BaseAdapter {
                 }
             }
 
-            fImageView.setOnClickListener(new View.OnClickListener() {
+            imageView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
                     if (!selectItems) {
@@ -250,7 +255,7 @@ public class MediaGridAdapter extends BaseAdapter {
                 }
             });
 
-            fImageView.setOnLongClickListener(new View.OnLongClickListener() {
+            imageView.setOnLongClickListener(new View.OnLongClickListener() {
                 @Override
                 public boolean onLongClick(View v) {
                     if (!selectItems) {
@@ -272,9 +277,8 @@ public class MediaGridAdapter extends BaseAdapter {
                         return false;
                     }
                 }
-            });;
+            });
             return fImageView;
-
         } else {
             final TextView fVideoView = videoView;
             if (mVideoDrawables.get(position) != null) {
@@ -302,7 +306,7 @@ public class MediaGridAdapter extends BaseAdapter {
                                 ((MediaActivity) mContext).runOnUiThread(new Runnable() {
                                     @Override
                                     public void run() {
-                                        //Drawable drawable = new BitmapDrawable(mContext.getResources(), bitmap);
+//                                        Drawable drawable = new BitmapDrawable(mContext.getResources(), bitmap);
                                         fVideoView.setText("");
                                         fVideoView.setBackground(drawable);
                                     }
@@ -385,11 +389,11 @@ public class MediaGridAdapter extends BaseAdapter {
 
     private void setImgDrawable(View view, Drawable draw) {
         try {
-            if (toDelete.contains(draw)) {
+            if (view != null && toDelete.contains(draw)) {
 //                draw.setAlpha(255);
                 view.getBackground().setColorFilter(null);
                 toDelete.remove(draw);
-            } else {
+            } else if (view != null){
 //                draw.setAlpha(128);
                 view.getBackground().setColorFilter(Color.DKGRAY, PorterDuff.Mode.OVERLAY);
                 toDelete.add(draw);
