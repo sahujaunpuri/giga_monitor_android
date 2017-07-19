@@ -4,12 +4,18 @@ import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.res.Resources;
 import android.graphics.Bitmap;
+import android.graphics.Canvas;
 import android.graphics.Color;
+import android.graphics.ColorFilter;
+import android.graphics.Point;
 import android.graphics.PorterDuff;
+import android.graphics.PorterDuffColorFilter;
 import android.graphics.drawable.AnimationDrawable;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
+import android.graphics.drawable.GradientDrawable;
 import android.media.MediaMetadataRetriever;
 import android.media.MediaPlayer;
 import android.media.ThumbnailUtils;
@@ -17,11 +23,17 @@ import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Environment;
 import android.provider.MediaStore;
+import android.support.v7.app.ActionBar;
+import android.view.Display;
 import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.WindowManager;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.widget.BaseAdapter;
 import android.widget.GridView;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.lib.sdk.bean.VideoWidgetBean;
@@ -58,7 +70,7 @@ public class MediaGridAdapter extends BaseAdapter {
     private ArrayList<Boolean> tridToGetImgThumbnail;
     private ArrayList<Boolean> tridToGetVideoThumbnail;
 
-    private ArrayList<Integer> toDelete;
+    private ArrayList<Drawable> toDelete;
 
     public long videoClickDownTime = 0;
     private String path = Environment.getExternalStorageDirectory().getPath();
@@ -85,10 +97,11 @@ public class MediaGridAdapter extends BaseAdapter {
         getImgFiles();
         getVideoFiles();
 
-        Bitmap blankBitmap = Bitmap.createBitmap(1, 1, Bitmap.Config.ARGB_8888);
+        Bitmap blankBitmap = Bitmap.createBitmap(2, 2, Bitmap.Config.ARGB_8888);
         blankDrawable = new BitmapDrawable(mContext.getResources(), blankBitmap);
 
         selectItems = false;
+
     }
 
     private void getImgFiles() {
@@ -164,34 +177,24 @@ public class MediaGridAdapter extends BaseAdapter {
     }
 
     @Override
-    public View getView(final int position, View convertView, ViewGroup parent) {
+    public View getView(final int position, final View convertView, ViewGroup parent) {
         TextView imageView = null;
         TextView videoView = null;
 
         if (convertView == null) {
-
             if(this.pictureMode) {
-
                 imageView = new TextView(mContext);
                 imageView.setLayoutParams(new GridView.LayoutParams(GridView.AUTO_FIT, 120));
-                //imageView.setScaleType(ImageView.ScaleType.CENTER_CROP);
-
             } else {
-
                 videoView = new TextView(mContext);
                 videoView.setLayoutParams(new GridView.LayoutParams(GridView.AUTO_FIT, 120));
-                //videoView.setScaleType(ImageView.ScaleType.CENTER_CROP);
-
             }
-
         } else {
-
             if(this.pictureMode) {
                 imageView = (TextView) convertView;
             } else {
                 videoView = (TextView) convertView;
             }
-
         }
 
         if(this.pictureMode) {
@@ -241,7 +244,8 @@ public class MediaGridAdapter extends BaseAdapter {
                         intent.setDataAndType(getImageUri(position), "image/*");
                         mContext.startActivity(intent);
                     } else {
-                        setImgDrawable(position);
+                        Drawable draw = getDrawable(position);
+                        setImgDrawable(v, draw);
                     }
                 }
             });
@@ -312,13 +316,15 @@ public class MediaGridAdapter extends BaseAdapter {
             fVideoView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-
-                            Intent intent = new Intent();
-                            intent.setAction(Intent.ACTION_VIEW);
-                            intent.setDataAndType(getVideoUri(position), "video/*");
-                            mContext.startActivity(intent);
-
-
+                    if (!selectItems) {
+                        Intent intent = new Intent();
+                        intent.setAction(Intent.ACTION_VIEW);
+                        intent.setDataAndType(getVideoUri(position), "video/*");
+                        mContext.startActivity(intent);
+                    } else {
+                        Drawable draw = getDrawable(position);
+                        setImgDrawable(v, draw);
+                    }
                 }
             });
 
@@ -326,22 +332,25 @@ public class MediaGridAdapter extends BaseAdapter {
             videoView.setOnLongClickListener(new View.OnLongClickListener() {
                 @Override
                 public boolean onLongClick(View v) {
+                    if (!selectItems) {
+                        AlertDialog.Builder builder = new AlertDialog.Builder(mContext);
 
-                    AlertDialog.Builder builder = new AlertDialog.Builder(mContext);
-
-                    builder.setTitle(mContext.getResources().getString(R.string.label_action))
-                            .setItems(new CharSequence[]{"Deletar", "Cancelar"},
-                                    new DialogInterface.OnClickListener() {
-                                        @Override
-                                        public void onClick(DialogInterface dialog, int which) {
-                                            if (which == 0) {
-                                                removeItem(position);
+                        builder.setTitle(mContext.getResources().getString(R.string.media_delete_various))
+                                .setItems(new CharSequence[]{"Sim", "Cancelar"},
+                                        new DialogInterface.OnClickListener() {
+                                            @Override
+                                            public void onClick(DialogInterface dialog, int which) {
+                                                if (which == 0) {
+                                                    removeItem(position);
+                                                }
                                             }
-                                        }
-                                    });
-                    builder.show();
+                                        });
+                        builder.show();
 
-                    return true;
+                        return true;
+                    } else {
+                        return false;
+                    }
                 }
             });
             return fVideoView;
@@ -354,6 +363,7 @@ public class MediaGridAdapter extends BaseAdapter {
                 Uri uri = getImageUri(position);
                 InputStream inputStream = mContext.getContentResolver().openInputStream(uri);
                 Drawable drawable = Drawable.createFromStream(inputStream, uri.toString());
+                mImgDrawables.remove(position);
                 mImgDrawables.add(position, drawable);
             } catch (FileNotFoundException e) {
                 e.printStackTrace();
@@ -363,28 +373,26 @@ public class MediaGridAdapter extends BaseAdapter {
         return mImgDrawables.get(position);
     }
 
-    private void setImgDrawable(Integer position) {
-        try {
-            Drawable drawable = mImgDrawables.get(position);
-            if (toDelete.contains(position)) {
-                drawable.setAlpha(255);
-//                drawable.setColorFilter(null);
-                toDelete.remove(position);
-            } else {
-                drawable.setAlpha(128);
-//                drawable.setColorFilter(Color.DKGRAY, PorterDuff.Mode.OVERLAY);
-                toDelete.add(position);
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
+    private Drawable getDrawable(int position) {
+        Drawable draw = null;
+        if (pictureMode) {
+            draw = mImgDrawables.get(position);
+        } else {
+            draw = mVideoDrawables.get(position);
         }
+        return draw;
     }
 
-    public void setAllImgDrawableClear() {
+    private void setImgDrawable(View view, Drawable draw) {
         try {
-            for (int i = 0; i < mImgDrawables.size(); i++) {
-                Drawable drawable = mImgDrawables.get(i);
-                drawable.setAlpha(255);
+            if (toDelete.contains(draw)) {
+//                draw.setAlpha(255);
+                view.getBackground().setColorFilter(null);
+                toDelete.remove(draw);
+            } else {
+//                draw.setAlpha(128);
+                view.getBackground().setColorFilter(Color.DKGRAY, PorterDuff.Mode.OVERLAY);
+                toDelete.add(draw);
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -398,6 +406,7 @@ public class MediaGridAdapter extends BaseAdapter {
             Bitmap bitmap = retriever.getFrameAtTime(1000, MediaMetadataRetriever.OPTION_CLOSEST_SYNC);
 //            Bitmap bitmap = ThumbnailUtils.createVideoThumbnail(mVideoFiles.get(position).getPath(), MediaStore.Images.Thumbnails.MINI_KIND);
             if (bitmap != null) {
+
                 mVideoDrawables.add(position,new BitmapDrawable(mContext.getResources(), bitmap));
             }
             tridToGetVideoThumbnail.add(position,true);
@@ -457,12 +466,25 @@ public class MediaGridAdapter extends BaseAdapter {
     }
 
     public void deleteSelectedMedias() {
-        for (int i=0; i<toDelete.size(); i++) {
-            Integer itemToDelete = toDelete.get(i);
-            removeItem(itemToDelete);
+        for (int i=0; i<toDelete.size(); i=0) {
+            Drawable itemToDelete = toDelete.get(i);
+            removeItem(getDrawablePosition(itemToDelete));
+            toDelete.remove(i);
         }
-        toDelete.clear();
-        setAllImgDrawableClear();
+    }
+
+    private int getDrawablePosition(Drawable drawable) {
+        int position = -1;
+        if (pictureMode) {
+            if (mImgDrawables.contains(drawable)) {
+                position = mImgDrawables.indexOf(drawable);
+            }
+        } else {
+            if (mVideoDrawables.contains(drawable)) {
+                position = mVideoDrawables.indexOf(drawable);
+            }
+        }
+        return position;
     }
 
 }

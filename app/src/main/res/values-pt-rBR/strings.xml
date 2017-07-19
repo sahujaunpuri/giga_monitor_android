@@ -161,6 +161,7 @@
     <string name="title_activity_bidirectional_talk_test">Voice Intercom</string>
     <string name="title_search_list">Procurar Dispositivo</string>
     <string name="label_action">Ação</string>
+    <string name="media_delete_various">Deseja deletar o(s) item(s) selecionado(s)?</string>
     <string name="label_add">Adicionar</string>
     <string name="label_upnp_warning">Certifique-se UPnP está em execução no roteador antes de usar este</string>
     <string name="label_upnp_http_port">Porta HTTP</string>

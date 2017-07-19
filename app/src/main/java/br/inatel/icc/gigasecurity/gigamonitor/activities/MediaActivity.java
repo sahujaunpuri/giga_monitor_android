@@ -1,5 +1,7 @@
 package br.inatel.icc.gigasecurity.gigamonitor.activities;
 
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
 import android.view.Menu;
@@ -8,6 +10,8 @@ import android.view.View;
 import android.view.ViewConfiguration;
 import android.widget.GridView;
 import android.widget.ImageView;
+import android.widget.ListAdapter;
+import android.widget.Toast;
 
 import br.inatel.icc.gigasecurity.gigamonitor.R;
 import br.inatel.icc.gigasecurity.gigamonitor.adapters.MediaGridAdapter;
@@ -49,6 +53,7 @@ public class MediaActivity extends ActionBarActivity {
                     ivVideo.setImageDrawable(getResources().getDrawable(R.drawable.ic_video_off));
                     ivImage.setImageDrawable(getResources().getDrawable(R.drawable.ic_camera_on));
                     ivImageSelected = true;
+                    verifyButtonsVisibility();
                 }
             }
         });
@@ -63,9 +68,16 @@ public class MediaActivity extends ActionBarActivity {
                     ivVideo.setImageDrawable(getResources().getDrawable(R.drawable.ic_video_on));
                     ivImage.setImageDrawable(getResources().getDrawable(R.drawable.ic_camera_off));
                     ivImageSelected = false;
+                    verifyButtonsVisibility();
                 }
             }
         });
+    }
+
+    private void verifyButtonsVisibility() {
+        if (mAdapter.selectItems) {
+            changeButtonsVisibility(false);
+        }
     }
 
     private void initComponents() {
@@ -87,7 +99,42 @@ public class MediaActivity extends ActionBarActivity {
 
     private void deleteMedias() {
         if (mAdapter.getNumberOfMediasToDelete() > 0) {
-            mAdapter.deleteSelectedMedias();
+            AlertDialog.Builder builder = new AlertDialog.Builder(this);
+            builder.setTitle(getResources().getString(R.string.media_delete_various))
+                    .setItems(new CharSequence[]{"Sim", "Cancelar"},
+                            new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialog, int which) {
+                                    if (which == 0) {
+                                        mAdapter.deleteSelectedMedias();
+                                    } else {
+                                        deselectAllViews();
+                                    }
+                                }
+                            });
+            builder.show();
+        } else {
+            Toast.makeText(getApplicationContext(), "Não há itens selecionados!", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    private void changeButtonsVisibility(boolean visible) {
+        if (visible) {
+            menuItemSelect.setTitle(CANCEL_TITLE_BUTTON);
+            menuItemTrash.setVisible(true);
+            mAdapter.selectItems = true;
+        } else {
+            menuItemSelect.setTitle(SELECT_TITLE_BUTTON);
+            menuItemTrash.setVisible(false);
+            mAdapter.selectItems = false;
+            deselectAllViews();
+        }
+    }
+
+    private void deselectAllViews() {
+        for (int i=0; i<gvMedia.getCount(); i++) {
+            View child = gvMedia.getChildAt(i);
+            child.getBackground().setColorFilter(null);
         }
     }
 
@@ -110,17 +157,13 @@ public class MediaActivity extends ActionBarActivity {
                 return true;
             }
             case R.id.select_media:{
-                if (menuItemSelect.getTitle().toString().equals(SELECT_TITLE_BUTTON)) {
-                    menuItemSelect.setTitle(CANCEL_TITLE_BUTTON);
-                    menuItemTrash.setVisible(true);
-                    mAdapter.selectItems = true;
+                if (!mAdapter.selectItems) {
+                    changeButtonsVisibility(true);
                     gvMedia.setChoiceMode(GridView.CHOICE_MODE_MULTIPLE);
                 } else {
-                    menuItemSelect.setTitle(SELECT_TITLE_BUTTON);
-                    menuItemTrash.setVisible(false);
-                    mAdapter.selectItems = false;
+                    changeButtonsVisibility(false);
                     gvMedia.setChoiceMode(GridView.CHOICE_MODE_SINGLE);
-                    mAdapter.setAllImgDrawableClear();
+                    deselectAllViews();
                 }
                 break;
             }
