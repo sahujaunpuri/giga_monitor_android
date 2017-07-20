@@ -748,12 +748,12 @@ public class DeviceManager implements IFunSDKResult{
                     return;
                 }
                 int nextConnectionType = -1;
-                boolean isSameNetwork = false;
+                boolean tryIpConnection = true;
                 if (device.getConnectionNetworkName() != null) {
-                    isSameNetwork = device.getConnectionNetworkName().equals(networkName);
+                    tryIpConnection = device.getConnectionNetworkName().equals(networkName);
                 }
                 if(device.getConnectionMethod() == -1 || device.getConnectionMethod() == 2) {
-                    if (networkType == 1 && isSameNetwork) {   //wifi connection
+                    if (networkType == 1 && tryIpConnection) {   //wifi connection
                         nextConnectionType = 0;
                     } else {
                         nextConnectionType = 1;
