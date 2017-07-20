@@ -20,6 +20,7 @@ import android.widget.ExpandableListView;
 import android.widget.Toast;
 
 import java.util.ArrayList;
+import java.util.Map;
 
 import br.inatel.icc.gigasecurity.gigamonitor.R;
 import br.inatel.icc.gigasecurity.gigamonitor.adapters.DeviceExpandableListAdapter;
@@ -69,19 +70,6 @@ public class DeviceListActivity extends ActionBarActivity {
             startInitialActivity();
 //            finish();
         }
-
-        //Verify Connection Name if Wi-Fi
-//        ConnectivityManager cm =
-//                (ConnectivityManager)mContext.getSystemService(Context.CONNECTIVITY_SERVICE);
-//
-//        NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
-//        boolean isConnected = activeNetwork != null &&
-//                activeNetwork.isConnectedOrConnecting();
-//        boolean isWiFi = activeNetwork.getType() == ConnectivityManager.TYPE_WIFI;
-//        J connectionName = activeNetwork.toString();
-//        int index = connectionName.toString().indexOf("extra");
-//        Log.e("NETWORK NAME", "YES");
-
 
         mExpandableListView.setOnGroupClickListener(new ExpandableListView.OnGroupClickListener() {
             @Override

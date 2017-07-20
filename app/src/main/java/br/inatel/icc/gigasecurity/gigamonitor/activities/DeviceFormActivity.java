@@ -45,12 +45,12 @@ public class DeviceFormActivity extends ActionBarActivity{
         if(getIntent().getExtras() != null) {
 //            mDevice = (Device) getIntent().getExtras().getSerializable("device");
             editPosition = getIntent().getExtras().getInt("index", -1);
-            if(editPosition > -1)
+            if(editPosition > -1) {
+                //Edit Device
                 mDevice = deviceManager.getDevices().get(editPosition);
-            else if(editPosition == -2)
+            } else if (editPosition == -2) {
                 mDevice = (Device) getIntent().getExtras().getSerializable("device");
-
-
+            }
 
             getSupportActionBar().setTitle("Editar Dispositivo");
             setForm(mDevice);
@@ -107,7 +107,7 @@ public class DeviceFormActivity extends ActionBarActivity{
         boolean isHostnameFilled = !TextUtils.isEmpty(etName.getText().toString());
         boolean isPortFilled = !TextUtils.isEmpty(etPort.getText().toString());
         boolean isSerialNumberFilled = !TextUtils.isEmpty(etSerial.getText().toString());
-        boolean isIPFilled = !TextUtils.isEmpty(etIpAddress.getText().toString());
+        boolean isIPFilled = isIPFilled();
         boolean isDNSFilled = !TextUtils.isEmpty(etDomain.getText().toString());
         boolean isUsernameFilled = !TextUtils.isEmpty(etUsername.getText().toString());
 
@@ -135,6 +135,10 @@ public class DeviceFormActivity extends ActionBarActivity{
         return false;
     }
 
+    private boolean isIPFilled() {
+        return !TextUtils.isEmpty(etIpAddress.getText().toString());
+    }
+
     private void startDeviceListActivity() {
         if(!DeviceListActivity.running) {
             Intent i = new Intent(this, DeviceListActivity.class);
@@ -143,6 +147,12 @@ public class DeviceFormActivity extends ActionBarActivity{
         }
         setResult(RESULT_OK, null);
         finish();
+    }
+
+    private void checkIfConnectionIsWifi() {
+        if (editPosition == -2 && deviceManager.networkType == 1 && isIPFilled()) {
+            mDevice.setConnectionNetworkName(deviceManager.getNetworkName());
+        }
     }
 
     @Override
@@ -177,6 +187,7 @@ public class DeviceFormActivity extends ActionBarActivity{
 //                        deviceManager.logoutDevice(deviceManager.findDeviceById(mDevice.getId()));
 //                        startDeviceListActivity();
                     } else {
+                        checkIfConnectionIsWifi();
                         deviceManager.addDevice(mDevice);
                         deviceManager.addSurfaceViewManager(mDevice);
                     }

@@ -68,11 +68,12 @@ public class Device implements Serializable {
     @Expose public int talkInChannel;
     @Expose public int talkOutChannel;
     @Expose public String connectionString;
+    @Expose private String connectionNetworkName = null;
 
     //State
     public boolean isLogged = false;
     public boolean isOnline = false;
-    public int connectionMethod = -1; //0 - IP:port, 1 - DDNS:port, 2 - SerialNumber
+    private int connectionMethod = -1; //0 - IP:port, 1 - DDNS:port, 2 - SerialNumber
     public int loginAttempt = 0;
     public ChannelsManager channelsManager;
     public String message = "Conectando via IP";
@@ -119,6 +120,7 @@ public class Device implements Serializable {
         this.connectionString = device.connectionString;
         this.isLogged  = device.isLogged ;
         this.isOnline = device.isOnline;
+        this.connectionNetworkName = device.connectionNetworkName;
     }
 
     public Device(String deviceName) {
@@ -486,6 +488,14 @@ public class Device implements Serializable {
         this.ddnsUserName = ddnsUserName;
     }
 
+    public int getConnectionMethod() {
+        return connectionMethod;
+    }
+
+    public void setConnectionMethod(int connectionMethod) {
+        this.connectionMethod = connectionMethod;
+    }
+
     public String getHostID() {
         String hostID;
         if (getIpAddress() != null && !getIpAddress().isEmpty()) {
@@ -510,5 +520,13 @@ public class Device implements Serializable {
 
     public void setDomain(String domain) {
         this.domain = domain;
+    }
+
+    public String getConnectionNetworkName() {
+        return connectionNetworkName;
+    }
+
+    public void setConnectionNetworkName(String connectionNetworkName) {
+        this.connectionNetworkName = connectionNetworkName;
     }
 }

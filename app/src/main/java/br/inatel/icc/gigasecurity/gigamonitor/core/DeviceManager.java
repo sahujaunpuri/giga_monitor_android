@@ -70,8 +70,6 @@ import static br.inatel.icc.gigasecurity.gigamonitor.activities.DeviceListActivi
  */
 public class DeviceManager implements IFunSDKResult{
 
-    private int COMPRESS_PICTURE_REQ = 1448;
-    private int COMPRESS_PICTURE_RSP = 1449;
     private static final String APP_UUID = "e29c9d4ac9fa41fab19413885818ca54";
     private static final String APP_KEY = "d55b6614829f4d1c84d3ab2a9193234b";
     private static final String APP_SECRET = "7a58fdbc242b4f6ba95652b7a3502b91";
@@ -114,6 +112,7 @@ public class DeviceManager implements IFunSDKResult{
     public int networkType; // -1:offline, 0:3g/4g, 1: wifi
     public String networkIp;
     public int networkMask;
+    private String networkName = null;
 
     private DeviceManager() {
     }
@@ -158,6 +157,18 @@ public class DeviceManager implements IFunSDKResult{
         loadSavedData(context);
         getScreenSize();
         networkType = getConnectionMethod();
+
+        if (networkType == 1) {
+            //Verify Connection Name if Wi-Fi
+            ConnectivityManager cm = (ConnectivityManager)currentContext.getSystemService(Context.CONNECTIVITY_SERVICE);
+
+            NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
+            String stringNetworkName = activeNetwork.toString();
+            int index = stringNetworkName.indexOf("extra");
+            int quotationMarksIndex = stringNetworkName.indexOf(",", index + 8);
+            networkName = stringNetworkName.substring(index + 8, quotationMarksIndex - 1);
+        }
+
         Log.d(TAG, "init: ");
     }
 
@@ -245,7 +256,7 @@ public class DeviceManager implements IFunSDKResult{
         return state;
     }
 
-    public void saveState(StatePreferences state){
+    public void saveState(StatePreferences state) {
         SharedPreferences.Editor editor = mPreferences.edit();
         editor.putInt("previousGroup", state.previousGroup);
         if(state.previousGroup != -1) {
@@ -641,7 +652,7 @@ public class DeviceManager implements IFunSDKResult{
         device.channelsManager = deviceChannelsManager;
     }
 
-    public void updateDevicesManagers(){
+    public void updateDevicesManagers() {
         if(deviceChannelsManagers == null)
             return;
         int i = 0;
@@ -651,7 +662,7 @@ public class DeviceManager implements IFunSDKResult{
         }
     }
 
-    public void updateSurfaceViewManagers(){
+    public void updateSurfaceViewManagers() {
         if(deviceChannelsManagers == null)
             return;
 //        deviceChannelsManagers.clear();
@@ -737,18 +748,24 @@ public class DeviceManager implements IFunSDKResult{
                     return;
                 }
                 int nextConnectionType = -1;
-                if(device.connectionMethod == -1 || device.connectionMethod == 2) {
-                    if (networkType == 1) {   //wifi connection
+                boolean isSameNetwork = false;
+                if (device.getConnectionNetworkName() != null) {
+                    isSameNetwork = device.getConnectionNetworkName().equals(networkName);
+                }
+                if(device.getConnectionMethod() == -1 || device.getConnectionMethod() == 2) {
+                    if (networkType == 1 && isSameNetwork) {   //wifi connection
                         nextConnectionType = 0;
-                    }else
+                    } else {
                         nextConnectionType = 1;
-                }else if(device.connectionMethod == 0){
+                    }
+                } else if(device.getConnectionMethod() == 0) {
                     nextConnectionType = 1;
-                } else if(device.connectionMethod == 1)
+                } else if(device.getConnectionMethod() == 1) {
                     nextConnectionType = 2;
-                if(device.setConnectionString(nextConnectionType) < 0)
+                }
+                if(device.setConnectionString(nextConnectionType) < 0) {
                     loginAttempt(device);
-                else {
+                } else {
                     Log.d(TAG, "loginAttempt: " + device.loginAttempt + " " + device.connectionString);
                     device.loginAttempt++;
                     if(expandableListAdapter != null)
@@ -1093,7 +1110,9 @@ public class DeviceManager implements IFunSDKResult{
         networkMask = netPrefix;
     }
 
-
+    public String getNetworkName() {
+        return networkName;
+    }
 
     // TODO
     /*
@@ -1273,9 +1292,10 @@ public class DeviceManager implements IFunSDKResult{
                     Log.d(TAG, "OnFunSDKResult: Login SUCCESS");
 //                    FunSDK.DevGetConfigByJson(getHandler(), device.connectionString, "NetWork", 4096, -1, 10000, device.getId());
 
+                    Log.d(device.deviceName, device.connectionString);
                     device.isLogged = true;
                     device.loginAttempt = 0;
-                    device.connectionMethod = -1;
+                    device.setConnectionMethod(-1);
 
                     favoriteManager.refreshFromDevice(device.getId());
                     /*if(loginList.get(device.connectionString) != null)
@@ -1283,7 +1303,7 @@ public class DeviceManager implements IFunSDKResult{
                     loginList.remove(device.connectionString);*/
                     FunSDK.DevGetConfigByJson(getHandler(), device.connectionString, "SystemInfo", 4096, -1, 10000, device.getId());
                 } else if(msg.arg1 == -11301){ //wrong password or login
-                    if(device != null){
+                    if(device != null) {
                         /*final String message = "Login/Senha incorreto(s) no disposivo " + device.deviceName;
                         ((DeviceListActivity) currentContext).runOnUiThread(new Runnable() {
                                @Override
@@ -1295,7 +1315,7 @@ public class DeviceManager implements IFunSDKResult{
                         if (loginList.get(device.getId()) != null)
                             loginList.get(device.getId()).onLoginError(msg.arg1, device);
                         loginList.remove(device.getId());
-                        device.connectionMethod = -1;
+                        device.setConnectionMethod(-1);
                     }
                 /*} else if(msg.arg1 == -11307 && device.loginAttempt == 9){
                     if(device != null && loginList.get(device.connectionString) != null) {
@@ -1312,6 +1332,7 @@ public class DeviceManager implements IFunSDKResult{
                     //next connection method
                     loginAttempt(device);
                     Log.d(TAG, "OnFunSDKResult: Login ERROR");
+                    Log.d(device.deviceName, device.connectionString);
                 }
             }
             break;
