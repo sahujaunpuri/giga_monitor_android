@@ -18,6 +18,7 @@ import java.util.ArrayList;
 
 import br.inatel.icc.gigasecurity.gigamonitor.R;
 import br.inatel.icc.gigasecurity.gigamonitor.adapters.DeviceSearchAdapter;
+import br.inatel.icc.gigasecurity.gigamonitor.config.ethernet.EthernetConfigActivity;
 import br.inatel.icc.gigasecurity.gigamonitor.core.Discovery;
 import br.inatel.icc.gigasecurity.gigamonitor.model.Device;
 
@@ -58,17 +59,7 @@ public class DeviceSearchListActivity extends ActionBarActivity {
             public void onItemClick(AdapterView<?> adapterView, final View view, final int i, long l) {
                 mListView.setItemChecked(i, true);
                 view.setSelected(true);
-
-                Bundle extras = new Bundle();
-                extras.putSerializable("device", mDevices.get(i));
-                extras.putInt("index", -2);
-
-                Intent intent = new Intent(DeviceSearchListActivity.this, DeviceFormActivity.class);
-                intent.putExtras(extras);
-//                startActivity(intent);
-                startActivityForResult(intent, 1);
-//                finish();
-
+                verifyOptionSelected(i);
             }
         });
 
@@ -103,6 +94,61 @@ public class DeviceSearchListActivity extends ActionBarActivity {
                         mLoadingDialog.dismiss();
                     }
                 });
+    }
+
+    private void verifyOptionSelected(final int item) {
+        final AlertDialog.Builder builder = new AlertDialog.Builder(mContext);
+        ((DeviceSearchListActivity) mContext).runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                builder.setTitle("")
+                        .setItems(new CharSequence[]{"Configurar rede", "Adicionar dispositivo", "Cancelar"},
+                                new DialogInterface.OnClickListener() {
+                                    @Override
+                                    public void onClick(DialogInterface dialog, int which) {
+                                        switch (which) {
+                                            case 0:
+                                                startNetworkSettingsActivity(item);
+                                                break;
+                                            case 1:
+                                                startAddDeviceActivity(item);
+                                                break;
+                                            case 2:
+                                                builder.setCancelable(true);
+                                                break;
+                                        }
+                                    }
+                                });
+                builder.show();
+            }
+        });
+    }
+
+    private void startNetworkSettingsActivity(int item) {
+
+        Bundle extras = new Bundle();
+        extras.putSerializable("IP", mDevices.get(item).getIpAddress());
+        extras.putSerializable("submask", mDevices.get(item).getSubmask());
+        extras.putSerializable("gateway", mDevices.get(item).getGateway());
+        extras.putInt("index", -3);
+
+        Intent intent = new Intent(DeviceSearchListActivity.this, EthernetConfigActivity.class);
+        intent.putExtras(extras);
+//                startActivity(intent);
+        startActivityForResult(intent, 1);
+//                finish();
+    }
+
+    private void startAddDeviceActivity(int item) {
+        Bundle extras = new Bundle();
+        extras.putSerializable("device", mDevices.get(item));
+        extras.putInt("index", -2);
+
+        Intent intent = new Intent(DeviceSearchListActivity.this, DeviceFormActivity.class);
+        intent.putExtras(extras);
+//                startActivity(intent);
+        startActivityForResult(intent, 1);
+//                finish();
     }
 
     private void stopAndRefresh() {

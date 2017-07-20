@@ -479,7 +479,7 @@ public class DeviceManager implements IFunSDKResult{
         expandableListAdapter.notifyDataSetChanged();
     }
 
-    public void setEthernetConfig(Device device, ConfigListener configListener){
+    public void setEthernetConfig(Device device, ConfigListener configListener) {
         currentConfigListener = configListener;
         try {
             currentConfig.put("HostName", device.getHostname());
