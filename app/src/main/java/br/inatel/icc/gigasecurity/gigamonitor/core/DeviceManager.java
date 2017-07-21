@@ -284,11 +284,7 @@ public class DeviceManager implements IFunSDKResult{
                     switch(msgContent.str){
                         case "SystemInfo":{
                             setDeviceInfo(json, device);
-                            if(loginList.get(device.getId()) != null) {
-                                loginList.get(device.getId()).onLoginSuccess(device);
-                            }
-                            loginList.remove(device.getId());
-
+                            FunSDK.DevGetChnName(getHandler(), device.connectionString, device.getUsername(), device.getPassword(), device.getId());
                         }
                         break;
                         case "NetWork.NetCommon":{
@@ -368,6 +364,12 @@ public class DeviceManager implements IFunSDKResult{
             case EUIMSG.DEV_GET_CHN_NAME:
             {
                 Log.d(TAG, "OnFunSDKResult: DEV_GET_CHN_NAME");
+                Device device = findDeviceById(msgContent.seq);
+                device.setChannelNumber(msg.arg1);
+                if(loginList.get(device.getId()) != null) {
+                    loginList.get(device.getId()).onLoginSuccess(device);
+                }
+                loginList.remove(device.getId());
             }
             break;
             case EUIMSG.DEV_FIND_FILE:
@@ -569,8 +571,8 @@ public class DeviceManager implements IFunSDKResult{
                 device.talkInChannel = systemInfo.getInt("TalkInChannel");
             if(systemInfo.has("TalkOutChannel"))
                 device.talkOutChannel = systemInfo.getInt("TalkOutChannel");
-            if(systemInfo.has("VideoInChannel"))
-                device.setChannelNumber(systemInfo.getInt("VideoInChannel") + systemInfo.getInt("DigChannel"));
+//            if(systemInfo.has("VideoInChannel"))
+//                device.setChannelNumber(systemInfo.getInt("VideoInChannel") + systemInfo.getInt("DigChannel") + systemInfo.getInt("VideoOutChannel"));
             saveData();
             if(device.getIpAddress() == null || device.getIpAddress().isEmpty())
                 getJsonConfig(device, "NetWork.NetCommon", null);
@@ -593,13 +595,13 @@ public class DeviceManager implements IFunSDKResult{
             if(jsonObject.has("NetWork.NetCommon"))
                 json = jsonObject.getJSONObject("NetWork.NetCommon");
 
-            if(json.has("HostName")){
+            if(json.has("HostName")) {
                 device.setHostname(json.getString("HostName"));
             }
-            if(json.has("GateWay")){
+            if(json.has("GateWay")) {
                 device.setGateway(Utils.hexStringToIP(json.getString("GateWay")));
             }
-            if(json.has("HostIP")){
+            if(json.has("HostIP")) {
                 if(device.getIpAddress().isEmpty())
                     collapse = position;
                 device.setIpAddress(Utils.hexStringToIP(json.getString("HostIP")));
@@ -719,7 +721,7 @@ public class DeviceManager implements IFunSDKResult{
         expandableListAdapter.notifyDataSetChanged();
     }
 
-    public void setEthernetConfig(Device device, ConfigListener configListener){
+    public void setEthernetConfig(Device device, ConfigListener configListener) {
         currentConfigListener = configListener;
         try {
             currentConfig.put("HostName", device.getHostname());
