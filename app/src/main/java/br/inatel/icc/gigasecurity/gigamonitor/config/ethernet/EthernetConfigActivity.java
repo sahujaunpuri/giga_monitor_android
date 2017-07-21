@@ -15,6 +15,8 @@ import android.widget.CompoundButton.OnCheckedChangeListener;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import com.lib.FunSDK;
+
 import br.inatel.icc.gigasecurity.gigamonitor.R;
 import br.inatel.icc.gigasecurity.gigamonitor.activities.DeviceListActivity;
 import br.inatel.icc.gigasecurity.gigamonitor.core.DeviceManager;
@@ -103,9 +105,11 @@ public class EthernetConfigActivity extends ActionBarActivity implements OnCheck
         if (intentIndex == -3) {
             mDevice = (Device) getIntent().getExtras().getSerializable("device");
             position = -1;
-            mHostIP = (String)getIntent().getExtras().getSerializable("IP");
-            mSubmask = (String)getIntent().getExtras().getSerializable("submask");
-            mGateway = (String)getIntent().getExtras().getSerializable("gateway");
+
+            temp = new Device();
+            mHostIP = (String) getIntent().getExtras().getSerializable("ipAddress");
+            mSubmask = (String) getIntent().getExtras().getSerializable("submask");
+            mGateway = (String) getIntent().getExtras().getSerializable("gateway");
 
             initViews();
         } else {
@@ -113,41 +117,37 @@ public class EthernetConfigActivity extends ActionBarActivity implements OnCheck
             position = mManager.getDevicePosition(mDevice);
             temp = new Device(mDevice);
             mManager.getJsonConfig(mDevice, "NetWork.NetCommon", mListener);
-
-            task = new AsyncTask<Void, Void, Void>() {
-                @Override
-                protected void onPreExecute() {
-//                pd = new ProgressDialog(mContext);
-                    pd.setTitle("Configurando");
-                    pd.setMessage("Aguarde");
-                    pd.setCancelable(false);
-                    pd.setIndeterminate(true);
-                    pd.show();
-                }
-
-                @Override
-                protected Void doInBackground(Void... arg0) {
-                    try {
-                        if (intentIndex != -3) {
-                            mManager.setEthernetConfig(temp, mListener);
-                        } else {
-
-                        }
-                        Thread.sleep(3000);
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                    }
-                    return null;
-                }
-
-                @Override
-                protected void onPostExecute(Void result) {
-                    if(pd.isShowing())
-                        pd.dismiss();
-                    mListener.onSetConfig();
-                }
-            };
         }
+
+        task = new AsyncTask<Void, Void, Void>() {
+            @Override
+            protected void onPreExecute() {
+//                pd = new ProgressDialog(mContext);
+                pd.setTitle("Configurando");
+                pd.setMessage("Aguarde");
+                pd.setCancelable(false);
+                pd.setIndeterminate(true);
+                pd.show();
+            }
+
+            @Override
+            protected Void doInBackground(Void... arg0) {
+                try {
+                    mManager.setEthernetConfig(temp, mListener);
+                    Thread.sleep(3000);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+                return null;
+            }
+
+            @Override
+            protected void onPostExecute(Void result) {
+                if(pd.isShowing())
+                    pd.dismiss();
+                mListener.onSetConfig();
+            }
+        };
 
     }
 
@@ -233,11 +233,23 @@ public class EthernetConfigActivity extends ActionBarActivity implements OnCheck
     private void save() {
 
 //        mManager.logoutDevice(mDevice);
+        if (intentIndex == -3) {
+            temp.setHostname((String) getIntent().getExtras().getSerializable("hostname"));
+            temp.setHttpPort((int) getIntent().getExtras().getSerializable("httpPort"));
+            temp.setMacAddress((String) getIntent().getExtras().getSerializable("macAddress"));
+            temp.setMaxBPS((int) getIntent().getExtras().getSerializable("maxBps"));
+            temp.setMonMode((String) getIntent().getExtras().getSerializable("monMode"));
+            temp.setSslPort((int) getIntent().getExtras().getSerializable("sslPort"));
+            temp.setTcpMaxConn((int) getIntent().getExtras().getSerializable("tcpMaxConn"));
+            temp.setTCPPort((int) getIntent().getExtras().getSerializable("tcpPort"));
+            temp.setTransferPlan((int) getIntent().getExtras().getSerializable("transferPlan"));
+            temp.setUdpPort((int) getIntent().getExtras().getSerializable("udpPort"));
+        }
         temp.setIpAddress(mHostIPEditText.getText().toString());
         temp.setSubmask(mSubmaskEditText.getText().toString());
         temp.setGateway(mGatewayEditText.getText().toString());
 
-        task.execute((Void[])null);
+        task.execute((Void[]) null);
     }
 
     private void startDeviceListActivity() {
