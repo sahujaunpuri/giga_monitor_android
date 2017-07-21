@@ -34,6 +34,7 @@ public class EthernetConfigActivity extends ActionBarActivity implements OnCheck
     private Device temp;
     private int position;
     private EditText mHostIPEditText, mSubmaskEditText, mGatewayEditText;
+    private int intentIndex;
 
     private String mHostIP, mSubmask, mGateway;
 
@@ -53,20 +54,20 @@ public class EthernetConfigActivity extends ActionBarActivity implements OnCheck
         @Override
         public void onSetConfig() {
             int messageId = R.string.saved;
-
-            mDevice = temp;
-            mManager.logoutDevice(mDevice);
-            mManager.getDevices().remove(position);
-            mDevice.isLogged = false;
-//            mDevice.setChannelNumber(0);
-//            temp.isLogged = false;
-//            temp.setChannelNumber(0);
-            mManager.addDevice(temp, position);
-//            mManager.updateSurfaceViewManager(position);
-            mManager.collapse = position;
-//            mManager.getExpandableListAdapter().collapseGroup(position);
-//            mManager.getExpandableListAdapter().childViewHolder.get(position).recyclerViewChannels = null;
-
+            if (intentIndex != -3) {
+                mDevice = temp;
+                mManager.logoutDevice(mDevice);
+                mManager.getDevices().remove(position);
+                mDevice.isLogged = false;
+                //            mDevice.setChannelNumber(0);
+                //            temp.isLogged = false;
+                //            temp.setChannelNumber(0);
+                mManager.addDevice(temp, position);
+                //            mManager.updateSurfaceViewManager(position);
+                mManager.collapse = position;
+                //            mManager.getExpandableListAdapter().collapseGroup(position);
+                //            mManager.getExpandableListAdapter().childViewHolder.get(position).recyclerViewChannels = null;
+            }
 
             Toast.makeText(getApplicationContext(), messageId, Toast.LENGTH_SHORT).show();
             task.cancel(true);
@@ -98,48 +99,55 @@ public class EthernetConfigActivity extends ActionBarActivity implements OnCheck
         pd = new ProgressDialog(mContext);
         mManager = DeviceManager.getInstance();
 
-        if (getIntent().getExtras().getInt("index") == -3) {
+        intentIndex = getIntent().getExtras().getInt("index");
+        if (intentIndex == -3) {
             mDevice = (Device) getIntent().getExtras().getSerializable("device");
             position = -1;
             mHostIP = (String)getIntent().getExtras().getSerializable("IP");
             mSubmask = (String)getIntent().getExtras().getSerializable("submask");
             mGateway = (String)getIntent().getExtras().getSerializable("gateway");
+
+            initViews();
         } else {
             mDevice = mManager.findDeviceById((int) getIntent().getExtras().getSerializable("device"));
             position = mManager.getDevicePosition(mDevice);
             temp = new Device(mDevice);
             mManager.getJsonConfig(mDevice, "NetWork.NetCommon", mListener);
-        }
 
-        task = new AsyncTask<Void, Void, Void>() {
-            @Override
-            protected void onPreExecute() {
+            task = new AsyncTask<Void, Void, Void>() {
+                @Override
+                protected void onPreExecute() {
 //                pd = new ProgressDialog(mContext);
-                pd.setTitle("Configurando");
-                pd.setMessage("Aguarde");
-                pd.setCancelable(false);
-                pd.setIndeterminate(true);
-                pd.show();
-            }
-
-            @Override
-            protected Void doInBackground(Void... arg0) {
-                try {
-                    mManager.setEthernetConfig(temp, mListener);
-                    Thread.sleep(3000);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
+                    pd.setTitle("Configurando");
+                    pd.setMessage("Aguarde");
+                    pd.setCancelable(false);
+                    pd.setIndeterminate(true);
+                    pd.show();
                 }
-                return null;
-            }
 
-            @Override
-            protected void onPostExecute(Void result) {
-                if(pd.isShowing())
-                    pd.dismiss();
-                mListener.onSetConfig();
-            }
-        };
+                @Override
+                protected Void doInBackground(Void... arg0) {
+                    try {
+                        if (intentIndex != -3) {
+                            mManager.setEthernetConfig(temp, mListener);
+                        } else {
+
+                        }
+                        Thread.sleep(3000);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                    return null;
+                }
+
+                @Override
+                protected void onPostExecute(Void result) {
+                    if(pd.isShowing())
+                        pd.dismiss();
+                    mListener.onSetConfig();
+                }
+            };
+        }
 
     }
 
