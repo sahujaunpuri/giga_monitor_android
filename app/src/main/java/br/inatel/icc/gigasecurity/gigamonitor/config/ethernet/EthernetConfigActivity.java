@@ -133,7 +133,11 @@ public class EthernetConfigActivity extends ActionBarActivity implements OnCheck
             @Override
             protected Void doInBackground(Void... arg0) {
                 try {
-                    mManager.setEthernetConfig(temp, mListener);
+                    if (intentIndex == -3) {
+                        mManager.setEthernetConfigOffline(temp);
+                    } else {
+                        mManager.setEthernetConfig(temp, mListener);
+                    }
                     Thread.sleep(3000);
                 } catch (InterruptedException e) {
                     e.printStackTrace();

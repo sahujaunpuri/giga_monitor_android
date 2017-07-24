@@ -503,6 +503,29 @@ public class DeviceManager implements IFunSDKResult{
         currentConfig = null;
     }
 
+    public void setEthernetConfigOffline(Device device) {
+        JSONObject json = new JSONObject();
+        try {
+            json.put("HostName", device.getHostname());
+            json.put("GateWay", Utils.stringIpToHexString(device.getGateway()));
+            json.put("HostIP", Utils.stringIpToHexString(device.getIpAddress()));
+            json.put("Submask", Utils.stringIpToHexString(device.getSubmask()));
+            json.put("HttpPort", device.getHttpPort());
+            json.put("MaxBps", device.getMaxBPS());
+            json.put("MonMode", device.getMonMode());
+            json.put("SSLPort", device.getSslPort());
+            json.put("TCPMaxConn", device.getTcpMaxConn());
+            json.put("TCPPort", device.getTCPPort());
+            json.put("TransferPlan", device.getTransferPlan());
+            json.put("UDPPort", device.getUdpPort());
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        Log.d(TAG, "setCurrentConfigOffline: " + json.toString());
+        FunSDK.DevSetConfigByJson(getHandler(), device.connectionString, "NetWork.NetCommon", json.toString(), -1, 15000, device.getId());
+    }
+
     public void setDNSConfig(Device device){
         try{
             currentConfig.put("Address", Utils.stringIpToHexString(device.getPrimaryDNS()));
