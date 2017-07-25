@@ -275,9 +275,11 @@ public abstract class ChannelsManager implements IFunSDKResult {
     }
 
     public void disableSendAudio() {
-        mRecordThread.Stop();
-        mRecordThread.Pause(true);
-        mRecordThread = null;
+        if (mRecordThread != null) {
+            mRecordThread.Stop();
+            mRecordThread.Pause(true);
+            mRecordThread = null;
+        }
 //        FunSDK.MediaSetSound(talkHandler, 50, 0);
         FunSDK.DevStopTalk(talkHandler);
     }
@@ -391,6 +393,21 @@ public abstract class ChannelsManager implements IFunSDKResult {
         return found;
     }
 
+    public void stopActions() {
+        for (int j=0; j<surfaceViewComponents.size(); j++) {
+            SurfaceViewComponent sfvc = surfaceViewComponents.get(j);
+            if (sfvc.isREC()) {
+                stopRecord(sfvc);
+            }
+            if (sfvc.isReceiveAudioEnabled) {
+                sfvc.isReceiveAudioEnabled = false;
+                toggleReceiveAudio(sfvc);
+            }
+            if (sfvc.isSendAudioEnabled) {
+                disableSendAudio();
+            }
+        }
+    }
 
     /** Async return from SDK**/
     @Override

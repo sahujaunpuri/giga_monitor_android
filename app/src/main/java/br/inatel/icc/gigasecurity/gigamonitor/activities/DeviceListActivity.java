@@ -30,6 +30,7 @@ import br.inatel.icc.gigasecurity.gigamonitor.model.Device;
 import com.crashlytics.android.Crashlytics;
 
 import br.inatel.icc.gigasecurity.gigamonitor.model.StatePreferences;
+import br.inatel.icc.gigasecurity.gigamonitor.ui.SurfaceViewComponent;
 import io.fabric.sdk.android.Fabric;
 
 public class DeviceListActivity extends ActionBarActivity {
@@ -130,8 +131,9 @@ public class DeviceListActivity extends ActionBarActivity {
     }
 
     @Override
-    protected void onStop(){
+    protected void onStop() {
         super.onStop();
+        verifyIfSomeChannelIsSoundingOrRecording();
     }
 
     @Override
@@ -211,6 +213,11 @@ public class DeviceListActivity extends ActionBarActivity {
         mExpandableListView.setAdapter(mAdapter);
         mAdapter.notifyDataSetChanged();
 
+    }
+
+    private void verifyIfSomeChannelIsSoundingOrRecording() {
+        mDeviceManager.getExpandableListAdapter().stopActions();
+        mDeviceManager.getExpandableListAdapter().verifyOverlayMenuVisibility();
     }
 
     @Override
