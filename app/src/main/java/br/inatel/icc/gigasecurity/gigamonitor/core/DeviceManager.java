@@ -170,8 +170,6 @@ public class DeviceManager implements IFunSDKResult{
         }
 
         Log.d(TAG, "init: ");
-
-        refreshSearchDevices = false;
     }
 
     public void getScreenSize(){
