@@ -19,6 +19,7 @@ import java.util.ArrayList;
 import br.inatel.icc.gigasecurity.gigamonitor.R;
 import br.inatel.icc.gigasecurity.gigamonitor.adapters.DeviceSearchAdapter;
 import br.inatel.icc.gigasecurity.gigamonitor.config.ethernet.EthernetConfigActivity;
+import br.inatel.icc.gigasecurity.gigamonitor.core.DeviceManager;
 import br.inatel.icc.gigasecurity.gigamonitor.core.Discovery;
 import br.inatel.icc.gigasecurity.gigamonitor.model.Device;
 import br.inatel.icc.gigasecurity.gigamonitor.util.Utils;
@@ -76,7 +77,7 @@ public class DeviceSearchListActivity extends ActionBarActivity {
         }
     }
 
-    public void searchDevices(){
+    public void searchDevices() {
         if (mDiscoveryThread == null) {
             mDiscoveryThread = prepareDiscoveryThread();
         } else {
@@ -128,35 +129,22 @@ public class DeviceSearchListActivity extends ActionBarActivity {
     private void startNetworkSettingsActivity(int item) {
 
         Bundle extras = new Bundle();
-//        Device dev = new Device();
-//        dev.setHostname(mDevices.get(item).getHostname());
-//        dev.setGateway(mDevices.get(item).getGateway());
-//        dev.setIpAddress(mDevices.get(item).getIpAddress());
-//        dev.setSubmask(mDevices.get(item).getSubmask());
-//        dev.setHttpPort(mDevices.get(item).getHttpPort());
-//        dev.setMacAddress(mDevices.get(item).getMacAddress());
-//        dev.setMaxBPS(mDevices.get(item).getMaxBPS());
-//        dev.setMonMode(mDevices.get(item).getMonMode());
-//        dev.setSslPort(mDevices.get(item).getSslPort());
-//        dev.setTcpMaxConn(mDevices.get(item).getTcpMaxConn());
-//        dev.setTCPPort(mDevices.get(item).getTCPPort());
-//        dev.setTransferPlan(mDevices.get(item).getTransferPlan());
-//        dev.setUdpPort(mDevices.get(item).getUdpPort());
-        extras.putSerializable("hostname", mDevices.get(item).getHostname());
-        extras.putSerializable("gateway", mDevices.get(item).getGateway());
-        extras.putSerializable("ipAddress", mDevices.get(item).getIpAddress());
-        extras.putSerializable("submask", mDevices.get(item).getSubmask());
-        extras.putSerializable("httpPort", mDevices.get(item).getHttpPort());
-        extras.putSerializable("macAddress", mDevices.get(item).getMacAddress());
-        extras.putSerializable("maxBps", mDevices.get(item).getMaxBPS());
-        extras.putSerializable("monMode", mDevices.get(item).getMonMode());
-        extras.putSerializable("sslPort", mDevices.get(item).getSslPort());
-        extras.putSerializable("tcpMaxConn", mDevices.get(item).getTcpMaxConn());
-        extras.putSerializable("tcpPort", mDevices.get(item).getTCPPort());
-        extras.putSerializable("transferPlan", mDevices.get(item).getTransferPlan());
-        extras.putSerializable("udpPort", mDevices.get(item).getUdpPort());
+        Device dev = new Device();
+        dev.setHostname(mDevices.get(item).getHostname());
+        dev.setGateway(mDevices.get(item).getGateway());
+        dev.setIpAddress(mDevices.get(item).getIpAddress());
+        dev.setSubmask(mDevices.get(item).getSubmask());
+        dev.setHttpPort(mDevices.get(item).getHttpPort());
+        dev.setMacAddress(mDevices.get(item).getMacAddress());
+        dev.setMaxBPS(mDevices.get(item).getMaxBPS());
+        dev.setMonMode(mDevices.get(item).getMonMode());
+        dev.setSslPort(mDevices.get(item).getSslPort());
+        dev.setTcpMaxConn(mDevices.get(item).getTcpMaxConn());
+        dev.setTCPPort(mDevices.get(item).getTCPPort());
+        dev.setTransferPlan(mDevices.get(item).getTransferPlan());
+        dev.setUdpPort(mDevices.get(item).getUdpPort());
 
-//        extras.putSerializable("device", dev);
+        extras.putSerializable("device", dev);
         extras.putInt("index", -3);
 
         Intent intent = new Intent(DeviceSearchListActivity.this, EthernetConfigActivity.class);

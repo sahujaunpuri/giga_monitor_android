@@ -106,10 +106,11 @@ public class EthernetConfigActivity extends ActionBarActivity implements OnCheck
             mDevice = (Device) getIntent().getExtras().getSerializable("device");
             position = -1;
 
-            temp = new Device();
-            mHostIP = (String) getIntent().getExtras().getSerializable("ipAddress");
-            mSubmask = (String) getIntent().getExtras().getSerializable("submask");
-            mGateway = (String) getIntent().getExtras().getSerializable("gateway");
+            temp = new Device(mDevice);
+//            mHostIP = (String) getIntent().getExtras().getSerializable("ipAddress");
+//            mSubmask = (String) getIntent().getExtras().getSerializable("submask");
+//            mGateway = (String) getIntent().getExtras().getSerializable("gateway");
+            initData();
 
             initViews();
         } else {
@@ -238,16 +239,18 @@ public class EthernetConfigActivity extends ActionBarActivity implements OnCheck
 
 //        mManager.logoutDevice(mDevice);
         if (intentIndex == -3) {
-            temp.setHostname((String) getIntent().getExtras().getSerializable("hostname"));
-            temp.setHttpPort((int) getIntent().getExtras().getSerializable("httpPort"));
-            temp.setMacAddress((String) getIntent().getExtras().getSerializable("macAddress"));
-            temp.setMaxBPS((int) getIntent().getExtras().getSerializable("maxBps"));
-            temp.setMonMode((String) getIntent().getExtras().getSerializable("monMode"));
-            temp.setSslPort((int) getIntent().getExtras().getSerializable("sslPort"));
-            temp.setTcpMaxConn((int) getIntent().getExtras().getSerializable("tcpMaxConn"));
-            temp.setTCPPort((int) getIntent().getExtras().getSerializable("tcpPort"));
-            temp.setTransferPlan((int) getIntent().getExtras().getSerializable("transferPlan"));
-            temp.setUdpPort((int) getIntent().getExtras().getSerializable("udpPort"));
+//            temp.setHostname((String) getIntent().getExtras().getSerializable("hostname"));
+//            temp.setHttpPort((int) getIntent().getExtras().getSerializable("httpPort"));
+//            temp.setMacAddress((String) getIntent().getExtras().getSerializable("macAddress"));
+//            temp.setMaxBPS((int) getIntent().getExtras().getSerializable("maxBps"));
+//            temp.setMonMode((String) getIntent().getExtras().getSerializable("monMode"));
+//            temp.setSslPort((int) getIntent().getExtras().getSerializable("sslPort"));
+//            temp.setTcpMaxConn((int) getIntent().getExtras().getSerializable("tcpMaxConn"));
+//            temp.setTCPPort((int) getIntent().getExtras().getSerializable("tcpPort"));
+//            temp.setTransferPlan((int) getIntent().getExtras().getSerializable("transferPlan"));
+//            temp.setUdpPort((int) getIntent().getExtras().getSerializable("udpPort"));
+            temp.setConnectionMethod(0);
+            temp.setConnectionString(0);
         }
         temp.setIpAddress(mHostIPEditText.getText().toString());
         temp.setSubmask(mSubmaskEditText.getText().toString());

@@ -170,6 +170,8 @@ public class DeviceManager implements IFunSDKResult{
         }
 
         Log.d(TAG, "init: ");
+
+        refreshSearchDevices = false;
     }
 
     public void getScreenSize(){
@@ -523,7 +525,7 @@ public class DeviceManager implements IFunSDKResult{
         }
 
         Log.d(TAG, "setCurrentConfigOffline: " + json.toString());
-        FunSDK.DevSetConfigByJson(getHandler(), device.connectionString, "NetWork.NetCommon", json.toString(), -1, 15000, device.getId());
+        FunSDK.DevSetConfigByJson(getHandler(), device.connectionString, "NetWork.NetCommon", json.toString(), -1, 15000, 123);
     }
 
     public void setDNSConfig(Device device){
