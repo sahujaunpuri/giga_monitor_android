@@ -217,7 +217,7 @@ public class DeviceListActivity extends ActionBarActivity {
 
     private void verifyIfSomeChannelIsSoundingOrRecording() {
         mDeviceManager.getExpandableListAdapter().stopActions();
-        mDeviceManager.getExpandableListAdapter().verifyOverlayMenuVisibility();
+//        mDeviceManager.getExpandableListAdapter().verifyOverlayMenuVisibility();
     }
 
     @Override

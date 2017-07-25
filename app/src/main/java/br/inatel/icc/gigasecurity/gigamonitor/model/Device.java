@@ -77,6 +77,9 @@ public class Device implements Serializable {
     public int loginAttempt = 0;
     public ChannelsManager channelsManager;
     public String message = "Conectando via IP";
+    private boolean ipPriorityConnection;
+    private boolean domainPriorityConnection;
+    private boolean cloudPriorityConnection;
 
     private Calendar systemTime;
 
@@ -121,6 +124,9 @@ public class Device implements Serializable {
         this.isLogged  = device.isLogged ;
         this.isOnline = device.isOnline;
         this.connectionNetworkName = device.connectionNetworkName;
+        this.ipPriorityConnection = true;
+        this.domainPriorityConnection = true;
+        this.cloudPriorityConnection = true;
     }
 
     public Device(String deviceName) {
@@ -528,5 +534,29 @@ public class Device implements Serializable {
 
     public void setConnectionNetworkName(String connectionNetworkName) {
         this.connectionNetworkName = connectionNetworkName;
+    }
+
+    public boolean isIpPriorityConnection() {
+        return ipPriorityConnection;
+    }
+
+    public void setIpPriorityConnection(boolean ipPriorityConnection) {
+        this.ipPriorityConnection = ipPriorityConnection;
+    }
+
+    public boolean isDomainPriorityConnection() {
+        return domainPriorityConnection;
+    }
+
+    public void setDomainPriorityConnection(boolean domainPriorityConnection) {
+        this.domainPriorityConnection = domainPriorityConnection;
+    }
+
+    public boolean isCloudPriorityConnection() {
+        return cloudPriorityConnection;
+    }
+
+    public void setCloudPriorityConnection(boolean cloudPriorityConnection) {
+        this.cloudPriorityConnection = cloudPriorityConnection;
     }
 }

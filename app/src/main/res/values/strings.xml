@@ -157,7 +157,8 @@
     <string name="serial">Serial</string>
     <string name="ip">IP Address</string>
     <string name="domain">Domain</string>
-    <string name="port">Port</string>
+    <string name="port">Internal Port</string>
+    <string name="external_port">External Port</string>
     <string name="user">User</string>
     <string name="password">Password</string>
     <string name="invalid_device_save">Unable to save</string>
@@ -253,7 +254,7 @@
     <string name="label_devices_found">Found 0 devices.</string>
     <string name="name_hint">Office</string>
     <string name="serial_hint">0123456789</string>
-    <string name="ip_address_hint">Domain or IP</string>
+    <string name="ip_address_hint">Internal IP</string>
     <string name="domain_hint">Domain</string>
     <string name="password_hint">blank</string>
     <string name="label_search_serial_number">Serial Number</string>

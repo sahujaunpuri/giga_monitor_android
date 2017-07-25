@@ -47,6 +47,7 @@ import br.inatel.icc.gigasecurity.gigamonitor.R;
 import br.inatel.icc.gigasecurity.gigamonitor.activities.DeviceListActivity;
 import br.inatel.icc.gigasecurity.gigamonitor.adapters.DeviceExpandableListAdapter;
 import br.inatel.icc.gigasecurity.gigamonitor.listeners.ConfigListener;
+import br.inatel.icc.gigasecurity.gigamonitor.listeners.DownloadPlaybackListener;
 import br.inatel.icc.gigasecurity.gigamonitor.listeners.LoginDeviceListener;
 import br.inatel.icc.gigasecurity.gigamonitor.listeners.PlaybackSearchListener;
 import br.inatel.icc.gigasecurity.gigamonitor.model.ChannelsManager;
@@ -94,6 +95,8 @@ public class DeviceManager implements IFunSDKResult{
     private JSONObject currentConfig, currentConfigB;
     private JSONArray currentConfigArray;
     public Context currentContext;
+    private DownloadPlaybackListener downloadPlaybackListener;
+    private int downloadHandler;
 
     private DeviceExpandableListAdapter expandableListAdapter;
     private ArrayList<ChannelsManager> deviceChannelsManagers;
@@ -337,8 +340,13 @@ public class DeviceManager implements IFunSDKResult{
         }
     }
 
-    public void downloadFile(Device device, byte[] fileData, String path) {
-        FunSDK.DevDowonLoadByFile(getHandler(), device.connectionString, fileData, path, device.getId());
+    public void downloadFile(Device device, byte[] fileData, String path, DownloadPlaybackListener downloadListener) {
+        downloadPlaybackListener = downloadListener;
+        downloadHandler = FunSDK.DevDowonLoadByFile(getHandler(), device.connectionString, fileData, path, device.getId());
+    }
+
+    public void cancelDownload() {
+        FunSDK.DevStopDownLoad(downloadHandler);
     }
 
     public void getJsonConfig(Device device, String configString, ConfigListener configListener){
@@ -1544,6 +1552,11 @@ public class DeviceManager implements IFunSDKResult{
             {
                 if (msg.arg1 >= 0) {
                     Log.e("Download", "Started");
+                    String object = msgContent.str;
+                    int lengthIndex = object.indexOf("length");
+                    int finalLength = object.indexOf(";", lengthIndex);
+                    int fileSize = Integer.valueOf(object.substring(lengthIndex + 7, finalLength));
+                    downloadPlaybackListener.onStartDownload(fileSize);
                 }
             }
             break;
@@ -1551,6 +1564,7 @@ public class DeviceManager implements IFunSDKResult{
             {
                 if (msg.arg1 >= 0) {
                     Log.e("Download", "Complete");
+                    downloadPlaybackListener.onFinishDownload();
                 }
             }
             break;
@@ -1558,7 +1572,16 @@ public class DeviceManager implements IFunSDKResult{
             {
                 if (msg.arg1 >= 0) {
                     Log.e("Download", "Position");
+                    int currentProgress = msg.arg2;
+                    int totalProgress = msg.arg1;
+                    downloadPlaybackListener.onProgressDownload(currentProgress, totalProgress);
                 }
+            }
+            break;
+            case EUIMSG.EMSG_Stop_DownLoad:
+            {
+                Log.e("DOWNLOAD", "STOPPED");
+                downloadPlaybackListener.onCancelDownload();
             }
             break;
         }

@@ -4,7 +4,11 @@ import android.animation.Animator;
 import android.animation.AnimatorSet;
 import android.animation.ObjectAnimator;
 import android.app.Activity;
+import android.app.AlertDialog;
+import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.DialogInterface;
+import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.content.res.Configuration;
 import android.content.res.Resources;
@@ -16,6 +20,7 @@ import android.graphics.drawable.ShapeDrawable;
 import android.graphics.drawable.shapes.RectShape;
 import android.media.Image;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
@@ -66,6 +71,7 @@ import java.util.concurrent.TimeUnit;
 import br.inatel.icc.gigasecurity.gigamonitor.R;
 import br.inatel.icc.gigasecurity.gigamonitor.adapters.DeviceExpandableListAdapter;
 import br.inatel.icc.gigasecurity.gigamonitor.core.DeviceManager;
+import br.inatel.icc.gigasecurity.gigamonitor.listeners.DownloadPlaybackListener;
 import br.inatel.icc.gigasecurity.gigamonitor.listeners.PlaybackListener;
 import br.inatel.icc.gigasecurity.gigamonitor.listeners.PlaybackSearchListener;
 import br.inatel.icc.gigasecurity.gigamonitor.model.Device;
@@ -110,6 +116,8 @@ public class DevicePlaybackVideoActivity extends ActionBarActivity {
 
     private int surfaceViewHeight;
     private int seekBarHeight;
+
+    private ProgressDialog mProgressDialog;
 
     private PlaybackListener mPlaybackListener =
             new PlaybackListener() {
@@ -224,6 +232,42 @@ public class DevicePlaybackVideoActivity extends ActionBarActivity {
                     });
                 }
             };
+
+    final DownloadPlaybackListener downloadListener = new DownloadPlaybackListener() {
+        @Override
+        public void onStartDownload(int fileSize) {
+            mProgressDialog = new ProgressDialog(DevicePlaybackVideoActivity.this);
+            mProgressDialog.setMessage("Downloading file..");
+            mProgressDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
+            mProgressDialog.setCancelable(true);
+            mProgressDialog.setProgressNumberFormat("%d/%d KB");
+            mProgressDialog.show();
+            mProgressDialog.setOnCancelListener(new ProgressDialog.OnCancelListener(){
+                @Override
+                public void onCancel(DialogInterface dialogInterface) {
+                    mDeviceManager.cancelDownload();
+                }
+            });
+        }
+
+        @Override
+        public void onProgressDownload(int currentProgress, int totalProgress) {
+            mProgressDialog.setProgress(currentProgress/1000);
+            mProgressDialog.setMax(totalProgress/1000);
+        }
+
+        @Override
+        public void onFinishDownload() {
+            mProgressDialog.dismiss();
+            startMediaActivity();
+        }
+
+        @Override
+        public void onCancelDownload() {
+            mProgressDialog.dismiss();
+        }
+    };
+
     /**
      * ATTENTION: This was auto-generated to implement the App Indexing API.
      * See https://g.co/AppIndexing/AndroidStudio for more information.
@@ -382,8 +426,10 @@ public class DevicePlaybackVideoActivity extends ActionBarActivity {
         super.onResume();
     }
 
-    private void showMessage() {
-        Toast.makeText(this, "O vídeo precisa estar em andamento!", Toast.LENGTH_SHORT).show();
+    private void startMediaActivity() {
+        Intent i = new Intent(this, MediaActivity.class);
+
+        startActivity(i);
     }
 
     private void setSeekBarTextViewPosition() {
@@ -510,9 +556,24 @@ public class DevicePlaybackVideoActivity extends ActionBarActivity {
     }
 
     private void downloadFile() {
-        byte[] file = G.ObjToBytes(mFileData.getFileData());
-        String path = Environment.getExternalStorageDirectory().getPath() + "/Movies/Giga Monitor/" + Utils.currentDateTime() + ".mp4";
-        mDeviceManager.downloadFile(mDevice, file, path);
+        final AlertDialog.Builder alert = new AlertDialog.Builder(this);
+        alert.setTitle("Download!");
+        String message = String.valueOf(mFileData.getFileData().st_1_size);
+        alert.setMessage("Tem certeza que deseja baixar um arquivo de " + message + " KB?");
+        alert.setPositiveButton("Sim", new DialogInterface.OnClickListener(){
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                byte[] file = G.ObjToBytes(mFileData.getFileData());
+                String path = Environment.getExternalStorageDirectory().getPath() + "/Movies/Giga Monitor/" + Utils.currentDateTime() + ".mp4";
+                mDeviceManager.downloadFile(mDevice, file, path, downloadListener);
+            }
+        });
+        alert.setNegativeButton("Não", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                dialogInterface.dismiss();
+            }
+        });
     }
 
     public void updateStatusTextView(final CharSequence statusText) {

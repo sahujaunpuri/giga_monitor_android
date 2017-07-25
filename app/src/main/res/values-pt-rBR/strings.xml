@@ -251,7 +251,8 @@
     <string name="ip">Endereço IP</string>
     <string name="domain">Domínio</string>
     <string name="domain_hint">dominio.gigaddns.com.br</string>
-    <string name="port">Porta</string>
+    <string name="port">Porta Interna</string>
+    <string name="external_port">Porta Externa</string>
     <string name="user">Usuário</string>
     <string name="password">Senha</string>
     <string name="invalid_device_save">Não foi possível salvar</string>
