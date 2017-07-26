@@ -255,7 +255,7 @@
     <string name="external_port">Porta Externa</string>
     <string name="user">Usuário</string>
     <string name="password">Senha</string>
-    <string name="invalid_device_save">Não foi possível salvar</string>
+    <string name="invalid_device_save">Não foi possível salvar. Dados incompletos!</string>
     <string name="saved">Alterações salvas</string>
     <string name="enable">Ativar</string>
     <string name="searching_dialog_messsage">Procurando…</string>

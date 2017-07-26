@@ -476,7 +476,7 @@ public final class CaptureActivity extends Activity implements SurfaceHolder.Cal
     device.setSerialNumber(serialNumber);
 
     extras.putSerializable("device", device);
-
+    extras.putInt("index", -2);
     Intent i = new Intent(this, DeviceFormActivity.class);
     i.putExtras(extras);
 //    startActivity(i);

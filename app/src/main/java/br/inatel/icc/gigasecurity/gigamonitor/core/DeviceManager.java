@@ -864,8 +864,9 @@ public class DeviceManager implements IFunSDKResult{
     private Device addLanDevice(SDK_CONFIG_NET_COMMON_V2 comm) {
         Device device = null;
         synchronized (mLanDevices) {
+            Log.e(TAG, "Vai passar pelo G.toString");
             String devSn = G.ToString(comm.st_14_sSn);
-
+            Log.e(TAG, "Passou pelo G.toString");
             if (null != devSn) {
                 if (findLanDevice(devSn) == null) {
                     device = new Device(comm);
@@ -978,7 +979,7 @@ public class DeviceManager implements IFunSDKResult{
 
     public void findPlaybackList(Device device, H264_DVR_FINDINFO info, PlaybackSearchListener listener) {
         currentPlaybackSearchListener = listener;
-        FunSDK.DevFindFile(getHandler(), device.connectionString, G.ObjToBytes(info), 64, 20000, device.getId());
+        FunSDK.DevFindFile(getHandler(), device.connectionString, G.ObjToBytes(info), 1000, 20000, device.getId());
     }
 
     public void findThumbnailList(Device device, FileData info, PlaybackSearchListener listener) {

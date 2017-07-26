@@ -237,12 +237,16 @@ public abstract class ChannelsManager implements IFunSDKResult {
     }
 
     public void onStop(SurfaceViewComponent svc){
-        if ( svc.isConnected() ) {
+        if (svc.isConnected()) {
+            if (svc.isReceiveAudioEnabled) {
+                stopAudio(svc);
+            }
             if(svc.isREC) {
                 svc.stoppingRec = true;
                 stopRecord(svc);
-            } else
+            } else {
                 FunSDK.MediaStop(svc.mPlayerHandler);
+            }
             svc.setConnected(false);
         }
         svc.isPlaying = false;
@@ -260,13 +264,24 @@ public abstract class ChannelsManager implements IFunSDKResult {
 
     public abstract void disableHD(SurfaceViewComponent svc);
 
-    public void toggleReceiveAudio(SurfaceViewComponent svc){
-        int volume;
-        if(svc.isReceiveAudioEnabled)
-            volume = 100;
-        else
-            volume = -1;
+    public void toggleReceiveAudio(SurfaceViewComponent svc) {
+        if (svc.isReceiveAudioEnabled) {
+            stopAudio(svc);
+        } else {
+            enableAudio(svc);
+        }
+    }
+
+    private void enableAudio(SurfaceViewComponent svc) {
+        int volume = 100;
         FunSDK.MediaSetSound(svc.mPlayerHandler, volume, svc.mySurfaceViewOrderId);
+        svc.isReceiveAudioEnabled = true;
+    }
+
+    private void stopAudio(SurfaceViewComponent svc) {
+        int volume = -1;
+        FunSDK.MediaSetSound(svc.mPlayerHandler, volume, svc.mySurfaceViewOrderId);
+        svc.isReceiveAudioEnabled = false;
     }
 
     public void enableSendAudio(SurfaceViewComponent svc){
@@ -306,6 +321,7 @@ public abstract class ChannelsManager implements IFunSDKResult {
     public void stopRecord(SurfaceViewComponent svc) {
         if(svc.isConnected()) {
             FunSDK.MediaStopRecord(svc.mPlayerHandler, 0);
+            recCounter--;
         }
     }
 
@@ -382,6 +398,16 @@ public abstract class ChannelsManager implements IFunSDKResult {
 
     }
 
+    public boolean verifyIfSomeChannelIsRecording() {
+        boolean hasRecording = false;
+        for (int i=0; i<surfaceViewComponents.size(); i++) {
+            if (surfaceViewComponents.get(i).isREC()) {
+                hasRecording = true;
+                break;
+            }
+        }
+        return hasRecording;
+    }
 
     /***************/
     public SurfaceViewComponent findSurfaceByHandler(int handler){
@@ -541,14 +567,14 @@ public abstract class ChannelsManager implements IFunSDKResult {
                             onStop(svc);
                             svc.stoppingRec = false;
                         }
-                    }else{
+                    } else {
                         file.delete();
                         Toast.makeText(mContext, "Falha na captura da imagem", Toast.LENGTH_SHORT).show();
                     }
                 } else{
                     Toast.makeText(mContext, "Falha na gravação", Toast.LENGTH_SHORT).show();
                 }
-                recCounter--;
+//                recCounter--;
             }
             break;
             case EUIMSG.ON_PLAY_INFO: {

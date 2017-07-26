@@ -130,7 +130,7 @@ public class OverlayMenu extends RelativeLayout {
 
         if(!surfaceViewComponent.isReceiveAudioEnabled && !surfaceViewComponent.isSendAudioEnabled){
             ivReceiveAudio.setImageDrawable(mContext.getResources().getDrawable(R.drawable.ic_volume_mute_white_36dp));
-        }else if(!surfaceViewComponent.isSendAudioEnabled){
+        } else if(!surfaceViewComponent.isSendAudioEnabled){
             ivReceiveAudio.setImageDrawable(mContext.getResources().getDrawable(R.drawable.ic_volume_up_white_36dp));
         } else{
             ivReceiveAudio.setImageDrawable(mContext.getResources().getDrawable(R.drawable.ic_volume_off_white_36dp));
@@ -157,14 +157,19 @@ public class OverlayMenu extends RelativeLayout {
             @Override
             public void onClick(View v) {
                 if(surfaceViewComponent.isREC){
-                    Toast.makeText(mContext, "Finalize a gravação", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(mContext, "Finalize a gravação!", Toast.LENGTH_SHORT).show();
                 } else {
-                    if (!surfaceViewComponent.isHD()) {
-                        deviceChannelsManager.enableHD(surfaceViewComponent);
-                        ivHQ.setImageDrawable(mContext.getResources().getDrawable(R.drawable.ic_hq_on));
+                    boolean hasRecording = deviceChannelsManager.verifyIfSomeChannelIsRecording();
+                    if (!hasRecording) {
+                        if (!surfaceViewComponent.isHD()) {
+                            deviceChannelsManager.enableHD(surfaceViewComponent);
+                            ivHQ.setImageDrawable(mContext.getResources().getDrawable(R.drawable.ic_hq_on));
+                        } else {
+                            deviceChannelsManager.disableHD(surfaceViewComponent);
+                            ivHQ.setImageDrawable(mContext.getResources().getDrawable(R.drawable.ic_hq_off));
+                        }
                     } else {
-                        deviceChannelsManager.disableHD(surfaceViewComponent);
-                        ivHQ.setImageDrawable(mContext.getResources().getDrawable(R.drawable.ic_hq_off));
+                        Toast.makeText(mContext, "Finalize a gravação do outro canal!", Toast.LENGTH_SHORT).show();
                     }
                 }
             }
@@ -199,7 +204,7 @@ public class OverlayMenu extends RelativeLayout {
             @Override
             public void onClick(View v) {
                 if(!surfaceViewComponent.isPlaying) {
-                    Toast.makeText(mContext, "Vídeo pausado", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(mContext, "Vídeo parado", Toast.LENGTH_SHORT).show();
                 } else if(!surfaceViewComponent.isREC()){
                     surfaceViewComponent.setREC(true);
                     mDeviceManager.channelOnRec = true;
@@ -270,10 +275,10 @@ public class OverlayMenu extends RelativeLayout {
             @Override
             public void onClick(View view) {
                 if(surfaceViewComponent.isReceiveAudioEnabled){
-                    surfaceViewComponent.isReceiveAudioEnabled = false;
+//                    surfaceViewComponent.isReceiveAudioEnabled = false;
                     ivReceiveAudio.setImageDrawable(mContext.getResources().getDrawable(R.drawable.ic_volume_mute_white_36dp));
                 }else {
-                    surfaceViewComponent.isReceiveAudioEnabled = true;
+//                    surfaceViewComponent.isReceiveAudioEnabled = true;
                     ivReceiveAudio.setImageDrawable(mContext.getResources().getDrawable(R.drawable.ic_volume_up_white_36dp));
                 }
                 deviceChannelsManager.toggleReceiveAudio(surfaceViewComponent);
