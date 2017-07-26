@@ -1551,7 +1551,6 @@ public class DeviceManager implements IFunSDKResult{
             case EUIMSG.ON_FILE_DOWNLOAD:
             {
                 if (msg.arg1 >= 0) {
-                    Log.e("Download", "Started");
                     String object = msgContent.str;
                     int lengthIndex = object.indexOf("length");
                     int finalLength = object.indexOf(";", lengthIndex);
@@ -1563,7 +1562,6 @@ public class DeviceManager implements IFunSDKResult{
             case EUIMSG.ON_FILE_DLD_COMPLETE:
             {
                 if (msg.arg1 >= 0) {
-                    Log.e("Download", "Complete");
                     downloadPlaybackListener.onFinishDownload();
                 }
             }
@@ -1571,7 +1569,6 @@ public class DeviceManager implements IFunSDKResult{
             case EUIMSG.ON_FILE_DLD_POS:
             {
                 if (msg.arg1 >= 0) {
-                    Log.e("Download", "Position");
                     int currentProgress = msg.arg2;
                     int totalProgress = msg.arg1;
                     downloadPlaybackListener.onProgressDownload(currentProgress, totalProgress);
@@ -1580,7 +1577,6 @@ public class DeviceManager implements IFunSDKResult{
             break;
             case EUIMSG.EMSG_Stop_DownLoad:
             {
-                Log.e("DOWNLOAD", "STOPPED");
                 downloadPlaybackListener.onCancelDownload();
             }
             break;

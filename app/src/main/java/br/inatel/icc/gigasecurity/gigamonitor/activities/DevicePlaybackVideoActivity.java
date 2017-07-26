@@ -239,15 +239,21 @@ public class DevicePlaybackVideoActivity extends ActionBarActivity {
             mProgressDialog = new ProgressDialog(DevicePlaybackVideoActivity.this);
             mProgressDialog.setMessage("Downloading file..");
             mProgressDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
-            mProgressDialog.setCancelable(true);
+            mProgressDialog.setCancelable(false);
             mProgressDialog.setProgressNumberFormat("%d/%d KB");
-            mProgressDialog.show();
-            mProgressDialog.setOnCancelListener(new ProgressDialog.OnCancelListener(){
+//            mProgressDialog.setOnCancelListener(new ProgressDialog.OnCancelListener(){
+//                @Override
+//                public void onCancel(DialogInterface dialogInterface) {
+//                    mDeviceManager.cancelDownload();
+//                }
+//            });
+            mProgressDialog.setButton(DialogInterface.BUTTON_NEGATIVE, "Cancelar", new DialogInterface.OnClickListener() {
                 @Override
-                public void onCancel(DialogInterface dialogInterface) {
+                public void onClick(DialogInterface dialogInterface, int i) {
                     mDeviceManager.cancelDownload();
                 }
             });
+            mProgressDialog.show();
         }
 
         @Override
@@ -259,6 +265,7 @@ public class DevicePlaybackVideoActivity extends ActionBarActivity {
         @Override
         public void onFinishDownload() {
             mProgressDialog.dismiss();
+            stopButtonClick();
             startMediaActivity();
         }
 
@@ -557,7 +564,7 @@ public class DevicePlaybackVideoActivity extends ActionBarActivity {
 
     private void downloadFile() {
         final AlertDialog.Builder alert = new AlertDialog.Builder(this);
-        alert.setTitle("Download!");
+        alert.setTitle("Download");
         String message = String.valueOf(mFileData.getFileData().st_1_size);
         alert.setMessage("Tem certeza que deseja baixar um arquivo de " + message + " KB?");
         alert.setPositiveButton("Sim", new DialogInterface.OnClickListener(){
@@ -574,6 +581,7 @@ public class DevicePlaybackVideoActivity extends ActionBarActivity {
                 dialogInterface.dismiss();
             }
         });
+        alert.show();
     }
 
     public void updateStatusTextView(final CharSequence statusText) {
