@@ -241,13 +241,8 @@ public class DevicePlaybackVideoActivity extends ActionBarActivity {
             mProgressDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
             mProgressDialog.setCancelable(false);
             mProgressDialog.setProgressNumberFormat("%d/%d KB");
-//            mProgressDialog.setOnCancelListener(new ProgressDialog.OnCancelListener(){
-//                @Override
-//                public void onCancel(DialogInterface dialogInterface) {
-//                    mDeviceManager.cancelDownload();
-//                }
-//            });
-            mProgressDialog.setButton(DialogInterface.BUTTON_NEGATIVE, "Cancelar", new DialogInterface.OnClickListener() {
+            String cancel = getResources().getString(R.string.cancel);
+            mProgressDialog.setButton(DialogInterface.BUTTON_NEGATIVE, cancel, new DialogInterface.OnClickListener() {
                 @Override
                 public void onClick(DialogInterface dialogInterface, int i) {
                     mDeviceManager.cancelDownload();

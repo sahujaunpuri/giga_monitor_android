@@ -77,9 +77,9 @@ public class Device implements Serializable {
     public int loginAttempt = 0;
     public ChannelsManager channelsManager;
     public String message = "Conectando via IP";
-    private boolean ipPriorityConnection;
-    private boolean domainPriorityConnection;
-    private boolean cloudPriorityConnection;
+    @Expose private boolean ipPriorityConnection;
+    @Expose private boolean domainPriorityConnection;
+    @Expose private boolean cloudPriorityConnection;
 
     private Calendar systemTime;
 

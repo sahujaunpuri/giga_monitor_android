@@ -37,30 +37,30 @@
                 android:inputType="text"
                 android:imeOptions="actionNext"/>
 
-            <RelativeLayout
-                android:id="@+id/serial_relative_layout"
+            <LinearLayout
+                android:id="@+id/serial_linear_layout"
                 android:orientation="horizontal"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_below="@+id/edit_text_device_form_name">
 
                 <TextView
-                    android:layout_width="wrap_content"
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
+                    android:layout_weight="1"
                     android:text="@string/serial"
                     android:id="@+id/text_view_serial"
                     android:hint="@string/serial" />
                 <!--android:layout_below="@+id/edit_text_device_form_name"-->
                 
                 <CheckBox
+                    android:id="@+id/serial_checkbox"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:gravity="right|center_vertical"
-                    android:checked="false"
-                    android:layout_gravity="center_horizontal"
+                    android:checked="true"
                     android:layout_alignParentRight="true"/>
                 
-            </RelativeLayout>
+            </LinearLayout>
 
             <EditText
                 android:layout_width="match_parent"
@@ -73,27 +73,28 @@
                 android:inputType="text"
                 android:imeOptions="actionNext"/>
 
-            <RelativeLayout
-                android:id="@+id/ip_relative_layout"
+            <LinearLayout
+                android:id="@+id/ip_linear_layout"
                 android:orientation="horizontal"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                android:layout_height="match_parent"
                 android:layout_below="@+id/edit_text_device_form_serial">
 
                 <TextView
-                    android:layout_width="wrap_content"
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
+                    android:layout_weight="1"
                     android:text="@string/ip"
                     android:id="@+id/text_view_ip_address" />
 
                 <CheckBox
+                    android:id="@+id/ip_checkbox"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:checked="false"
-                    android:layout_gravity="center_horizontal"
+                    android:checked="true"
                     android:layout_alignParentRight="true"/>
 
-            </RelativeLayout>
+            </LinearLayout>
 
             <EditText
                 android:layout_width="match_parent"
@@ -102,7 +103,7 @@
                 android:id="@+id/edit_text_device_form_ip_address"
                 android:hint="@string/ip_address_hint"
                 android:textColorHint="@android:color/secondary_text_light_nodisable"
-                android:layout_below="@+id/ip_relative_layout"
+                android:layout_below="@+id/ip_linear_layout"
                 android:digits="0123456789."
                 android:nextFocusForward="@+id/edit_text_device_form_domain"
                 android:inputType="numberDecimal"
@@ -128,27 +129,28 @@
                 android:inputType="number"
                 android:imeOptions="actionNext"/>
 
-            <RelativeLayout
-                android:id="@+id/domain_relative_layout"
+            <LinearLayout
+                android:id="@+id/domain_linear_layout"
                 android:orientation="horizontal"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
                 android:layout_below="@+id/edit_text_device_form_Port">
 
                 <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
                     android:text="@string/domain"
                     android:id="@+id/text_view_domain" />
 
                 <CheckBox
+                    android:id="@+id/domain_checkbox"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:checked="false"
-                    android:layout_gravity="center_horizontal"
+                    android:checked="true"
                     android:layout_alignParentRight="true" />
 
-            </RelativeLayout>
+            </LinearLayout>
 
             <EditText
                 android:layout_width="match_parent"
@@ -157,7 +159,7 @@
                 android:id="@+id/edit_text_device_form_domain"
                 android:hint="@string/domain_hint"
                 android:textColorHint="@android:color/secondary_text_light_nodisable"
-                android:layout_below="@+id/domain_relative_layout"
+                android:layout_below="@+id/domain_linear_layout"
                 android:nextFocusForward="@+id/edit_text_device_form_Port"
                 android:inputType="text"
                 android:imeOptions="actionNext"/>

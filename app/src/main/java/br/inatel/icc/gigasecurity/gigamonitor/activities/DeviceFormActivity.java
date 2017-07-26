@@ -6,6 +6,7 @@ import android.support.v7.app.ActionBarActivity;
 import android.text.TextUtils;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.Toast;
 
@@ -28,6 +29,9 @@ public class DeviceFormActivity extends ActionBarActivity{
     EditText etPort;
     EditText etUsername;
     EditText etPassword;
+    CheckBox cbSerial;
+    CheckBox cbIpAddress;
+    CheckBox cbDomain;
     String TAG = "DeviceForm";
 
     int editPosition = -1;
@@ -70,13 +74,16 @@ public class DeviceFormActivity extends ActionBarActivity{
     }
 
     public void initForm() {
-        etName      = (EditText)findViewById(R.id.edit_text_device_form_name);
-        etSerial    = (EditText)findViewById(R.id.edit_text_device_form_serial);
-        etIpAddress = (EditText)findViewById(R.id.edit_text_device_form_ip_address);
+        etName      = (EditText) findViewById(R.id.edit_text_device_form_name);
+        etSerial    = (EditText) findViewById(R.id.edit_text_device_form_serial);
+        etIpAddress = (EditText) findViewById(R.id.edit_text_device_form_ip_address);
         etDomain    = (EditText) findViewById(R.id.edit_text_device_form_domain);
-        etPort      = (EditText)findViewById(R.id.edit_text_device_form_Port);
-        etUsername  = (EditText)findViewById(R.id.edit_text_device_form_username);
-        etPassword  = (EditText)findViewById(R.id.edit_text_device_form_password);
+        etPort      = (EditText) findViewById(R.id.edit_text_device_form_Port);
+        etUsername  = (EditText) findViewById(R.id.edit_text_device_form_username);
+        etPassword  = (EditText) findViewById(R.id.edit_text_device_form_password);
+        cbSerial    = (CheckBox) findViewById(R.id.serial_checkbox);
+        cbIpAddress = (CheckBox) findViewById(R.id.ip_checkbox);
+        cbDomain    = (CheckBox) findViewById(R.id.domain_checkbox);
     }
 
     private void setForm(Device device) {
@@ -91,6 +98,9 @@ public class DeviceFormActivity extends ActionBarActivity{
         if(etUsername.getText().toString().isEmpty())
             etUsername.setText("admin");
         etPassword.setText(device.getPassword());
+        cbSerial.setChecked(device.isCloudPriorityConnection());
+        cbIpAddress.setChecked(device.isIpPriorityConnection());
+        cbDomain.setChecked(device.isDomainPriorityConnection());
     }
 
     @Override
@@ -116,10 +126,17 @@ public class DeviceFormActivity extends ActionBarActivity{
                 Toast.makeText(this, "Endereço de IP inválido", Toast.LENGTH_SHORT).show();
                 return false;
             }
+            if(!somePriorityConnectionIsMarked()) {
+                Toast.makeText(this, getResources().getString(R.string.priority_connection_message), Toast.LENGTH_SHORT).show();
+                return false;
+            }
             mDevice.deviceName = etName.getText().toString();
             mDevice.setDomain(etDomain.getText().toString());
+            mDevice.setDomainPriorityConnection(cbDomain.isChecked());
             mDevice.setIpAddress(etIpAddress.getText().toString());
+            mDevice.setIpPriorityConnection(cbIpAddress.isChecked());
             mDevice.setSerialNumber(etSerial.getText().toString());
+            mDevice.setCloudPriorityConnection(cbSerial.isChecked());
             mDevice.setTCPPort(Integer.parseInt(etPort.getText().toString()));
 
             if(isUsernameFilled)
@@ -153,6 +170,13 @@ public class DeviceFormActivity extends ActionBarActivity{
         if (editPosition == -2 && deviceManager.networkType == 1 && isIPFilled()) {
             mDevice.setConnectionNetworkName(deviceManager.getNetworkName());
         }
+    }
+
+    private boolean somePriorityConnectionIsMarked() {
+        if (cbIpAddress.isChecked() || cbDomain.isChecked() || cbSerial.isChecked()) {
+            return true;
+        }
+        return false;
     }
 
     @Override

@@ -784,14 +784,16 @@ public class DeviceManager implements IFunSDKResult{
                     tryIpConnection = device.getConnectionNetworkName().equals(networkName);
                 }
                 if(device.getConnectionMethod() == -1 || device.getConnectionMethod() == 2) {
-                    if (networkType == 1 && tryIpConnection) {   //wifi connection
+                    if (networkType == 1 && tryIpConnection && device.isIpPriorityConnection()) {   //wifi connection
                         nextConnectionType = 0;
-                    } else {
+                    } else if (device.isDomainPriorityConnection()){
                         nextConnectionType = 1;
+                    } else if (device.isCloudPriorityConnection()){
+                        nextConnectionType = 2;
                     }
-                } else if(device.getConnectionMethod() == 0) {
+                } else if(device.getConnectionMethod() == 0 && device.isDomainPriorityConnection()) {
                     nextConnectionType = 1;
-                } else if(device.getConnectionMethod() == 1) {
+                } else if(device.getConnectionMethod() == 1 && device.isCloudPriorityConnection()) {
                     nextConnectionType = 2;
                 }
                 if(device.setConnectionString(nextConnectionType) < 0) {
