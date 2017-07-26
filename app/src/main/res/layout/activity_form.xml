@@ -178,7 +178,7 @@
                 android:ems="10"
                 android:id="@+id/edit_text_device_form_extern_port"
                 android:hint="34567"
-                android:text="34567"
+                android:text=""
                 android:textColorHint="@android:color/secondary_text_light_nodisable"
                 android:layout_below="@+id/tvPort"
                 android:digits="0123456789"

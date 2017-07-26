@@ -33,6 +33,7 @@ public class Device implements Serializable {
     @Expose private int httpPort = 80;
     @Expose private int sslPort = 8443;
     @Expose private int tcpPort = 34567;
+    @Expose private int externalPort;
     @Expose private int udpPort = 34568;
     @Expose private int maxBPS;
     @Expose private int transferPlan;
@@ -98,6 +99,7 @@ public class Device implements Serializable {
         this.httpPort = device.httpPort;
         this.sslPort = device.sslPort;
         this.tcpPort = device.tcpPort;
+        this.externalPort = device.externalPort;
         this.udpPort = device.udpPort;
         this.maxBPS = device.maxBPS;
         this.transferPlan = device.transferPlan;
@@ -176,23 +178,33 @@ public class Device implements Serializable {
                     loginAttempt++;
                     connectionString = ipAddress + ":" + tcpPort;
                     message = "Conectando via IP";
-                }else
+                } else {
                     return -1;
-            }break;
+                }
+            }
+            break;
             case 1: {     //domain:port
                 if(domain != null && !domain.isEmpty()) {
-                    connectionString = domain + ":" + tcpPort;
+                    if (externalPort != 0) {
+                        connectionString = domain + ":" + externalPort;
+                    } else {
+                        connectionString = domain + ":" + tcpPort;
+                    }
                     message = "Conectando via domínio";
-                }else
+                } else {
                     return -1;
-            }break;
+                }
+            }
+            break;
             case 2: {     //cloud
                 if(!serialNumber.isEmpty()) {
                     connectionString = serialNumber;
                     message = "Conectando via cloud";
-                }else
+                } else {
                     return -1;
-            }break;
+                }
+            }
+            break;
         }
         return 1;
     }
@@ -300,6 +312,14 @@ public class Device implements Serializable {
 
     public void setTCPPort(int port) {
         this.tcpPort = port;
+    }
+
+    public int getExternalPort() {
+        return externalPort;
+    }
+
+    public void setExternalPort(final int externalPort) {
+        this.externalPort = externalPort;
     }
 
     public String getPassword() {
@@ -532,7 +552,7 @@ public class Device implements Serializable {
         return connectionNetworkName;
     }
 
-    public void setConnectionNetworkName(String connectionNetworkName) {
+    public void setConnectionNetworkName(final String connectionNetworkName) {
         this.connectionNetworkName = connectionNetworkName;
     }
 
@@ -540,7 +560,7 @@ public class Device implements Serializable {
         return ipPriorityConnection;
     }
 
-    public void setIpPriorityConnection(boolean ipPriorityConnection) {
+    public void setIpPriorityConnection(final boolean ipPriorityConnection) {
         this.ipPriorityConnection = ipPriorityConnection;
     }
 
@@ -548,7 +568,7 @@ public class Device implements Serializable {
         return domainPriorityConnection;
     }
 
-    public void setDomainPriorityConnection(boolean domainPriorityConnection) {
+    public void setDomainPriorityConnection(final boolean domainPriorityConnection) {
         this.domainPriorityConnection = domainPriorityConnection;
     }
 
@@ -556,7 +576,7 @@ public class Device implements Serializable {
         return cloudPriorityConnection;
     }
 
-    public void setCloudPriorityConnection(boolean cloudPriorityConnection) {
+    public void setCloudPriorityConnection(final boolean cloudPriorityConnection) {
         this.cloudPriorityConnection = cloudPriorityConnection;
     }
 }
