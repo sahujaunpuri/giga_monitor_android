@@ -343,7 +343,13 @@ public abstract class ChannelsManager implements IFunSDKResult {
 
     public void ptzControl(int command, SurfaceViewComponent svc, boolean stop){
         //EPTZCMD
-        FunSDK.DevPTZControl(svc.mPlayerHandler, svc.deviceConnection, svc.mySurfaceViewChannelId, command, stop?1:0, 3, svc.mySurfaceViewChannelId);
+        int toStop = -1;
+        if (stop) {
+            toStop = 1;
+        } else {
+            toStop = 0;
+        }
+        FunSDK.DevPTZControl(mUserID, svc.deviceConnection, svc.mySurfaceViewChannelId, command, toStop, 3, svc.mySurfaceViewChannelId);
     }
 
     public void handleVisibleChannels() {
