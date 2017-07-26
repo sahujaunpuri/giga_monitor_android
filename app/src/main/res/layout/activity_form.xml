@@ -17,13 +17,13 @@
         <LinearLayout
             android:orientation="vertical"
             android:layout_width="match_parent"
-            android:layout_height="match_parent">
+            android:layout_height="wrap_content">
 
             <TextView
+                android:id="@+id/text_view_name"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/name"
-                android:id="@+id/text_view_name" />
+                android:layout_height="28dp"
+                android:text="@string/name" />
 
             <EditText
                 android:layout_width="match_parent"
@@ -32,34 +32,31 @@
                 android:id="@+id/edit_text_device_form_name"
                 android:hint="@string/name_hint"
                 android:textColorHint="@android:color/secondary_text_light_nodisable"
-                android:layout_below="@+id/text_view_name"
                 android:nextFocusForward="@+id/edit_text_device_form_serial"
                 android:inputType="text"
                 android:imeOptions="actionNext"/>
 
             <LinearLayout
                 android:id="@+id/serial_linear_layout"
-                android:orientation="horizontal"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:layout_below="@+id/edit_text_device_form_name">
+                android:orientation="horizontal">
 
                 <TextView
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:text="@string/serial"
                     android:id="@+id/text_view_serial"
-                    android:hint="@string/serial" />
-                <!--android:layout_below="@+id/edit_text_device_form_name"-->
-                
+                    android:layout_width="0dp"
+                    android:layout_height="28dp"
+                    android:layout_weight="1"
+                    android:hint="@string/serial"
+                    android:text="@string/serial" />
+
                 <CheckBox
                     android:id="@+id/serial_checkbox"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:checked="true"
-                    android:layout_alignParentRight="true"/>
-                
+                    android:gravity="center_horizontal" />
+
             </LinearLayout>
 
             <EditText
@@ -77,22 +74,22 @@
                 android:id="@+id/ip_linear_layout"
                 android:orientation="horizontal"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_below="@+id/edit_text_device_form_serial">
+                android:layout_height="match_parent">
 
                 <TextView
+                    android:id="@+id/text_view_ip_address"
                     android:layout_width="0dp"
-                    android:layout_height="wrap_content"
+                    android:layout_height="28dp"
                     android:layout_weight="1"
-                    android:text="@string/ip"
-                    android:id="@+id/text_view_ip_address" />
+                    android:text="@string/ip" />
 
                 <CheckBox
                     android:id="@+id/ip_checkbox"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:checked="true"
-                    android:layout_alignParentRight="true"/>
+                    android:padding="0dp"
+                    android:gravity="center_horizontal"/>
 
             </LinearLayout>
 
@@ -103,18 +100,16 @@
                 android:id="@+id/edit_text_device_form_ip_address"
                 android:hint="@string/ip_address_hint"
                 android:textColorHint="@android:color/secondary_text_light_nodisable"
-                android:layout_below="@+id/ip_linear_layout"
                 android:digits="0123456789."
                 android:nextFocusForward="@+id/edit_text_device_form_domain"
                 android:inputType="numberDecimal"
                 android:imeOptions="actionNext"/>
 
             <TextView
+                android:id="@+id/text_view_username"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/port"
-                android:layout_below="@+id/edit_text_device_form_ip_address"
-                android:id="@+id/text_view_username" />
+                android:layout_height="28dp"
+                android:text="@string/port" />
 
             <EditText
                 android:layout_width="match_parent"
@@ -124,7 +119,6 @@
                 android:hint="34567"
                 android:text="34567"
                 android:textColorHint="@android:color/secondary_text_light_nodisable"
-                android:layout_below="@+id/tvPort"
                 android:digits="0123456789"
                 android:inputType="number"
                 android:imeOptions="actionNext"/>
@@ -133,22 +127,21 @@
                 android:id="@+id/domain_linear_layout"
                 android:orientation="horizontal"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_below="@+id/edit_text_device_form_Port">
+                android:layout_height="match_parent">
 
                 <TextView
+                    android:id="@+id/text_view_domain"
                     android:layout_width="0dp"
-                    android:layout_height="wrap_content"
+                    android:layout_height="28dp"
                     android:layout_weight="1"
-                    android:text="@string/domain"
-                    android:id="@+id/text_view_domain" />
+                    android:text="@string/domain" />
 
                 <CheckBox
                     android:id="@+id/domain_checkbox"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:checked="true"
-                    android:layout_alignParentRight="true" />
+                    android:gravity="center_horizontal"/>
 
             </LinearLayout>
 
@@ -159,18 +152,16 @@
                 android:id="@+id/edit_text_device_form_domain"
                 android:hint="@string/domain_hint"
                 android:textColorHint="@android:color/secondary_text_light_nodisable"
-                android:layout_below="@+id/domain_linear_layout"
                 android:nextFocusForward="@+id/edit_text_device_form_Port"
                 android:inputType="text"
                 android:imeOptions="actionNext"/>
 
             <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/external_port"
                 android:id="@+id/tvPort"
-                android:layout_below="@+id/edit_text_device_form_domain"
-                android:hint="@string/port" />
+                android:layout_width="wrap_content"
+                android:layout_height="28dp"
+                android:hint="@string/port"
+                android:text="@string/external_port" />
 
             <EditText
                 android:layout_width="match_parent"
@@ -180,17 +171,15 @@
                 android:hint="34567"
                 android:text=""
                 android:textColorHint="@android:color/secondary_text_light_nodisable"
-                android:layout_below="@+id/tvPort"
                 android:digits="0123456789"
                 android:inputType="number"
                 android:imeOptions="actionNext"/>
 
             <TextView
+                android:id="@+id/tvExternalPort"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/user"
-                android:layout_below="@+id/edit_text_device_form_extern_port"
-                android:id="@+id/tvExternalPort" />
+                android:layout_height="28dp"
+                android:text="@string/user" />
 
             <EditText
                 android:layout_width="match_parent"
@@ -200,16 +189,14 @@
                 android:hint="@string/user"
                 android:text="admin"
                 android:textColorHint="@android:color/secondary_text_light_nodisable"
-                android:layout_below="@+id/tvExternalPort"
                 android:inputType="text"
                 android:imeOptions="actionNext"/>
 
             <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/password"
                 android:id="@+id/tvPassword"
-                android:layout_below="@+id/edit_text_device_form_username" />
+                android:layout_width="wrap_content"
+                android:layout_height="28dp"
+                android:text="@string/password" />
 
             <EditText
                 android:layout_width="match_parent"
@@ -218,8 +205,7 @@
                 android:id="@+id/edit_text_device_form_password"
                 android:hint="@string/password_hint"
                 android:textColorHint="@android:color/secondary_text_light_nodisable"
-                android:inputType="textPassword"
-                android:layout_below="@+id/tvPassword" />
+                android:inputType="textPassword" />
         </LinearLayout>
     </ScrollView>
 
