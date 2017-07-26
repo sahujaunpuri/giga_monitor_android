@@ -223,6 +223,10 @@ public class SurfaceViewComponent extends FrameLayout {
         ptzOverlay = null;
     }
 
+    public void ptz(int command, boolean state) {
+        mChannelsManager.ptzControl(command, this, state);
+    }
+
     public int getMySurfaceViewChannelId() {
         return mySurfaceViewChannelId;
     }
@@ -311,6 +315,10 @@ public class SurfaceViewComponent extends FrameLayout {
         this.getParent().requestDisallowInterceptTouchEvent(false);
         if(mChannelsManager.mRecyclerAdapter!=null)
             mChannelsManager.mRecyclerAdapter.enableListScrolling();
+    }
+
+    public void setIvTouch(int visibility) {
+        this.ivTouch.setVisibility(visibility);
     }
 
     @Override

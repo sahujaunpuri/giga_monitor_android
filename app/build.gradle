@@ -1,7 +1,7 @@
 apply plugin: 'com.android.application'
 
 android {
-    compileSdkVersion 21
+    compileSdkVersion 23
     buildToolsVersion '25.0.0'
 
     defaultConfig {
@@ -66,4 +66,5 @@ dependencies {
     androidTestCompile 'com.android.support.test.espresso:espresso-core:2.2.2', {
         exclude group: 'com.android.support', module: 'support-annotations'
     }
+    compile 'com.google.android.gms:play-services:8.4.0'
 }
