@@ -8,6 +8,7 @@
     android:paddingTop="0dp"
     android:paddingBottom="0dp"
     android:paddingLeft="10dp"
+    android:paddingRight="10dp"
     android:dividerHeight="1dp"
     android:fastScrollEnabled="true"
     android:background="#e6e6e6"

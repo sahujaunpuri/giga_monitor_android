@@ -479,7 +479,6 @@ public class SurfaceViewComponent extends FrameLayout {
         public boolean onSingleTapConfirmed(MotionEvent motionEvent) {
             //open menu
             mChannelsManager.mRecyclerAdapter.openOverlayMenu(surfaceViewComponent());
-            Log.d(TAG2, "onSingleTapConfirmed: ");
             resumeScroll();
             return true;
         }
