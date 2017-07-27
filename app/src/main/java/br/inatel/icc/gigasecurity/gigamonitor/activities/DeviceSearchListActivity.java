@@ -20,6 +20,7 @@ import br.inatel.icc.gigasecurity.gigamonitor.R;
 import br.inatel.icc.gigasecurity.gigamonitor.adapters.DeviceSearchAdapter;
 import br.inatel.icc.gigasecurity.gigamonitor.config.ethernet.EthernetConfigActivity;
 import br.inatel.icc.gigasecurity.gigamonitor.core.DeviceManager;
+import br.inatel.icc.gigasecurity.gigamonitor.core.DeviceManager;
 import br.inatel.icc.gigasecurity.gigamonitor.core.Discovery;
 import br.inatel.icc.gigasecurity.gigamonitor.model.Device;
 import br.inatel.icc.gigasecurity.gigamonitor.util.Utils;
@@ -47,7 +48,7 @@ public class DeviceSearchListActivity extends ActionBarActivity {
 
         mListView = (ListView) findViewById(R.id.list_view_device);
 
-        if(getIntent().getExtras() != null){
+        if(getIntent().getExtras() != null) {
             mDevices = (ArrayList<Device>) getIntent().getExtras().getSerializable("devicesSearch");
         } else {
             mDevices = new ArrayList<Device>();
@@ -179,6 +180,7 @@ public class DeviceSearchListActivity extends ActionBarActivity {
     private Discovery.DiscoveryReceiver mDeviceReceiver = new Discovery.DiscoveryReceiver() {
         @Override
         public void onReceiveDevices(ArrayList<Device> devices) {
+
             mDevices = new ArrayList<>(devices);
 
             DeviceSearchListActivity.this.runOnUiThread(new Runnable() {

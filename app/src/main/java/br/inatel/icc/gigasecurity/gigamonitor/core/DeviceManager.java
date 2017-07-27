@@ -328,8 +328,8 @@ public class DeviceManager implements IFunSDKResult{
                 device.talkInChannel = systemInfo.getInt("TalkInChannel");
             if(systemInfo.has("TalkOutChannel"))
                 device.talkOutChannel = systemInfo.getInt("TalkOutChannel");
-            if(systemInfo.has("VideoInChannel"))
-                device.setChannelNumber(systemInfo.getInt("VideoInChannel"));
+//            if(systemInfo.has("VideoInChannel"))
+//                device.setChannelNumber(systemInfo.getInt("VideoInChannel") + systemInfo.getInt("DigChannel") + systemInfo.getInt("VideoOutChannel"));
             saveData();
             if(device.getIpAddress() == null || device.getIpAddress().isEmpty())
                 getJsonConfig(device, "NetWork.NetCommon", null);
