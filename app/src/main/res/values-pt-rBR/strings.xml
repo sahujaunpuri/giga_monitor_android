@@ -248,8 +248,8 @@
     <string name="no_device_list">Nenhum Dispositivo</string>
     <string name="name">Nome</string>
     <string name="serial">Número Serial</string>
-    <string name="ip">Endereço IP</string>
-    <string name="domain">Domínio</string>
+    <string name="ip">IP Interno</string>
+    <string name="domain">Domínio ou IP Externo</string>
     <string name="domain_hint">dominio.gigaddns.com.br</string>
     <string name="port">Porta Interna</string>
     <string name="external_port">Porta Externa</string>

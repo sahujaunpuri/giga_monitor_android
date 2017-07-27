@@ -22,7 +22,7 @@ public class OverlayPTZ extends RelativeLayout implements View.OnTouchListener  
 
     private Context mContext;
     public SurfaceViewComponent surfaceViewComponent;
-    private ImageView topLeftArrow, leftArrow, rightArrow, topRightArrow, upArrow, downLeftArrow, downArrow, downRightArrow, zoomIn, zoomOut, ptz;
+    private ImageView topLeftArrow, leftArrow, rightArrow, topRightArrow, upArrow, downLeftArrow, downArrow, downRightArrow, zoomIn, zoomOut;//, focusIn, focusOut, irisUp, irisDown, ptz;
     private DeviceManager deviceManager;
 
     public OverlayPTZ(Context context) {
@@ -66,6 +66,14 @@ public class OverlayPTZ extends RelativeLayout implements View.OnTouchListener  
         zoomIn.setOnTouchListener(this);
         zoomOut = (ImageView) findViewById(R.id.zoom_out);
         zoomOut.setOnTouchListener(this);
+//        focusIn = (ImageView) findViewById(R.id.focus_in);
+//        focusIn.setOnTouchListener(this);
+//        focusOut = (ImageView) findViewById(R.id.focus_out);
+//        focusOut.setOnTouchListener(this);
+//        irisUp = (ImageView) findViewById(R.id.iris_up);
+//        irisUp.setOnTouchListener(this);
+//        irisDown = (ImageView) findViewById(R.id.iris_down);
+//        irisDown.setOnTouchListener(this);
 //        ptz = (ImageView) findViewById(R.id.iv_ptz);
 //        ptz.setOnDragListener(this);
 
@@ -136,6 +144,22 @@ public class OverlayPTZ extends RelativeLayout implements View.OnTouchListener  
                 int zoomOutCommand = EPTZCMD.ZOOM_OUT;
                 manageImageTouch(motionEvent, zoomOutCommand);
                 return true;
+//            case R.id.focus_in:
+//                int focusInCommand = EPTZCMD.FOCUS_NEAR;
+//                manageImageTouch(motionEvent, focusInCommand);
+//                return true;
+//            case R.id.focus_out:
+//                int focusOutCommand = EPTZCMD.FOCUS_FAR;
+//                manageImageTouch(motionEvent, focusOutCommand);
+//                return true;
+//            case R.id.iris_up:
+//                int irisUpCommand = EPTZCMD.IRIS_OPEN;
+//                manageImageTouch(motionEvent, irisUpCommand);
+//                return true;
+//            case R.id.iris_down:
+//                int irisDownCommand = EPTZCMD.IRIS_CLOSE;
+//                manageImageTouch(motionEvent, irisDownCommand);
+//                return true;
             default:
                 break;
         }

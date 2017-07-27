@@ -106,7 +106,7 @@
                 android:imeOptions="actionNext"/>
 
             <TextView
-                android:id="@+id/text_view_username"
+                android:id="@+id/internal_port"
                 android:layout_width="wrap_content"
                 android:layout_height="28dp"
                 android:text="@string/port" />
@@ -152,15 +152,15 @@
                 android:id="@+id/edit_text_device_form_domain"
                 android:hint="@string/domain_hint"
                 android:textColorHint="@android:color/secondary_text_light_nodisable"
-                android:nextFocusForward="@+id/edit_text_device_form_Port"
+                android:nextFocusForward="@+id/tv_external_port"
                 android:inputType="text"
                 android:imeOptions="actionNext"/>
 
             <TextView
-                android:id="@+id/tvPort"
+                android:id="@+id/tv_external_port"
                 android:layout_width="wrap_content"
                 android:layout_height="28dp"
-                android:hint="@string/port"
+                android:hint="@string/external_port"
                 android:text="@string/external_port" />
 
             <EditText

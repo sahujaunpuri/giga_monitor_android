@@ -1417,11 +1417,8 @@ public class DeviceManager implements IFunSDKResult{
                     switch(msgContent.str){
                         case "SystemInfo":{
                             setDeviceInfo(json, device);
-                            if(loginList.get(device.getId()) != null) {
-                                loginList.get(device.getId()).onLoginSuccess(device);
-                            }
-                            loginList.remove(device.getId());
 
+                            FunSDK.DevGetChnName(getHandler(), device.connectionString, device.getUsername(), device.getPassword(), device.getId());
                         }
                         break;
                         case "NetWork.NetCommon":{
@@ -1500,7 +1497,12 @@ public class DeviceManager implements IFunSDKResult{
             break;
             case EUIMSG.DEV_GET_CHN_NAME:
             {
-                Log.d(TAG, "OnFunSDKResult: DEV_GET_CHN_NAME");
+                Device device = findDeviceById(msgContent.seq);
+                device.setChannelNumber(msg.arg1);
+                if(loginList.get(device.getId()) != null) {
+                    loginList.get(device.getId()).onLoginSuccess(device);
+                }
+                loginList.remove(device.getId());
             }
             break;
             case EUIMSG.DEV_FIND_FILE:

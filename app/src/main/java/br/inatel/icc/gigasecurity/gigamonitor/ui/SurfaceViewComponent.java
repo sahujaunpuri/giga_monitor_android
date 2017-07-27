@@ -206,7 +206,7 @@ public class SurfaceViewComponent extends FrameLayout {
 
         ivTouch = new ImageView(mContext);
         ivTouch.setImageResource(R.drawable.ic_touch_white_36dp);
-        FrameLayout.LayoutParams params = new FrameLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT, Gravity.CENTER_HORIZONTAL);
+        FrameLayout.LayoutParams params = new FrameLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT, Gravity.CENTER);
         this.addView(ivTouch, params);
         ivTouch.setScaleX(0.6f);
         ivTouch.setScaleY(0.6f);

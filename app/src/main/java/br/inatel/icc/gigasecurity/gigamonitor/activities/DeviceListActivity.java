@@ -160,7 +160,7 @@ public class DeviceListActivity extends ActionBarActivity {
             previousGroup = statePreferences.previousGroup;
             if (previousGroup > -1 && mDeviceManager.networkType > -1)
                 mExpandableListView.expandGroup(previousGroup);
-            else if(mDeviceManager.networkType == 1)
+            else if(mDeviceManager.networkType == 1 && mDevices.size() > 1)
                 Toast.makeText(mContext, "Finalize a gravação", Toast.LENGTH_SHORT).show();
             Log.d(TAG, "onResume: group: " + previousGroup + ", channel: " + statePreferences.previousChannel + ", grid: " + statePreferences.previousGrid + ", HD: " + statePreferences.previousHD);
             mDeviceManager.loadedState = true;

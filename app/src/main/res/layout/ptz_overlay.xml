@@ -20,9 +20,10 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:scaleX="1.5"
-        android:layout_centerHorizontal="true"
-        android:layout_alignParentTop="true"
-        android:background="@android:color/transparent" />
+        android:background="@android:color/transparent"
+        android:layout_alignBottom="@+id/arrow_top_left"
+        android:layout_alignLeft="@+id/arrow_down"
+        android:layout_alignStart="@+id/arrow_down" />
 
     <ImageView
         android:id="@+id/arrow_left"
@@ -30,9 +31,10 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:scaleY="1.5"
+        android:background="@android:color/transparent"
         android:layout_centerVertical="true"
-        android:layout_alignParentLeft="true"
-        android:background="@android:color/transparent" />
+        android:layout_alignRight="@+id/arrow_down_left"
+        android:layout_alignEnd="@+id/arrow_down_left" />
 
     <ImageView
         android:id="@+id/arrow_down"
@@ -40,9 +42,9 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:scaleX="1.5"
-        android:layout_centerHorizontal="true"
-        android:layout_alignParentBottom="true"
-        android:background="@android:color/transparent" />
+        android:background="@android:color/transparent"
+        android:layout_alignTop="@+id/arrow_down_left"
+        android:layout_centerHorizontal="true" />
 
     <ImageView
         android:id="@+id/arrow_down_left"
@@ -60,9 +62,10 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:scaleY="1.5"
-        android:layout_centerVertical="true"
-        android:layout_alignParentRight="true"
-        android:background="@android:color/transparent" />
+        android:background="@android:color/transparent"
+        android:layout_alignTop="@+id/arrow_left"
+        android:layout_alignLeft="@+id/arrow_down_right"
+        android:layout_alignStart="@+id/arrow_down_right" />
 
     <ImageView
         android:id="@+id/arrow_down_right"
@@ -103,6 +106,51 @@
         android:layout_marginTop="5dp"
         android:layout_toRightOf="@id/arrow_top_left"
         android:layout_toLeftOf="@id/arrow_up" />
+
+    <!--<ImageView-->
+        <!--android:id="@+id/focus_in"-->
+        <!--android:src="@mipmap/focus_in"-->
+        <!--android:layout_width="25dp"-->
+        <!--android:layout_height="25dp"-->
+        <!--android:background="@android:color/transparent"-->
+        <!--android:layout_alignTop="@+id/focus_out"-->
+        <!--android:layout_toRightOf="@+id/arrow_top_left"-->
+        <!--android:layout_toEndOf="@+id/arrow_top_left"-->
+        <!--android:layout_marginLeft="48dp"-->
+        <!--android:layout_marginStart="48dp" />-->
+
+    <!--<ImageView-->
+        <!--android:id="@+id/focus_out"-->
+        <!--android:src="@mipmap/focus_out"-->
+        <!--android:layout_width="25dp"-->
+        <!--android:layout_height="25dp"-->
+        <!--android:background="@android:color/transparent"-->
+        <!--android:layout_alignTop="@+id/arrow_down_right"-->
+        <!--android:layout_toRightOf="@+id/arrow_down"-->
+        <!--android:layout_toEndOf="@+id/arrow_down"-->
+        <!--android:layout_marginLeft="44dp"-->
+        <!--android:layout_marginStart="44dp" />-->
+
+    <!--<ImageView-->
+        <!--android:id="@+id/iris_up"-->
+        <!--android:src="@mipmap/iris_up"-->
+        <!--android:layout_width="35dp"-->
+        <!--android:layout_height="30dp"-->
+        <!--android:background="@android:color/transparent"-->
+        <!--android:layout_alignTop="@+id/iris_down"-->
+        <!--android:layout_alignRight="@+id/arrow_top_left"-->
+        <!--android:layout_alignEnd="@+id/arrow_top_left" />-->
+
+    <!--<ImageView-->
+        <!--android:id="@+id/iris_down"-->
+        <!--android:src="@mipmap/iris_down"-->
+        <!--android:layout_width="35dp"-->
+        <!--android:layout_height="30dp"-->
+        <!--android:background="@android:color/transparent"-->
+        <!--android:layout_below="@+id/arrow_top_right"-->
+        <!--android:layout_alignLeft="@+id/arrow_top_right"-->
+        <!--android:layout_alignStart="@+id/arrow_top_right"-->
+        <!--android:layout_marginTop="85dp" />-->
 
     <!--<ImageView-->
         <!--android:id="@+id/ptz_on"-->

@@ -155,8 +155,8 @@
     <string name="no_device_list">No Devices</string>
     <string name="name">Name</string>
     <string name="serial">Serial</string>
-    <string name="ip">IP Address</string>
-    <string name="domain">Domain</string>
+    <string name="ip">Internal IP</string>
+    <string name="domain">Domain or External IP</string>
     <string name="port">Internal Port</string>
     <string name="external_port">External Port</string>
     <string name="user">User</string>

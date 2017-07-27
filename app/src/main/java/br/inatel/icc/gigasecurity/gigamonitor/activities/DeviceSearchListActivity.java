@@ -158,6 +158,7 @@ public class DeviceSearchListActivity extends ActionBarActivity {
     private void startAddDeviceActivity(int item) {
         Bundle extras = new Bundle();
         Device device = mDevices.get(item);
+        device.setIpPriorityConnection(true);
         extras.putSerializable("device", device);
         extras.putInt("index", -2);
 
