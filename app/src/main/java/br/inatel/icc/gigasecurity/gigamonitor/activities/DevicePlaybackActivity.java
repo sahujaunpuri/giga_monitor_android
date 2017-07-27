@@ -280,7 +280,7 @@ public class DevicePlaybackActivity extends ActionBarActivity
                         menuItem.setVisible(false);
                         layout_spinner.setVisibility(View.VISIBLE);
                         layoutListPlayback.setVisibility(View.VISIBLE);
-                        
+
                         arrayAdapter = new DevicePlaybacksAdapter(mActivity, playbacksShowed);
                         mListView.setAdapter(arrayAdapter);
 

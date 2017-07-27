@@ -29,11 +29,14 @@ public class InitialActivity extends ActionBarActivity implements View.OnClickLi
     private ProgressBar pbInitial;
     private TextView tvDevicesFound, tvQrCode, tvNewDevice, tvAppVersion;
     private Context mContext;
+    private DeviceManager mDeviceManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_initial);
+
+        mDeviceManager = DeviceManager.getInstance();
 
         mContext = this;
 
@@ -135,7 +138,7 @@ public class InitialActivity extends ActionBarActivity implements View.OnClickLi
     private Discovery.DiscoveryReceiver mDeviceReceiver = new Discovery.DiscoveryReceiver() {
         @Override
         public void onReceiveDevices(ArrayList<Device> devices) {
-            mDevices = new ArrayList<>(devices);
+            mDevices = devicesThatAreNotAddedYet(devices);
 
             InitialActivity.this.runOnUiThread(new Runnable() {
                 @Override
@@ -197,5 +200,22 @@ public class InitialActivity extends ActionBarActivity implements View.OnClickLi
                 this.finish();
             }
         }
+    }
+
+    private ArrayList<Device> devicesThatAreNotAddedYet(ArrayList<Device> devices) {
+        ArrayList<Device> newDevices = new ArrayList<>();
+        for (Device dev: devices) {
+            boolean alreadyAdded = false;
+            for (Device device: mDeviceManager.getDevices()) {
+                if (dev.getSerialNumber().equals(device.getSerialNumber())) {
+                    alreadyAdded = true;
+                    break;
+                }
+            }
+            if (!alreadyAdded) {
+                newDevices.add(dev);
+            }
+        }
+        return newDevices;
     }
 }
