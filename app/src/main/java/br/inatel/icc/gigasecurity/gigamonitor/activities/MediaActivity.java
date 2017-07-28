@@ -106,10 +106,13 @@ public class MediaActivity extends ActionBarActivity {
                                 @Override
                                 public void onClick(DialogInterface dialog, int which) {
                                     if (which == 0) {
-                                        mAdapter.deleteSelectedMedias();
-                                    } else {
                                         deselectAllViews();
-                                    }
+                                        mAdapter.deleteSelectedMedias();
+                                        menuItemTrash.setVisible(false);
+                                        menuItemSelect.setTitle(SELECT_TITLE_BUTTON);
+                                    }/* else {
+                                        deselectAllViews();
+                                    }*/
                                 }
                             });
             builder.show();
@@ -128,13 +131,16 @@ public class MediaActivity extends ActionBarActivity {
             menuItemTrash.setVisible(false);
             mAdapter.selectItems = false;
             deselectAllViews();
+            mAdapter.clearToDeleteArray();
         }
     }
 
     private void deselectAllViews() {
         for (int i=0; i<gvMedia.getCount(); i++) {
             View child = gvMedia.getChildAt(i);
-            child.getBackground().setColorFilter(null);
+            if (child != null) {
+                child.setBackgroundResource(R.drawable.transparent_media_background);
+            }
         }
     }
 
@@ -163,14 +169,11 @@ public class MediaActivity extends ActionBarActivity {
                 } else {
                     changeButtonsVisibility(false);
                     gvMedia.setChoiceMode(GridView.CHOICE_MODE_SINGLE);
-                    deselectAllViews();
                 }
                 break;
             }
             case R.id.delete_medias:{
                 deleteMedias();
-                menuItemTrash.setVisible(false);
-                menuItemSelect.setTitle(SELECT_TITLE_BUTTON);
             }
             break;
         }

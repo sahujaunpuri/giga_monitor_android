@@ -270,7 +270,6 @@ public class DeviceListActivity extends ActionBarActivity {
 
     private void startMediaActivity() {
         Intent intent = new Intent(mContext, MediaActivity.class);
-
         startActivity(intent);
     }
 
