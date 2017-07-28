@@ -19,6 +19,7 @@ import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.GridView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -350,18 +351,21 @@ public class MediaGridAdapter extends BaseAdapter {
         }
     }
 
-    public Drawable getVideoDrawable(int position) {
+    public Drawable getVideoDrawable(final int position) {
         if (mVideoDrawables.get(position) == null) {
-            MediaMetadataRetriever retriever = new MediaMetadataRetriever();
-            retriever.setDataSource(mVideoFiles.get(position).getPath());
-            Bitmap bitmap = retriever.getFrameAtTime(1000, MediaMetadataRetriever.OPTION_CLOSEST_SYNC);
-//            Bitmap bitmap = ThumbnailUtils.createVideoThumbnail(mVideoFiles.get(position).getPath(), MediaStore.Images.Thumbnails.MINI_KIND);
-            if (bitmap != null) {
+            try {
+                MediaMetadataRetriever retriever = new MediaMetadataRetriever();
+                retriever.setDataSource(mVideoFiles.get(position).getPath());
+                Bitmap bitmap = retriever.getFrameAtTime(1000, MediaMetadataRetriever.OPTION_CLOSEST_SYNC);
+                //            Bitmap bitmap = ThumbnailUtils.createVideoThumbnail(mVideoFiles.get(position).getPath(), MediaStore.Images.Thumbnails.MINI_KIND);
+                if (bitmap != null) {
 
-                mVideoDrawables.add(position,new BitmapDrawable(mContext.getResources(), bitmap));
+                    mVideoDrawables.add(position, new BitmapDrawable(mContext.getResources(), bitmap));
+                }
+                tridToGetVideoThumbnail.add(position, true);
+            } catch (RuntimeException e) {
+                e.printStackTrace();
             }
-            tridToGetVideoThumbnail.add(position,true);
-
         }
         return mVideoDrawables.get(position);
     }

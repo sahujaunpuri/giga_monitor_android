@@ -342,7 +342,10 @@ public class DeviceManager implements IFunSDKResult{
 
     public void downloadFile(Device device, byte[] fileData, String path, DownloadPlaybackListener downloadListener) {
         downloadPlaybackListener = downloadListener;
-        downloadHandler = FunSDK.DevDowonLoadByFile(getHandler(), device.connectionString, fileData, path, device.getId());
+        int hand = getHandler();
+        String connection = device.connectionString;
+        int id = device.getId();
+        downloadHandler = FunSDK.DevDowonLoadByFile(hand, connection, fileData, path, id);
     }
 
     public void cancelDownload() {
@@ -1561,6 +1564,8 @@ public class DeviceManager implements IFunSDKResult{
                     int finalLength = object.indexOf(";", lengthIndex);
                     int fileSize = Integer.valueOf(object.substring(lengthIndex + 7, finalLength));
                     downloadPlaybackListener.onStartDownload(fileSize);
+                } else {
+                    downloadPlaybackListener.onErrorDownload();
                 }
             }
             break;

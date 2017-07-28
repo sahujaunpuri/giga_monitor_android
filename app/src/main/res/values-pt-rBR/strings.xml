@@ -277,5 +277,6 @@
     <string name="title_activity_timeline">Minha Timeline</string>
     <string name="title_activity_full_screen_my_surface">FullScreenMySurfaceActivity</string>
     <string name="priority_connection_message">Ao menos uma conexão deve ser marcada!</string>
+    <string name="download_error">Erro ao tentar baixar o arquivo</string>
 
 </resources>

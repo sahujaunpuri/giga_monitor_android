@@ -278,5 +278,6 @@
     <string name="title_activity_device_list3">Meus Dispositivos</string>
     <string name="title_activity_timeline">Minha Timeline</string>
     <string name="priority_connection_message">At least one connection has to be marked!</string>
+    <string name="download_error">Error trying to download file</string>
 
 </resources>

@@ -10,4 +10,5 @@ public interface DownloadPlaybackListener {
     void onProgressDownload(int currentProgress, int totalProgress);
     void onFinishDownload();
     void onCancelDownload();
+    void onErrorDownload();
 }

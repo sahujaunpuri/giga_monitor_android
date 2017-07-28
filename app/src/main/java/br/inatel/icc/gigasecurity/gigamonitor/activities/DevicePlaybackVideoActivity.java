@@ -268,6 +268,11 @@ public class DevicePlaybackVideoActivity extends ActionBarActivity {
         public void onCancelDownload() {
             mProgressDialog.dismiss();
         }
+
+        @Override
+        public void onErrorDownload() {
+            Toast.makeText(mActivity, getResources().getString(R.string.download_error), Toast.LENGTH_SHORT).show();
+        }
     };
 
     /**
