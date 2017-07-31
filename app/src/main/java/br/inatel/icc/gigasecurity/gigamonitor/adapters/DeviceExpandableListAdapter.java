@@ -20,6 +20,7 @@ import android.widget.ExpandableListView;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import java.io.NotSerializableException;
 import java.util.ArrayList;
 
 import br.inatel.icc.gigasecurity.gigamonitor.R;
@@ -134,28 +135,31 @@ public class DeviceExpandableListAdapter extends BaseExpandableListAdapter {
 
 
     private ChildViewHolder initChildViewHolder(ViewGroup parent, int groupPosition){
-        ChildViewHolder currentChildViewHolder = childViewHolder.get(groupPosition);
+        try {
+            ChildViewHolder currentChildViewHolder = childViewHolder.get(groupPosition);
+            currentChildViewHolder.convertView = mInflater.inflate(R.layout.expandable_list_view_child, parent, false);
+            currentChildViewHolder.recyclerViewChannels = (RecyclerView) currentChildViewHolder.convertView.findViewById(R.id.recycler_view_channels);
+            currentChildViewHolder.tvMessage = (TextView) currentChildViewHolder.convertView.findViewById(R.id.tv_message_connecting);
+            currentChildViewHolder.overlayMenu = (OverlayMenu) currentChildViewHolder.convertView.findViewById(R.id.overlay_menu);
+            currentChildViewHolder.overlayPTZ = (OverlayPTZ) currentChildViewHolder.convertView.findViewById(R.id.ptz_overlay_menu);
+            currentChildViewHolder.tvMessage = (TextView) currentChildViewHolder.convertView.findViewById(R.id.tv_message_connecting);
+            currentChildViewHolder.position = groupPosition;
+            currentChildViewHolder.overlayMenu.setDeviceChannelsManager(mDeviceManager.getDeviceChannelsManagers().get(groupPosition));
+            //        currentChildViewHolder.overlayPTZ.setDeviceChannelsManager(mDeviceManager.getDeviceChannelsManagers().get(groupPosition));
+            currentChildViewHolder.overlayMenu.setLayoutParams(currentChildViewHolder.recyclerViewChannels.getLayoutParams());
+            currentChildViewHolder.overlayPTZ.setLayoutParams(currentChildViewHolder.recyclerViewChannels.getLayoutParams());
 
-        currentChildViewHolder.convertView              =  mInflater.inflate(R.layout.expandable_list_view_child, parent, false);
-        currentChildViewHolder.recyclerViewChannels     =  (RecyclerView) currentChildViewHolder.convertView.findViewById(R.id.recycler_view_channels);
-        currentChildViewHolder.tvMessage                =  (TextView) currentChildViewHolder.convertView.findViewById(R.id.tv_message_connecting);
-        currentChildViewHolder.overlayMenu              =  (OverlayMenu) currentChildViewHolder.convertView.findViewById(R.id.overlay_menu);
-        currentChildViewHolder.overlayPTZ               =  (OverlayPTZ) currentChildViewHolder.convertView.findViewById(R.id.ptz_overlay_menu);
-        currentChildViewHolder.tvMessage                =  (TextView) currentChildViewHolder.convertView.findViewById(R.id.tv_message_connecting);
-        currentChildViewHolder.position                 =   groupPosition;
-        currentChildViewHolder.overlayMenu.setDeviceChannelsManager(mDeviceManager.getDeviceChannelsManagers().get(groupPosition));
-//        currentChildViewHolder.overlayPTZ.setDeviceChannelsManager(mDeviceManager.getDeviceChannelsManagers().get(groupPosition));
-        currentChildViewHolder.overlayMenu.setLayoutParams(currentChildViewHolder.recyclerViewChannels.getLayoutParams());
-        currentChildViewHolder.overlayPTZ.setLayoutParams(currentChildViewHolder.recyclerViewChannels.getLayoutParams());
-
-        if(groupViewHolder.get(groupPosition).mDevice.getSerialNumber().equals("Favoritos")){
-            currentChildViewHolder.tvMessage.setText("Nenhum favorito adicionado.");
-        }else{
-            currentChildViewHolder.tvMessage.setText(groupViewHolder.get(groupPosition).mDevice.message);
+            if (groupViewHolder.get(groupPosition).mDevice.getSerialNumber().equals("Favoritos")) {
+                currentChildViewHolder.tvMessage.setText("Nenhum favorito adicionado.");
+            } else {
+                currentChildViewHolder.tvMessage.setText(groupViewHolder.get(groupPosition).mDevice.message);
+            }
+            return currentChildViewHolder;
+        } catch (IndexOutOfBoundsException i) {
+            i.printStackTrace();
+            return null;
         }
-
 //        this.childViewHolder.add(currentChildViewHolder);
-        return currentChildViewHolder;
     }
 
     private void initGridRecycler(int groupPosition, ChildViewHolder childViewHolder){
@@ -342,30 +346,34 @@ public class DeviceExpandableListAdapter extends BaseExpandableListAdapter {
 
     @Override
     public void onGroupCollapsed(int groupPosition){
-        super.onGroupCollapsed(groupPosition);
-        stopChannels(groupPosition);
-        final GroupViewHolder currentGroupViewHolder = groupViewHolder.get(groupPosition);
-        final ChildViewHolder currentChildViewHolder = childViewHolder.get(groupPosition);
-        ((DeviceListActivity) mContext).runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                currentGroupViewHolder.ivMore.setVisibility(View.INVISIBLE);
-                currentGroupViewHolder.ivIndicator.setImageDrawable(mContext.getResources().getDrawable(R.drawable.ic_indicator_plus));
-                currentGroupViewHolder.ivQuad.setVisibility(View.INVISIBLE);
-                currentChildViewHolder.recyclerViewChannels.setVisibility(View.INVISIBLE);
-                currentChildViewHolder.overlayMenu.setVisibility(View.GONE);
-                currentChildViewHolder.overlayPTZ.setVisibility(View.GONE);
-                currentChildViewHolder.recyclerViewChannels.removeAllViewsInLayout();
-//                currentChildViewHolder.recyclerViewChannels = null;
-            }
-        });
+        try {
+            super.onGroupCollapsed(groupPosition);
+            stopChannels(groupPosition);
+            final GroupViewHolder currentGroupViewHolder = groupViewHolder.get(groupPosition);
+            final ChildViewHolder currentChildViewHolder = childViewHolder.get(groupPosition);
+            ((DeviceListActivity) mContext).runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    currentGroupViewHolder.ivMore.setVisibility(View.INVISIBLE);
+                    currentGroupViewHolder.ivIndicator.setImageDrawable(mContext.getResources().getDrawable(R.drawable.ic_indicator_plus));
+                    currentGroupViewHolder.ivQuad.setVisibility(View.INVISIBLE);
+                    currentChildViewHolder.recyclerViewChannels.setVisibility(View.INVISIBLE);
+                    currentChildViewHolder.overlayMenu.setVisibility(View.GONE);
+                    currentChildViewHolder.overlayPTZ.setVisibility(View.GONE);
+                    currentChildViewHolder.recyclerViewChannels.removeAllViewsInLayout();
+                    //                currentChildViewHolder.recyclerViewChannels = null;
+                }
+            });
 
-//        mDeviceManager.getDeviceChannelsManagers().get(groupPosition).clearSurfaceViewComponents();
+            //        mDeviceManager.getDeviceChannelsManagers().get(groupPosition).clearSurfaceViewComponents();
 
-        mDeviceManager.removeLoginListener(currentGroupViewHolder.mDevice.getId());
-        mDeviceManager.clearStart();
+            mDeviceManager.removeLoginListener(currentGroupViewHolder.mDevice.getId());
+            mDeviceManager.clearStart();
 
-//        onChangeOrientation(groupPosition);
+            //        onChangeOrientation(groupPosition);
+        } catch (IndexOutOfBoundsException e) {
+            e.printStackTrace();
+        }
     }
 
     private void setLayoutSize(final int groupPosition, final ChildViewHolder childViewHolder) {
@@ -560,13 +568,18 @@ public class DeviceExpandableListAdapter extends BaseExpandableListAdapter {
     }
 
     private void startDeviceRemoteControlActivity(Device mDevice) {
-        Bundle extras = new Bundle();
-        extras.putSerializable("device", mDevice);
+        try {
+            Bundle extras = new Bundle();
+            extras.putSerializable("device", mDevice);
 
-        Intent intent = new Intent(mContext, DeviceRemoteControlActivity.class);
-        intent.putExtras(extras);
+            Intent intent = new Intent(mContext, DeviceRemoteControlActivity.class);
+            intent.putExtras(extras);
 
-        mContext.startActivity(intent);
+            mContext.startActivity(intent);
+        } catch (RuntimeException e) {
+            Log.e("Remote Control", "RunTimeException");
+            e.printStackTrace();
+        }
     }
 
     public int nextNumQuad(int numQuad,int totalChannels) {
@@ -635,14 +648,18 @@ public class DeviceExpandableListAdapter extends BaseExpandableListAdapter {
     }
 
     public void setMessage(final int position, final String message){
-        if(childViewHolder.size() > position && childViewHolder.get(position).tvMessage != null)
-            ((Activity)mContext).runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    childViewHolder.get(position).tvMessage.setText(message);
-                    childViewHolder.get(position).tvMessage.invalidate();
-                }
-            });
+        try {
+            if (childViewHolder.size() > position && childViewHolder.get(position).tvMessage != null)
+                ((Activity) mContext).runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        childViewHolder.get(position).tvMessage.setText(message);
+                        childViewHolder.get(position).tvMessage.invalidate();
+                    }
+                });
+        } catch (ArrayIndexOutOfBoundsException e) {
+            e.printStackTrace();
+        }
     }
 
     public void stopActions() {

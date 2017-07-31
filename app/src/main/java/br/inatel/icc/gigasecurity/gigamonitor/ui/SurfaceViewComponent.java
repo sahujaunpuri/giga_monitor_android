@@ -311,10 +311,15 @@ public class SurfaceViewComponent extends FrameLayout {
     }
 
     public void resumeScroll(){
-        mySurfaceView.setRenderMode(GLSurfaceView.RENDERMODE_WHEN_DIRTY);
-        this.getParent().requestDisallowInterceptTouchEvent(false);
-        if(mChannelsManager.mRecyclerAdapter!=null)
-            mChannelsManager.mRecyclerAdapter.enableListScrolling();
+        try {
+            mySurfaceView.setRenderMode(GLSurfaceView.RENDERMODE_WHEN_DIRTY);
+            this.getParent().requestDisallowInterceptTouchEvent(false);
+            if (mChannelsManager.mRecyclerAdapter != null) {
+                mChannelsManager.mRecyclerAdapter.enableListScrolling();
+            }
+        } catch (NullPointerException e) {
+            e.printStackTrace();
+        }
     }
 
     public void setIvTouch(int visibility) {
@@ -359,8 +364,6 @@ public class SurfaceViewComponent extends FrameLayout {
             if (mScaleFactor > 1.0 && isPTZEnabled()) {
                 ivTouch.setVisibility(INVISIBLE);
                 ptzOverlay.setVisibility(INVISIBLE);
-            } else if (isPTZEnabled()) {
-                ivTouch.setVisibility(VISIBLE);
             }
         }
 

@@ -638,7 +638,7 @@ public class DevicePlaybackVideoActivity extends ActionBarActivity {
 
     public void pause() {
         if (mSurfaceView.isREC()) {
-            Toast.makeText(this, "O vídeo está sendo gravado. Pare a gravação para parar o vídeo!", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, getResources().getString(R.string.playback_stop_video_when_recording), Toast.LENGTH_SHORT).show();
         } else {
             mDeviceChannelsManager.onPause(mSurfaceView);
 

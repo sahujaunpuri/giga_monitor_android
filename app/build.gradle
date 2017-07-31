@@ -9,7 +9,7 @@ android {
         minSdkVersion 14
         targetSdkVersion 21
         versionCode 6
-        versionName "1.0.4"
+        versionName "1.0.4b"
         testInstrumentationRunner 'android.support.test.runner.AndroidJUnitRunner'
     }
 

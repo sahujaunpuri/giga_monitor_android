@@ -237,24 +237,28 @@ public class DeviceManager implements IFunSDKResult{
 
     public StatePreferences loadState(){
         StatePreferences state = new StatePreferences();
-        state.previousGroup = mPreferences.getInt("previousGroup", -1);
-        if (state.previousGroup > -1) {
-            ChannelsManager channelsManager = getDeviceChannelsManagers().get(state.previousGroup);
-            state.previousChannel = mPreferences.getInt("previousChannel", -1);
-            state.previousGrid = mPreferences.getInt("previousGrid", -1);
-            state.previousLastGrid = mPreferences.getInt("previousLastGrid", -1);
-            state.previousHD = mPreferences.getInt("previousHD", -1);
-            channelsManager.lastFirstVisibleItem = state.previousChannel;
-            channelsManager.numQuad = state.previousGrid;
-            channelsManager.lastNumQuad = state.previousLastGrid;
-            channelsManager.reOrderSurfaceViewComponents();
-            channelsManager.lastFirstItemBeforeSelectChannel = mPreferences.getInt("previousLastVisibleChannel", -1);
-            channelsManager.changeSurfaceViewSize();
-            if (state.previousHD > -1 && channelsManager.surfaceViewComponents.size() > state.previousHD) {
-                if(!mDevices.get(state.previousGroup).getSerialNumber().equals("Favoritos"))
-                    state.previousHD = findChannelManagerByDevice(mDevices.get(state.previousGroup)).getChannelSelected(state.previousHD);
-                channelsManager.enableHD(channelsManager.surfaceViewComponents.get(state.previousHD));
+        try {
+            state.previousGroup = mPreferences.getInt("previousGroup", -1);
+            if (state.previousGroup > -1) {
+                ChannelsManager channelsManager = getDeviceChannelsManagers().get(state.previousGroup);
+                state.previousChannel = mPreferences.getInt("previousChannel", -1);
+                state.previousGrid = mPreferences.getInt("previousGrid", -1);
+                state.previousLastGrid = mPreferences.getInt("previousLastGrid", -1);
+                state.previousHD = mPreferences.getInt("previousHD", -1);
+                channelsManager.lastFirstVisibleItem = state.previousChannel;
+                channelsManager.numQuad = state.previousGrid;
+                channelsManager.lastNumQuad = state.previousLastGrid;
+                channelsManager.reOrderSurfaceViewComponents();
+                channelsManager.lastFirstItemBeforeSelectChannel = mPreferences.getInt("previousLastVisibleChannel", -1);
+                channelsManager.changeSurfaceViewSize();
+                if (state.previousHD > -1 && channelsManager.surfaceViewComponents.size() > state.previousHD) {
+                    if (!mDevices.get(state.previousGroup).getSerialNumber().equals("Favoritos"))
+                        state.previousHD = findChannelManagerByDevice(mDevices.get(state.previousGroup)).getChannelSelected(state.previousHD);
+                    channelsManager.enableHD(channelsManager.surfaceViewComponents.get(state.previousHD));
+                }
             }
+        } catch (IndexOutOfBoundsException e) {
+            e.printStackTrace();
         }
         return state;
     }
@@ -445,7 +449,6 @@ public class DeviceManager implements IFunSDKResult{
             }
             json = jsonObject.getJSONArray("NetWork.NetDDNS").getJSONObject(0);
             Log.d(TAG, "HANDLECONFIG: " + json.toString());
-
 
             currentConfig = json;
 
@@ -661,11 +664,14 @@ public class DeviceManager implements IFunSDKResult{
     }
 
     public ChannelsManager findChannelManagerByDevice(Device device){
-        for(ChannelsManager svm : deviceChannelsManagers){
-            if(device.getId() == svm.mDevice.getId())
-                return svm;
+        try {
+            for(ChannelsManager svm : deviceChannelsManagers){
+                if(device.getId() == svm.mDevice.getId())
+                    return svm;
+            }
+        } catch (NullPointerException e) {
+            e.printStackTrace();
         }
-        Log.e(TAG, "findChannelManagerByDevice: DeviceChannelsManager Not Found");
         return null;
     }
 
@@ -867,14 +873,16 @@ public class DeviceManager implements IFunSDKResult{
     private Device addLanDevice(SDK_CONFIG_NET_COMMON_V2 comm) {
         Device device = null;
         synchronized (mLanDevices) {
-            Log.e(TAG, "Vai passar pelo G.toString");
-            String devSn = G.ToString(comm.st_14_sSn);
-            Log.e(TAG, "Passou pelo G.toString");
-            if (null != devSn) {
-                if (findLanDevice(devSn) == null) {
-                    device = new Device(comm);
-                    mLanDevices.add(device);
+            try {
+                String devSn = G.ToString(comm.st_14_sSn);
+                if (null != devSn) {
+                    if (findLanDevice(devSn) == null) {
+                        device = new Device(comm);
+                        mLanDevices.add(device);
+                    }
                 }
+            } catch (Exception e) {
+                e.printStackTrace();
             }
         }
         return device;
@@ -1004,23 +1012,27 @@ public class DeviceManager implements IFunSDKResult{
     public static String getDownloadFileNameByData(H264_DVR_FILE_DATA data, int type, boolean bThumbnail) {
         StringBuffer sb = new StringBuffer();
         if (null != data) {
-            sb.append(getTime(data.st_3_beginTime, 0));
-            sb.append("_");
-            sb.append(getTime(data.st_4_endTime, 0));
-            if (type == 1) {
+            try {
+                sb.append(getTime(data.st_3_beginTime, 0));
                 sb.append("_");
-                int orderNum = Utils.getOrderNum(G.ToString(data.st_2_fileName), 1);
-                sb.append(orderNum);
-                if (bThumbnail) {
-                    sb.append("_thumb");
+                sb.append(getTime(data.st_4_endTime, 0));
+                if (type == 1) {
+                    sb.append("_");
+                    int orderNum = Utils.getOrderNum(G.ToString(data.st_2_fileName), 1);
+                    sb.append(orderNum);
+                    if (bThumbnail) {
+                        sb.append("_thumb");
+                    }
+                    sb.append(".jpg");
+                } else if (type == 0) {
+                    sb.append("_");
+                    sb.append(data.st_6_StreamType);
+                    if (bThumbnail)
+                        sb.append("_thumb");
+                    sb.append(".mp4");
                 }
-                sb.append(".jpg");
-            } else if (type == 0) {
-                sb.append("_");
-                sb.append(data.st_6_StreamType);
-                if (bThumbnail)
-                    sb.append("_thumb");
-                sb.append(".mp4");
+            } catch (Exception e) {
+                e.printStackTrace();
             }
         }
         return sb.toString();
@@ -1406,12 +1418,12 @@ public class DeviceManager implements IFunSDKResult{
             case EUIMSG.DEV_GET_JSON:
             {
                 if(msg.arg1 >= 0 && msgContent.pData != null){
+                    JSONObject json = null;
                     Log.d(TAG, "OnFunSDKResult: GETCONFIGJSON SUCCESS");
                     Device device = findDeviceById(msgContent.seq);
-                    String jsonText = G.ToStringJson(msgContent.pData);
-                    Log.d(TAG, "EUIMSG.DEV_GET_JSON --> json: " + device.connectionString + " " + jsonText);
-                    JSONObject json = null;
                     try {
+                        String jsonText = G.ToStringJson(msgContent.pData);
+                        Log.d(TAG, "EUIMSG.DEV_GET_JSON --> json: " + device.connectionString + " " + jsonText);
                         json = new JSONObject(jsonText);
                     } catch (JSONException e) {
                         e.printStackTrace();
@@ -1490,9 +1502,13 @@ public class DeviceManager implements IFunSDKResult{
             case EUIMSG.DEV_GET_CONFIG:
             {
                 if(msg.arg1 >= 0){
-                    Log.d(TAG, "OnFunSDKResult: GETCONFIG SUCCESS");
-                    String data = G.ToString(msgContent.pData);
-                    Log.d(TAG, "--> DATA: " + data);
+                    try {
+                        Log.d(TAG, "OnFunSDKResult: GETCONFIG SUCCESS");
+                        String data = G.ToString(msgContent.pData);
+                        Log.d(TAG, "--> DATA: " + data);
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
                 } else{
                     Log.d(TAG, "OnFunSDKResult: GETCONFIG ERROR");
                 }
@@ -1544,8 +1560,12 @@ public class DeviceManager implements IFunSDKResult{
             case EUIMSG.DEV_CMD_EN:
             {
                 if(msgContent != null){
-                    String data = G.ToString(msgContent.pData);
-                    Log.d(TAG, "--> DATA: " + data);
+                    try {
+                        String data = G.ToString(msgContent.pData);
+                        Log.d(TAG, "--> DATA: " + data);
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
                 }
             }
             break;

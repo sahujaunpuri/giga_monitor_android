@@ -557,19 +557,23 @@ public abstract class ChannelsManager implements IFunSDKResult {
             break;
             case EUIMSG.STOP_SAVE_MEDIA_FILE: {
                 if(msg.arg1 == 0){
-                    SurfaceViewComponent svc = findSurfaceByHandler(msgContent.sender);
-                    File file = new File(svc.recordFileName);
-                    svc.isREC = false;
-                    if(file.length() > 1000) {
-                        String mensagem = "Gravação do canal " + (svc.mySurfaceViewChannelId + 1) + " finalizada";
-                        Toast.makeText(mContext, mensagem, Toast.LENGTH_SHORT).show();
-                        if(svc.stoppingRec) {
-                            onStop(svc);
-                            svc.stoppingRec = false;
+                    try {
+                        SurfaceViewComponent svc = findSurfaceByHandler(msgContent.sender);
+                        File file = new File(svc.recordFileName);
+                        svc.isREC = false;
+                        if (file.length() > 1000) {
+                            String mensagem = "Gravação do canal " + (svc.mySurfaceViewChannelId + 1) + " finalizada";
+                            Toast.makeText(mContext, mensagem, Toast.LENGTH_SHORT).show();
+                            if (svc.stoppingRec) {
+                                onStop(svc);
+                                svc.stoppingRec = false;
+                            }
+                        } else {
+                            file.delete();
+                            Toast.makeText(mContext, "Falha na captura da imagem", Toast.LENGTH_SHORT).show();
                         }
-                    } else {
-                        file.delete();
-                        Toast.makeText(mContext, "Falha na captura da imagem", Toast.LENGTH_SHORT).show();
+                    } catch (NullPointerException e) {
+                        e.printStackTrace();
                     }
                 } else{
                     Toast.makeText(mContext, "Falha na gravação", Toast.LENGTH_SHORT).show();
