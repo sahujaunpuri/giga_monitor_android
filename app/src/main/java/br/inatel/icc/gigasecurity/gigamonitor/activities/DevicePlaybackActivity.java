@@ -227,8 +227,7 @@ public class DevicePlaybackActivity extends ActionBarActivity
 
     private ArrayList<FileData> infoToArray(H264_DVR_FILE_DATA files[]){
         ArrayList<FileData> playbacks = new ArrayList<FileData>();
-//        for (H264_DVR_FILE_DATA file : files) {
-        for (int i=0; i<files.length; i++) {
+        for (int i=files.length - 1; i>=0; i--) {
             H264_DVR_FILE_DATA file = files[i];
             FileData funFileData = new FileData(file, null);
             playbacks.add(funFileData);

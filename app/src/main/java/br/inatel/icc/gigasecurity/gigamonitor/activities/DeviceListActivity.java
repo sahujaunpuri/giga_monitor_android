@@ -133,6 +133,7 @@ public class DeviceListActivity extends ActionBarActivity {
     @Override
     protected void onStop() {
         super.onStop();
+        Log.e("DeviceList", "Stop");
         verifyIfSomeChannelIsSoundingOrRecording();
     }
 

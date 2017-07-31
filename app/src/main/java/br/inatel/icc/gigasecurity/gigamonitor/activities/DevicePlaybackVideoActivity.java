@@ -124,6 +124,7 @@ public class DevicePlaybackVideoActivity extends ActionBarActivity {
                 @Override
                 public void onComplete() {
                     currentProgress = 0;
+                    Log.e("PlaybackListener", "Complete");
                     stopButtonClick();
                 }
 
@@ -132,8 +133,6 @@ public class DevicePlaybackVideoActivity extends ActionBarActivity {
                     if (!mSurfaceView.isSeeking) {
                         advanceSeek(progress);
                         currentProgress = progress;
-                        Log.d(TAG, "onChangeProgress: " + currentProgress);
-
                     }/*else if(((progress*100)/(int)mFileData.getTotalTime()) == definedProgress){
                         mSurfaceView.setVisibility(View.VISIBLE);
                         mSurfaceView.isSeeking = false;
@@ -163,14 +162,13 @@ public class DevicePlaybackVideoActivity extends ActionBarActivity {
                         });
                     }
                 }
-
             };
 
     private SeekBar.OnSeekBarChangeListener mSeekBarChangeListener =
             new SeekBar.OnSeekBarChangeListener() {
                 @Override
                 public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-                    if (fromUser /*&& (mSurfaceView.isConnected())*/) {
+                    if (fromUser) {
                         try {
                             SimpleDateFormat simpleDateFormat = new SimpleDateFormat("HH:mm:ss");
                             Date dt = simpleDateFormat.parse(initialTimeVideo);
@@ -186,14 +184,18 @@ public class DevicePlaybackVideoActivity extends ActionBarActivity {
 //                            thumb.setIntrinsicWidth(30);
 //                            seekBar.setThumb(thumb);
 
-                            int val = (progress * (seekBar.getWidth() - 2 * seekBar.getThumbOffset())) / seekBar.getMax();
-                            seekBarTextView.setX(seekBar.getX() + val + seekBar.getThumbOffset() / 2);
-
+//                            int val = (progress * (seekBar.getWidth() - 2 * seekBar.getThumbOffset())) / seekBar.getMax();
+                            int val = (int)((float)(seekBar.getMeasuredWidth() / 2) - seekBarTextView.getWidth() / 2);
+//                            seekBarTextView.setX(seekBar.getX() + val + seekBar.getThumbOffset() / 2);
+                            seekBarTextView.setX(val);
                         } catch (ParseException e) {
                             e.printStackTrace();
                         }
                         currentBar = progress;
                     }
+//                    if (progress == seekBar.getMax() - 1) {
+//                        stopRecordingPlayback();
+//                    }
                 }
 
                 @Override
@@ -237,7 +239,7 @@ public class DevicePlaybackVideoActivity extends ActionBarActivity {
         @Override
         public void onStartDownload(int fileSize) {
             mProgressDialog = new ProgressDialog(DevicePlaybackVideoActivity.this);
-            mProgressDialog.setMessage("Downloading file..");
+            mProgressDialog.setMessage("Downloading file...");
             mProgressDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
             mProgressDialog.setCancelable(false);
             mProgressDialog.setProgressNumberFormat("%d/%d KB");
@@ -260,8 +262,9 @@ public class DevicePlaybackVideoActivity extends ActionBarActivity {
         @Override
         public void onFinishDownload() {
             mProgressDialog.dismiss();
-            stopButtonClick();
-            startMediaActivity();
+            Toast.makeText(getApplicationContext(), "Download efetuado com sucesso", Toast.LENGTH_SHORT).show();
+//            stopButtonClick();
+//            startMediaActivity();
         }
 
         @Override
@@ -317,7 +320,7 @@ public class DevicePlaybackVideoActivity extends ActionBarActivity {
 
         seekBarTextView = new TextView(this);//TextView) findViewById(R.id.thumbnail_text_view2);
         seekBarTextView.setBackgroundResource(R.drawable.playback_time_box);
-        seekBarTextView.setY(seekBarTextPosition);
+        seekBarTextView.setY(seekBarTextPosition - 30);
         seekBarTextView.setLayoutParams(new ActionBar.LayoutParams(120, 35));
         seekBarTextView.setGravity(Gravity.CENTER);
 
@@ -347,7 +350,11 @@ public class DevicePlaybackVideoActivity extends ActionBarActivity {
         ivStop.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                stopButtonClick();
+                if (mSurfaceView.isREC()) {
+                    Toast.makeText(mActivity, "Pare a gravação antes de parar o vídeo", Toast.LENGTH_SHORT).show();
+                } else {
+                    stopButtonClick();
+                }
             }
         });
 
@@ -417,9 +424,6 @@ public class DevicePlaybackVideoActivity extends ActionBarActivity {
                 return progressBarDisabled;
             }
         });
-
-        Log.d(TAG, "onCreate totalTime: " + (int) mFileData.getTotalTime());
-        Log.d(TAG, "onCreate startSecond: " + mStartSecond);
 
 //        requestDeviceSearchPicture();
         // ATTENTION: This was auto-generated to implement the App Indexing API.
@@ -518,11 +522,11 @@ public class DevicePlaybackVideoActivity extends ActionBarActivity {
 
     public void stopButtonClick() {
         if (mSurfaceView.isConnected()) {
-            stop();
             mSurfaceView.isSeeking = false;
             mSeekBar.setProgress(0);
             currentProgress = 0;
             initialTime.setText(initialTimeVideo);
+            stop();
         }
     }
 
@@ -532,22 +536,39 @@ public class DevicePlaybackVideoActivity extends ActionBarActivity {
             mDeviceChannelsManager.takeSnapshot(mSurfaceView, playbackName);
             flashView();
         } else {
-            Toast.makeText(this, "O vídeo precisa estar em andamento para que a foto seja tirada!", Toast.LENGTH_SHORT).show();
+            Toast.makeText(mActivity, "O vídeo precisa estar em andamento para que a foto seja tirada!", Toast.LENGTH_SHORT).show();
         }
     }
 
     private void recordPlayback() {
         if (mSurfaceView.isConnected() && mSurfaceView.isPlaying()) {
             if (mSurfaceView.isREC()) {
-                mDeviceChannelsManager.stopRecord(mSurfaceView);
-                menu.getItem(1).setIcon(R.drawable.record);
+                stopRecordingPlayback();
             } else {
-                String playbackRecordName = actualTime();
-                mDeviceChannelsManager.startRecord(mSurfaceView, playbackRecordName);
-                menu.getItem(1).setIcon(R.mipmap.red_record);
+                startRecordingPlayback();
             }
         } else {
-            Toast.makeText(this, "O vídeo precisa estar em andamento para que a gravação seja iniciada!", Toast.LENGTH_SHORT).show();
+            Toast.makeText(mActivity, "O vídeo precisa estar em andamento para que a gravação seja iniciada!", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    private void startRecordingPlayback() {
+        String playbackRecordName = actualTime();
+        mDeviceChannelsManager.startRecord(mSurfaceView, playbackRecordName);
+        changeToRedRecordIcon(true);
+    }
+
+    private void stopRecordingPlayback() {
+        mDeviceChannelsManager.stopRecord(mSurfaceView);
+        changeToRedRecordIcon(false);
+    }
+
+    private void changeToRedRecordIcon(boolean icon) {
+        MenuItem recordIcon = menu.findItem(R.id.playback_record);
+        if (icon) {
+            recordIcon.setIcon(R.mipmap.red_record);
+        } else {
+            recordIcon.setIcon(R.drawable.record);
         }
     }
 
@@ -584,6 +605,12 @@ public class DevicePlaybackVideoActivity extends ActionBarActivity {
         alert.show();
     }
 
+    private void startMediasActivity() {
+        stopButtonClick();
+        Intent intent = new Intent(this, MediaActivity.class);
+        startActivity(intent);
+    }
+
     public void updateStatusTextView(final CharSequence statusText) {
         mActivity.runOnUiThread(new Runnable() {
             @Override
@@ -614,9 +641,7 @@ public class DevicePlaybackVideoActivity extends ActionBarActivity {
     }
 
     public void stop() {
-        if (mSurfaceView.isREC()) {
-            recordPlayback();
-        }
+        changeToRedRecordIcon(false);
         mDeviceChannelsManager.onStop(mSurfaceView);
 
         String text = getResources().getString(R.string.label_stopped);
@@ -773,6 +798,9 @@ public class DevicePlaybackVideoActivity extends ActionBarActivity {
 //                mDeviceChannelsManager.playType = 0;
 //                DeviceManager.getInstance().updateSurfaceViewManagers();
                 finish();
+                return true;
+            case R.id.medias:
+                startMediasActivity();
                 return true;
             case R.id.playback_snapshot:
                 snapshotPlayback();

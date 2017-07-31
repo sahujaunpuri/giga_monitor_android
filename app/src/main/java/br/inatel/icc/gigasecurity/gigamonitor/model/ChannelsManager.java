@@ -252,6 +252,14 @@ public abstract class ChannelsManager implements IFunSDKResult {
         svc.isPlaying = false;
     }
 
+//    public void stopPlayback(SurfaceViewComponent svc) {
+//        if (svc.isConnected()) {
+//            FunSDK.MediaStop(svc.mPlayerHandler);
+//            svc.setConnected(false);
+//        }
+//        svc.isPlaying = false;
+//    }
+
     public void restartVideo(SurfaceViewComponent svc){
         svc.isLoading(true);
 //        if(svc.isConnected()){
@@ -432,7 +440,6 @@ public abstract class ChannelsManager implements IFunSDKResult {
                 stopRecord(sfvc);
             }
             if (sfvc.isReceiveAudioEnabled) {
-                sfvc.isReceiveAudioEnabled = false;
                 toggleReceiveAudio(sfvc);
             }
             if (sfvc.isSendAudioEnabled) {
@@ -599,6 +606,9 @@ public abstract class ChannelsManager implements IFunSDKResult {
                                 Log.d(TAG, "OnFunSDKResult TIME: " + hour + "h" + min + "min " + sec + "s. " + currentSec);
                                 currentPlaybackListener.onChangeProgress(currentSec);
                             }
+                        }
+                        if (msg.arg2 == msgContent.arg3 && svc.playType == 1 && svc.isREC()) {
+                            stopRecord(svc);
                         }
                     }
                 }
