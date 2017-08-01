@@ -238,7 +238,7 @@ public class DevicePlaybackVideoActivity extends ActionBarActivity {
         @Override
         public void onStartDownload(int fileSize) {
             mProgressDialog = new ProgressDialog(DevicePlaybackVideoActivity.this);
-            mProgressDialog.setMessage("Downloading file...");
+            mProgressDialog.setMessage(getResources().getString(R.string.downloading));
             mProgressDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
             mProgressDialog.setCancelable(false);
             mProgressDialog.setProgressNumberFormat("%d/%d KB");
@@ -262,8 +262,6 @@ public class DevicePlaybackVideoActivity extends ActionBarActivity {
         public void onFinishDownload() {
             mProgressDialog.dismiss();
             Toast.makeText(getApplicationContext(), "Download efetuado com sucesso", Toast.LENGTH_SHORT).show();
-//            stopButtonClick();
-//            startMediaActivity();
         }
 
         @Override
@@ -465,7 +463,7 @@ public class DevicePlaybackVideoActivity extends ActionBarActivity {
             mHandler.postDelayed(mAction, 500);
             isAdvancing = true;
         } else {
-            Toast.makeText(this, "O vídeo deve estar em andamento!", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, getResources().getString(R.string.playback_running), Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -544,7 +542,7 @@ public class DevicePlaybackVideoActivity extends ActionBarActivity {
             mDeviceChannelsManager.takeSnapshot(mSurfaceView, playbackName);
             flashView();
         } else {
-            Toast.makeText(mActivity, "O vídeo precisa estar em andamento para que a foto seja tirada!", Toast.LENGTH_SHORT).show();
+            Toast.makeText(mActivity, getResources().getString(R.string.playback_running), Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -556,7 +554,7 @@ public class DevicePlaybackVideoActivity extends ActionBarActivity {
                 startRecordingPlayback();
             }
         } else {
-            Toast.makeText(mActivity, "O vídeo precisa estar em andamento para que a gravação seja iniciada!", Toast.LENGTH_SHORT).show();
+            Toast.makeText(mActivity, getResources().getString(R.string.playback_running), Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -602,7 +600,8 @@ public class DevicePlaybackVideoActivity extends ActionBarActivity {
             @Override
             public void onClick(DialogInterface dialogInterface, int i) {
                 byte[] file = G.ObjToBytes(mFileData.getFileData());
-                String path = Environment.getExternalStorageDirectory().getPath() + "/Movies/Giga Monitor/" + Utils.currentDateTime() + ".mp4";
+                String fileName = actualTime();
+                String path = Environment.getExternalStorageDirectory().getPath() + "/Movies/Giga Monitor/" + fileName + ".mp4";
                 mDeviceManager.downloadFile(mDevice, file, path, downloadListener);
             }
         });
@@ -616,7 +615,6 @@ public class DevicePlaybackVideoActivity extends ActionBarActivity {
     }
 
     private void startMediasActivity() {
-        stopButtonClick();
         Intent intent = new Intent(this, MediaActivity.class);
         startActivity(intent);
     }
@@ -804,13 +802,13 @@ public class DevicePlaybackVideoActivity extends ActionBarActivity {
 
     @Override
     public boolean onPrepareOptionsMenu(Menu menu) {
-        MenuItem recordIcon = menu.findItem(R.id.playback_record);
+//        MenuItem recordIcon = menu.findItem(R.id.playback_record);
         MenuItem downloadIcon = menu.findItem(R.id.playback_download);
         if (mFileData.mFileType == 2) {
-            recordIcon.setVisible(false);
+//            recordIcon.setVisible(false);
             downloadIcon.setVisible(true);
         } else {
-            recordIcon.setVisible(true);
+//            recordIcon.setVisible(true);
             downloadIcon.setVisible(false);
         }
         return true;
@@ -822,13 +820,18 @@ public class DevicePlaybackVideoActivity extends ActionBarActivity {
 
         switch (id) {
             case android.R.id.home:
-                mDeviceChannelsManager.onStop(mSurfaceView);
-//                mDeviceChannelsManager.playType = 0;
-//                DeviceManager.getInstance().updateSurfaceViewManagers();
-                finish();
+                if (mSurfaceView.isREC()) {
+                    Toast.makeText(mActivity, getResources().getString(R.string.playback_being_recorded), Toast.LENGTH_SHORT).show();
+                } else {
+                    finish();
+                }
                 return true;
             case R.id.medias:
-                startMediasActivity();
+                if (mSurfaceView.isREC()) {
+                    Toast.makeText(mActivity, getResources().getString(R.string.playback_being_recorded), Toast.LENGTH_SHORT).show();
+                } else {
+                    startMediasActivity();
+                }
                 return true;
             case R.id.playback_snapshot:
                 snapshotPlayback();

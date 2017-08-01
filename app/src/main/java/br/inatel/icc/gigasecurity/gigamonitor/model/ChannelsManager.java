@@ -16,6 +16,7 @@ import com.lib.EUIMSG;
 import com.lib.FunSDK;
 import com.lib.IFunSDKResult;
 import com.lib.MsgContent;
+import com.lib.SDKCONST;
 import com.lib.sdk.struct.H264_DVR_FILE_DATA;
 import com.video.opengl.GLSurfaceView20;
 
@@ -567,7 +568,8 @@ public abstract class ChannelsManager implements IFunSDKResult {
                 if(msg.arg1 == 0){
                     try {
                         SurfaceViewComponent svc = findSurfaceByHandler(msgContent.sender);
-                        File file = new File(svc.recordFileName);
+//                        File file = new File(svc.recordFileName);
+                        File file = new File(msgContent.str);
                         svc.isREC = false;
                         if (file.length() > 1000) {
                             String message = null;
@@ -583,13 +585,13 @@ public abstract class ChannelsManager implements IFunSDKResult {
                             }
                         } else {
                             file.delete();
-                            Toast.makeText(mContext, "Falha na captura da imagem", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(mContext, mContext.getResources().getString(R.string.snapshot_failed), Toast.LENGTH_SHORT).show();
                         }
                     } catch (NullPointerException e) {
                         e.printStackTrace();
                     }
                 } else{
-                    Toast.makeText(mContext, "Falha na gravação", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(mContext, mContext.getResources().getString(R.string.record_failed), Toast.LENGTH_SHORT).show();
                 }
 //                recCounter--;
             }

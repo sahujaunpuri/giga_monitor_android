@@ -282,5 +282,9 @@
     <string name="playback_stop_video_when_recording">"The video cannot be paused. Stop the record before stopping the video"</string>
     <string name="playback_record_message">Playback Record finished</string>
     <string name="playback_being_recorded">Playback is being record</string>
+    <string name="downloading">Downloading file...</string>
+    <string name="playback_running">The playback must be running</string>
+    <string name="snapshot_failed">Snapshot failed</string>
+    <string name="record_failed">Record failed</string>
 
 </resources>
