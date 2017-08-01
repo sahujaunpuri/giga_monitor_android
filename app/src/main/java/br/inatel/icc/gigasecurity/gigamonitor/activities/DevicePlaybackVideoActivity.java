@@ -123,8 +123,6 @@ public class DevicePlaybackVideoActivity extends ActionBarActivity {
             new PlaybackListener() {
                 @Override
                 public void onComplete() {
-                    currentProgress = 0;
-                    Log.e("PlaybackListener", "Complete");
                     stopButtonClick();
                 }
 
@@ -193,25 +191,26 @@ public class DevicePlaybackVideoActivity extends ActionBarActivity {
                         }
                         currentBar = progress;
                     }
-//                    if (progress == seekBar.getMax() - 1) {
-//                        stopRecordingPlayback();
-//                    }
                 }
 
                 @Override
                 public void onStartTrackingTouch(SeekBar seekBar) {
-//                    mSurfaceView.setVisibility(View.INVISIBLE);
-                    mDeviceChannelsManager.onStop(mSurfaceView);
-                    mSurfaceView.isSeeking = true;
-//                    seekBarTextView.setVisibility(View.VISIBLE);
-                    playbackLayout.addView(seekBarTextView);
-                    thumbnail = new ImageView(mActivity);
-//                    FileData fileData = thumbnailsList.get(0);
-//                    Utils.savePictureFile(fileData.getFileName());
-//                    Bitmap bitmap = BitmapFactory.decodeFile(fileData.getFileName(), );
-//                    thumbnail.setImageBitmap(bitmap);
-//                    playbackLayout.addView(thumbnail);
-//                    thumbnail.setVisibility(View.VISIBLE);
+                    if (mSurfaceView.isREC()) {
+                        Toast.makeText(mActivity, "Pare a gravação para avançar!", Toast.LENGTH_SHORT).show();
+                    } else {
+                        //                    mSurfaceView.setVisibility(View.INVISIBLE);
+                        mSurfaceView.isSeeking = true;
+                        mDeviceChannelsManager.onStop(mSurfaceView);
+                        //                    seekBarTextView.setVisibility(View.VISIBLE);
+                        playbackLayout.addView(seekBarTextView);
+                        thumbnail = new ImageView(mActivity);
+                        //                    FileData fileData = thumbnailsList.get(0);
+                        //                    Utils.savePictureFile(fileData.getFileName());
+                        //                    Bitmap bitmap = BitmapFactory.decodeFile(fileData.getFileName(), );
+                        //                    thumbnail.setImageBitmap(bitmap);
+                        //                    playbackLayout.addView(thumbnail);
+                        //                    thumbnail.setVisibility(View.VISIBLE);
+                    }
                 }
 
                 @Override
@@ -361,20 +360,24 @@ public class DevicePlaybackVideoActivity extends ActionBarActivity {
         ivForward.setOnTouchListener(new View.OnTouchListener() {
             @Override
             public boolean onTouch(View view, MotionEvent event) {
-                if (event.getAction() == MotionEvent.ACTION_DOWN) {
-                    if (mHandler != null) {
+                if (!mSurfaceView.isREC()) {
+                    if (event.getAction() == MotionEvent.ACTION_DOWN) {
+                        if (mHandler != null) {
+                            return true;
+                        }
+                        int valueOfSecondsToAdvance = 2;
+                        String text = ">> 2x";
+                        advanceOrDelayVideo(text, valueOfSecondsToAdvance);
+                        return true;
+                    } else if (event.getAction() == event.ACTION_UP) {
+                        if (mHandler == null) {
+                            return true;
+                        }
+                        stopAdvancingVideoAndPlay();
                         return true;
                     }
-                    int valueOfSecondsToAdvance = 2;
-                    String text = ">> 2x";
-                    advanceOrDelayVideo(text, valueOfSecondsToAdvance);
-                    return true;
-                } else if (event.getAction() == event.ACTION_UP) {
-                    if (mHandler == null) {
-                        return true;
-                    }
-                    stopAdvancingVideoAndPlay();
-                    return true;
+                } else {
+                    Toast.makeText(mActivity, mActivity.getResources().getString(R.string.playback_being_recorded), Toast.LENGTH_SHORT).show();
                 }
                 return false;
             }
@@ -383,20 +386,24 @@ public class DevicePlaybackVideoActivity extends ActionBarActivity {
         ivBackward.setOnTouchListener(new View.OnTouchListener() {
             @Override
             public boolean onTouch(View view, MotionEvent event) {
-                if (event.getAction() == MotionEvent.ACTION_DOWN) {
-                    if (mHandler != null) {
+                if (!mSurfaceView.isREC()) {
+                    if (event.getAction() == MotionEvent.ACTION_DOWN) {
+                        if (mHandler != null) {
+                            return true;
+                        }
+                        String text = "<< 2x";
+                        int valueOfSecondsToBack = -2;
+                        advanceOrDelayVideo(text, valueOfSecondsToBack);
+                        return true;
+                    } else if (event.getAction() == event.ACTION_UP) {
+                        if (mHandler == null) {
+                            return true;
+                        }
+                        stopAdvancingVideoAndPlay();
                         return true;
                     }
-                    String text = "<< 2x";
-                    int valueOfSecondsToBack = -2;
-                    advanceOrDelayVideo(text, valueOfSecondsToBack);
-                    return true;
-                } else if (event.getAction() == event.ACTION_UP) {
-                    if (mHandler == null) {
-                        return true;
-                    }
-                    stopAdvancingVideoAndPlay();
-                    return true;
+                } else {
+                    Toast.makeText(mActivity, mActivity.getResources().getString(R.string.playback_being_recorded), Toast.LENGTH_SHORT).show();
                 }
                 return false;
             }
@@ -416,6 +423,7 @@ public class DevicePlaybackVideoActivity extends ActionBarActivity {
 //        mSurfaceView.setAudioCtrl(MyConfig.AudioState.OPENED);
 
         // Configure progress bar
+        mSeekBar.setEnabled(true);
         mSeekBar.setMax((int) mFileData.getTotalTime());
         mStartSecond = (int) mFileData.getStartTime();
         mSeekBar.setOnTouchListener(new View.OnTouchListener() {
@@ -556,11 +564,13 @@ public class DevicePlaybackVideoActivity extends ActionBarActivity {
         String playbackRecordName = actualTime();
         mDeviceChannelsManager.startRecord(mSurfaceView, playbackRecordName);
         changeToRedRecordIcon(true);
+        mSeekBar.setEnabled(false);
     }
 
     private void stopRecordingPlayback() {
         mDeviceChannelsManager.stopRecord(mSurfaceView);
         changeToRedRecordIcon(false);
+        mSeekBar.setEnabled(true);
     }
 
     private void changeToRedRecordIcon(boolean icon) {
@@ -659,6 +669,10 @@ public class DevicePlaybackVideoActivity extends ActionBarActivity {
                 ivPlayPause.setImageDrawable(getResources().getDrawable(R.drawable.ic_play_playback));
             }
         });
+
+        if (!mSeekBar.isEnabled()) {
+            mSeekBar.setEnabled(true);
+        }
     }
 
     public void pause() {
@@ -785,6 +799,20 @@ public class DevicePlaybackVideoActivity extends ActionBarActivity {
         getMenuInflater().inflate(R.menu.menu_video_playback, menu);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         this.menu = menu;
+        return true;
+    }
+
+    @Override
+    public boolean onPrepareOptionsMenu(Menu menu) {
+        MenuItem recordIcon = menu.findItem(R.id.playback_record);
+        MenuItem downloadIcon = menu.findItem(R.id.playback_download);
+        if (mFileData.mFileType == 2) {
+            recordIcon.setVisible(false);
+            downloadIcon.setVisible(true);
+        } else {
+            recordIcon.setVisible(true);
+            downloadIcon.setVisible(false);
+        }
         return true;
     }
 

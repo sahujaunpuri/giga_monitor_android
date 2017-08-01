@@ -280,5 +280,7 @@
     <string name="priority_connection_message">At least one connection has to be marked!</string>
     <string name="download_error">Error trying to download file</string>
     <string name="playback_stop_video_when_recording">"The video cannot be paused. Stop the record before stopping the video"</string>
+    <string name="playback_record_message">Playback Record finished</string>
+    <string name="playback_being_recorded">Playback is being record</string>
 
 </resources>

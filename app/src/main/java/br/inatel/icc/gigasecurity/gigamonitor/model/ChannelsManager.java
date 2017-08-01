@@ -29,6 +29,7 @@ import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.Locale;
 
+import br.inatel.icc.gigasecurity.gigamonitor.R;
 import br.inatel.icc.gigasecurity.gigamonitor.activities.DeviceListActivity;
 import br.inatel.icc.gigasecurity.gigamonitor.adapters.ChannelRecyclerViewAdapter;
 import br.inatel.icc.gigasecurity.gigamonitor.core.DeviceManager;
@@ -569,8 +570,13 @@ public abstract class ChannelsManager implements IFunSDKResult {
                         File file = new File(svc.recordFileName);
                         svc.isREC = false;
                         if (file.length() > 1000) {
-                            String mensagem = "Gravação do canal " + (svc.mySurfaceViewChannelId + 1) + " finalizada";
-                            Toast.makeText(mContext, mensagem, Toast.LENGTH_SHORT).show();
+                            String message = null;
+                            if (svc.playType == 0) {
+                                message = "Gravação do canal " + (svc.mySurfaceViewChannelId + 1) + " finalizada";
+                            } else {
+                                message = mContext.getResources().getString(R.string.playback_record_message);
+                            }
+                            Toast.makeText(mContext, message, Toast.LENGTH_SHORT).show();
                             if (svc.stoppingRec) {
                                 onStop(svc);
                                 svc.stoppingRec = false;
@@ -607,16 +613,13 @@ public abstract class ChannelsManager implements IFunSDKResult {
                                 currentPlaybackListener.onChangeProgress(currentSec);
                             }
                         }
-                        if (msg.arg2 == msgContent.arg3 && svc.playType == 1 && svc.isREC()) {
-                            stopRecord(svc);
-                        }
                     }
                 }
             }
             break;
             case EUIMSG.ON_PLAY_END: {
                 SurfaceViewComponent svc = findSurfaceByHandler(msgContent.sender);
-                if(svc != null && svc.playType == 1){
+                if(svc != null && svc.playType == 1 && !svc.isSeeking){
                     currentPlaybackListener.onComplete();
                 }
             }
