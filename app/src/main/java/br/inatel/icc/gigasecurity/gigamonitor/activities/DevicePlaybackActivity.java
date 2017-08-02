@@ -53,11 +53,11 @@ import br.inatel.icc.gigasecurity.gigamonitor.util.Utils;
 public class DevicePlaybackActivity extends ActionBarActivity
         implements AdapterView.OnItemClickListener{
 
-    private static final String CONTINUOUSTYPE = "Contínuo";
     private static final String ALLTYPE = "Todos";
     private static final String ALARMTYPE = "Alarme";
     private static final String MOVIMENTTYPE = "Movimento";
     private static final String MANUALTYPE = "Manual";
+    private static final String REGULARTYPE = "Contínuo";
 
     private DeviceManager mManager;
     private ArrayList<FileData> allPlaybacks = new ArrayList<>();
@@ -147,11 +147,13 @@ public class DevicePlaybackActivity extends ActionBarActivity
                 playbackType.setText(selectedType);
 //                filterPlaybacks(selectedType);
                 int type = SDKCONST.FileType.SDK_RECORD_ALL;
-                if (selectedType.equals(CONTINUOUSTYPE)) {
+                if (selectedType.equals(ALARMTYPE)) {
                     type = SDKCONST.FileType.SDK_RECORD_ALARM;
                 } else if (selectedType.equals(MOVIMENTTYPE)) {
                     type = SDKCONST.FileType.SDK_RECORD_DETECT;
-                } else if (selectedType.equals(ALARMTYPE)) {
+                } else if (selectedType.equals(MANUALTYPE)) {
+                    type = SDKCONST.FileType.SDK_RECORD_MANUAL;
+                } else if (selectedType.equals(REGULARTYPE)) {
                     type = SDKCONST.FileType.SDK_RECORD_REGULAR;
                 }
                 String stringType = String.valueOf(type);

@@ -215,6 +215,7 @@ public class DeviceFormActivity extends ActionBarActivity{
                 return true;
             case R.id.action_save:
                 if(save()) {
+                    int id = mDevice.getId();
                     if(editPosition > -1){
                         deviceManager.logoutDevice(mDevice);
                         checkEdit();
@@ -225,7 +226,7 @@ public class DeviceFormActivity extends ActionBarActivity{
                         deviceManager.addDevice(mDevice, editPosition);
                         deviceManager.updateSurfaceViewManager(editPosition);
                         deviceManager.collapse = editPosition;
-                    } else if(deviceManager.findDeviceById(mDevice.getId()) != null) {
+                    } else if (deviceManager.findDeviceById(id) != null) {
                         Toast.makeText(this, "Dispositivo já adicionado.", Toast.LENGTH_SHORT).show();
 //                        deviceManager.logoutDevice(deviceManager.findDeviceById(mDevice.getId()));
 //                        startDeviceListActivity();

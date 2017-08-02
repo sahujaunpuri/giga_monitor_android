@@ -115,21 +115,23 @@ public class DeviceExpandableListAdapter extends BaseExpandableListAdapter {
 
     private GroupViewHolder initGroupViewHolder(final int groupPosition, View convertView, ViewGroup parent){
         GroupViewHolder groupViewHolder = new GroupViewHolder();
+//        try {
+            groupViewHolder.convertView = convertView;
+            groupViewHolder.blank = mInflater.inflate(R.layout.blank_layout, parent, false);
+            groupViewHolder.ivQuad = (ImageView) convertView.findViewById(R.id.iv_grid_list_device);
+            groupViewHolder.ivMore = (ImageView) convertView.findViewById(R.id.iv_device_more);
+            groupViewHolder.ivIndicator = (ImageView) convertView.findViewById(R.id.iv_indicator);
+            groupViewHolder.tvDeviceName = (TextView) convertView.findViewById(R.id.tv_hostname_list_device);
+            groupViewHolder.mDevice = mDevices.get(groupPosition);
+            groupViewHolder.position = groupPosition;
+            groupViewHolder.tvDeviceName.setText(groupViewHolder.mDevice.deviceName);
+            groupViewHolder.ivMore.setOnClickListener(createMoreListener(groupPosition));
+            groupViewHolder.ivQuad.setOnClickListener(createQuadListener(groupPosition));
 
-        groupViewHolder.convertView  = convertView;
-        groupViewHolder.blank        = mInflater.inflate(R.layout.blank_layout, parent, false);
-        groupViewHolder.ivQuad       = (ImageView) convertView.findViewById(R.id.iv_grid_list_device);
-        groupViewHolder.ivMore       = (ImageView) convertView.findViewById(R.id.iv_device_more);
-        groupViewHolder.ivIndicator  = (ImageView) convertView.findViewById(R.id.iv_indicator);
-        groupViewHolder.tvDeviceName = (TextView) convertView.findViewById(R.id.tv_hostname_list_device);
-        groupViewHolder.mDevice      = mDevices.get(groupPosition);
-        groupViewHolder.position    = groupPosition;
-        groupViewHolder.tvDeviceName.setText(groupViewHolder.mDevice.deviceName);
-        groupViewHolder.ivMore.setOnClickListener(createMoreListener(groupPosition));
-        groupViewHolder.ivQuad.setOnClickListener(createQuadListener(groupPosition));
-
-        this.groupViewHolder.add(groupViewHolder);
-
+            this.groupViewHolder.add(groupViewHolder);
+//        } catch (IndexOutOfBoundsException i) {
+//            i.printStackTrace();
+//        }
         return groupViewHolder;
     }
 
@@ -265,7 +267,8 @@ public class DeviceExpandableListAdapter extends BaseExpandableListAdapter {
 
     @Override
     public View getGroupView(final int groupPosition, final boolean isExpanded, View convertView, ViewGroup parent) {
-        if(convertView == null || groupViewHolder.size() <= groupPosition){
+
+        if (convertView == null || groupViewHolder.size() <= groupPosition) {
             convertView = mInflater.inflate(R.layout.expandable_list_view_row, parent, false);
             GroupViewHolder groupViewHolder = initGroupViewHolder(groupPosition, convertView, parent);
             groupViewHolder.blank.setTag(groupViewHolder);
@@ -273,8 +276,9 @@ public class DeviceExpandableListAdapter extends BaseExpandableListAdapter {
             childViewHolder.add(new ChildViewHolder());
         }
         GroupViewHolder groupViewHolder = (GroupViewHolder) convertView.getTag();
-        if(groupViewHolder.position != groupPosition)
+        if (groupViewHolder.position != groupPosition) {
             groupViewHolder = this.groupViewHolder.get(groupPosition);
+        }
         if((mContext.getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE && DeviceListActivity.previousGroup != -1)){
             return groupViewHolder.blank;
         } else {

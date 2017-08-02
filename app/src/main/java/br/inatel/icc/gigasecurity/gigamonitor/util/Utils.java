@@ -171,13 +171,13 @@ public class Utils {
                 return "Todos";
             case SDKCONST.FileType.SDK_RECORD_ALARM:
                 //return "Record Alarm";
-                return "Contínuo";
+                return "Alarme";
             case SDKCONST.FileType.SDK_RECORD_DETECT:
                 //return "Record Detect";
                 return "Movimento";
             case SDKCONST.FileType.SDK_RECORD_REGULAR:
                 //return "Record Regular";
-                return "Regular";
+                return "Contínuo";
             case SDKCONST.FileType.SDK_RECORD_MANUAL:
                 //return "Record Manual";
                 return "Manual";
@@ -276,16 +276,25 @@ public class Utils {
             int pos = fileName.indexOf('[');
             if (pos > 0 && pos < fileName.length()) {
                 String type = fileName.substring(pos + 1, pos + 2);
-                if (type.equals("A"))
-                    fileType = SDKCONST.VidoFileType.VI_DETECT;
-                else if (type.equals("M"))
-                    fileType = SDKCONST.VidoFileType.VI_MANUAL;
-                else if (type.equals("R"))
-                    fileType = SDKCONST.VidoFileType.VI_MANUAL;
-                else if (type.equals("H"))
-                    fileType = SDKCONST.VidoFileType.VI_REGULAR;
-                else if (type.equals("K"))
-                    fileType = SDKCONST.VidoFileType.VI_KEY;
+//                if (type.equals("A"))
+//                    fileType = SDKCONST.VidoFileType.VI_DETECT;
+//                else if (type.equals("M"))
+//                    fileType = SDKCONST.VidoFileType.VI_MANUAL;
+//                else if (type.equals("R"))
+//                    fileType = SDKCONST.VidoFileType.VI_MANUAL;
+//                else if (type.equals("H"))
+//                    fileType = SDKCONST.VidoFileType.VI_REGULAR;
+//                else if (type.equals("K"))
+//                    fileType = SDKCONST.VidoFileType.VI_KEY;
+                if (type.equals("A")) {
+                    fileType = SDKCONST.FileType.SDK_RECORD_ALARM;
+                } else if (type.equals("M")) {
+                    fileType = SDKCONST.FileType.SDK_RECORD_DETECT;
+                } else if (type.equals("R")) {
+                    fileType = SDKCONST.FileType.SDK_RECORD_REGULAR;
+                } else if (type.equals("H")) {
+                    fileType = SDKCONST.FileType.SDK_RECORD_MANUAL;
+                }
             }
         } else if (fileName.endsWith(".jpg")) {
             int pos = fileName.indexOf('[');

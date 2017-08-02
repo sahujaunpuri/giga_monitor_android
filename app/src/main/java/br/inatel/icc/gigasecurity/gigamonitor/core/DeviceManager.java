@@ -64,6 +64,7 @@ import br.inatel.icc.gigasecurity.gigamonitor.util.OPCompressPic;
 import br.inatel.icc.gigasecurity.gigamonitor.util.Utils;
 
 import static android.content.Context.MODE_PRIVATE;
+import static br.inatel.icc.gigasecurity.gigamonitor.activities.DeviceListActivity.mDevices;
 import static br.inatel.icc.gigasecurity.gigamonitor.activities.DeviceListActivity.previousGroup;
 
 /**
@@ -918,6 +919,20 @@ public class DeviceManager implements IFunSDKResult{
         return null;
     }
 
+    public boolean verifyIfDeviceExists(Device device) {
+        boolean exist = false;
+        for (Device dev: mDevices) {
+            if (dev.getSerialNumber() != null && device.getSerialNumber() != null && dev.getSerialNumber().equals(device.getSerialNumber())) {
+                exist = true;
+                break;
+            } else if (dev.getDomain() != null && device.getDomain() != null && dev.getDomain().equals(device.getDomain()) && dev.getExternalPort() == device.getExternalPort()) {
+                exist = true;
+                break;
+            }
+        }
+        return exist;
+    }
+
     public ArrayList<Device> getLanDevices(){
         return mLanDevices;
     }
@@ -1477,9 +1492,13 @@ public class DeviceManager implements IFunSDKResult{
                 } else{
 //                    if(msgContent != null && msgContent.str.equals("Uart.PTZ"))
 //                        break;
-                    Device device = findDeviceById(msgContent.seq);
-                    FunSDK.DevGetConfigByJson(getHandler(), device.connectionString, msgContent.str, 4096, -1, 10000, device.getId());
-                    Log.d(TAG, "OnFunSDKResult: GETCONFIGJSON ERROR");
+                    try {
+                        Device device = findDeviceById(msgContent.seq);
+                        FunSDK.DevGetConfigByJson(getHandler(), device.connectionString, msgContent.str, 4096, -1, 10000, device.getId());
+                        Log.d(TAG, "OnFunSDKResult: GETCONFIGJSON ERROR");
+                    } catch (NullPointerException e) {
+                        e.printStackTrace();
+                    }
                 }
             }
             break;

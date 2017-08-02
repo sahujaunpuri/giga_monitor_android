@@ -81,15 +81,15 @@ public class DeviceListActivity extends ActionBarActivity {
                     previousGroup = groupPosition;
                     parent.expandGroup(groupPosition, true);
                     return true;
-                }else if(mDeviceManager.getDeviceChannelsManagers().get(previousGroup).recCounter > 0){
+                } else if (mDeviceManager.getDeviceChannelsManagers().get(previousGroup).recCounter > 0) {
                     Toast.makeText(mContext, "Finalize a gravação", Toast.LENGTH_SHORT).show();
                     return true;
-                }else if(previousGroup == groupPosition){
+                } else if(previousGroup == groupPosition){
                     /*parent.collapseGroup(previousGroup);
                     previousGroup = -1;*/
                     Log.d(TAG, "onGroupClick: ");
                     return true;
-                }else {
+                } else {
                     parent.collapseGroup(previousGroup);
                     parent.expandGroup(groupPosition, true);
                     previousGroup = groupPosition;

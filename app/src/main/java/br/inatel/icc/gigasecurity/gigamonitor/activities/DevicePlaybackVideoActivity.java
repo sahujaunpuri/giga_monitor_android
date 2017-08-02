@@ -199,8 +199,8 @@ public class DevicePlaybackVideoActivity extends ActionBarActivity {
                         Toast.makeText(mActivity, "Pare a gravação para avançar!", Toast.LENGTH_SHORT).show();
                     } else {
                         //                    mSurfaceView.setVisibility(View.INVISIBLE);
-                        mSurfaceView.isSeeking = true;
                         mDeviceChannelsManager.onStop(mSurfaceView);
+                        mSurfaceView.isSeeking = true;
                         //                    seekBarTextView.setVisibility(View.VISIBLE);
                         playbackLayout.addView(seekBarTextView);
                         thumbnail = new ImageView(mActivity);
@@ -219,7 +219,6 @@ public class DevicePlaybackVideoActivity extends ActionBarActivity {
                     seekBarTextView.startAnimation(animationFadeIn);
 
                     setPlaybackProgress(currentBar);
-//                    seekBarTextView.setVisibility(View.GONE);
                     playbackLayout.removeView(seekBarTextView);
 //                    playbackLayout.removeView(thumbnail);
 //                    thumbnail.setVisibility(View.GONE);
