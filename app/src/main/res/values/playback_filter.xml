@@ -7,5 +7,6 @@
         <item>Contínuo</item>
         <item>Alarme</item>
         <item>Movimento</item>
+        <item>Manual</item>
     </string-array>
 </resources>

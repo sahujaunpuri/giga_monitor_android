@@ -53,7 +53,6 @@ import br.inatel.icc.gigasecurity.gigamonitor.util.Utils;
 public class DevicePlaybackActivity extends ActionBarActivity
         implements AdapterView.OnItemClickListener{
 
-    private static final String ALLTYPE = "Todos";
     private static final String ALARMTYPE = "Alarme";
     private static final String MOVIMENTTYPE = "Movimento";
     private static final String MANUALTYPE = "Manual";
@@ -145,7 +144,6 @@ public class DevicePlaybackActivity extends ActionBarActivity
             public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
                 String selectedType = spinner.getSelectedItem().toString();
                 playbackType.setText(selectedType);
-//                filterPlaybacks(selectedType);
                 int type = SDKCONST.FileType.SDK_RECORD_ALL;
                 if (selectedType.equals(ALARMTYPE)) {
                     type = SDKCONST.FileType.SDK_RECORD_ALARM;
@@ -171,8 +169,6 @@ public class DevicePlaybackActivity extends ActionBarActivity
     public void setDateButtonText(Date date) {
         tvDate.setText(new SimpleDateFormat("dd/MM/yyyy").format(date));
     }
-
-
 
     private void showDatePicker() {
         DatePickerFragment fragment = new DatePickerFragment();
