@@ -123,6 +123,7 @@ public class DevicePlaybackVideoActivity extends ActionBarActivity {
             new PlaybackListener() {
                 @Override
                 public void onComplete() {
+                    Log.e("PlaybackListener", "Complete");
                     stopButtonClick();
                 }
 
@@ -298,7 +299,7 @@ public class DevicePlaybackVideoActivity extends ActionBarActivity {
 
         // Find views
         playbackLayout = (RelativeLayout) findViewById(R.id.playback_relative_layout);
-        mSurfaceView = (SurfaceViewComponent) findViewById(R.id.surface_view_test_1);
+        mSurfaceView = (SurfaceViewComponent) findViewById(R.id.surface_view_test_2);
         mProgressBar = (ProgressBar) findViewById(R.id.pb_playback);
         playbackControls = (LinearLayout) findViewById(R.id.view_playback_controls);
         playbackStatus = (LinearLayout) findViewById(R.id.view_playback_status);
@@ -559,12 +560,14 @@ public class DevicePlaybackVideoActivity extends ActionBarActivity {
 
     private void startRecordingPlayback() {
         String playbackRecordName = actualTime();
+        mSurfaceView.setREC(true);
         mDeviceChannelsManager.startRecord(mSurfaceView, playbackRecordName);
         changeToRedRecordIcon(true);
         mSeekBar.setEnabled(false);
     }
 
     private void stopRecordingPlayback() {
+        mSurfaceView.setREC(false);
         mDeviceChannelsManager.stopRecord(mSurfaceView);
         changeToRedRecordIcon(false);
         mSeekBar.setEnabled(true);

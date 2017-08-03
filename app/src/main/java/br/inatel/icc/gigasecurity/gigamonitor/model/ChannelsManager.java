@@ -335,7 +335,7 @@ public abstract class ChannelsManager implements IFunSDKResult {
         }
     }
 
-    public void onPlayPlayback(H264_DVR_FILE_DATA file, SurfaceViewComponent svc){
+    public void onPlayPlayback(H264_DVR_FILE_DATA file, final SurfaceViewComponent svc) {
         fileToStart = file;
         svc.mPlayerHandler = FunSDK.MediaNetRecordPlay(mUserID, svc.deviceConnection, G.ObjToBytes(file), svc.mySurfaceView, 0);
     }
@@ -353,7 +353,7 @@ public abstract class ChannelsManager implements IFunSDKResult {
         }
     }
 
-    public void setCurrentPlaybackListener(PlaybackListener listener){
+    public void setCurrentPlaybackListener(PlaybackListener listener) {
         this.currentPlaybackListener = listener;
     }
 
@@ -568,9 +568,10 @@ public abstract class ChannelsManager implements IFunSDKResult {
                 if(msg.arg1 == 0){
                     try {
                         SurfaceViewComponent svc = findSurfaceByHandler(msgContent.sender);
-//                        File file = new File(svc.recordFileName);
-                        File file = new File(msgContent.str);
+                        File file = new File(svc.recordFileName);
+//                        File file = new File(msgContent.str);
                         svc.isREC = false;
+
                         if (file.length() > 1000) {
                             String message = null;
                             if (svc.playType == 0) {
@@ -621,13 +622,13 @@ public abstract class ChannelsManager implements IFunSDKResult {
             break;
             case EUIMSG.ON_PLAY_END: {
                 SurfaceViewComponent svc = findSurfaceByHandler(msgContent.sender);
-                if(svc != null && svc.playType == 1 && !svc.isSeeking){
+                if(svc != null && svc.playType == 1 && !svc.isSeeking) {
                     currentPlaybackListener.onComplete();
                 }
             }
             case EUIMSG.SEEK_TO_POS: {
                 SurfaceViewComponent svc = findSurfaceByHandler(msgContent.sender);
-                if(msg.arg1 == 0 && svc != null){
+                if(msg.arg1 == 0 && svc != null) {
                     svc.seekPercentage = 0;
                 }
             }
