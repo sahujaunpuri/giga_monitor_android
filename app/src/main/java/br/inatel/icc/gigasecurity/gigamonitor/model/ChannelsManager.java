@@ -323,14 +323,14 @@ public abstract class ChannelsManager implements IFunSDKResult {
         if(svc.isConnected()) {
             recCounter++;
             svc.recordFileName = Environment.getExternalStorageDirectory().getPath() + "/Movies/Giga Monitor/" + archiveName + ".mp4";
-            FunSDK.MediaStartRecord(svc.mPlayerHandler, svc.recordFileName, 0);
+            FunSDK.MediaStartRecord(svc.mPlayerHandler, svc.recordFileName, 33);
             svc.isREC = true;
         }
     }
 
     public void stopRecord(SurfaceViewComponent svc) {
         if(svc.isConnected()) {
-            FunSDK.MediaStopRecord(svc.mPlayerHandler, 0);
+            FunSDK.MediaStopRecord(svc.mPlayerHandler, 33);
             recCounter--;
         }
     }
@@ -474,6 +474,8 @@ public abstract class ChannelsManager implements IFunSDKResult {
                         svc.setConnected(true);
                         if (svc.playType == 0) {
                             mDeviceManager.requestStart();
+                        } else if (svc.isSeeking) {
+                            currentPlaybackListener.onCompleteSeek();
                         }
                         Log.i(TAG, "START SUCCESS " + (svc.getMySurfaceViewChannelId()+1));
                     } else {

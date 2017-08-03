@@ -143,6 +143,7 @@ public class DevicePlaybackVideoActivity extends ActionBarActivity {
 
                 @Override
                 public void onCompleteSeek() {
+                    Log.e("Seek", "Completed");
                     mSurfaceView.isSeeking = false;
                 }
 
@@ -219,7 +220,6 @@ public class DevicePlaybackVideoActivity extends ActionBarActivity {
                     final Animation animationFadeIn = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.abc_slide_out_top);
                     seekBarTextView.startAnimation(animationFadeIn);
 
-                    setPlaybackProgress(currentBar);
                     playbackLayout.removeView(seekBarTextView);
 //                    playbackLayout.removeView(thumbnail);
 //                    thumbnail.setVisibility(View.GONE);
@@ -231,6 +231,7 @@ public class DevicePlaybackVideoActivity extends ActionBarActivity {
                             mProgressBar.setVisibility(View.VISIBLE);
                         }
                     });
+                    setPlaybackProgress(currentBar);
                 }
             };
 
@@ -617,6 +618,9 @@ public class DevicePlaybackVideoActivity extends ActionBarActivity {
     }
 
     private void startMediasActivity() {
+        if (mSurfaceView.isConnected() && mSurfaceView.isPlaying()) {
+            stopButtonClick();
+        }
         Intent intent = new Intent(this, MediaActivity.class);
         startActivity(intent);
     }
