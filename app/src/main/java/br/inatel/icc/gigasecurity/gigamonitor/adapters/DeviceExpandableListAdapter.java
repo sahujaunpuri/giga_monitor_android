@@ -669,9 +669,9 @@ public class DeviceExpandableListAdapter extends BaseExpandableListAdapter {
     public void stopActions() {
         for (int position=0; position<childViewHolder.size(); position++) {
             for (SurfaceViewComponent svc : mDeviceManager.getDeviceChannelsManagers().get(position).surfaceViewComponents) {
-                if (svc.isConnected()) {
+//                if (svc.isConnected()) {
                     mDeviceManager.getDeviceChannelsManagers().get(position).stopActions();
-                }
+//                }
             }
         }
     }

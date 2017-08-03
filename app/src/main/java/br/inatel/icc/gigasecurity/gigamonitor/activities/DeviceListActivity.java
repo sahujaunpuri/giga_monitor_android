@@ -10,6 +10,7 @@ import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.os.StrictMode;
 import android.support.v7.app.ActionBarActivity;
+import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -33,7 +34,7 @@ import br.inatel.icc.gigasecurity.gigamonitor.model.StatePreferences;
 import br.inatel.icc.gigasecurity.gigamonitor.ui.SurfaceViewComponent;
 import io.fabric.sdk.android.Fabric;
 
-public class DeviceListActivity extends ActionBarActivity {
+public class DeviceListActivity extends AppCompatActivity {
     private final String TAG = "MainActivity";
     public static Context mContext;
     public static ExpandableListView mExpandableListView;

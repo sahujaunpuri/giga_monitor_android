@@ -4,8 +4,10 @@ import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
+import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewConfiguration;
 import android.widget.GridView;
@@ -16,7 +18,7 @@ import android.widget.Toast;
 import br.inatel.icc.gigasecurity.gigamonitor.R;
 import br.inatel.icc.gigasecurity.gigamonitor.adapters.MediaGridAdapter;
 
-public class MediaActivity extends ActionBarActivity {
+public class MediaActivity extends AppCompatActivity {
 
     public static GridView gvMedia;
     public static MediaGridAdapter mAdapter;
@@ -43,6 +45,19 @@ public class MediaActivity extends ActionBarActivity {
         gvMedia.setAdapter(mAdapter);
 
         gvMedia.setFriction(ViewConfiguration.getScrollFriction() * 10);
+
+        gvMedia.setVerticalScrollBarEnabled(false);
+
+        gvMedia.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                if (mAdapter.selectItems) {
+                    return true;
+                } else {
+                    return false;
+                }
+            }
+        });
 
         ivImage.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -183,7 +198,5 @@ public class MediaActivity extends ActionBarActivity {
         }
         return super.onOptionsItemSelected(item);
     }
-
-
 
 }
