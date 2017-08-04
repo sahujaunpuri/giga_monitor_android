@@ -205,7 +205,7 @@ public class OverlayMenu extends RelativeLayout {
             @Override
             public void onClick(View v) {
                 if(!surfaceViewComponent.isPlaying) {
-                    Toast.makeText(mContext, "Vídeo parado", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(mContext, getResources().getString(R.string.playback_running), Toast.LENGTH_SHORT).show();
                 } else if(!surfaceViewComponent.isREC()){
                     surfaceViewComponent.setREC(true);
                     mDeviceManager.channelOnRec = true;

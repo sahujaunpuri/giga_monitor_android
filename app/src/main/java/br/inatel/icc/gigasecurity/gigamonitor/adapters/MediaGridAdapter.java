@@ -31,6 +31,7 @@ import java.util.Date;
 
 import br.inatel.icc.gigasecurity.gigamonitor.R;
 import br.inatel.icc.gigasecurity.gigamonitor.activities.MediaActivity;
+import br.inatel.icc.gigasecurity.gigamonitor.core.DeviceManager;
 
 //import wseemann.media.FFmpegMediaMetadataRetriever;
 
@@ -40,6 +41,7 @@ import br.inatel.icc.gigasecurity.gigamonitor.activities.MediaActivity;
 public class MediaGridAdapter extends BaseAdapter {
 
     private Context mContext;
+    private DeviceManager mDeviceManager;
     private LayoutInflater mInflater;
     private ArrayList<File> mImageFiles;
     private ArrayList<File> mVideoFiles;
@@ -64,6 +66,7 @@ public class MediaGridAdapter extends BaseAdapter {
 
     public MediaGridAdapter(Context mContext) {
         this.mContext = mContext;
+        this.mDeviceManager = DeviceManager.getInstance();
         this.mInflater = LayoutInflater.from(mContext);
         this.pictureMode = true;
 
@@ -73,6 +76,8 @@ public class MediaGridAdapter extends BaseAdapter {
         mImgDrawables = new ArrayList<>();
         tridToGetImgThumbnail = new ArrayList<>();
 
+//        mVideoDrawables = mDeviceManager.getImages();
+//        tridToGetVideoThumbnail = mDeviceManager.getImagesBoolean();
         mVideoDrawables = new ArrayList<>();
         tridToGetVideoThumbnail = new ArrayList<>();
 
@@ -227,7 +232,7 @@ public class MediaGridAdapter extends BaseAdapter {
             if (mVideoDrawables.get(position) != null) {
                 fVideoView.setText("");
                 fVideoView.setBackground(mVideoDrawables.get(position));
-            }  else {
+            } else {
                 fVideoView.setBackground(blankDrawable);
                 fVideoView.setText(mVideoFiles.get(position).getName().substring(0, 19).replace("_", ":"));
                 fVideoView.setGravity(Gravity.CENTER_VERTICAL | Gravity.CENTER_HORIZONTAL);
@@ -412,6 +417,7 @@ public class MediaGridAdapter extends BaseAdapter {
             mVideoUris.remove(position);
             mVideoDrawables.remove(position);
             tridToGetVideoThumbnail.remove(position);
+//            mDeviceManager.deleteImage(position);
         }
         notifyDataSetChanged();
     }

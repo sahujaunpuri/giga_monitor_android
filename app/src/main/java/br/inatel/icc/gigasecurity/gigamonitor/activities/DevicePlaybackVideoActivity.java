@@ -1,41 +1,27 @@
 package br.inatel.icc.gigasecurity.gigamonitor.activities;
 
-import android.animation.Animator;
 import android.animation.AnimatorSet;
 import android.animation.ObjectAnimator;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.pm.ActivityInfo;
 import android.content.res.Configuration;
 import android.content.res.Resources;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.graphics.Color;
-import android.graphics.drawable.BitmapDrawable;
-import android.graphics.drawable.ShapeDrawable;
-import android.graphics.drawable.shapes.RectShape;
-import android.media.Image;
 import android.net.Uri;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarActivity;
-import android.text.format.Time;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.Gravity;
-import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
-import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
@@ -43,7 +29,6 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
-import android.widget.ScrollView;
 import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -53,13 +38,8 @@ import com.google.android.gms.appindexing.Action;
 import com.google.android.gms.appindexing.AppIndex;
 import com.google.android.gms.appindexing.Thing;
 import com.google.android.gms.common.api.GoogleApiClient;
-import com.lib.FunSDK;
-import com.lib.SDKCONST;
-import com.lib.sdk.bean.OPCompressPicBean;
 import com.lib.sdk.struct.H264_DVR_FILE_DATA;
-import com.lib.sdk.struct.H264_DVR_FINDINFO;
 import com.lib.sdk.struct.SDK_SYSTEM_TIME;
-import com.lib.sdk.struct.SDK_SearchByTime;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -69,7 +49,6 @@ import java.util.Date;
 import java.util.concurrent.TimeUnit;
 
 import br.inatel.icc.gigasecurity.gigamonitor.R;
-import br.inatel.icc.gigasecurity.gigamonitor.adapters.DeviceExpandableListAdapter;
 import br.inatel.icc.gigasecurity.gigamonitor.core.DeviceManager;
 import br.inatel.icc.gigasecurity.gigamonitor.listeners.DownloadPlaybackListener;
 import br.inatel.icc.gigasecurity.gigamonitor.listeners.PlaybackListener;
@@ -78,8 +57,6 @@ import br.inatel.icc.gigasecurity.gigamonitor.model.Device;
 import br.inatel.icc.gigasecurity.gigamonitor.model.FileData;
 import br.inatel.icc.gigasecurity.gigamonitor.model.DeviceChannelsManager;
 import br.inatel.icc.gigasecurity.gigamonitor.ui.SurfaceViewComponent;
-import br.inatel.icc.gigasecurity.gigamonitor.util.OPCompressPic;
-import br.inatel.icc.gigasecurity.gigamonitor.util.Utils;
 
 public class DevicePlaybackVideoActivity extends ActionBarActivity {
 
@@ -297,6 +274,8 @@ public class DevicePlaybackVideoActivity extends ActionBarActivity {
         mDevice = DeviceManager.getInstance().findDeviceById(deviceID);
         mFileData = (FileData) extras.getSerializable("fileData");
         mDeviceChannelsManager = new DeviceChannelsManager(mDevice);
+
+        mSurfaceView = mDeviceChannelsManager.surfaceViewComponents.get(0);
 
         // Find views
         playbackLayout = (RelativeLayout) findViewById(R.id.playback_relative_layout);

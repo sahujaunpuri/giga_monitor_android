@@ -3,6 +3,10 @@ package br.inatel.icc.gigasecurity.gigamonitor.model;
 import android.app.Activity;
 import android.content.Context;
 import android.content.res.Configuration;
+import android.graphics.Bitmap;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
+import android.media.MediaMetadataRetriever;
 import android.os.Environment;
 import android.os.Message;
 import android.util.Log;
@@ -11,6 +15,7 @@ import android.widget.FrameLayout;
 import android.widget.Toast;
 
 import com.basic.G;
+import com.lib.EFUN_ERROR;
 import com.lib.EPTZCMD;
 import com.lib.EUIMSG;
 import com.lib.FunSDK;
@@ -37,6 +42,7 @@ import br.inatel.icc.gigasecurity.gigamonitor.core.DeviceManager;
 import br.inatel.icc.gigasecurity.gigamonitor.listeners.PlaybackListener;
 import br.inatel.icc.gigasecurity.gigamonitor.task.AudioRecordThread;
 import br.inatel.icc.gigasecurity.gigamonitor.ui.SurfaceViewComponent;
+import br.inatel.icc.gigasecurity.gigamonitor.util.FunLog;
 import br.inatel.icc.gigasecurity.gigamonitor.util.Utils;
 
 
@@ -319,25 +325,25 @@ public abstract class ChannelsManager implements IFunSDKResult {
         }
     }
 
-    public void startRecord(SurfaceViewComponent svc, String archiveName) {
+    public void startRecord(SurfaceViewComponent svc, final String archiveName) {
         if(svc.isConnected()) {
             recCounter++;
             svc.recordFileName = Environment.getExternalStorageDirectory().getPath() + "/Movies/Giga Monitor/" + archiveName + ".mp4";
-            FunSDK.MediaStartRecord(svc.mPlayerHandler, svc.recordFileName, 33);
+            FunSDK.MediaStartRecord(svc.mPlayerHandler, svc.recordFileName, 0);
             svc.isREC = true;
         }
     }
 
-    public void stopRecord(SurfaceViewComponent svc) {
+    public void stopRecord(final SurfaceViewComponent svc) {
         if(svc.isConnected()) {
-            FunSDK.MediaStopRecord(svc.mPlayerHandler, 33);
+            FunSDK.MediaStopRecord(svc.mPlayerHandler, 0);
             recCounter--;
         }
     }
 
-    public void onPlayPlayback(H264_DVR_FILE_DATA file, final SurfaceViewComponent svc) {
+    public void onPlayPlayback(final H264_DVR_FILE_DATA file, SurfaceViewComponent svc) {
         fileToStart = file;
-        svc.mPlayerHandler = FunSDK.MediaNetRecordPlay(mUserID, svc.deviceConnection, G.ObjToBytes(file), svc.mySurfaceView, 0);
+        svc.mPlayerHandler = FunSDK.MediaNetRecordPlay(mUserID, svc.deviceConnection, G.ObjToBytes(fileToStart), svc.mySurfaceView, 0);
     }
 
     public void seekByTime(int absTime, SurfaceViewComponent svc) {
@@ -430,8 +436,9 @@ public abstract class ChannelsManager implements IFunSDKResult {
                 }
             }
         }
-        if(found == null)
+        if(found == null) {
             Log.d(TAG, "findSurfaceByHandler: Surface not Found");
+        }
         return found;
     }
 
@@ -581,6 +588,7 @@ public abstract class ChannelsManager implements IFunSDKResult {
                             } else {
                                 message = mContext.getResources().getString(R.string.playback_record_message);
                             }
+//                            mDeviceManager.saveImage(svc.recordFileName);
                             Toast.makeText(mContext, message, Toast.LENGTH_SHORT).show();
                             if (svc.stoppingRec) {
                                 onStop(svc);
