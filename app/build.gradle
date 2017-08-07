@@ -6,7 +6,7 @@ android {
 
     defaultConfig {
         applicationId "br.inatel.icc.gigasecurity.gigamonitor"
-        minSdkVersion 14
+        minSdkVersion 16
         targetSdkVersion 21
         versionCode 6
         versionName "1.0.4b"

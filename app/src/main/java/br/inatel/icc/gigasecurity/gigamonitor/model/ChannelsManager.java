@@ -11,6 +11,7 @@ import android.os.Environment;
 import android.os.Message;
 import android.util.Log;
 import android.view.Gravity;
+import android.view.Surface;
 import android.widget.FrameLayout;
 import android.widget.Toast;
 
@@ -42,7 +43,9 @@ import br.inatel.icc.gigasecurity.gigamonitor.core.DeviceManager;
 import br.inatel.icc.gigasecurity.gigamonitor.listeners.PlaybackListener;
 import br.inatel.icc.gigasecurity.gigamonitor.task.AudioRecordThread;
 import br.inatel.icc.gigasecurity.gigamonitor.ui.SurfaceViewComponent;
-import br.inatel.icc.gigasecurity.gigamonitor.util.FunLog;
+//import br.inatel.icc.gigasecurity.gigamonitor.util.FunLog;
+//import br.inatel.icc.gigasecurity.gigamonitor.util.MediaConverter;
+import br.inatel.icc.gigasecurity.gigamonitor.util.MediaConverter;
 import br.inatel.icc.gigasecurity.gigamonitor.util.Utils;
 
 
@@ -457,6 +460,10 @@ public abstract class ChannelsManager implements IFunSDKResult {
         }
     }
 
+    private void convertVideoIfHardwareIsDown(String path) {
+        MediaConverter media = new MediaConverter(getMySurfaceView(0), path);
+    }
+
     /** Async return from SDK**/
     @Override
     public int OnFunSDKResult(Message msg, MsgContent msgContent) {
@@ -588,7 +595,7 @@ public abstract class ChannelsManager implements IFunSDKResult {
                             } else {
                                 message = mContext.getResources().getString(R.string.playback_record_message);
                             }
-//                            mDeviceManager.saveImage(svc.recordFileName);
+                            convertVideoIfHardwareIsDown(svc.recordFileName);
                             Toast.makeText(mContext, message, Toast.LENGTH_SHORT).show();
                             if (svc.stoppingRec) {
                                 onStop(svc);
