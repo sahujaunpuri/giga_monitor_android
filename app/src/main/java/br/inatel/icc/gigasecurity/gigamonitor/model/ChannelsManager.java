@@ -6,9 +6,12 @@ import android.content.res.Configuration;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
+import android.media.MediaCodec;
+import android.media.MediaFormat;
 import android.media.MediaMetadataRetriever;
 import android.os.Environment;
 import android.os.Message;
+import android.provider.MediaStore;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.Surface;
@@ -27,6 +30,7 @@ import com.lib.sdk.struct.H264_DVR_FILE_DATA;
 import com.video.opengl.GLSurfaceView20;
 
 import java.io.File;
+import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -461,7 +465,18 @@ public abstract class ChannelsManager implements IFunSDKResult {
     }
 
     private void convertVideoIfHardwareIsDown(String path) {
-        MediaConverter media = new MediaConverter(getMySurfaceView(0), path);
+//        MediaConverter media = new MediaConverter(mContext);
+//        String[] command = {"-y", "-i", path, "-s", "160x120", "-r", "25", "-vcodec", "mpeg4", "-b:v", "150k", "-b:a", "48000", "-ac", "2", "-ar", "22050", path};
+//        media.execFFmpegBinary(command);
+//        try {
+//            MediaCodec codec = MediaCodec.createByCodecName(path);
+//            MediaFormat videoFormat = MediaFormat.createVideoFormat(MediaFormat.MIMETYPE_AUDIO_MPEG, 720, 480);
+//            codec.configure(videoFormat'    ');
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//        }
+//        MediaConverter media = new MediaConverter();
+//        media.convertVideo(path, path, null);
     }
 
     /** Async return from SDK**/

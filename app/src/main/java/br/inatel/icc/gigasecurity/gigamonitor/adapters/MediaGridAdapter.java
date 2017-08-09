@@ -268,14 +268,18 @@ public class MediaGridAdapter extends BaseAdapter {
             @Override
             public void onClick(View v) {
                 if (!selectItems) {
-                    Intent intent = new Intent();
-                    intent.setAction(Intent.ACTION_VIEW);
-                    if (pictureMode) {
-                        intent.setDataAndType(getImageUri(position), "image/*");
-                    } else {
-                        intent.setDataAndType(getVideoUri(position), "video/*");
+                    try {
+                        Intent intent = new Intent();
+                        intent.setAction(Intent.ACTION_VIEW);
+                        if (pictureMode) {
+                            intent.setDataAndType(getImageUri(position), "image/*");
+                        } else {
+                            intent.setDataAndType(getVideoUri(position), "video/*");
+                        }
+                        mContext.startActivity(intent);
+                    } catch (Exception e) {
+                        e.printStackTrace();
                     }
-                    mContext.startActivity(intent);
                 } else {
                     Drawable draw = getDrawable(position);
                     setImgDrawable(v, draw);
