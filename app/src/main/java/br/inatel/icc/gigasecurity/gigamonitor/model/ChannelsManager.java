@@ -6,19 +6,27 @@ import android.content.res.Configuration;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
+import android.media.CamcorderProfile;
 import android.media.MediaCodec;
 import android.media.MediaFormat;
 import android.media.MediaMetadataRetriever;
+import android.media.MediaMuxer;
+import android.media.MediaPlayer;
+import android.net.Uri;
 import android.os.Environment;
 import android.os.Message;
 import android.provider.MediaStore;
 import android.util.Log;
+import android.view.Display;
 import android.view.Gravity;
 import android.view.Surface;
 import android.widget.FrameLayout;
 import android.widget.Toast;
+import android.widget.VideoView;
 
 import com.basic.G;
+import com.google.android.gms.cast.MediaInfo;
+import com.google.android.gms.common.images.Size;
 import com.lib.EFUN_ERROR;
 import com.lib.EPTZCMD;
 import com.lib.EUIMSG;
@@ -38,6 +46,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.GregorianCalendar;
+import java.util.List;
 import java.util.Locale;
 
 import br.inatel.icc.gigasecurity.gigamonitor.R;
@@ -465,18 +474,24 @@ public abstract class ChannelsManager implements IFunSDKResult {
     }
 
     private void convertVideoIfHardwareIsDown(String path) {
-//        MediaConverter media = new MediaConverter(mContext);
-//        String[] command = {"-y", "-i", path, "-s", "160x120", "-r", "25", "-vcodec", "mpeg4", "-b:v", "150k", "-b:a", "48000", "-ac", "2", "-ar", "22050", path};
-//        media.execFFmpegBinary(command);
-//        try {
-//            MediaCodec codec = MediaCodec.createByCodecName(path);
-//            MediaFormat videoFormat = MediaFormat.createVideoFormat(MediaFormat.MIMETYPE_AUDIO_MPEG, 720, 480);
-//            codec.configure(videoFormat'    ');
-//        } catch (IOException e) {
-//            e.printStackTrace();
+//        MediaMetadataRetriever retriever = new MediaMetadataRetriever();
+//        retriever.setDataSource(path);
+//        int width = Integer.valueOf(retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_VIDEO_WIDTH));
+//        int height = Integer.valueOf(retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_VIDEO_HEIGHT));
+//        retriever.release();
+//        CamcorderProfile camcorderProfile = CamcorderProfile.get(CamcorderProfile.QUALITY_HIGH);
+//        Log.e("WIDTH", String.valueOf(camcorderProfile.videoFrameWidth));
+//        Log.e("HEIGHT", String.valueOf(camcorderProfile.videoFrameHeight));
+//        if (width > 1280 && height > 720 && deviceHasLowHardware()) {
+//
 //        }
-//        MediaConverter media = new MediaConverter();
-//        media.convertVideo(path, path, null);
+
+    }
+
+    private boolean deviceHasLowHardware() {
+        boolean lowHardware = false;
+
+        return lowHardware;
     }
 
     /** Async return from SDK**/

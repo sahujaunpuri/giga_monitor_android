@@ -11,6 +11,7 @@ import android.media.MediaMetadataRetriever;
 import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.AsyncTask;
+import android.os.Bundle;
 import android.os.Environment;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -31,6 +32,7 @@ import java.util.Date;
 
 import br.inatel.icc.gigasecurity.gigamonitor.R;
 import br.inatel.icc.gigasecurity.gigamonitor.activities.MediaActivity;
+import br.inatel.icc.gigasecurity.gigamonitor.activities.MediaVideoActivity;
 import br.inatel.icc.gigasecurity.gigamonitor.core.DeviceManager;
 
 //import wseemann.media.FFmpegMediaMetadataRetriever;
@@ -275,6 +277,11 @@ public class MediaGridAdapter extends BaseAdapter {
                             intent.setDataAndType(getImageUri(position), "image/*");
                         } else {
                             intent.setDataAndType(getVideoUri(position), "video/*");
+//                            Bundle extras = new Bundle();
+//                            extras.putSerializable("mediaPath", getVideoUri(position).toString());
+//
+//                            intent = new Intent(mContext, MediaVideoActivity.class);
+//                            intent.putExtras(extras);
                         }
                         mContext.startActivity(intent);
                     } catch (Exception e) {
