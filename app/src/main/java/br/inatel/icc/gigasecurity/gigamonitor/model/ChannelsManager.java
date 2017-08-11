@@ -2,6 +2,7 @@ package br.inatel.icc.gigasecurity.gigamonitor.model;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.content.res.Configuration;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
@@ -13,6 +14,8 @@ import android.media.MediaMetadataRetriever;
 import android.media.MediaMuxer;
 import android.media.MediaPlayer;
 import android.net.Uri;
+import android.os.AsyncTask;
+import android.os.Bundle;
 import android.os.Environment;
 import android.os.Message;
 import android.provider.MediaStore;
@@ -51,6 +54,7 @@ import java.util.Locale;
 
 import br.inatel.icc.gigasecurity.gigamonitor.R;
 import br.inatel.icc.gigasecurity.gigamonitor.activities.DeviceListActivity;
+import br.inatel.icc.gigasecurity.gigamonitor.activities.MediaVideoActivity;
 import br.inatel.icc.gigasecurity.gigamonitor.adapters.ChannelRecyclerViewAdapter;
 import br.inatel.icc.gigasecurity.gigamonitor.core.DeviceManager;
 import br.inatel.icc.gigasecurity.gigamonitor.listeners.PlaybackListener;
@@ -58,7 +62,8 @@ import br.inatel.icc.gigasecurity.gigamonitor.task.AudioRecordThread;
 import br.inatel.icc.gigasecurity.gigamonitor.ui.SurfaceViewComponent;
 //import br.inatel.icc.gigasecurity.gigamonitor.util.FunLog;
 //import br.inatel.icc.gigasecurity.gigamonitor.util.MediaConverter;
-import br.inatel.icc.gigasecurity.gigamonitor.util.MediaConverter;
+//import br.inatel.icc.gigasecurity.gigamonitor.util.MediaConverter;
+import br.inatel.icc.gigasecurity.gigamonitor.util.MediaService;
 import br.inatel.icc.gigasecurity.gigamonitor.util.Utils;
 
 
@@ -473,27 +478,6 @@ public abstract class ChannelsManager implements IFunSDKResult {
         }
     }
 
-    private void convertVideoIfHardwareIsDown(String path) {
-//        MediaMetadataRetriever retriever = new MediaMetadataRetriever();
-//        retriever.setDataSource(path);
-//        int width = Integer.valueOf(retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_VIDEO_WIDTH));
-//        int height = Integer.valueOf(retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_VIDEO_HEIGHT));
-//        retriever.release();
-//        CamcorderProfile camcorderProfile = CamcorderProfile.get(CamcorderProfile.QUALITY_HIGH);
-//        Log.e("WIDTH", String.valueOf(camcorderProfile.videoFrameWidth));
-//        Log.e("HEIGHT", String.valueOf(camcorderProfile.videoFrameHeight));
-//        if (width > 1280 && height > 720 && deviceHasLowHardware()) {
-//
-//        }
-
-    }
-
-    private boolean deviceHasLowHardware() {
-        boolean lowHardware = false;
-
-        return lowHardware;
-    }
-
     /** Async return from SDK**/
     @Override
     public int OnFunSDKResult(Message msg, MsgContent msgContent) {
@@ -625,7 +609,6 @@ public abstract class ChannelsManager implements IFunSDKResult {
                             } else {
                                 message = mContext.getResources().getString(R.string.playback_record_message);
                             }
-                            convertVideoIfHardwareIsDown(svc.recordFileName);
                             Toast.makeText(mContext, message, Toast.LENGTH_SHORT).show();
                             if (svc.stoppingRec) {
                                 onStop(svc);

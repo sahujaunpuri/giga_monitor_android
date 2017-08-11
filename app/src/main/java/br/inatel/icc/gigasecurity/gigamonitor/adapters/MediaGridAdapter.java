@@ -276,12 +276,12 @@ public class MediaGridAdapter extends BaseAdapter {
                         if (pictureMode) {
                             intent.setDataAndType(getImageUri(position), "image/*");
                         } else {
-                            intent.setDataAndType(getVideoUri(position), "video/*");
-//                            Bundle extras = new Bundle();
-//                            extras.putSerializable("mediaPath", getVideoUri(position).toString());
-//
-//                            intent = new Intent(mContext, MediaVideoActivity.class);
-//                            intent.putExtras(extras);
+//                            intent.setDataAndType(getVideoUri(position), "video/*");
+                            Bundle extras = new Bundle();
+                            extras.putSerializable("mediaPath", getVideoUri(position).toString());
+
+                            intent = new Intent(mContext, MediaVideoActivity.class);
+                            intent.putExtras(extras);
                         }
                         mContext.startActivity(intent);
                     } catch (Exception e) {

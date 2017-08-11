@@ -35,8 +35,9 @@ public class MediaActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_media);
-        if(getIntent().getExtras() != null)
+        if(getIntent().getExtras() != null) {
             ivImageSelected = getIntent().getExtras().getBoolean("imageSelected");
+        }
 
         mAdapter = new MediaGridAdapter(MediaActivity.this);
 
