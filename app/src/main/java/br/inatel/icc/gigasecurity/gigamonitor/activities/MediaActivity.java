@@ -2,9 +2,12 @@ package br.inatel.icc.gigasecurity.gigamonitor.activities;
 
 import android.app.AlertDialog;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.os.Bundle;
+import android.os.Environment;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.MotionEvent;
@@ -15,8 +18,11 @@ import android.widget.ImageView;
 import android.widget.ListAdapter;
 import android.widget.Toast;
 
+import java.io.File;
+
 import br.inatel.icc.gigasecurity.gigamonitor.R;
 import br.inatel.icc.gigasecurity.gigamonitor.adapters.MediaGridAdapter;
+import br.inatel.icc.gigasecurity.gigamonitor.listeners.MediaListener;
 
 public class MediaActivity extends AppCompatActivity {
 
@@ -30,6 +36,7 @@ public class MediaActivity extends AppCompatActivity {
     private Menu menu;
     private MenuItem menuItemSelect;
     private MenuItem menuItemTrash;
+    private MediaListener mMediaListener;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -39,7 +46,19 @@ public class MediaActivity extends AppCompatActivity {
             ivImageSelected = getIntent().getExtras().getBoolean("imageSelected");
         }
 
-        mAdapter = new MediaGridAdapter(MediaActivity.this);
+        mMediaListener = new MediaListener() {
+            @Override
+            public void onStartVideoActivity(final String path, final int position) {
+                Intent i = new Intent(MediaActivity.this, MediaVideoActivity.class);
+                Bundle extras = new Bundle();
+                extras.putSerializable("mediaPath", path);
+                extras.putSerializable("position", position);
+                i.putExtras(extras);
+                startActivityForResult(i, 1);
+            }
+        };
+
+        mAdapter = new MediaGridAdapter(MediaActivity.this, mMediaListener);
 
         initComponents();
 
@@ -160,6 +179,47 @@ public class MediaActivity extends AppCompatActivity {
         }
     }
 
+    public void showUnsupportedVideoOptions(final int position, final String path) {
+        final AlertDialog.Builder builder = new AlertDialog.Builder(this);
+
+        String text = getResources().getString(R.string.media_failed_message);
+        String labelDelete = getResources().getString(R.string.action_delete);
+
+        builder.setMessage(text)
+                .setPositiveButton(labelDelete, new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                        String filePath = path.substring(7);
+                        filePath = filePath.replace("%20", " ");
+                        filePath = filePath.replace("%", " ");
+
+                        File file = new File(filePath);
+                        file.delete();
+                        mAdapter.removeItem(position);
+                        Toast.makeText(getApplicationContext(), "Arquivo deletado", Toast.LENGTH_LONG).show();
+                    }
+                })
+                .setNegativeButton(R.string.transfer, new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                        transferFile(path);
+                        mAdapter.removeItem(position);
+                        Toast.makeText(getApplicationContext(), "Arquivo transferido com sucesso", Toast.LENGTH_LONG).show();
+                    }
+                });
+
+        builder.show();
+    }
+
+    private void transferFile(final String path) {
+        String filePath = path.substring(7);
+        filePath = filePath.replace("%20", " ");
+        filePath = filePath.replace("%", " ");
+        File from = new File(filePath);
+        int index = filePath.indexOf("Monitor");
+        String fileName = filePath.substring(index + 8);
+        File to = new File(Environment.getExternalStorageDirectory().getPath() + "/DCIM/Camera/" + fileName);
+        from.renameTo(to);
+    }
+
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
@@ -200,4 +260,18 @@ public class MediaActivity extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == 1) {
+            Bundle extras = data.getExtras();
+            int pos = (int) extras.getSerializable("position");
+            if(resultCode == RESULT_CANCELED) {
+                String path = (String) extras.getSerializable("path");
+                showUnsupportedVideoOptions(pos, path);
+            } else if(resultCode == RESULT_OK) {
+                mAdapter.startVideoPosition(pos);
+            }
+        }
+    }
 }

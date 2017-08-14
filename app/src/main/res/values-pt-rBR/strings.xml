@@ -285,5 +285,7 @@
     <string name="playback_running">O vídeo deve estar em andamento</string>
     <string name="snapshot_failed">Falha na captura da imagem</string>
     <string name="record_failed">Falha na gravação</string>
+    <string name="media_failed_message">O seu dispositivo não consegue reproduzir a mídia com o reprodutor padrão. Deseja deletar o arquivo ou transferí-lo para o rolo de câmera para assistir em outro reprodutor de vídeo?</string>
+    <string name="transfer">Transferir</string>
 
 </resources>

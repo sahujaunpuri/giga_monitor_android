@@ -13,6 +13,8 @@ import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Environment;
+import android.os.Handler;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -21,6 +23,8 @@ import android.widget.BaseAdapter;
 import android.widget.GridView;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import com.google.android.gms.games.GamesMetadata;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -34,6 +38,7 @@ import br.inatel.icc.gigasecurity.gigamonitor.R;
 import br.inatel.icc.gigasecurity.gigamonitor.activities.MediaActivity;
 import br.inatel.icc.gigasecurity.gigamonitor.activities.MediaVideoActivity;
 import br.inatel.icc.gigasecurity.gigamonitor.core.DeviceManager;
+import br.inatel.icc.gigasecurity.gigamonitor.listeners.MediaListener;
 
 //import wseemann.media.FFmpegMediaMetadataRetriever;
 
@@ -65,9 +70,11 @@ public class MediaGridAdapter extends BaseAdapter {
     public boolean selectItems;
 
     public static Drawable blankDrawable;
+    private MediaListener mMediaListener;
 
-    public MediaGridAdapter(Context mContext) {
+    public MediaGridAdapter(Context mContext, MediaListener mediaListener) {
         this.mContext = mContext;
+        mMediaListener = mediaListener;
         this.mDeviceManager = DeviceManager.getInstance();
         this.mInflater = LayoutInflater.from(mContext);
         this.pictureMode = true;
@@ -275,15 +282,15 @@ public class MediaGridAdapter extends BaseAdapter {
                         intent.setAction(Intent.ACTION_VIEW);
                         if (pictureMode) {
                             intent.setDataAndType(getImageUri(position), "image/*");
+                            mContext.startActivity(intent);
                         } else {
+                            mMediaListener.onStartVideoActivity(getVideoUri(position).toString(), position);
 //                            intent.setDataAndType(getVideoUri(position), "video/*");
-                            Bundle extras = new Bundle();
-                            extras.putSerializable("mediaPath", getVideoUri(position).toString());
-
-                            intent = new Intent(mContext, MediaVideoActivity.class);
-                            intent.putExtras(extras);
+//                            Bundle extras = new Bundle();
+//                            extras.putSerializable("mediaPath", getVideoUri(position).toString());
+//                            intent = new Intent(mContext, MediaVideoActivity.class);
+//                            intent.putExtras(extras);
                         }
-                        mContext.startActivity(intent);
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
@@ -321,6 +328,13 @@ public class MediaGridAdapter extends BaseAdapter {
         });
 
         return convertView;
+    }
+
+    public void startVideoPosition(final int position) {
+        Intent intent = new Intent();
+        intent.setAction(Intent.ACTION_VIEW);
+        intent.setDataAndType(getVideoUri(position), "video/*");
+        mContext.startActivity(intent);
     }
 
     public Drawable getImgDrawable(int position) {
