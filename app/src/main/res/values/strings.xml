@@ -286,7 +286,7 @@
     <string name="playback_running">The playback must be running</string>
     <string name="snapshot_failed">Snapshot failed</string>
     <string name="record_failed">Record failed</string>
-    <string name="media_failed_message">The media is on an unsupported resolution. You can delete the media or transfer the archive to roll camera to watch the video with another player</string>
+    <string name="media_failed_message">Your device does not support the media resolution. Select another player to watch the video!</string>
     <string name="transfer">Transfer</string>
 
 </resources>

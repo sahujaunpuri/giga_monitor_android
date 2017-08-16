@@ -126,9 +126,14 @@ public class InitialActivity extends ActionBarActivity implements View.OnClickLi
     }
 
     private void stopAndRefresh() {
-        mDiscoveryThread.interrupt();
-        mDiscoveryThread = prepareDiscoveryThread();
-        pbInitial.setVisibility(View.GONE);
+        try {
+            mDiscoveryThread.interrupt();
+            mDiscoveryThread = prepareDiscoveryThread();
+        } catch (RuntimeException e) {
+            e.printStackTrace();
+        } finally {
+            pbInitial.setVisibility(View.GONE);
+        }
     }
 
     public Discovery prepareDiscoveryThread() {

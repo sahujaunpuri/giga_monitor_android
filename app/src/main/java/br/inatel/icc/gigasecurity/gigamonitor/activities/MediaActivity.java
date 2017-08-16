@@ -1,8 +1,10 @@
 package br.inatel.icc.gigasecurity.gigamonitor.activities;
 
+import android.annotation.TargetApi;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.support.v7.app.ActionBarActivity;
@@ -179,35 +181,45 @@ public class MediaActivity extends AppCompatActivity {
         }
     }
 
-    public void showUnsupportedVideoOptions(final int position, final String path) {
+    public void showUnsupportedVideoOptions(final int position) {
         final AlertDialog.Builder builder = new AlertDialog.Builder(this);
 
         String text = getResources().getString(R.string.media_failed_message);
-        String labelDelete = getResources().getString(R.string.action_delete);
+        String labelDelete = getResources().getString(R.string.button_ok);
 
         builder.setMessage(text)
                 .setPositiveButton(labelDelete, new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int id) {
-                        String filePath = path.substring(7);
-                        filePath = filePath.replace("%20", " ");
-                        filePath = filePath.replace("%", " ");
-
-                        File file = new File(filePath);
-                        file.delete();
-                        mAdapter.removeItem(position);
-                        Toast.makeText(getApplicationContext(), "Arquivo deletado", Toast.LENGTH_LONG).show();
-                    }
-                })
-                .setNegativeButton(R.string.transfer, new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int id) {
-                        transferFile(path);
-                        mAdapter.removeItem(position);
-                        Toast.makeText(getApplicationContext(), "Arquivo transferido com sucesso", Toast.LENGTH_LONG).show();
+                        Log.d("OK", "Pressed");
+//                        String filePath = path.substring(7);
+//                        filePath = filePath.replace("%20", " ");
+//                        filePath = filePath.replace("%", " ");
+//
+//                        File file = new File(filePath);
+//                        file.delete();
+//                        mAdapter.removeItem(position);
+//                        Toast.makeText(getApplicationContext(), "Arquivo deletado", Toast.LENGTH_LONG).show();
                     }
                 });
-
+//                .setNegativeButton(R.string.transfer, new DialogInterface.OnClickListener() {
+//                    public void onClick(DialogInterface dialog, int id) {
+//                        transferFile(path);
+//                        mAdapter.removeItem(position);
+//                        Toast.makeText(getApplicationContext(), "Arquivo transferido com sucesso", Toast.LENGTH_LONG).show();
+//                    }
+//                });
+        builder.setOnDismissListener(new DialogInterface.OnDismissListener() {
+            @Override
+            public void onDismiss(DialogInterface dialog) {
+                mAdapter.startVideoPosition(position);
+            }
+        });
         builder.show();
     }
+
+//    private void showUnsupportedVideoMessageForAPI16OrLess(final int position) {
+//        final AlertDialog
+//    }
 
     private void transferFile(final String path) {
         String filePath = path.substring(7);
@@ -267,8 +279,11 @@ public class MediaActivity extends AppCompatActivity {
             Bundle extras = data.getExtras();
             int pos = (int) extras.getSerializable("position");
             if(resultCode == RESULT_CANCELED) {
-                String path = (String) extras.getSerializable("path");
-                showUnsupportedVideoOptions(pos, path);
+//                if (android.os.Build.VERSION.SDK_INT >= 17) {
+                    showUnsupportedVideoOptions(pos);
+//                } else {
+//                    showUnsupportedVideoMessageForAPI16OrLess(pos);
+//                }
             } else if(resultCode == RESULT_OK) {
                 mAdapter.startVideoPosition(pos);
             }
