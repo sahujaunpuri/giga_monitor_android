@@ -83,6 +83,7 @@ public class DeviceManager implements IFunSDKResult {
     private static final int APP_MOVECARD = 8;
     private static final String SERVER_IP = "200.98.128.50";
     private static final int SERVER_PORT = 8000;
+    private static final String MEDIA_DISK_NAME = "MEDIA_DISK";
 
     private static String TAG = DeviceManager.class.getSimpleName();
     private static DeviceManager mInstance = null;
@@ -1186,6 +1187,17 @@ public class DeviceManager implements IFunSDKResult {
 
     public String getNetworkName() {
         return networkName;
+    }
+
+    public void mediaPlayerMessageAlreadySeen() {
+        SharedPreferences.Editor editor = mPreferences.edit();
+        editor.putBoolean(MEDIA_DISK_NAME, false);
+
+        editor.apply();
+    }
+
+    public boolean showMediaCheckbox() {
+        return mPreferences.getBoolean(MEDIA_DISK_NAME, true);
     }
 
     public void saveImage(String path) {

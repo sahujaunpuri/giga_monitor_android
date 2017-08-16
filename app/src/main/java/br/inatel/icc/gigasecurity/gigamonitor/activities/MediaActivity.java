@@ -4,9 +4,14 @@ import android.annotation.TargetApi;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.content.pm.ResolveInfo;
+import android.content.res.Resources;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
+import android.provider.MediaStore;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
@@ -15,21 +20,27 @@ import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewConfiguration;
+import android.widget.CheckBox;
+import android.widget.CompoundButton;
 import android.widget.GridView;
 import android.widget.ImageView;
 import android.widget.ListAdapter;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import java.io.File;
+import java.util.List;
 
 import br.inatel.icc.gigasecurity.gigamonitor.R;
 import br.inatel.icc.gigasecurity.gigamonitor.adapters.MediaGridAdapter;
+import br.inatel.icc.gigasecurity.gigamonitor.core.DeviceManager;
 import br.inatel.icc.gigasecurity.gigamonitor.listeners.MediaListener;
 
 public class MediaActivity extends AppCompatActivity {
 
     public static GridView gvMedia;
     public static MediaGridAdapter mAdapter;
+    private DeviceManager mDeviceManager;
     public static ImageView ivImage, ivVideo;
     public boolean ivImageSelected = true;
 
@@ -59,6 +70,8 @@ public class MediaActivity extends AppCompatActivity {
                 startActivityForResult(i, 1);
             }
         };
+
+        mDeviceManager = DeviceManager.getInstance();
 
         mAdapter = new MediaGridAdapter(MediaActivity.this, mMediaListener);
 
@@ -181,33 +194,33 @@ public class MediaActivity extends AppCompatActivity {
         }
     }
 
-    public void showUnsupportedVideoOptions(final int position) {
-        final AlertDialog.Builder builder = new AlertDialog.Builder(this);
+    public void verifyMediaPlayersToShowMessage(final int position) {
 
         String text = getResources().getString(R.string.media_failed_message);
+
+        final AlertDialog.Builder builder = new AlertDialog.Builder(this);
         String labelDelete = getResources().getString(R.string.button_ok);
 
+        if (mDeviceManager.showMediaCheckbox()) {
+            View checkboxView = View.inflate(this, R.layout.checkbox_view_message, null);
+            CheckBox checkBox = (CheckBox) checkboxView.findViewById(R.id.checkbox_message);
+            checkBox.setText(getResources().getString(R.string.do_not_show_message_again));
+            checkBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+                @Override
+                public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                    if (isChecked) {
+                        mDeviceManager.mediaPlayerMessageAlreadySeen();
+                    }
+                }
+            });
+            builder.setView(checkboxView);
+        }
         builder.setMessage(text)
                 .setPositiveButton(labelDelete, new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int id) {
                         Log.d("OK", "Pressed");
-//                        String filePath = path.substring(7);
-//                        filePath = filePath.replace("%20", " ");
-//                        filePath = filePath.replace("%", " ");
-//
-//                        File file = new File(filePath);
-//                        file.delete();
-//                        mAdapter.removeItem(position);
-//                        Toast.makeText(getApplicationContext(), "Arquivo deletado", Toast.LENGTH_LONG).show();
                     }
                 });
-//                .setNegativeButton(R.string.transfer, new DialogInterface.OnClickListener() {
-//                    public void onClick(DialogInterface dialog, int id) {
-//                        transferFile(path);
-//                        mAdapter.removeItem(position);
-//                        Toast.makeText(getApplicationContext(), "Arquivo transferido com sucesso", Toast.LENGTH_LONG).show();
-//                    }
-//                });
         builder.setOnDismissListener(new DialogInterface.OnDismissListener() {
             @Override
             public void onDismiss(DialogInterface dialog) {
@@ -217,20 +230,19 @@ public class MediaActivity extends AppCompatActivity {
         builder.show();
     }
 
-//    private void showUnsupportedVideoMessageForAPI16OrLess(final int position) {
-//        final AlertDialog
+//    private boolean verifyMediaPlayersList() {
+//        boolean onlyMediaPlayer = false;
+//        Intent resolveIntent = new Intent(Intent.ACTION_VIEW);
+//        Uri uri = Uri.withAppendedPath(
+//                MediaStore.Video.Media.INTERNAL_CONTENT_URI, "1");
+//        resolveIntent.setDataAndType(uri, "video/*");
+//
+//        List< ResolveInfo> pkgAppsList = getApplicationContext().getPackageManager().queryIntentActivities(resolveIntent, PackageManager.GET_RESOLVED_FILTER);
+//        if (pkgAppsList.size() <= 2) {
+//            onlyMediaPlayer = true;
+//        }
+//        return onlyMediaPlayer;
 //    }
-
-    private void transferFile(final String path) {
-        String filePath = path.substring(7);
-        filePath = filePath.replace("%20", " ");
-        filePath = filePath.replace("%", " ");
-        File from = new File(filePath);
-        int index = filePath.indexOf("Monitor");
-        String fileName = filePath.substring(index + 8);
-        File to = new File(Environment.getExternalStorageDirectory().getPath() + "/DCIM/Camera/" + fileName);
-        from.renameTo(to);
-    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -279,11 +291,7 @@ public class MediaActivity extends AppCompatActivity {
             Bundle extras = data.getExtras();
             int pos = (int) extras.getSerializable("position");
             if(resultCode == RESULT_CANCELED) {
-//                if (android.os.Build.VERSION.SDK_INT >= 17) {
-                    showUnsupportedVideoOptions(pos);
-//                } else {
-//                    showUnsupportedVideoMessageForAPI16OrLess(pos);
-//                }
+                verifyMediaPlayersToShowMessage(pos);
             } else if(resultCode == RESULT_OK) {
                 mAdapter.startVideoPosition(pos);
             }

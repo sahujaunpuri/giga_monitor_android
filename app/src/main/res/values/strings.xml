@@ -286,7 +286,8 @@
     <string name="playback_running">The playback must be running</string>
     <string name="snapshot_failed">Snapshot failed</string>
     <string name="record_failed">Record failed</string>
-    <string name="media_failed_message">Your device does not support the media resolution. Select another player to watch the video!</string>
+    <string name="media_failed_message">Your device does not support the media resolution. Select another player or download a new one to watch the video!</string>
     <string name="transfer">Transfer</string>
+    <string name="do_not_show_message_again">Do not show message again!</string>
 
 </resources>
