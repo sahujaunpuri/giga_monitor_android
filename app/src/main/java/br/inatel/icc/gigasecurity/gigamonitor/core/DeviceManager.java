@@ -11,7 +11,9 @@ import android.media.MediaMetadataRetriever;
 import android.net.ConnectivityManager;
 import android.net.DhcpInfo;
 import android.net.NetworkInfo;
+import android.net.Uri;
 import android.net.wifi.WifiManager;
+import android.os.AsyncTask;
 import android.os.Environment;
 import android.os.Message;
 import android.util.Log;
@@ -44,6 +46,9 @@ import java.net.InterfaceAddress;
 import java.net.NetworkInterface;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.LinkedList;
 
@@ -124,7 +129,9 @@ public class DeviceManager implements IFunSDKResult {
     public int networkMask;
     private String networkName = null;
 
+    private ArrayList<File> mVideoFiles = new ArrayList<>();
     private ArrayList<Drawable> savedMediaVideos = new ArrayList<>();
+    private ArrayList<Uri> videoUris = new ArrayList<>();
     private ArrayList<Boolean> savedMediaVideosPositionOk = new ArrayList<>();
 
     private DeviceManager() {
@@ -181,6 +188,13 @@ public class DeviceManager implements IFunSDKResult {
             int quotationMarksIndex = stringNetworkName.indexOf(",", index + 8);
             networkName = stringNetworkName.substring(index + 8, quotationMarksIndex - 1);
         }
+
+        AsyncTask.execute(new Runnable() {
+            @Override
+            public void run() {
+                loadSavedMediaVideos();
+            }
+        });
 
         Log.d(TAG, "init: ");
     }
@@ -1205,12 +1219,15 @@ public class DeviceManager implements IFunSDKResult {
         }
     }
 
-    public void saveImage(String path) {
+    public void saveImage(File file) {
         try {
+
             MediaMetadataRetriever retriever = new MediaMetadataRetriever();
-            retriever.setDataSource(path);
+            retriever.setDataSource(file.getPath());
             Bitmap bitmap = retriever.getFrameAtTime(1000, MediaMetadataRetriever.OPTION_CLOSEST_SYNC);
             int position = 0;
+            mVideoFiles.add(position, file);
+            videoUris.add(position, Uri.fromFile(file));
             if (bitmap != null) {
                 savedMediaVideos.add(position, new BitmapDrawable(mContext.getResources(), bitmap));
                 savedMediaVideosPositionOk.add(position, true);
@@ -1226,6 +1243,8 @@ public class DeviceManager implements IFunSDKResult {
     public void deleteImage(final int position) {
         savedMediaVideos.remove(position);
         savedMediaVideosPositionOk.remove(position);
+        videoUris.remove(position);
+        mVideoFiles.remove(position);
     }
 
     public ArrayList getImages() {
@@ -1234,6 +1253,54 @@ public class DeviceManager implements IFunSDKResult {
 
     public ArrayList getImagesBoolean() {
         return savedMediaVideosPositionOk;
+    }
+
+    private void loadSavedMediaVideos() {
+        File videoFile = new File(Environment.getExternalStorageDirectory().getPath() + "/Movies/Giga Monitor/"); //"/sdcard/Movies/Giga Monitor");
+        File[] videoFiles = videoFile.listFiles();
+        savedMediaVideos = new ArrayList<>();
+        if(videoFiles == null) {
+            return;
+        }
+        for(int i=0; i<videoFiles.length; i++) {
+            if(videoFiles[i].getName().contains(".mp4")) {
+                mVideoFiles.add(i, videoFiles[i]);
+                try {
+                    MediaMetadataRetriever retriever = new MediaMetadataRetriever();
+                    retriever.setDataSource(videoFiles[i].getPath());
+//                    retriever.setDataSource(videoFiles.get(i).getPath());
+                    Bitmap bitmap = retriever.getFrameAtTime(1000, MediaMetadataRetriever.OPTION_CLOSEST_SYNC);
+                    //            Bitmap bitmap = ThumbnailUtils.createVideoThumbnail(mVideoFiles.get(position).getPath(), MediaStore.Images.Thumbnails.MINI_KIND);
+                    if (bitmap != null) {
+                        savedMediaVideos.add(i, new BitmapDrawable(mContext.getResources(), bitmap));
+                        savedMediaVideosPositionOk.add(i, true);
+                    } else {
+                        savedMediaVideos.add(i, null);
+                        savedMediaVideosPositionOk.add(i, false);
+                    }
+
+                    Uri uri = Uri.fromFile(mVideoFiles.get(i));
+                    videoUris.add(i, uri);
+
+                } catch (RuntimeException e) {
+                    e.printStackTrace();
+                }
+//                mVideoFiles.add(videoFiles[i]);
+//
+//                //Aux Arrays
+//                mVideoUris.add(null);
+//                mVideoDrawables.add(null);
+//                tridToGetVideoThumbnail.add(false);
+            }
+        }
+    }
+
+    public ArrayList<File> getmVideoFiles() {
+        return mVideoFiles;
+    }
+
+    public ArrayList<Uri> getVideoUris() {
+        return videoUris;
     }
 
     // TODO

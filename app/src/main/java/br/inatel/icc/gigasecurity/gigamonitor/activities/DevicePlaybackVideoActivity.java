@@ -57,6 +57,7 @@ import br.inatel.icc.gigasecurity.gigamonitor.model.Device;
 import br.inatel.icc.gigasecurity.gigamonitor.model.FileData;
 import br.inatel.icc.gigasecurity.gigamonitor.model.DeviceChannelsManager;
 import br.inatel.icc.gigasecurity.gigamonitor.ui.SurfaceViewComponent;
+import br.inatel.icc.gigasecurity.gigamonitor.util.OPCompressPic;
 
 public class DevicePlaybackVideoActivity extends ActionBarActivity {
 

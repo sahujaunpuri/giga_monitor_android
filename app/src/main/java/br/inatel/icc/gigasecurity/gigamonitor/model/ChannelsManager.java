@@ -614,6 +614,7 @@ public abstract class ChannelsManager implements IFunSDKResult {
                                 onStop(svc);
                                 svc.stoppingRec = false;
                             }
+                            mDeviceManager.saveImage(file);
                         } else {
                             file.delete();
                             Toast.makeText(mContext, mContext.getResources().getString(R.string.snapshot_failed), Toast.LENGTH_SHORT).show();
