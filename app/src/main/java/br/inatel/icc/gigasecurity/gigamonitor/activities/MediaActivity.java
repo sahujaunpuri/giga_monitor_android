@@ -196,14 +196,14 @@ public class MediaActivity extends AppCompatActivity {
     }
 
     public void verifyMediaPlayersToShowMessage(final int position) {
-
-        String text = getResources().getString(R.string.media_failed_message);
-
-        final AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        String labelDelete = getResources().getString(R.string.button_ok);
-
-        checkboxMessage = false;
         if (mDeviceManager.showMediaCheckbox()) {
+            String text = getResources().getString(R.string.media_failed_message);
+
+            final AlertDialog.Builder builder = new AlertDialog.Builder(this);
+            String labelDelete = getResources().getString(R.string.button_ok);
+
+            checkboxMessage = false;
+
             View checkboxView = View.inflate(this, R.layout.checkbox_view_message, null);
             CheckBox checkBox = (CheckBox) checkboxView.findViewById(R.id.checkbox_message);
             checkBox.setText(getResources().getString(R.string.do_not_show_message_again));
@@ -218,22 +218,24 @@ public class MediaActivity extends AppCompatActivity {
                 }
             });
             builder.setView(checkboxView);
-        }
-        builder.setMessage(text)
-                .setPositiveButton(labelDelete, new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int id) {
-                        if (checkboxMessage) {
-                            mDeviceManager.mediaPlayerMessageAlreadySeen();
+            builder.setMessage(text)
+                    .setPositiveButton(labelDelete, new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int id) {
+                            if (checkboxMessage) {
+                                mDeviceManager.mediaPlayerMessageAlreadySeen();
+                            }
                         }
-                    }
-                });
-        builder.setOnDismissListener(new DialogInterface.OnDismissListener() {
-            @Override
-            public void onDismiss(DialogInterface dialog) {
-                mAdapter.startVideoPosition(position);
-            }
-        });
-        builder.show();
+                    });
+            builder.setOnDismissListener(new DialogInterface.OnDismissListener() {
+                @Override
+                public void onDismiss(DialogInterface dialog) {
+                    mAdapter.startVideoPosition(position);
+                }
+            });
+            builder.show();
+        } else {
+            mAdapter.startVideoPosition(position);
+        }
     }
 
 //    private boolean verifyMediaPlayersList() {

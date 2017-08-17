@@ -285,11 +285,6 @@ public class MediaGridAdapter extends BaseAdapter {
                             mContext.startActivity(intent);
                         } else {
                             mMediaListener.onStartVideoActivity(getVideoUri(position).toString(), position);
-//                            intent.setDataAndType(getVideoUri(position), "video/*");
-//                            Bundle extras = new Bundle();
-//                            extras.putSerializable("mediaPath", getVideoUri(position).toString());
-//                            intent = new Intent(mContext, MediaVideoActivity.class);
-//                            intent.putExtras(extras);
                         }
                     } catch (Exception e) {
                         e.printStackTrace();
