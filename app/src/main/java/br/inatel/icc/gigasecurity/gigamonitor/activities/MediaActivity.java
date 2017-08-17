@@ -50,6 +50,7 @@ public class MediaActivity extends AppCompatActivity {
     private MenuItem menuItemSelect;
     private MenuItem menuItemTrash;
     private MediaListener mMediaListener;
+    private boolean checkboxMessage;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -201,6 +202,7 @@ public class MediaActivity extends AppCompatActivity {
         final AlertDialog.Builder builder = new AlertDialog.Builder(this);
         String labelDelete = getResources().getString(R.string.button_ok);
 
+        checkboxMessage = false;
         if (mDeviceManager.showMediaCheckbox()) {
             View checkboxView = View.inflate(this, R.layout.checkbox_view_message, null);
             CheckBox checkBox = (CheckBox) checkboxView.findViewById(R.id.checkbox_message);
@@ -209,7 +211,9 @@ public class MediaActivity extends AppCompatActivity {
                 @Override
                 public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                     if (isChecked) {
-                        mDeviceManager.mediaPlayerMessageAlreadySeen();
+                        checkboxMessage = true;
+                    } else {
+                        checkboxMessage = false;
                     }
                 }
             });
@@ -218,7 +222,9 @@ public class MediaActivity extends AppCompatActivity {
         builder.setMessage(text)
                 .setPositiveButton(labelDelete, new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int id) {
-                        Log.d("OK", "Pressed");
+                        if (checkboxMessage) {
+                            mDeviceManager.mediaPlayerMessageAlreadySeen();
+                        }
                     }
                 });
         builder.setOnDismissListener(new DialogInterface.OnDismissListener() {

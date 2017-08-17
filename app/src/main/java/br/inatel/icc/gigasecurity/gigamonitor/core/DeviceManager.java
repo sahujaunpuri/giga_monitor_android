@@ -1190,14 +1190,19 @@ public class DeviceManager implements IFunSDKResult {
     }
 
     public void mediaPlayerMessageAlreadySeen() {
-        SharedPreferences.Editor editor = mPreferences.edit();
-        editor.putBoolean(MEDIA_DISK_NAME, false);
+        ComplexPreferences cp = new ComplexPreferences(currentContext, MEDIA_DISK_NAME, MODE_PRIVATE);
+        cp.putObject("mediaMessage", false);
 
-        editor.apply();
+        cp.apply();
     }
 
     public boolean showMediaCheckbox() {
-        return mPreferences.getBoolean(MEDIA_DISK_NAME, true);
+        ComplexPreferences cp = new ComplexPreferences(mContext, MEDIA_DISK_NAME, MODE_PRIVATE);
+        if (cp.getObject("mediaMessage", Boolean.class) != null) {
+            return cp.getObject("mediaMessage", Boolean.class);
+        } else {
+            return true;
+        }
     }
 
     public void saveImage(String path) {
