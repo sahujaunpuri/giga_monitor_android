@@ -7,9 +7,9 @@
     <ImageView
         android:id="@+id/arrow_top_left"
         android:src="@drawable/white_top_left_arrow"
-        android:layout_width="30dp"
-        android:layout_height="30dp"
-        android:scaleY="1.5"
+        android:layout_width="26dp"
+        android:layout_height="26dp"
+        android:layout_marginLeft="5dp"
         android:layout_alignParentTop="true"
         android:layout_alignParentLeft="true"
         android:background="@android:color/transparent" />
@@ -17,8 +17,8 @@
     <ImageView
         android:id="@+id/arrow_up"
         android:src="@drawable/white_top_arrow"
-        android:layout_width="30dp"
-        android:layout_height="30dp"
+        android:layout_width="26dp"
+        android:layout_height="26dp"
         android:scaleX="1.5"
         android:background="@android:color/transparent"
         android:layout_alignBottom="@+id/arrow_top_left"
@@ -28,8 +28,8 @@
     <ImageView
         android:id="@+id/arrow_left"
         android:src="@drawable/white_left_arrow"
-        android:layout_width="30dp"
-        android:layout_height="30dp"
+        android:layout_width="26dp"
+        android:layout_height="26dp"
         android:scaleY="1.5"
         android:background="@android:color/transparent"
         android:layout_centerVertical="true"
@@ -39,8 +39,8 @@
     <ImageView
         android:id="@+id/arrow_down"
         android:src="@drawable/down_arrow"
-        android:layout_width="30dp"
-        android:layout_height="30dp"
+        android:layout_width="26dp"
+        android:layout_height="26dp"
         android:scaleX="1.5"
         android:background="@android:color/transparent"
         android:layout_alignTop="@+id/arrow_down_left"
@@ -49,9 +49,9 @@
     <ImageView
         android:id="@+id/arrow_down_left"
         android:src="@drawable/white_down_left_arrow"
-        android:layout_width="30dp"
-        android:layout_height="30dp"
-        android:scaleX="1.5"
+        android:layout_width="26dp"
+        android:layout_height="26dp"
+        android:layout_marginLeft="5dp"
         android:layout_alignParentLeft="true"
         android:layout_alignParentBottom="true"
         android:background="@android:color/transparent" />
@@ -59,8 +59,8 @@
     <ImageView
         android:id="@+id/arrow_right"
         android:src="@drawable/white_right_arrow"
-        android:layout_width="30dp"
-        android:layout_height="30dp"
+        android:layout_width="26dp"
+        android:layout_height="26dp"
         android:scaleY="1.5"
         android:background="@android:color/transparent"
         android:layout_alignTop="@+id/arrow_left"
@@ -70,9 +70,9 @@
     <ImageView
         android:id="@+id/arrow_down_right"
         android:src="@drawable/white_down_right_arrow"
-        android:layout_width="30dp"
-        android:layout_height="30dp"
-        android:scaleY="1.5"
+        android:layout_width="26dp"
+        android:layout_height="26dp"
+        android:layout_marginRight="5dp"
         android:layout_alignParentBottom="true"
         android:layout_alignParentRight="true"
         android:background="@android:color/transparent" />
@@ -80,9 +80,9 @@
     <ImageView
         android:id="@+id/arrow_top_right"
         android:src="@drawable/white_top_right_arrow"
-        android:layout_width="30dp"
-        android:layout_height="30dp"
-        android:scaleY="1.5"
+        android:layout_width="26dp"
+        android:layout_height="26dp"
+        android:layout_marginRight="5dp"
         android:layout_alignParentTop="true"
         android:layout_alignParentRight="true"
         android:background="@android:color/transparent" />
