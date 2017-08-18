@@ -34,6 +34,7 @@ import com.lib.sdk.struct.SDK_CONFIG_NET_COMMON_V2;
 import com.lib.sdk.struct.SDK_SYSTEM_TIME;
 
 
+import org.apache.commons.lang3.ObjectUtils;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -276,7 +277,7 @@ public class DeviceManager implements IFunSDKResult {
                 channelsManager.lastFirstItemBeforeSelectChannel = mPreferences.getInt("previousLastVisibleChannel", -1);
                 channelsManager.changeSurfaceViewSize();
                 if (state.previousHD > -1 && channelsManager.surfaceViewComponents.size() > state.previousHD) {
-                    if (!mDevices.get(state.previousGroup).getSerialNumber().equals("Favoritos"))
+                    if(!mDevices.get(state.previousGroup).getSerialNumber().equals("Favoritos"))
                         state.previousHD = findChannelManagerByDevice(mDevices.get(state.previousGroup)).getChannelSelected(state.previousHD);
                     channelsManager.enableHD(channelsManager.surfaceViewComponents.get(state.previousHD));
                 }
@@ -699,10 +700,14 @@ public class DeviceManager implements IFunSDKResult {
         return null;
     }
 
-    public ChannelsManager findChannelManagerByDevice(int deviceId) {
-        for (ChannelsManager svm : deviceChannelsManagers) {
-            if (deviceId == svm.mDevice.getId())
-                return svm;
+    public ChannelsManager findChannelManagerByDevice(int deviceId){
+        try {
+            for (ChannelsManager svm : deviceChannelsManagers) {
+                if (deviceId == svm.mDevice.getId())
+                    return svm;
+            }
+        } catch (NullPointerException e) {
+            e.printStackTrace();
         }
         Log.e(TAG, "findChannelManagerByDevice: DeviceChannelsManager Not Found");
         return null;
@@ -1161,6 +1166,17 @@ public class DeviceManager implements IFunSDKResult {
     }
 
     public void removeDevice(int id) {
+    public boolean someDeviceIsRecording() {
+        boolean someRecord = false;
+        for (Device device: mDevices) {
+            if (device.channelsManager != null) {
+                someRecord = device.channelsManager.verifyIfSomeChannelIsRecording();
+            }
+        }
+        return someRecord;
+    }
+
+    public void removeDevice(int id){
         removeDeviceFromFavorite(id);
         deviceChannelsManagers.remove(findChannelManagerByDevice(id));
         mDevices.remove(findDeviceById(id));

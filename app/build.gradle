@@ -8,8 +8,8 @@ android {
         applicationId "br.inatel.icc.gigasecurity.gigamonitor"
         minSdkVersion 16
         targetSdkVersion 21
-        versionCode 6
-        versionName "1.0.4b"
+        versionCode 7
+        versionName "1.0.5"
         testInstrumentationRunner 'android.support.test.runner.AndroidJUnitRunner'
         ndk {
             abiFilters "armeabi", "armeabi-v7a", "x86"

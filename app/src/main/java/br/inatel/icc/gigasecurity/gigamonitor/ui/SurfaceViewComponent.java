@@ -364,6 +364,8 @@ public class SurfaceViewComponent extends FrameLayout {
             if (mScaleFactor > 1.0 && isPTZEnabled()) {
                 ivTouch.setVisibility(INVISIBLE);
                 ptzOverlay.setVisibility(INVISIBLE);
+            } else if (isPTZEnabled()) {
+                ivTouch.setVisibility(VISIBLE);
             }
         }
 

@@ -1,9 +1,11 @@
 package br.inatel.icc.gigasecurity.gigamonitor.activities;
 
 import android.app.Activity;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
 import android.content.res.Configuration;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
@@ -25,6 +27,7 @@ import java.util.Map;
 
 import br.inatel.icc.gigasecurity.gigamonitor.R;
 import br.inatel.icc.gigasecurity.gigamonitor.adapters.DeviceExpandableListAdapter;
+import br.inatel.icc.gigasecurity.gigamonitor.core.ConnectionReceiver;
 import br.inatel.icc.gigasecurity.gigamonitor.core.DeviceManager;
 import br.inatel.icc.gigasecurity.gigamonitor.model.ChannelsManager;
 import br.inatel.icc.gigasecurity.gigamonitor.model.Device;
@@ -160,10 +163,11 @@ public class DeviceListActivity extends AppCompatActivity {
         if(!mDeviceManager.loadedState) {
             statePreferences = mDeviceManager.loadState();
             previousGroup = statePreferences.previousGroup;
-            if (previousGroup > -1 && mDeviceManager.networkType > -1)
+            if (previousGroup > -1 && mDeviceManager.networkType > -1) {
                 mExpandableListView.expandGroup(previousGroup);
-            else if(mDeviceManager.networkType == 1 && mDevices.size() > 1)
+            } else if(mDeviceManager.networkType == 1 && mDeviceManager.someDeviceIsRecording()) {
                 Toast.makeText(mContext, "Finalize a gravação", Toast.LENGTH_SHORT).show();
+            }
             Log.d(TAG, "onResume: group: " + previousGroup + ", channel: " + statePreferences.previousChannel + ", grid: " + statePreferences.previousGrid + ", HD: " + statePreferences.previousHD);
             mDeviceManager.loadedState = true;
         }

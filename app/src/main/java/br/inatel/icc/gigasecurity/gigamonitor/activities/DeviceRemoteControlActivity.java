@@ -127,7 +127,10 @@ public class DeviceRemoteControlActivity extends ActionBarActivity {
         ivOk    = (ImageView) findViewById(R.id.iv_control_ok);
 
         mManager = DeviceManager.getInstance();
-        mDevice = (Device) getIntent().getExtras().getSerializable("device");
+//        mDevice = (Device) getIntent().getExtras().getSerializable("device");
+
+        int devicePosition = (int) getIntent().getExtras().getSerializable("device");
+        mDevice = mManager.getDevices().get(devicePosition);
     }
 
     private void blink(ImageView imageButton){
