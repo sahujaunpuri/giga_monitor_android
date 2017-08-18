@@ -189,12 +189,12 @@ public class DeviceManager implements IFunSDKResult {
             networkName = stringNetworkName.substring(index + 8, quotationMarksIndex - 1);
         }
 
-        AsyncTask.execute(new Runnable() {
-            @Override
-            public void run() {
-                loadSavedMediaVideos();
-            }
-        });
+//        AsyncTask.execute(new Runnable() {
+//            @Override
+//            public void run() {
+//                loadSavedMediaVideos();
+//            }
+//        });
 
         Log.d(TAG, "init: ");
     }
@@ -1255,45 +1255,45 @@ public class DeviceManager implements IFunSDKResult {
         return savedMediaVideosPositionOk;
     }
 
-    private void loadSavedMediaVideos() {
-        File videoFile = new File(Environment.getExternalStorageDirectory().getPath() + "/Movies/Giga Monitor/"); //"/sdcard/Movies/Giga Monitor");
-        File[] videoFiles = videoFile.listFiles();
-        savedMediaVideos = new ArrayList<>();
-        if(videoFiles == null) {
-            return;
-        }
-        for(int i=0; i<videoFiles.length; i++) {
-            if(videoFiles[i].getName().contains(".mp4")) {
-                mVideoFiles.add(i, videoFiles[i]);
-                try {
-                    MediaMetadataRetriever retriever = new MediaMetadataRetriever();
-                    retriever.setDataSource(videoFiles[i].getPath());
-//                    retriever.setDataSource(videoFiles.get(i).getPath());
-                    Bitmap bitmap = retriever.getFrameAtTime(1000, MediaMetadataRetriever.OPTION_CLOSEST_SYNC);
-                    //            Bitmap bitmap = ThumbnailUtils.createVideoThumbnail(mVideoFiles.get(position).getPath(), MediaStore.Images.Thumbnails.MINI_KIND);
-                    if (bitmap != null) {
-                        savedMediaVideos.add(i, new BitmapDrawable(mContext.getResources(), bitmap));
-                        savedMediaVideosPositionOk.add(i, true);
-                    } else {
-                        savedMediaVideos.add(i, null);
-                        savedMediaVideosPositionOk.add(i, false);
-                    }
-
-                    Uri uri = Uri.fromFile(mVideoFiles.get(i));
-                    videoUris.add(i, uri);
-
-                } catch (RuntimeException e) {
-                    e.printStackTrace();
-                }
+//    private void loadSavedMediaVideos() {
+//        File videoFile = new File(Environment.getExternalStorageDirectory().getPath() + "/Movies/Giga Monitor/"); //"/sdcard/Movies/Giga Monitor");
+//        File[] videoFiles = videoFile.listFiles();
+//        savedMediaVideos = new ArrayList<>();
+//        if(videoFiles == null) {
+//            return;
+//        }
+//        for(int i=0; i<videoFiles.length; i++) {
+//            if(videoFiles[i].getName().contains(".mp4")) {
+//                mVideoFiles.add(i, videoFiles[i]);
+//                try {
+//                    MediaMetadataRetriever retriever = new MediaMetadataRetriever();
+//                    retriever.setDataSource(videoFiles[i].getPath());
+////                    retriever.setDataSource(videoFiles.get(i).getPath());
+//                    Bitmap bitmap = retriever.getFrameAtTime(1000, MediaMetadataRetriever.OPTION_CLOSEST_SYNC);
+//                    //            Bitmap bitmap = ThumbnailUtils.createVideoThumbnail(mVideoFiles.get(position).getPath(), MediaStore.Images.Thumbnails.MINI_KIND);
+//                    if (bitmap != null) {
+//                        savedMediaVideos.add(i, new BitmapDrawable(mContext.getResources(), bitmap));
+//                        savedMediaVideosPositionOk.add(i, true);
+//                    } else {
+//                        savedMediaVideos.add(i, null);
+//                        savedMediaVideosPositionOk.add(i, false);
+//                    }
+//
+//                    Uri uri = Uri.fromFile(mVideoFiles.get(i));
+//                    videoUris.add(i, uri);
+//
+//                } catch (RuntimeException e) {
+//                    e.printStackTrace();
+//                }
 //                mVideoFiles.add(videoFiles[i]);
 //
 //                //Aux Arrays
 //                mVideoUris.add(null);
 //                mVideoDrawables.add(null);
 //                tridToGetVideoThumbnail.add(false);
-            }
-        }
-    }
+//            }
+//        }
+//    }
 
     public ArrayList<File> getmVideoFiles() {
         return mVideoFiles;

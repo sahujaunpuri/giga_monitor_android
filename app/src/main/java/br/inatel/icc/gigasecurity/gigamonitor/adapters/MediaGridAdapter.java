@@ -94,7 +94,8 @@ public class MediaGridAdapter extends BaseAdapter {
         toDelete = new ArrayList<>();
 
         getImgFiles();
-        getVideoFilesAndDrawable();
+        getVideoFiles();
+//        getVideoFilesAndDrawable();
 
         Bitmap blankBitmap = Bitmap.createBitmap(2, 2, Bitmap.Config.ARGB_8888);
         blankDrawable = new BitmapDrawable(mContext.getResources(), blankBitmap);
@@ -127,33 +128,33 @@ public class MediaGridAdapter extends BaseAdapter {
         });
     }
 
-    private void getVideoFilesAndDrawable() {
-//        File videoFile = new File(path + "/Movies/Giga Monitor/"); //"/sdcard/Movies/Giga Monitor");
-//        File[] videoFiles = videoFile.listFiles();
-//        mVideoFiles = new ArrayList<>();
-//        if(videoFiles == null)
-//            return;
-//        for(int i =0; i<videoFiles.length; i++) {
-//            if(videoFiles[i].getName().contains(".mp4")) {
-//                mVideoFiles.add(videoFiles[i]);
-//
-//                //Aux Arrays
-//                mVideoUris.add(null);
-//                mVideoDrawables.add(null);
-//                tridToGetVideoThumbnail.add(false);
-//            }
-//        }
-        mVideoFiles = mDeviceManager.getmVideoFiles();
-        mVideoDrawables = mDeviceManager.getImages();
-        mVideoUris = mDeviceManager.getVideoUris();
-        tridToGetVideoThumbnail = mDeviceManager.getImagesBoolean();
-//        Collections.sort(mVideoFiles, new Comparator<File>() {
-//            public int compare(File video1, File video2) {
-//                Date datevideo1 = new Date(video1.lastModified());
-//                Date datevideo2 = new Date(video2.lastModified());
-//                return datevideo2.compareTo(datevideo1);
-//            }
-//        });
+    private void getVideoFiles() {
+        File videoFile = new File(path + "/Movies/Giga Monitor/"); //"/sdcard/Movies/Giga Monitor");
+        File[] videoFiles = videoFile.listFiles();
+        mVideoFiles = new ArrayList<>();
+        if(videoFiles == null)
+            return;
+        for(int i =0; i<videoFiles.length; i++) {
+            if(videoFiles[i].getName().contains(".mp4")) {
+                mVideoFiles.add(videoFiles[i]);
+
+                //Aux Arrays
+                mVideoUris.add(null);
+                mVideoDrawables.add(null);
+                tridToGetVideoThumbnail.add(false);
+            }
+        }
+//        mVideoFiles = mDeviceManager.getmVideoFiles();
+//        mVideoDrawables = mDeviceManager.getImages();
+//        mVideoUris = mDeviceManager.getVideoUris();
+//        tridToGetVideoThumbnail = mDeviceManager.getImagesBoolean();
+        Collections.sort(mVideoFiles, new Comparator<File>() {
+            public int compare(File video1, File video2) {
+                Date datevideo1 = new Date(video1.lastModified());
+                Date datevideo2 = new Date(video2.lastModified());
+                return datevideo2.compareTo(datevideo1);
+            }
+        });
     }
 
     @Override
@@ -250,31 +251,31 @@ public class MediaGridAdapter extends BaseAdapter {
                 fVideoView.setBackground(blankDrawable);
                 fVideoView.setText(mVideoFiles.get(position).getName().substring(0, 19).replace("_", ":"));
                 fVideoView.setGravity(Gravity.CENTER_VERTICAL | Gravity.CENTER_HORIZONTAL);
-//
-//                if (!tridToGetVideoThumbnail.get(position)) {
-//
-//                    new AsyncTask<Void, Void, Drawable>() {
-//                        @Override
-//                        protected Drawable doInBackground(Void... params) {
-//                            return getVideoDrawable(position);
-//                        }
-//
-//                        @Override
-//                        protected void onPostExecute(final Drawable drawable) {
-//                            super.onPostExecute(drawable);
-//                            if (drawable != null) {
-//                                ((MediaActivity) mContext).runOnUiThread(new Runnable() {
-//                                    @Override
-//                                    public void run() {
+
+                if (!tridToGetVideoThumbnail.get(position)) {
+
+                    new AsyncTask<Void, Void, Drawable>() {
+                        @Override
+                        protected Drawable doInBackground(Void... params) {
+                            return getVideoDrawable(position);
+                        }
+
+                        @Override
+                        protected void onPostExecute(final Drawable drawable) {
+                            super.onPostExecute(drawable);
+                            if (drawable != null) {
+                                ((MediaActivity) mContext).runOnUiThread(new Runnable() {
+                                    @Override
+                                    public void run() {
 //                                        Drawable drawable = new BitmapDrawable(mContext.getResources(), bitmap);
-//                                        fVideoView.setText("");
-//                                        fVideoView.setBackground(drawable);
-//                                    }
-//                                });
-//                            }
-//                        }
-//                    }.execute();
-//                }
+                                        fVideoView.setText("");
+                                        fVideoView.setBackground(drawable);
+                                    }
+                                });
+                            }
+                        }
+                    }.execute();
+                }
             }
 //            return fVideoView;
         }
@@ -427,11 +428,11 @@ public class MediaGridAdapter extends BaseAdapter {
             tridToGetImgThumbnail.remove(position);
         } else {
             mVideoFiles.get(position).delete();
-            mVideoFiles.remove(position);
+//            mVideoFiles.remove(position);
             mVideoUris.remove(position);
             mVideoDrawables.remove(position);
             tridToGetVideoThumbnail.remove(position);
-            mDeviceManager.deleteImage(position);
+//            mDeviceManager.deleteImage(position);
         }
         notifyDataSetChanged();
     }
