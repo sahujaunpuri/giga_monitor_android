@@ -307,10 +307,15 @@ public class SurfaceViewComponent extends FrameLayout {
     }
 
     public void resumeScroll(){
-        mySurfaceView.setRenderMode(GLSurfaceView.RENDERMODE_WHEN_DIRTY);
-        this.getParent().requestDisallowInterceptTouchEvent(false);
-        if(mChannelsManager.mRecyclerAdapter!=null)
-            mChannelsManager.mRecyclerAdapter.enableListScrolling();
+        try {
+            mySurfaceView.setRenderMode(GLSurfaceView.RENDERMODE_WHEN_DIRTY);
+            this.getParent().requestDisallowInterceptTouchEvent(false);
+            if (mChannelsManager.mRecyclerAdapter != null) {
+                mChannelsManager.mRecyclerAdapter.enableListScrolling();
+            }
+        } catch (NullPointerException e) {
+            e.printStackTrace();
+        }
     }
 
     @Override

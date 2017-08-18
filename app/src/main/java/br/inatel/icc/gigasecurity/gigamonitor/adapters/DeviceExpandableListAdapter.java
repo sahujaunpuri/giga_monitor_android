@@ -115,46 +115,55 @@ public class DeviceExpandableListAdapter extends BaseExpandableListAdapter {
 
 
     private GroupViewHolder initGroupViewHolder(final int groupPosition, View convertView, ViewGroup parent){
-        GroupViewHolder groupViewHolder = new GroupViewHolder();
+//        try {
+            GroupViewHolder groupViewHolder = new GroupViewHolder();
 
-        groupViewHolder.convertView  = convertView;
-        groupViewHolder.blank        = mInflater.inflate(R.layout.blank_layout, parent, false);
-        groupViewHolder.ivQuad       = (ImageView) convertView.findViewById(R.id.iv_grid_list_device);
-        groupViewHolder.ivMore       = (ImageView) convertView.findViewById(R.id.iv_device_more);
-        groupViewHolder.ivIndicator  = (ImageView) convertView.findViewById(R.id.iv_indicator);
-        groupViewHolder.tvDeviceName = (TextView) convertView.findViewById(R.id.tv_hostname_list_device);
-        groupViewHolder.mDevice      = mDevices.get(groupPosition);
-        groupViewHolder.position    = groupPosition;
-        groupViewHolder.tvDeviceName.setText(groupViewHolder.mDevice.deviceName);
-        groupViewHolder.ivMore.setOnClickListener(createMoreListener(groupPosition));
-        groupViewHolder.ivQuad.setOnClickListener(createQuadListener(groupPosition));
+            groupViewHolder.convertView = convertView;
+            groupViewHolder.blank = mInflater.inflate(R.layout.blank_layout, parent, false);
+            groupViewHolder.ivQuad = (ImageView) convertView.findViewById(R.id.iv_grid_list_device);
+            groupViewHolder.ivMore = (ImageView) convertView.findViewById(R.id.iv_device_more);
+            groupViewHolder.ivIndicator = (ImageView) convertView.findViewById(R.id.iv_indicator);
+            groupViewHolder.tvDeviceName = (TextView) convertView.findViewById(R.id.tv_hostname_list_device);
+            groupViewHolder.mDevice = mDevices.get(groupPosition);
+            groupViewHolder.position = groupPosition;
+            groupViewHolder.tvDeviceName.setText(groupViewHolder.mDevice.deviceName);
+            groupViewHolder.ivMore.setOnClickListener(createMoreListener(groupPosition));
+            groupViewHolder.ivQuad.setOnClickListener(createQuadListener(groupPosition));
 
-        this.groupViewHolder.add(groupViewHolder);
+            this.groupViewHolder.add(groupViewHolder);
 
-        return groupViewHolder;
+            return groupViewHolder;
+//        } catch (IndexOutOfBoundsException e) {
+//            e.printStackTrace();
+//            return null;
+//        }
     }
 
 
     private ChildViewHolder initChildViewHolder(ViewGroup parent, int groupPosition){
         ChildViewHolder currentChildViewHolder = childViewHolder.get(groupPosition);
+        try {
+            currentChildViewHolder.convertView = mInflater.inflate(R.layout.expandable_list_view_child, parent, false);
+            currentChildViewHolder.recyclerViewChannels = (RecyclerView) currentChildViewHolder.convertView.findViewById(R.id.recycler_view_channels);
+            currentChildViewHolder.tvMessage = (TextView) currentChildViewHolder.convertView.findViewById(R.id.tv_message_connecting);
+            currentChildViewHolder.overlayMenu = (OverlayMenu) currentChildViewHolder.convertView.findViewById(R.id.overlay_menu);
+            currentChildViewHolder.tvMessage = (TextView) currentChildViewHolder.convertView.findViewById(R.id.tv_message_connecting);
+            currentChildViewHolder.position = groupPosition;
+            currentChildViewHolder.overlayMenu.setDeviceChannelsManager(mDeviceManager.getDeviceChannelsManagers().get(groupPosition));
+            currentChildViewHolder.overlayMenu.setLayoutParams(currentChildViewHolder.recyclerViewChannels.getLayoutParams());
 
-        currentChildViewHolder.convertView              =  mInflater.inflate(R.layout.expandable_list_view_child, parent, false);
-        currentChildViewHolder.recyclerViewChannels     =  (RecyclerView) currentChildViewHolder.convertView.findViewById(R.id.recycler_view_channels);
-        currentChildViewHolder.tvMessage                =  (TextView) currentChildViewHolder.convertView.findViewById(R.id.tv_message_connecting);
-        currentChildViewHolder.overlayMenu              =  (OverlayMenu) currentChildViewHolder.convertView.findViewById(R.id.overlay_menu);
-        currentChildViewHolder.tvMessage                =  (TextView) currentChildViewHolder.convertView.findViewById(R.id.tv_message_connecting);
-        currentChildViewHolder.position                 =   groupPosition;
-        currentChildViewHolder.overlayMenu.setDeviceChannelsManager(mDeviceManager.getDeviceChannelsManagers().get(groupPosition));
-        currentChildViewHolder.overlayMenu.setLayoutParams(currentChildViewHolder.recyclerViewChannels.getLayoutParams());
+            if (groupViewHolder.get(groupPosition).mDevice.getSerialNumber().equals("Favoritos")) {
+                currentChildViewHolder.tvMessage.setText("Nenhum favorito adicionado.");
+            } else {
+                currentChildViewHolder.tvMessage.setText(groupViewHolder.get(groupPosition).mDevice.message);
+            }
 
-        if(groupViewHolder.get(groupPosition).mDevice.getSerialNumber().equals("Favoritos")){
-            currentChildViewHolder.tvMessage.setText("Nenhum favorito adicionado.");
-        }else{
-            currentChildViewHolder.tvMessage.setText(groupViewHolder.get(groupPosition).mDevice.message);
+            //        this.childViewHolder.add(currentChildViewHolder);
+            return currentChildViewHolder;
+        } catch (IndexOutOfBoundsException e) {
+            e.printStackTrace();
+            return null;
         }
-
-//        this.childViewHolder.add(currentChildViewHolder);
-        return currentChildViewHolder;
     }
 
     private void initGridRecycler(int groupPosition, ChildViewHolder childViewHolder){
@@ -260,17 +269,26 @@ public class DeviceExpandableListAdapter extends BaseExpandableListAdapter {
 
     @Override
     public View getGroupView(final int groupPosition, final boolean isExpanded, View convertView, ViewGroup parent) {
-        if(convertView == null || groupViewHolder.size() <= groupPosition){
-            convertView = mInflater.inflate(R.layout.expandable_list_view_row, parent, false);
-            GroupViewHolder groupViewHolder = initGroupViewHolder(groupPosition, convertView, parent);
-            groupViewHolder.blank.setTag(groupViewHolder);
-            convertView.setTag(groupViewHolder);
-            childViewHolder.add(new ChildViewHolder());
+        try {
+            if (convertView == null || groupViewHolder.size() <= groupPosition) {
+                convertView = mInflater.inflate(R.layout.expandable_list_view_row, parent, false);
+                GroupViewHolder groupViewHolder = initGroupViewHolder(groupPosition, convertView, parent);
+                groupViewHolder.blank.setTag(groupViewHolder);
+                convertView.setTag(groupViewHolder);
+                childViewHolder.add(new ChildViewHolder());
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
         }
         GroupViewHolder groupViewHolder = (GroupViewHolder) convertView.getTag();
-        if(groupViewHolder.position != groupPosition)
-            groupViewHolder = this.groupViewHolder.get(groupPosition);
-        if((mContext.getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE && DeviceListActivity.previousGroup != -1)){
+        try {
+            if (groupViewHolder.position != groupPosition) {
+                groupViewHolder = this.groupViewHolder.get(groupPosition);
+            }
+        } catch (NullPointerException e){
+            e.printStackTrace();
+        }
+        if((mContext.getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE && DeviceListActivity.previousGroup != -1)) {
             return groupViewHolder.blank;
         } else {
             return groupViewHolder.convertView;
@@ -341,29 +359,33 @@ public class DeviceExpandableListAdapter extends BaseExpandableListAdapter {
 
     @Override
     public void onGroupCollapsed(int groupPosition){
-        super.onGroupCollapsed(groupPosition);
-        stopChannels(groupPosition);
-        final GroupViewHolder currentGroupViewHolder = groupViewHolder.get(groupPosition);
-        final ChildViewHolder currentChildViewHolder = childViewHolder.get(groupPosition);
-        ((DeviceListActivity) mContext).runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                currentGroupViewHolder.ivMore.setVisibility(View.INVISIBLE);
-                currentGroupViewHolder.ivIndicator.setImageDrawable(mContext.getResources().getDrawable(R.drawable.ic_indicator_plus));
-                currentGroupViewHolder.ivQuad.setVisibility(View.INVISIBLE);
-                currentChildViewHolder.recyclerViewChannels.setVisibility(View.INVISIBLE);
-                currentChildViewHolder.overlayMenu.setVisibility(View.GONE);
-                currentChildViewHolder.recyclerViewChannels.removeAllViewsInLayout();
-//                currentChildViewHolder.recyclerViewChannels = null;
-            }
-        });
+        try {
+            super.onGroupCollapsed(groupPosition);
+            stopChannels(groupPosition);
+            final GroupViewHolder currentGroupViewHolder = groupViewHolder.get(groupPosition);
+            final ChildViewHolder currentChildViewHolder = childViewHolder.get(groupPosition);
+            ((DeviceListActivity) mContext).runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    currentGroupViewHolder.ivMore.setVisibility(View.INVISIBLE);
+                    currentGroupViewHolder.ivIndicator.setImageDrawable(mContext.getResources().getDrawable(R.drawable.ic_indicator_plus));
+                    currentGroupViewHolder.ivQuad.setVisibility(View.INVISIBLE);
+                    currentChildViewHolder.recyclerViewChannels.setVisibility(View.INVISIBLE);
+                    currentChildViewHolder.overlayMenu.setVisibility(View.GONE);
+                    currentChildViewHolder.recyclerViewChannels.removeAllViewsInLayout();
+                    //                currentChildViewHolder.recyclerViewChannels = null;
+                }
+            });
 
-//        mDeviceManager.getDeviceChannelsManagers().get(groupPosition).clearSurfaceViewComponents();
+            //        mDeviceManager.getDeviceChannelsManagers().get(groupPosition).clearSurfaceViewComponents();
 
-        mDeviceManager.removeLoginListener(currentGroupViewHolder.mDevice.getId());
-        mDeviceManager.clearStart();
+            mDeviceManager.removeLoginListener(currentGroupViewHolder.mDevice.getId());
+            mDeviceManager.clearStart();
 
-//        onChangeOrientation(groupPosition);
+            //        onChangeOrientation(groupPosition);
+        } catch (IndexOutOfBoundsException e) {
+            e.printStackTrace();
+        }
     }
 
     private void setLayoutSize(final int groupPosition, final ChildViewHolder childViewHolder) {
@@ -559,13 +581,17 @@ public class DeviceExpandableListAdapter extends BaseExpandableListAdapter {
     }
 
     private void startDeviceRemoteControlActivity(Device mDevice) {
-        Bundle extras = new Bundle();
-        extras.putSerializable("device", mDevice);
+        try {
+            Bundle extras = new Bundle();
+            extras.putSerializable("device", mDevices.indexOf(mDevice));
 
-        Intent intent = new Intent(mContext, DeviceRemoteControlActivity.class);
-        intent.putExtras(extras);
+            Intent intent = new Intent(mContext, DeviceRemoteControlActivity.class);
+            intent.putExtras(extras);
 
-        mContext.startActivity(intent);
+            mContext.startActivity(intent);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     public int nextNumQuad(int numQuad,int totalChannels) {
@@ -634,14 +660,19 @@ public class DeviceExpandableListAdapter extends BaseExpandableListAdapter {
     }
 
     public void setMessage(final int position, final String message){
-        if(childViewHolder.size() > position && childViewHolder.get(position).tvMessage != null)
-            ((Activity)mContext).runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    childViewHolder.get(position).tvMessage.setText(message);
-                    childViewHolder.get(position).tvMessage.invalidate();
-                }
-            });
+        try {
+            if (childViewHolder.size() > position && childViewHolder.get(position).tvMessage != null) {
+                ((Activity) mContext).runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        childViewHolder.get(position).tvMessage.setText(message);
+                        childViewHolder.get(position).tvMessage.invalidate();
+                    }
+                });
+            }
+        } catch (ArrayIndexOutOfBoundsException e) {
+            e.printStackTrace();
+        }
     }
 
 

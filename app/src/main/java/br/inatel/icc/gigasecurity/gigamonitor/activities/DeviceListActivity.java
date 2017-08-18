@@ -156,10 +156,11 @@ public class DeviceListActivity extends ActionBarActivity {
         if(!mDeviceManager.loadedState) {
             statePreferences = mDeviceManager.loadState();
             previousGroup = statePreferences.previousGroup;
-            if (previousGroup > -1 && mDeviceManager.networkType > -1)
+            if (previousGroup > -1 && mDeviceManager.networkType > -1) {
                 mExpandableListView.expandGroup(previousGroup);
-            else if(mDeviceManager.networkType == 1)
+            } else if(mDeviceManager.networkType == 1 && mDeviceManager.someDeviceIsRecording()) {
                 Toast.makeText(mContext, "Finalize a gravação", Toast.LENGTH_SHORT).show();
+            }
             Log.d(TAG, "onResume: group: " + previousGroup + ", channel: " + statePreferences.previousChannel + ", grid: " + statePreferences.previousGrid + ", HD: " + statePreferences.previousHD);
             mDeviceManager.loadedState = true;
         }

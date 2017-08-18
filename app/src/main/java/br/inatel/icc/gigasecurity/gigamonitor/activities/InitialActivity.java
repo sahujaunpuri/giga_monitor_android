@@ -7,6 +7,7 @@ import android.graphics.Color;
 import android.graphics.PorterDuff;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -26,6 +27,7 @@ public class InitialActivity extends ActionBarActivity implements View.OnClickLi
     private static final int REQUEST_EXIT = 1;
     private ArrayList<Device> mDevices;
     private Discovery mDiscoveryThread;
+    private MenuItem atualizeButton;
     private ProgressBar pbInitial;
     private TextView tvDevicesFound, tvQrCode, tvNewDevice, tvAppVersion;
     private Context mContext;
@@ -33,6 +35,7 @@ public class InitialActivity extends ActionBarActivity implements View.OnClickLi
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
         setContentView(R.layout.activity_initial);
 
         mContext = this;
@@ -107,6 +110,7 @@ public class InitialActivity extends ActionBarActivity implements View.OnClickLi
     }
 
     public void searchDevices(){
+//        atualizeButton.setVisible(false);
         if (mDiscoveryThread == null) {
             mDiscoveryThread = prepareDiscoveryThread();
         } else {
@@ -123,9 +127,14 @@ public class InitialActivity extends ActionBarActivity implements View.OnClickLi
     }
 
     private void stopAndRefresh() {
-        mDiscoveryThread.interrupt();
-        mDiscoveryThread = prepareDiscoveryThread();
-        pbInitial.setVisibility(View.GONE);
+        try {
+            mDiscoveryThread.interrupt();
+            mDiscoveryThread = prepareDiscoveryThread();
+        } catch (RuntimeException e) {
+            e.printStackTrace();
+        } finally {
+            pbInitial.setVisibility(View.GONE);
+        }
     }
 
     public Discovery prepareDiscoveryThread() {
@@ -145,7 +154,7 @@ public class InitialActivity extends ActionBarActivity implements View.OnClickLi
                     } else {
                         tvDevicesFound.setText("Found " + mDevices.size() + " devices.");
                     }
-
+                    atualizeButton.setVisible(true);
                     pbInitial.setVisibility(View.GONE);
                 }
             });
@@ -164,14 +173,15 @@ public class InitialActivity extends ActionBarActivity implements View.OnClickLi
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-//        getMenuInflater().inflate(R.menu.menu_initial, menu);
-        if(DeviceManager.getInstance().getDevices().size()<2)
+        if(DeviceManager.getInstance().getDevices().size()<2) {
             getSupportActionBar().setDisplayHomeAsUpEnabled(false);
-        else
+        } else {
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        }
 
         getMenuInflater().inflate(R.menu.menu_initial_return, menu);
-
+        atualizeButton = menu.findItem(R.id.action_refresh);
+        atualizeButton.setVisible(false);
         return true;
     }
 
@@ -180,6 +190,7 @@ public class InitialActivity extends ActionBarActivity implements View.OnClickLi
         int id = item.getItemId();
 
         if (id == R.id.action_refresh) {
+            atualizeButton.setVisible(false);
             searchDevices();
         }
         if(id == android.R.id.home){
