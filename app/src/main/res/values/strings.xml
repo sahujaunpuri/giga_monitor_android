@@ -286,7 +286,7 @@
     <string name="playback_running">The playback must be running</string>
     <string name="snapshot_failed">Snapshot failed</string>
     <string name="record_failed">Record failed</string>
-    <string name="media_failed_message">The video has a high resolution and the pattern media player does not support it. Select another player or download a new one to watch the video!</string>
+    <string name="media_failed_message">The video has a high resolution and the pattern media player does not support it. Select another player or copy it to another device to watch it!</string>
     <string name="transfer">Transfer</string>
     <string name="do_not_show_message_again">Do not show message again!</string>
 
