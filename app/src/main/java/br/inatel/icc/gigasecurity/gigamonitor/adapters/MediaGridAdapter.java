@@ -44,6 +44,7 @@ import br.inatel.icc.gigasecurity.gigamonitor.listeners.MediaListener;
 
 /**
  * Created by filipecampos on 24/02/2016.
+ * Updated by williampenna on 08/08/2017.
  */
 public class MediaGridAdapter extends BaseAdapter {
 
@@ -62,10 +63,8 @@ public class MediaGridAdapter extends BaseAdapter {
     private ArrayList<Boolean> tridToGetImgThumbnail;
     private ArrayList<Boolean> tridToGetVideoThumbnail;
 
-    private TextView videoView;
-    private ArrayList<Integer> toDelete;
+    private ArrayList<String> toDelete;
 
-    public long videoClickDownTime = 0;
     private String path = Environment.getExternalStorageDirectory().getPath();
     private boolean pictureMode;
     public boolean selectItems;
@@ -86,8 +85,6 @@ public class MediaGridAdapter extends BaseAdapter {
         mImgDrawables = new ArrayList<>();
         tridToGetImgThumbnail = new ArrayList<>();
 
-//        mVideoDrawables = mDeviceManager.getImages();
-//        tridToGetVideoThumbnail = mDeviceManager.getImagesBoolean();
         mVideoDrawables = new ArrayList<>();
         tridToGetVideoThumbnail = new ArrayList<>();
 
@@ -183,17 +180,15 @@ public class MediaGridAdapter extends BaseAdapter {
     @Override
     public View getView(final int position, View convertView, ViewGroup parent) {
         TextView imageView = new TextView(mContext);
-        videoView = new TextView(mContext);
+        TextView videoView = new TextView(mContext);
 
         if (convertView == null) {
             convertView = mInflater.inflate(R.layout.recycler_view_media_item, parent, false);
             if(this.pictureMode) {
                 imageView = (TextView) convertView.findViewById(R.id.media_text_view);
-//                imageView = new TextView(mContext);
                 convertView.setLayoutParams(new GridView.LayoutParams(GridView.AUTO_FIT, 120));
             } else {
                 videoView = (TextView) convertView.findViewById(R.id.media_text_view);
-//                videoView = new TextView(mContext);
                 convertView.setLayoutParams(new GridView.LayoutParams(GridView.AUTO_FIT, 120));
             }
         } else {
@@ -277,7 +272,6 @@ public class MediaGridAdapter extends BaseAdapter {
                     }.execute();
                 }
             }
-//            return fVideoView;
         }
         convertView.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -337,18 +331,24 @@ public class MediaGridAdapter extends BaseAdapter {
         mContext.startActivity(intent);
     }
 
-    public Drawable getImgDrawable(int position) {
+    public Drawable getImgDrawable(final int position) {
         if (mImgDrawables.get(position) == null) {
             try {
                 Uri uri = getImageUri(position);
                 InputStream inputStream = mContext.getContentResolver().openInputStream(uri);
                 Drawable drawable = Drawable.createFromStream(inputStream, uri.toString());
                 mImgDrawables.remove(position);
-                mImgDrawables.add(position, drawable);
+                tridToGetImgThumbnail.remove(position);
+                if (drawable != null) {
+                    mImgDrawables.add(position, drawable);
+                    tridToGetImgThumbnail.add(position, true);
+                } else {
+                    mImgDrawables.add(position, null);
+                    tridToGetImgThumbnail.add(position, false);
+                }
             } catch (FileNotFoundException e) {
                 e.printStackTrace();
             }
-            tridToGetImgThumbnail.add(position, true);
         }
         return mImgDrawables.get(position);
     }
@@ -365,16 +365,18 @@ public class MediaGridAdapter extends BaseAdapter {
 
     public void setImgDrawable(View view, final int position) {
         try {
-            if (view != null && toDelete.contains(new Integer(position))) {
-//                draw.setAlpha(255);
-//                view.getBackground().setColorFilter(null);
+            String archiveDate;
+            if (pictureMode) {
+                archiveDate = mImageFiles.get(position).getName();
+            } else {
+                archiveDate = mVideoFiles.get(position).getName();
+            }
+            if (view != null && toDelete.contains(archiveDate)) {
                 view.setBackgroundResource(R.drawable.transparent_media_background);
-                toDelete.remove(new Integer(position));
+                toDelete.remove(archiveDate);
             } else if (view != null){
-//                draw.setAlpha(128);
-//                view.getBackground().setColorFilter(Color.GREEN, PorterDuff.Mode.OVERLAY);
                 view.setBackgroundResource(R.drawable.green_media_background);
-                toDelete.add(new Integer(position));
+                toDelete.add(archiveDate);
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -387,11 +389,11 @@ public class MediaGridAdapter extends BaseAdapter {
                 MediaMetadataRetriever retriever = new MediaMetadataRetriever();
                 retriever.setDataSource(mVideoFiles.get(position).getPath());
                 Bitmap bitmap = retriever.getFrameAtTime(1000, MediaMetadataRetriever.OPTION_CLOSEST_SYNC);
-                //            Bitmap bitmap = ThumbnailUtils.createVideoThumbnail(mVideoFiles.get(position).getPath(), MediaStore.Images.Thumbnails.MINI_KIND);
                 if (bitmap != null) {
                     mVideoDrawables.add(position, new BitmapDrawable(mContext.getResources(), bitmap));
+                    tridToGetVideoThumbnail.add(position, true);
                 }
-                tridToGetVideoThumbnail.add(position, true);
+
             } catch (RuntimeException e) {
                 e.printStackTrace();
             }
@@ -428,7 +430,7 @@ public class MediaGridAdapter extends BaseAdapter {
             tridToGetImgThumbnail.remove(position);
         } else {
             mVideoFiles.get(position).delete();
-//            mVideoFiles.remove(position);
+            mVideoFiles.remove(position);
             mVideoUris.remove(position);
             mVideoDrawables.remove(position);
             tridToGetVideoThumbnail.remove(position);
@@ -443,22 +445,42 @@ public class MediaGridAdapter extends BaseAdapter {
 
     public void deleteSelectedMedias() {
         for (int i=0; i<toDelete.size(); i=0) {
-            Integer itemToDelete = toDelete.get(i);
-            removeItem(itemToDelete);
+            String itemToDelete = toDelete.get(i);
+            removeItem(getImagePosition(itemToDelete));
             toDelete.remove(i);
         }
         selectItems = false;
     }
 
-    private int getDrawablePosition(View drawable) {
-        int position = -1;
+    private int getImagePosition(String date) {
+        int position;
         if (pictureMode) {
-            if (mImgDrawables.contains(drawable)) {
-                position = mImgDrawables.indexOf(drawable);
-            }
+            position = imagePosition(date);
         } else {
-            if (mVideoDrawables.contains(drawable)) {
-                position = mVideoDrawables.indexOf(drawable);
+            position = videoPosition(date);
+        }
+        return position;
+    }
+
+    private int imagePosition(final String date) {
+        int position = -1;
+        for (int i=0; i<mImageFiles.size(); i++) {
+            String name = mImageFiles.get(i).getName();
+            if (name.contains(date)) {
+                position = i;
+                break;
+            }
+        }
+        return position;
+    }
+
+    private int videoPosition(final String date) {
+        int position = -1;
+        for (int i=0; i<mVideoFiles.size(); i++) {
+            String name = mVideoFiles.get(i).getName();
+            if (name.contains(date)) {
+                position = i;
+                break;
             }
         }
         return position;
