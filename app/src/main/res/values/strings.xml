@@ -142,6 +142,7 @@
     <string name="title_activity_ddnsconfig">DDNS Config</string>
     <string name="title_activity_upnp_config">UPnP Config</string>
     <string name="media_video_activity_title">Mídia</string>
+    <string name="media_delete_various">Do you really like to delete the selected items?</string>
     <string name="label_action">Action</string>
     <string name="label_add">Add</string>
     <string name="action_settings">Settings</string>
