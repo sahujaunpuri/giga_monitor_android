@@ -28,8 +28,6 @@ import android.widget.Toast;
 import android.widget.VideoView;
 
 import com.basic.G;
-import com.google.android.gms.cast.MediaInfo;
-import com.google.android.gms.common.images.Size;
 import com.lib.EFUN_ERROR;
 import com.lib.EPTZCMD;
 import com.lib.EUIMSG;

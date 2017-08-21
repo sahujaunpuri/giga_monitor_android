@@ -6,7 +6,7 @@ import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.os.Handler;
-import android.support.v7.app.AppCompatActivity;
+import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -21,7 +21,7 @@ import br.inatel.icc.gigasecurity.gigamonitor.R;
  * Created by zappts on 10/08/17.
  */
 
-public class MediaVideoActivity extends Activity implements
+public class MediaVideoActivity extends ActionBarActivity implements
         MediaPlayer.OnBufferingUpdateListener, MediaPlayer.OnCompletionListener, MediaPlayer.OnPreparedListener,
         MediaPlayer.OnVideoSizeChangedListener, MediaPlayer.OnErrorListener, SurfaceHolder.Callback {
 

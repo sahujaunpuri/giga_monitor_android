@@ -14,7 +14,6 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
 import android.support.v7.app.ActionBarActivity;
-import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -38,7 +37,7 @@ import br.inatel.icc.gigasecurity.gigamonitor.adapters.MediaGridAdapter;
 import br.inatel.icc.gigasecurity.gigamonitor.core.DeviceManager;
 import br.inatel.icc.gigasecurity.gigamonitor.listeners.MediaListener;
 
-public class MediaActivity extends AppCompatActivity {
+public class MediaActivity extends ActionBarActivity {
 
     public static GridView gvMedia;
     public static MediaGridAdapter mAdapter;

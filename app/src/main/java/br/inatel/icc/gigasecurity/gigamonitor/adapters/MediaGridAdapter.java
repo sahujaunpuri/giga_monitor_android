@@ -24,8 +24,6 @@ import android.widget.GridView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.google.android.gms.games.GamesMetadata;
-
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
