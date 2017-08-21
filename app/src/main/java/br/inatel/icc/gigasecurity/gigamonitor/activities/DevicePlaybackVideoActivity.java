@@ -38,9 +38,11 @@ import com.google.android.gms.appindexing.Action;
 import com.google.android.gms.appindexing.AppIndex;
 import com.google.android.gms.appindexing.Thing;
 import com.google.android.gms.common.api.GoogleApiClient;
+import com.lib.SDKCONST;
 import com.lib.sdk.struct.H264_DVR_FILE_DATA;
 import com.lib.sdk.struct.SDK_SYSTEM_TIME;
 
+import java.io.File;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -96,6 +98,7 @@ public class DevicePlaybackVideoActivity extends ActionBarActivity {
     private int seekBarHeight;
 
     private ProgressDialog mProgressDialog;
+    private String downloadPath;
 
     private PlaybackListener mPlaybackListener =
             new PlaybackListener() {
@@ -245,7 +248,14 @@ public class DevicePlaybackVideoActivity extends ActionBarActivity {
 
         @Override
         public void onCancelDownload() {
-            mProgressDialog.dismiss();
+            try {
+                File file = new File(downloadPath);
+                file.delete();
+            } catch (Exception e) {
+                e.printStackTrace();
+            } finally {
+                mProgressDialog.dismiss();
+            }
         }
 
         @Override
@@ -584,8 +594,8 @@ public class DevicePlaybackVideoActivity extends ActionBarActivity {
             public void onClick(DialogInterface dialogInterface, int i) {
                 byte[] file = G.ObjToBytes(mFileData.getFileData());
                 String fileName = actualTime();
-                String path = Environment.getExternalStorageDirectory().getPath() + "/Movies/Giga Monitor/" + fileName + ".mp4";
-                mDeviceManager.downloadFile(mDevice, file, path, downloadListener);
+                downloadPath = Environment.getExternalStorageDirectory().getPath() + "/Movies/Giga Monitor/" + fileName + ".mp4";
+                mDeviceManager.downloadFile(mDevice, file, downloadPath, downloadListener);
             }
         });
         alert.setNegativeButton("Não", new DialogInterface.OnClickListener() {
@@ -788,14 +798,11 @@ public class DevicePlaybackVideoActivity extends ActionBarActivity {
 
     @Override
     public boolean onPrepareOptionsMenu(Menu menu) {
-//        MenuItem recordIcon = menu.findItem(R.id.playback_record);
         MenuItem downloadIcon = menu.findItem(R.id.playback_download);
-        if (mFileData.mFileType == 2) {
-//            recordIcon.setVisible(false);
-            downloadIcon.setVisible(true);
-        } else {
-//            recordIcon.setVisible(true);
+        if (mFileData.mFileType == SDKCONST.FileType.SDK_RECORD_MANUAL) {
             downloadIcon.setVisible(false);
+        } else {
+            downloadIcon.setVisible(true);
         }
         return true;
     }

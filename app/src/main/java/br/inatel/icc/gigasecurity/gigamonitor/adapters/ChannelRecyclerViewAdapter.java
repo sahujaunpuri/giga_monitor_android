@@ -210,7 +210,7 @@ public class ChannelRecyclerViewAdapter extends RecyclerView.Adapter<ChannelRecy
         if(overlayMenu.getVisibility() == View.VISIBLE) {
             overlayMenu.setVisibility(View.GONE);
         }
-        if (overlayPTZ.getVisibility() == View.VISIBLE) {
+        if (overlayPTZ != null && overlayPTZ.getVisibility() == View.VISIBLE) {
             overlayPTZ.setVisibility(View.GONE);
         }
     }

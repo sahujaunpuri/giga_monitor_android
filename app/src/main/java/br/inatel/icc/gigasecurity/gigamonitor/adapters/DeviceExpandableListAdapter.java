@@ -380,7 +380,7 @@ public class DeviceExpandableListAdapter extends BaseExpandableListAdapter {
             mDeviceManager.clearStart();
 
             //        onChangeOrientation(groupPosition);
-        } catch (IndexOutOfBoundsException e) {
+        } catch (IndexOutOfBoundsException |  NullPointerException e) {
             e.printStackTrace();
         }
     }

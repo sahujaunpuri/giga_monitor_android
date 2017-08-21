@@ -1165,7 +1165,6 @@ public class DeviceManager implements IFunSDKResult {
         saveData();
     }
 
-    public void removeDevice(int id) {
     public boolean someDeviceIsRecording() {
         boolean someRecord = false;
         for (Device device: mDevices) {
@@ -1767,7 +1766,9 @@ public class DeviceManager implements IFunSDKResult {
             break;
             case EUIMSG.EMSG_Stop_DownLoad:
             {
-                downloadPlaybackListener.onCancelDownload();
+                if (msg.arg1 == 0) {
+                    downloadPlaybackListener.onCancelDownload();
+                }
             }
             break;
         }
