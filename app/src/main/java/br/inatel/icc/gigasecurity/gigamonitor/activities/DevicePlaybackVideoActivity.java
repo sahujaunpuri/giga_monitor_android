@@ -9,7 +9,6 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.res.Configuration;
 import android.content.res.Resources;
-import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
@@ -34,8 +33,8 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.basic.G;
-import com.lib.SDKCONST;
 import com.lib.sdk.struct.H264_DVR_FILE_DATA;
+import com.lib.sdk.struct.H264_DVR_FINDINFO;
 import com.lib.sdk.struct.SDK_SYSTEM_TIME;
 
 import java.io.File;
@@ -56,6 +55,7 @@ import br.inatel.icc.gigasecurity.gigamonitor.model.FileData;
 import br.inatel.icc.gigasecurity.gigamonitor.model.DeviceChannelsManager;
 import br.inatel.icc.gigasecurity.gigamonitor.ui.SurfaceViewComponent;
 import br.inatel.icc.gigasecurity.gigamonitor.util.OPCompressPic;
+import br.inatel.icc.gigasecurity.gigamonitor.util.Utils;
 
 public class DevicePlaybackVideoActivity extends ActionBarActivity {
 
@@ -826,7 +826,7 @@ public class DevicePlaybackVideoActivity extends ActionBarActivity {
     }
 
     private void requestDeviceSearchPicture() {
-//        String path = Environment.getExternalStorageDirectory().getPath() + "/Pictures/Giga Monitor/" + Utils.currentDateTime() + ".jpg";
+        String path = Environment.getExternalStorageDirectory().getPath() + "/Pictures/Giga Monitor/Videos";
 //        H264_DVR_FILE_DATA info = mFileData.getFileData();
 //        OPCompressPic opCompressPic = new OPCompressPic();
 //        opCompressPic.setPicName("Thumbnail");
@@ -840,31 +840,31 @@ public class DevicePlaybackVideoActivity extends ActionBarActivity {
 //                20, -1,
 //                path, 145);
 //        return (result == 0);
-//        H264_DVR_FINDINFO info = new H264_DVR_FINDINFO();
-//
+        H264_DVR_FINDINFO info = new H264_DVR_FINDINFO();
+
 //        info.st_0_nChannelN0 = mFileData.getFileData().st_0_ch;
 //        info.st_1_nFileType = SDKCONST.PicFileType.PIC_KEY;
-//        Date beginDate = mFileData.getBeginDate();
-//        Calendar beginCalendar = Calendar.getInstance();
-//        beginCalendar.setTime(beginDate);
-//        Date finalDate = mFileData.getEndDate();
-//        Calendar endCalendar = Calendar.getInstance();
-//        endCalendar.setTime(finalDate);
-//        info.st_2_startTime.st_0_dwYear = beginCalendar.get(Calendar.YEAR);
-//        info.st_2_startTime.st_1_dwMonth = beginCalendar.get(Calendar.MONTH) + 1;
-//        info.st_2_startTime.st_2_dwDay = beginCalendar.get(Calendar.DAY_OF_MONTH);
-//        info.st_2_startTime.st_3_dwHour = beginCalendar.get(Calendar.HOUR_OF_DAY);
-//        info.st_2_startTime.st_4_dwMinute = beginCalendar.get(Calendar.MINUTE);
-//        info.st_2_startTime.st_5_dwSecond = 0;
-//        info.st_3_endTime.st_0_dwYear = endCalendar.get(Calendar.YEAR);
-//        info.st_3_endTime.st_1_dwMonth = endCalendar.get(Calendar.MONTH) + 1;
-//        info.st_3_endTime.st_2_dwDay = endCalendar.get(Calendar.DAY_OF_MONTH);
-//        info.st_3_endTime.st_3_dwHour = endCalendar.get(Calendar.HOUR_OF_DAY);
-//        info.st_3_endTime.st_4_dwMinute = endCalendar.get(Calendar.MINUTE);
-//        info.st_3_endTime.st_5_dwSecond = 59;
+        Date beginDate = mFileData.getBeginDate();
+        Calendar beginCalendar = Calendar.getInstance();
+        beginCalendar.setTime(beginDate);
+        Date finalDate = mFileData.getEndDate();
+        Calendar endCalendar = Calendar.getInstance();
+        endCalendar.setTime(finalDate);
+        info.st_2_startTime.st_0_dwYear = beginCalendar.get(Calendar.YEAR);
+        info.st_2_startTime.st_1_dwMonth = beginCalendar.get(Calendar.MONTH) + 1;
+        info.st_2_startTime.st_2_dwDay = beginCalendar.get(Calendar.DAY_OF_MONTH);
+        info.st_2_startTime.st_3_dwHour = beginCalendar.get(Calendar.HOUR_OF_DAY);
+        info.st_2_startTime.st_4_dwMinute = beginCalendar.get(Calendar.MINUTE);
+        info.st_2_startTime.st_5_dwSecond = 0;
+        info.st_3_endTime.st_0_dwYear = endCalendar.get(Calendar.YEAR);
+        info.st_3_endTime.st_1_dwMonth = endCalendar.get(Calendar.MONTH) + 1;
+        info.st_3_endTime.st_2_dwDay = endCalendar.get(Calendar.DAY_OF_MONTH);
+        info.st_3_endTime.st_3_dwHour = endCalendar.get(Calendar.HOUR_OF_DAY);
+        info.st_3_endTime.st_4_dwMinute = endCalendar.get(Calendar.MINUTE);
+        info.st_3_endTime.st_5_dwSecond = 59;
 //        info.st_6_StreamType = 2;
 
-        mDeviceManager.findThumbnailList(mDevice, mFileData, new PlaybackSearchListener() {
+        mDeviceManager.findThumbnailList(mDevice, mFileData, info, new PlaybackSearchListener() {
             @Override
             public void onEmptyListFound() {
                 Log.e("ThumbnailList", "Empty");

@@ -1038,20 +1038,14 @@ public class DeviceManager implements IFunSDKResult {
         FunSDK.DevFindFile(getHandler(), device.connectionString, G.ObjToBytes(info), 1000, 20000, device.getId());
     }
 
-    public void findThumbnailList(Device device, FileData info, PlaybackSearchListener listener) {
-        currentPlaybackSearchListener = listener;
-        H264_DVR_FILE_DATA info2 = info.getFileData();
-        String path = Environment.getExternalStorageDirectory().getPath() + "/Pictures/Giga Monitor/";
-        String thumb_path = path + File.separator + getDownloadFileNameByData(info2, 1, true);
-        OPCompressPic opCompressPic = new OPCompressPic();
-        opCompressPic.setPicName(G.ToString(info2.st_2_fileName));
-        opCompressPic.setWidth(160);
-        opCompressPic.setHeight(100);
-        opCompressPic.setIsGeo(1);
-        String opCompressPicJson = opCompressPic.getSendMsg();
-        int result = FunSDK.DevSearchPicture(getHandler(), device.getSerialNumber(), EDEV_JSON_ID.COMPRESS_PICTURE_REQ, 200, 10000, opCompressPicJson.getBytes(), 200, -1, thumb_path, 12);
-        String result1 = String.valueOf(result);
-        Log.e("PICSEARCH", result1);
+    public void findThumbnailList(Device device, FileData info, H264_DVR_FINDINFO findInfo, PlaybackSearchListener listener) {
+//        currentPlaybackSearchListener = listener;
+//        H264_DVR_FILE_DATA info2 = info.getFileData();
+//        String path = Environment.getExternalStorageDirectory().getPath() + "/Pictures/Giga Monitor/";
+//        String thumb_path = path + File.separator + getDownloadFileNameByData(info2, 1, true);
+//        int result = FunSDK.DownloadRecordBImages();
+//        String result1 = String.valueOf(result);
+//        Log.e("PICSEARCH", result1);
     }
 
     public static String getDownloadFileNameByData(H264_DVR_FILE_DATA data, int type, boolean bThumbnail) {
