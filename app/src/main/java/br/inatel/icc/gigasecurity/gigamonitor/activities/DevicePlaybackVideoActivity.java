@@ -784,17 +784,6 @@ public class DevicePlaybackVideoActivity extends ActionBarActivity {
     }
 
     @Override
-    public boolean onPrepareOptionsMenu(Menu menu) {
-        MenuItem downloadIcon = menu.findItem(R.id.playback_download);
-        if (mFileData.mFileType == SDKCONST.FileType.SDK_RECORD_MANUAL) {
-            downloadIcon.setVisible(false);
-        } else {
-            downloadIcon.setVisible(true);
-        }
-        return true;
-    }
-
-    @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
 

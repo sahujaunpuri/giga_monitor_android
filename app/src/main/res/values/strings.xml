@@ -279,7 +279,7 @@
     <string name="title_activity_device_list3">Meus Dispositivos</string>
     <string name="title_activity_timeline">Minha Timeline</string>
     <string name="priority_connection_message">At least one connection has to be marked!</string>
-    <string name="download_error">Error trying to download file</string>
+    <string name="download_error">You do not have permission to download the file!</string>
     <string name="playback_stop_video_when_recording">"The video cannot be paused. Stop the record before stopping the video"</string>
     <string name="playback_record_message">Playback Record finished</string>
     <string name="playback_being_recorded">Playback is being recorded</string>

@@ -277,7 +277,7 @@
     <string name="title_activity_timeline">Minha Timeline</string>
     <string name="title_activity_full_screen_my_surface">FullScreenMySurfaceActivity</string>
     <string name="priority_connection_message">Ao menos uma conexão deve ser marcada!</string>
-    <string name="download_error">Erro ao tentar baixar o arquivo</string>
+    <string name="download_error">Você não tem permissão para baixar o arquivo!</string>
     <string name="playback_stop_video_when_recording">O vídeo está sendo gravado. Pare a gravação para parar o vídeo!</string>
     <string name="playback_record_message">Gravação do playback finalizada</string>
     <string name="playback_being_recorded">O vídeo está sendo gravado</string>
