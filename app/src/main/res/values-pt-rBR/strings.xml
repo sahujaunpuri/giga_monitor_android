@@ -288,5 +288,11 @@
     <string name="media_failed_message">O vídeo possui uma resolução alta e o seu dispositivo não consegue reproduzí-lo. Escolha outro reprodutor ou copie para um computador para assistí-lo!</string>
     <string name="transfer">Transferir</string>
     <string name="do_not_show_message_again">Não mostrar essa mensagem novamente!</string>
+    <string name="cameras">Cameras</string>
+    <string name="stream">Stream:</string>
+    <string name="resolution">Resolução:</string>
+    <string name="frame_rate">Taxa de quadros:</string>
+    <string name="quality">Qualidade:</string>
+    <string name="audio">Áudio:</string>
 
 </resources>

@@ -94,7 +94,7 @@ public class DevicePlaybackActivity extends ActionBarActivity
         layoutListPlayback = (LinearLayout) findViewById(R.id.linear_layout_list_playback);
         layout_spinner     = (LinearLayout) findViewById(R.id.linear_layout_spinner);
         playbackType       = (TextView) findViewById(R.id.spinnerValue);
-        spinner               = (Spinner) findViewById(R.id.playback_filter);
+        spinner            = (Spinner) findViewById(R.id.playback_filter);
 
         mListView.setOnItemClickListener(this);
 

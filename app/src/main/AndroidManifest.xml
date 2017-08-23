@@ -127,6 +127,9 @@
             android:label="@string/title_activity_device_config" />
         <activity android:name=".activities.MediaVideoActivity" android:theme="@style/Theme.Transparent"/>
         <activity
+            android:name=".config.encode.EncodeActivity"
+            android:label="@string/cameras"/>
+        <activity
             android:name=".activities.SplashScreenActivity"
             android:label="@string/app_name">
             <intent-filter>
