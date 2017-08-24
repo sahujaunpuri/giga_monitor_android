@@ -290,11 +290,24 @@
     <string name="media_failed_message">The video has a high resolution and the pattern media player does not support it. Select another player or copy it to another device to watch it!</string>
     <string name="transfer">Transfer</string>
     <string name="do_not_show_message_again">Do not show message again!</string>
+
+    <!--   ENCODE STRINGS    -->
+
     <string name="cameras">Cameras</string>
     <string name="stream">Stream:</string>
     <string name="resolution">Resolution:</string>
     <string name="frame_rate">Frame rate:</string>
     <string name="quality">Quality:</string>
     <string name="audio">Audio:</string>
+    <string name="d1_resolution">D1</string>
+    <string name="resolution_960h">960H</string>
+    <string name="resolution_720p">720P</string>
+    <string name="resolution_1080p">1080P</string>
+    <string name="excellent_quality">Excellent</string>
+    <string name="very_good_quality">Very good</string>
+    <string name="good_quality">Good</string>
+    <string name="regular_quality">Regular</string>
+    <string name="bad_quality">Bad</string>
+    <string name="very_bad_quality">Very bad</string>
 
 </resources>

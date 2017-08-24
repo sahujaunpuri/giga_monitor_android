@@ -38,6 +38,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginLeft="@dimen/margintop_config_item"
+        android:layout_marginTop="@dimen/margintop_config_item"
         android:orientation="horizontal">
 
         <TextView
@@ -76,7 +77,7 @@
 
         <TextView
             android:id="@+id/resolution"
-            android:layout_width="40dp"
+            android:layout_width="80dp"
             android:layout_height="match_parent"
             android:layout_marginLeft="10dp"
             android:textSize="20sp"
@@ -136,7 +137,7 @@
 
         <TextView
             android:id="@+id/quality"
-            android:layout_width="40dp"
+            android:layout_width="100dp"
             android:layout_height="match_parent"
             android:layout_marginLeft="10dp"
             android:textSize="20sp"
@@ -160,22 +161,18 @@
             android:id="@+id/tv_audio"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
+            android:gravity="center_vertical"
             android:text="@string/audio"
             android:textSize="20sp"
             android:textAppearance="?android:attr/textAppearanceMedium"/>
 
-        <TextView
-            android:id="@+id/audio"
-            android:layout_width="40dp"
-            android:layout_height="match_parent"
-            android:layout_marginLeft="10dp"
-            android:textSize="20sp"
-            android:textAppearance="?android:attr/textAppearanceMedium"/>
-
-        <Spinner
-            android:id="@+id/audio_spinner"
-            android:layout_width="40dp"
-            android:layout_height="wrap_content" />
+        <ToggleButton
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/audio_toggle_button"
+            android:layout_marginLeft="@dimen/margintop_config_item"
+            android:textOff="Off"
+            android:textOn="On" />
 
     </LinearLayout>
 
