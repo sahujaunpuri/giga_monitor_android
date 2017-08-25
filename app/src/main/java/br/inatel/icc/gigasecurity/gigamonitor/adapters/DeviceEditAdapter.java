@@ -31,14 +31,10 @@ public class DeviceEditAdapter extends BaseAdapter {
     private ArrayList<Device> mDevices;
     private DeviceManager mDeviceManager;
     private Context mContex;
-    private TextView tvDeviceName;
-    private ImageView ivDeleteDevice;
-    private LayoutInflater mInflater;
 
     public DeviceEditAdapter(Context context, ArrayList<Device> devices) {
         this.mContex = context;
         this.mDevices = devices;
-//        this.mInflater = LayoutInflater.from(context);
         this.mDeviceManager = DeviceManager.getInstance();
     }
 
@@ -67,8 +63,6 @@ public class DeviceEditAdapter extends BaseAdapter {
 
             holder.delete = (ImageView) convertView.findViewById(R.id.iv_delete_device);
             holder.deviceName = (TextView) convertView.findViewById(R.id.tv_item_edit_device);
-//            tvDeviceName = (TextView) convertView.findViewById(R.id.tv_item_edit_device);
-//            ivDeleteDevice = (ImageView) convertView.findViewById(R.id.iv_delete_device);
             convertView.setTag(holder);
         } else {
             holder = (ViewHolder) convertView.getTag();
@@ -76,12 +70,10 @@ public class DeviceEditAdapter extends BaseAdapter {
 
         if(mDevices.get(position).getId() == ("Favoritos").hashCode()) {
             holder.delete.setVisibility(View.INVISIBLE);
-//            ivDeleteDevice.setVisibility(View.INVISIBLE);
         } else {
             holder.delete.setVisibility(View.VISIBLE);
         }
 
-//        tvDeviceName.setText(mDevices.get(position).deviceName);
         holder.deviceName.setText(mDevices.get(position).deviceName);
 
         holder.delete.setOnClickListener(new View.OnClickListener() {
@@ -90,12 +82,6 @@ public class DeviceEditAdapter extends BaseAdapter {
                 showDeleteConfirmation(position);
             }
         });
-//        ivDeleteDevice.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                showDeleteConfirmation(position);
-//            }
-//        });
 
         if(mDevices.get(position).getId() != ("Favoritos").hashCode())
             holder.deviceName.setOnClickListener(new View.OnClickListener() {
@@ -104,12 +90,6 @@ public class DeviceEditAdapter extends BaseAdapter {
                     startDeviceFormActivity(position);
                 }
             });
-//            tvDeviceName.setOnClickListener(new View.OnClickListener() {
-//                @Override
-//                public void onClick(View v) {
-//                    startDeviceFormActivity(position);
-//                }
-//            });
         convertView.setTag(holder);
         return convertView;
     }
@@ -151,7 +131,5 @@ public class DeviceEditAdapter extends BaseAdapter {
     private class ViewHolder {
         private ImageView delete;
         private TextView deviceName;
-        private ImageView dragButton;
-
     }
 }
