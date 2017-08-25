@@ -22,20 +22,17 @@ import br.inatel.icc.gigasecurity.gigamonitor.model.Device;
 
 /**
  * Created by filipecampos on 09/07/2015.
+ * Updated by williampenna on 25/08/2017.
  */
 public class DeviceEditAdapter extends BaseAdapter {
 
     private ArrayList<Device> mDevices;
     private DeviceManager mDeviceManager;
     private Context mContex;
-    private TextView tvDeviceName;
-    private ImageView ivDeleteDevice;
-    private LayoutInflater mInflater;
 
     public DeviceEditAdapter(Context context, ArrayList<Device> devices) {
         this.mContex = context;
         this.mDevices = devices;
-        this.mInflater = LayoutInflater.from(context);
         this.mDeviceManager = DeviceManager.getInstance();
     }
 
@@ -56,33 +53,45 @@ public class DeviceEditAdapter extends BaseAdapter {
 
     @Override
     public View getView(final int position, View convertView, ViewGroup parent) {
-
+        ViewHolder holder = new ViewHolder();
         if(convertView == null) {
-            convertView = mInflater.inflate(R.layout.list_item_edit_device, null);
+            LayoutInflater inflater = (LayoutInflater) mContex.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+            convertView = inflater.inflate(R.layout.list_item_edit_device, null);
 
-            tvDeviceName = (TextView) convertView.findViewById(R.id.tv_item_edit_device);
-            ivDeleteDevice = (ImageView) convertView.findViewById(R.id.iv_delete_device);
-            if(mDevices.get(position).getId() == ("Favoritos").hashCode())
-                ivDeleteDevice.setVisibility(View.INVISIBLE);
+            holder.deviceName = (TextView) convertView.findViewById(R.id.tv_item_edit_device);
+            holder.deleteDevice = (ImageView) convertView.findViewById(R.id.iv_delete_device);
+
+            convertView.setTag(holder);
+
+        } else {
+            holder = (ViewHolder) convertView.getTag();
         }
 
-        tvDeviceName.setText(mDevices.get(position).deviceName);
+        if(mDevices.get(position).getId() == ("Favoritos").hashCode()) {
+            holder.deleteDevice.setVisibility(View.INVISIBLE);
+        } else {
+            holder.deleteDevice.setVisibility(View.VISIBLE);
+        }
 
-        ivDeleteDevice.setOnClickListener(new View.OnClickListener() {
+        holder.deviceName.setText(mDevices.get(position).deviceName);
+
+        holder.deleteDevice.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 showDeleteConfirmation(position);
             }
         });
 
-        if(mDevices.get(position).getId() != ("Favoritos").hashCode())
-            tvDeviceName.setOnClickListener(new View.OnClickListener() {
+        if(mDevices.get(position).getId() != ("Favoritos").hashCode()) {
+            holder.deviceName.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
                     startDeviceFormActivity(position);
                 }
             });
+        }
 
+        convertView.setTag(holder);
         return convertView;
     }
 
@@ -118,5 +127,10 @@ public class DeviceEditAdapter extends BaseAdapter {
         });
 
         alert.show();
+    }
+
+    private class ViewHolder {
+        ImageView deleteDevice;
+        TextView deviceName;
     }
 }
