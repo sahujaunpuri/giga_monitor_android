@@ -5,6 +5,9 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.v7.widget.RecyclerView;
+import android.util.Log;
+import android.view.DragEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -35,7 +38,7 @@ public class DeviceEditAdapter extends BaseAdapter {
     public DeviceEditAdapter(Context context, ArrayList<Device> devices) {
         this.mContex = context;
         this.mDevices = devices;
-        this.mInflater = LayoutInflater.from(context);
+//        this.mInflater = LayoutInflater.from(context);
         this.mDeviceManager = DeviceManager.getInstance();
     }
 
@@ -56,33 +59,58 @@ public class DeviceEditAdapter extends BaseAdapter {
 
     @Override
     public View getView(final int position, View convertView, ViewGroup parent) {
-
+        final ViewHolder holder;
         if(convertView == null) {
-            convertView = mInflater.inflate(R.layout.list_item_edit_device, null);
+            LayoutInflater inflater = (LayoutInflater) mContex.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+            convertView = inflater.inflate(R.layout.list_item_edit_device, null);
+            holder = new ViewHolder();
 
-            tvDeviceName = (TextView) convertView.findViewById(R.id.tv_item_edit_device);
-            ivDeleteDevice = (ImageView) convertView.findViewById(R.id.iv_delete_device);
-            if(mDevices.get(position).getId() == ("Favoritos").hashCode())
-                ivDeleteDevice.setVisibility(View.INVISIBLE);
+            holder.delete = (ImageView) convertView.findViewById(R.id.iv_delete_device);
+            holder.deviceName = (TextView) convertView.findViewById(R.id.tv_item_edit_device);
+//            tvDeviceName = (TextView) convertView.findViewById(R.id.tv_item_edit_device);
+//            ivDeleteDevice = (ImageView) convertView.findViewById(R.id.iv_delete_device);
+            convertView.setTag(holder);
+        } else {
+            holder = (ViewHolder) convertView.getTag();
         }
 
-        tvDeviceName.setText(mDevices.get(position).deviceName);
+        if(mDevices.get(position).getId() == ("Favoritos").hashCode()) {
+            holder.delete.setVisibility(View.INVISIBLE);
+//            ivDeleteDevice.setVisibility(View.INVISIBLE);
+        } else {
+            holder.delete.setVisibility(View.VISIBLE);
+        }
 
-        ivDeleteDevice.setOnClickListener(new View.OnClickListener() {
+//        tvDeviceName.setText(mDevices.get(position).deviceName);
+        holder.deviceName.setText(mDevices.get(position).deviceName);
+
+        holder.delete.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 showDeleteConfirmation(position);
             }
         });
+//        ivDeleteDevice.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                showDeleteConfirmation(position);
+//            }
+//        });
 
         if(mDevices.get(position).getId() != ("Favoritos").hashCode())
-            tvDeviceName.setOnClickListener(new View.OnClickListener() {
+            holder.deviceName.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
                     startDeviceFormActivity(position);
                 }
             });
-
+//            tvDeviceName.setOnClickListener(new View.OnClickListener() {
+//                @Override
+//                public void onClick(View v) {
+//                    startDeviceFormActivity(position);
+//                }
+//            });
+        convertView.setTag(holder);
         return convertView;
     }
 
@@ -118,5 +146,12 @@ public class DeviceEditAdapter extends BaseAdapter {
         });
 
         alert.show();
+    }
+
+    private class ViewHolder {
+        private ImageView delete;
+        private TextView deviceName;
+        private ImageView dragButton;
+
     }
 }
