@@ -265,8 +265,8 @@
     <string name="label_please_wait">Please wait...</string>
     <string name="label_no_records">No recordings available.</string>
     <string name="label_date_playback">Date:</string>
-    <string name="label_begin_hour_playback">Begin Hour:</string>
-    <string name="label_end_hour_playback">End Hour:</string>
+    <string name="label_begin_hour_playback">Begin Time:</string>
+    <string name="label_end_hour_playback">End Time:</string>
     <string name="label_channel_playback">Channel:</string>
     <string name="label_setup_new_device">SETUP NEW DEVICE</string>
     <string name="label_scan_qr_code">SCAN QR CODE</string>

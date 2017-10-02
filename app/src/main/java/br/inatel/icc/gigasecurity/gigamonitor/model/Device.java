@@ -33,7 +33,7 @@ public class Device implements Serializable {
     @Expose private int httpPort = 80;
     @Expose private int sslPort = 8443;
     @Expose private int tcpPort = 34567;
-    @Expose private int externalPort;
+    @Expose private int externalPort = 34567;
     @Expose private int udpPort = 34568;
     @Expose private int maxBPS;
     @Expose private int transferPlan;
