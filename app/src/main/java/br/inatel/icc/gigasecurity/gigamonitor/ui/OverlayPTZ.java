@@ -22,7 +22,7 @@ public class OverlayPTZ extends RelativeLayout implements View.OnTouchListener  
 
     private Context mContext;
     public SurfaceViewComponent surfaceViewComponent;
-    private ImageView topLeftArrow, leftArrow, rightArrow, topRightArrow, upArrow, downLeftArrow, downArrow, downRightArrow, zoomIn, zoomOut;//, focusIn, focusOut, irisUp, irisDown, ptz;
+    private ImageView topLeftArrow, leftArrow, rightArrow, topRightArrow, upArrow, downLeftArrow, downArrow, downRightArrow, zoomIn, zoomOut, ivTouch;//, focusIn, focusOut, irisUp, irisDown, ptz;
     private DeviceManager deviceManager;
 
     public OverlayPTZ(Context context) {
@@ -66,6 +66,7 @@ public class OverlayPTZ extends RelativeLayout implements View.OnTouchListener  
         zoomIn.setOnTouchListener(this);
         zoomOut = (ImageView) findViewById(R.id.zoom_out);
         zoomOut.setOnTouchListener(this);
+        ivTouch = (ImageView) findViewById(R.id.touch_icon);
 //        focusIn = (ImageView) findViewById(R.id.focus_in);
 //        focusIn.setOnTouchListener(this);
 //        focusOut = (ImageView) findViewById(R.id.focus_out);
@@ -87,6 +88,16 @@ public class OverlayPTZ extends RelativeLayout implements View.OnTouchListener  
 
     public void setSurfaceViewComponent(SurfaceViewComponent svc) {
         this.surfaceViewComponent = svc;
+    }
+
+    public void setPartialVisibility(int visibility){
+        zoomIn.setVisibility(visibility);
+        zoomOut.setVisibility(visibility);
+//        irisUp.setVisibility(visibility);
+//        irisDown.setVisibility(visibility);
+//        focusIn.setVisibility(visibility);
+//        focusOut.setVisibility(visibility);
+        ivTouch.setVisibility(visibility);
     }
 
     private void manageImageTouch(MotionEvent motionEvent, int command) {

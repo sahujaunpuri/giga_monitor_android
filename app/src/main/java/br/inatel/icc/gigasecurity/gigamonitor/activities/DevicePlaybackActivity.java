@@ -291,7 +291,7 @@ public class DevicePlaybackActivity extends ActionBarActivity
                 info.st_3_endTime.st_5_dwSecond = 59;
                 info.st_6_StreamType = 2;
 
-                mManager.findPlaybackList(mDevice, info, new PlaybackSearchListener() {
+                mManager.findPlaybackList(mDevice, DevicePlaybackActivity.this, info, new PlaybackSearchListener() {
                     @Override
                     public void onFindList(H264_DVR_FILE_DATA files[]) {
                         allPlaybacks = infoToArray(files);
