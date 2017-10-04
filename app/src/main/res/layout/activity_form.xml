@@ -175,7 +175,7 @@
                 android:id="@+id/edit_text_device_form_extern_port"
                 android:textColor="@color/secondary_color"
                 android:hint="34567"
-                android:text=""
+                android:text="34567"
                 android:textColorHint="@android:color/secondary_text_light_nodisable"
                 android:digits="0123456789"
                 android:inputType="number"

@@ -427,7 +427,7 @@ public class SurfaceViewComponent extends FrameLayout {
             break;
             case MotionEvent.ACTION_UP: {
                 handler.removeCallbacks(mLongPressed);
-                if(isPTZEnabled() && longPress && pointerCount == 1){
+                if(isPTZEnabled() && longPress && pointerCount == 1 && ptzOverlay != null){
                     if(mScaleFactor == 1.0f)
                         ptzOverlay.setPartialVisibility(View.VISIBLE);
 //                        ivTouch.setVisibility(VISIBLE);

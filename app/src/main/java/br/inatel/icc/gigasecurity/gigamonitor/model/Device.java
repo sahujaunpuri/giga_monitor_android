@@ -190,7 +190,7 @@ public class Device implements Serializable {
                     } else {
                         connectionString = domain + ":" + tcpPort;
                     }
-                    message = "Conectando via domínio";
+                    message = "Conectando via domínio/IP externo";
                 } else {
                     return -1;
                 }
