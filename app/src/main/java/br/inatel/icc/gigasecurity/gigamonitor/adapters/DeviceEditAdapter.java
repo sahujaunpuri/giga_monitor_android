@@ -25,6 +25,7 @@ import br.inatel.icc.gigasecurity.gigamonitor.model.Device;
 
 /**
  * Created by filipecampos on 09/07/2015.
+ * Updated by williampenna on 25/08/2017.
  */
 public class DeviceEditAdapter extends BaseAdapter {
 
@@ -75,14 +76,12 @@ public class DeviceEditAdapter extends BaseAdapter {
         }
 
         holder.deviceName.setText(mDevices.get(position).deviceName);
-
         holder.delete.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 showDeleteConfirmation(position);
             }
         });
-
         if(mDevices.get(position).getId() != ("Favoritos").hashCode())
             holder.deviceName.setOnClickListener(new View.OnClickListener() {
                 @Override

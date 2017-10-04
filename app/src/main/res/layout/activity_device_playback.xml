@@ -25,18 +25,12 @@
             android:text="Tipo: "
             android:textAppearance="?android:attr/textAppearanceMedium" />
 
-        <TextView
-            android:id="@+id/spinnerValue"
-            android:layout_width="wrap_content"
-            android:layout_height="50dp"
-            android:textAppearance="?android:attr/textAppearanceMedium" />
-
         <Spinner
             android:id="@+id/playback_filter"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:drawSelectorOnTop="true"
-            android:entries="@array/playback_types" />
+            android:spinnerMode="dropdown"/>
 
     </LinearLayout>
 
@@ -47,131 +41,128 @@
         android:layout_gravity="center"
         android:id="@+id/linear_layout_find_playback"
         android:layout_marginTop="5dp"
-        android:layout_marginBottom="5dp">
+        android:layout_marginBottom="5dp"
+        >
 
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:orientation="horizontal">
-
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginBottom="10dp">
             <TextView
-                android:layout_width="0dp"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_gravity="center"
+                android:layout_gravity="left"
                 android:layout_weight="1"
                 android:text="@string/label_date_playback"
                 android:textAppearance="?android:attr/textAppearanceMedium"
                 android:textColor="#000"
-                android:textSize="26dp" />
-
+                android:textSize="26dp"/>
             <TextView
                 android:id="@+id/text_view_playback_date"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:gravity="right"
+                android:layout_marginRight="10dp"
                 android:text="00/00/0000"
                 android:textAppearance="?android:attr/textAppearanceMedium"
                 android:textColor="#99cc00"
                 android:textSize="26dp" />
-
+            <ImageView
+                android:id="@+id/calendar"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="right"
+                android:tint="#99cc00"
+                android:src="@drawable/ic_date_range_black_36dp" />
         </LinearLayout>
 
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:orientation="horizontal">
-
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginBottom="10dp">
             <TextView
-                android:layout_width="0dp"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_gravity="center"
+                android:gravity="left"
                 android:layout_weight="1"
                 android:text="@string/label_begin_hour_playback"
                 android:textAppearance="?android:attr/textAppearanceMedium"
                 android:textColor="#000"
-                android:textSize="26dp" />
-
+                android:textSize="26dp"/>
             <TextView
                 android:id="@+id/textview_begin_hour_playback"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:layout_weight="1"
                 android:gravity="right"
-                android:layout_marginRight="5dp"
+                android:layout_marginRight="10dp"
                 android:text="00:00"
                 android:textAppearance="?android:attr/textAppearanceMedium"
                 android:textColor="#99cc00"
                 android:textSize="26dp" />
-
-            <ImageButton
+            <ImageView
                 android:id="@+id/initial_time_button"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:src="@drawable/clock" />
-
+                android:gravity="right"
+                android:tint="#99cc00"
+                android:src="@drawable/ic_query_builder_black_36dp" />
         </LinearLayout>
 
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:orientation="horizontal">
-
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginBottom="10dp">
             <TextView
-                android:layout_width="0dp"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_gravity="center"
+                android:gravity="left"
                 android:layout_weight="1"
                 android:text="@string/label_end_hour_playback"
                 android:textAppearance="?android:attr/textAppearanceMedium"
                 android:textColor="#000"
                 android:textSize="26dp" />
-
             <TextView
                 android:id="@+id/textview_end_hour_playback"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_gravity="center"
                 android:layout_weight="1"
                 android:gravity="right"
-                android:layout_marginRight="5dp"
+                android:layout_marginRight="10dp"
                 android:text="00:00"
                 android:textAppearance="?android:attr/textAppearanceMedium"
                 android:textColor="#99cc00"
                 android:textSize="26dp" />
-
-            <ImageButton
+            <ImageView
                 android:id="@+id/end_time_button"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:src="@drawable/clock" />
-
+                android:gravity="right"
+                android:tint="#99cc00"
+                android:src="@drawable/ic_query_builder_black_36dp" />
         </LinearLayout>
-
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_marginTop="30dp"
             android:orientation="horizontal">
-
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:layout_gravity="center"
+                android:layout_gravity="left|center"
                 android:textAppearance="?android:attr/textAppearanceMedium"
                 android:text="@string/label_channel_playback"
                 android:textSize="26dp"
                 android:textColor="#000"/>
-
             <NumberPicker
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:id="@+id/nb_playback"
                 android:visibility="visible"
-                android:gravity="right"
-                android:layout_gravity="center_horizontal" />
+                android:gravity="right"/>
 
         </LinearLayout>
 

@@ -55,6 +55,7 @@ import java.util.LinkedList;
 
 import br.inatel.icc.gigasecurity.gigamonitor.R;
 import br.inatel.icc.gigasecurity.gigamonitor.activities.DeviceListActivity;
+import br.inatel.icc.gigasecurity.gigamonitor.activities.DevicePlaybackActivity;
 import br.inatel.icc.gigasecurity.gigamonitor.adapters.DeviceExpandableListAdapter;
 import br.inatel.icc.gigasecurity.gigamonitor.listeners.ConfigListener;
 import br.inatel.icc.gigasecurity.gigamonitor.listeners.DownloadPlaybackListener;
@@ -107,7 +108,7 @@ public class DeviceManager implements IFunSDKResult {
     private ConfigListener currentConfigListener;
     private JSONObject currentConfig, currentConfigB;
     private JSONArray currentConfigArray;
-    public Context currentContext;
+    public Context currentContext, tempContext;
     private DownloadPlaybackListener downloadPlaybackListener;
     private int downloadHandler;
 
@@ -1033,9 +1034,10 @@ public class DeviceManager implements IFunSDKResult {
         }
     }
 
-    public void findPlaybackList(Device device, H264_DVR_FINDINFO info, PlaybackSearchListener listener) {
+    public void findPlaybackList(Device device, Context context, H264_DVR_FINDINFO info, PlaybackSearchListener listener) {
+        tempContext = context;
         currentPlaybackSearchListener = listener;
-        FunSDK.DevFindFile(getHandler(), device.connectionString, G.ObjToBytes(info), 1000, 20000, device.getId());
+        FunSDK.DevFindFile(getHandler(), device.connectionString, G.ObjToBytes(info), 10000, 20000, device.getId());
     }
 
     public void findThumbnailList(Device device, FileData info, H264_DVR_FINDINFO findInfo, PlaybackSearchListener listener) {
@@ -1686,13 +1688,24 @@ public class DeviceManager implements IFunSDKResult {
                     Log.d(TAG, "OnFunSDKResult: NENHUM ARQUIVO ENCONTRADO");
                     currentPlaybackSearchListener.onEmptyListFound();
                 } else {
-                    H264_DVR_FILE_DATA files[] = new H264_DVR_FILE_DATA[msg.arg1];
-                    for (int i = 0; i < files.length; i++) {
-                        files[i] = new H264_DVR_FILE_DATA();
-                    }
-                    G.BytesToObj(files, msgContent.pData);
-                    currentPlaybackSearchListener.onFindList(files);
+                    final H264_DVR_FILE_DATA files[] = new H264_DVR_FILE_DATA[msg.arg1];
+                    final byte[] data = msgContent.pData;
+                    new Thread(new Runnable() {
+                        @Override
+                        public void run() {
+                            for (int i = 0; i < files.length; i++) {
+                                files[i] = new H264_DVR_FILE_DATA();
+                            }
+                            G.BytesToObj(files, data);
 
+                            ((DevicePlaybackActivity)tempContext).runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    currentPlaybackSearchListener.onFindList(files);
+                                }
+                            });
+                        }
+                    }).start();
                 }
             }
             break;

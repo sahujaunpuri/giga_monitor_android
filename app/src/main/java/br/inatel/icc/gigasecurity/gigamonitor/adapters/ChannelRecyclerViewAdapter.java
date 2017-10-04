@@ -170,8 +170,6 @@ public class ChannelRecyclerViewAdapter extends RecyclerView.Adapter<ChannelRecy
         deviceChannelsManager.reOrderSurfaceViewComponents();
 
         deviceChannelsManager.changeSurfaceViewSize();
-
-
     }
 
     public void openOverlayMenu(final SurfaceViewComponent surfaceViewComponent) {
@@ -184,9 +182,9 @@ public class ChannelRecyclerViewAdapter extends RecyclerView.Adapter<ChannelRecy
                     overlayMenu.setVisibility(View.GONE);
                     if (surfaceViewComponent.isPTZEnabled()) {
                         final OverlayPTZ overlayPTZ = childViewHolder.overlayPTZ;
-                        surfaceViewComponent.setIvTouch(View.VISIBLE);
                         overlayPTZ.setSurfaceViewComponent(surfaceViewComponent);
                         overlayPTZ.setVisibility(View.VISIBLE);
+                        surfaceViewComponent.ptzOverlay = overlayPTZ;
                     }
                 }else {
                     overlayMenu.setSurfaceViewComponent(surfaceViewComponent);
@@ -194,7 +192,6 @@ public class ChannelRecyclerViewAdapter extends RecyclerView.Adapter<ChannelRecy
                     overlayMenu.setVisibility(View.VISIBLE);
                     if (surfaceViewComponent.isPTZEnabled()) {
                         final OverlayPTZ overlayPTZ = childViewHolder.overlayPTZ;
-                        surfaceViewComponent.setIvTouch(View.GONE);
                         overlayPTZ.setSurfaceViewComponent(surfaceViewComponent);
                         overlayPTZ.setVisibility(View.GONE);
                     }

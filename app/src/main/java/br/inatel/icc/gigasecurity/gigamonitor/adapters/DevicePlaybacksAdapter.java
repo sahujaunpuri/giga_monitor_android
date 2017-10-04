@@ -75,6 +75,8 @@ public class DevicePlaybacksAdapter extends BaseAdapter implements Filterable{
         if (view == null) {
             view = mInflater.inflate(R.layout.list_view_cell_playback, parent, false);
         }
+        if(mFileDataList.isEmpty())
+            return view;
 
         FileData fileData = getItem(position);
 

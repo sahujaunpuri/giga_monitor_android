@@ -21,7 +21,7 @@ import br.inatel.icc.gigasecurity.gigamonitor.R;
  * Created by zappts on 10/08/17.
  */
 
-public class MediaVideoActivity extends ActionBarActivity implements
+public class MediaVideoActivity extends Activity implements
         MediaPlayer.OnBufferingUpdateListener, MediaPlayer.OnCompletionListener, MediaPlayer.OnPreparedListener,
         MediaPlayer.OnVideoSizeChangedListener, MediaPlayer.OnErrorListener, SurfaceHolder.Callback {
 
