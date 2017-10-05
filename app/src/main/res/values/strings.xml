@@ -309,5 +309,7 @@
     <string name="regular_quality">Regular</string>
     <string name="bad_quality">Bad</string>
     <string name="very_bad_quality">Very bad</string>
+    <string name="primary_stream">Primary Stream</string>
+    <string name="secondary_stream">Secondary Stream</string>
 
 </resources>

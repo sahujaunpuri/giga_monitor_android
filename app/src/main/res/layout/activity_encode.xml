@@ -1,180 +1,270 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    >
 
-    <LinearLayout
+    <TableLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginLeft="@dimen/margintop_config_item"
-        android:layout_marginTop="@dimen/margintop_config_item"
-        android:orientation="horizontal">
+        android:stretchColumns="1"
+        android:padding="10dp">
 
-        <TextView
-            android:id="@+id/tv_channel"
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:text="@string/label_channel_playback"
-            android:textSize="20sp"
-            android:textAppearance="?android:attr/textAppearanceMedium"/>
-
-        <TextView
-            android:id="@+id/channel_number"
-            android:layout_width="40dp"
-            android:layout_height="match_parent"
-            android:layout_marginLeft="10dp"
-            android:textSize="20sp"
-            android:textAppearance="?android:attr/textAppearanceMedium"/>
-
-        <Spinner
-            android:id="@+id/channel_spinner"
-            android:layout_width="40dp"
-            android:layout_height="wrap_content" />
-
-    </LinearLayout>
-
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginLeft="@dimen/margintop_config_item"
-        android:layout_marginTop="@dimen/margintop_config_item"
-        android:orientation="horizontal">
-
-        <TextView
-            android:id="@+id/tv_stream"
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:gravity="center"
-            android:text="@string/stream"
-            android:textSize="20sp"
-            android:textAppearance="?android:attr/textAppearanceMedium"/>
-
-        <ToggleButton
+        <TableRow
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:id="@+id/toggleText"
-            android:layout_marginLeft="@dimen/margintop_config_item"
-            android:textOff="SD"
-            android:textOn="HD" />
+            android:layout_margin="5dp">
+            <TextView
+                android:id="@+id/tv_channel"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:gravity="center_vertical"
+                android:text="@string/label_channel_playback"
+                android:textSize="20sp"
+                android:textAppearance="?android:attr/textAppearanceMedium"/>
 
-    </LinearLayout>
+            <Spinner
+                android:id="@+id/channel_spinner"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:drawSelectorOnTop="true"
+                android:spinnerMode="dropdown"
+                />
+        </TableRow>
 
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/margintop_config_item"
-        android:layout_marginLeft="@dimen/margintop_config_item"
-        android:orientation="horizontal">
 
-        <TextView
-            android:id="@+id/tv_resolution"
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:text="@string/resolution"
-            android:textSize="20sp"
-            android:textAppearance="?android:attr/textAppearanceMedium"/>
-
-        <TextView
-            android:id="@+id/resolution"
-            android:layout_width="80dp"
-            android:layout_height="match_parent"
-            android:layout_marginLeft="10dp"
-            android:textSize="20sp"
-            android:textAppearance="?android:attr/textAppearanceMedium"/>
-
-        <Spinner
-            android:id="@+id/resolution_spinner"
-            android:layout_width="40dp"
-            android:layout_height="wrap_content" />
-
-    </LinearLayout>
-
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/margintop_encode_item"
-        android:layout_marginLeft="@dimen/margintop_config_item"
-        android:orientation="horizontal">
-
-        <TextView
-            android:id="@+id/tv_frame_rate"
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:text="@string/frame_rate"
-            android:textSize="20sp"
-            android:textAppearance="?android:attr/textAppearanceMedium"/>
-
-        <TextView
-            android:id="@+id/frame_rate"
-            android:layout_width="40dp"
-            android:layout_height="match_parent"
-            android:layout_marginLeft="10dp"
-            android:textSize="20sp"
-            android:textAppearance="?android:attr/textAppearanceMedium"/>
-
-        <Spinner
-            android:id="@+id/frame_rate_spinner"
-            android:layout_width="40dp"
-            android:layout_height="wrap_content" />
-
-    </LinearLayout>
-
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/margintop_encode_item"
-        android:layout_marginLeft="@dimen/margintop_config_item"
-        android:orientation="horizontal">
-
-        <TextView
-            android:id="@+id/tv_quality"
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:text="@string/quality"
-            android:textSize="20sp"
-            android:textAppearance="?android:attr/textAppearanceMedium"/>
-
-        <TextView
-            android:id="@+id/quality"
-            android:layout_width="100dp"
-            android:layout_height="match_parent"
-            android:layout_marginLeft="10dp"
-            android:textSize="20sp"
-            android:textAppearance="?android:attr/textAppearanceMedium"/>
-
-        <Spinner
-            android:id="@+id/quality_spinner"
-            android:layout_width="40dp"
-            android:layout_height="wrap_content" />
-
-    </LinearLayout>
-
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/margintop_encode_item"
-        android:layout_marginLeft="@dimen/margintop_config_item"
-        android:orientation="horizontal">
-
-        <TextView
-            android:id="@+id/tv_audio"
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:gravity="center_vertical"
-            android:text="@string/audio"
-            android:textSize="20sp"
-            android:textAppearance="?android:attr/textAppearanceMedium"/>
-
-        <ToggleButton
+        <!--Main Stream-->
+        <TableRow
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:id="@+id/audio_toggle_button"
-            android:layout_marginLeft="@dimen/margintop_config_item"
-            android:textOff="Off"
-            android:textOn="On" />
+            android:layout_margin="5dp"
+            android:paddingTop="15dp"
+            >
+            <TextView
+                android:id="@+id/tv_stream"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:text="@string/primary_stream"
+                android:gravity="center_vertical"
+                android:textSize="15sp"
+                android:textAppearance="?android:attr/textAppearanceMedium"/>
+        </TableRow>
 
-    </LinearLayout>
+        <!--divider-->
+        <TableRow
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+            <View
+                android:id="@+id/line1"
+                android:layout_width="match_parent"
+                android:layout_height="1dip"
+                android:layout_weight="1"
+                android:background="#FF3d3d3d"/>
+        </TableRow>
 
 
-</LinearLayout>
+        <TableRow
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="5dp">
+
+            <TextView
+                android:id="@+id/tv_resolution"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:gravity="center_vertical"
+                android:text="@string/resolution"
+                android:textSize="20sp"
+                android:textAppearance="?android:attr/textAppearanceMedium"/>
+
+            <Spinner
+                android:id="@+id/resolution_spinner"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:drawSelectorOnTop="true"
+                android:spinnerMode="dropdown"/>
+        </TableRow>
+
+        <TableRow
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="5dp">
+            <TextView
+                android:id="@+id/tv_frame_rate"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:gravity="center_vertical"
+                android:text="@string/frame_rate"
+                android:textSize="20sp"
+                android:textAppearance="?android:attr/textAppearanceMedium"/>
+
+            <Spinner
+                android:id="@+id/frame_rate_spinner"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:drawSelectorOnTop="true"
+                android:spinnerMode="dropdown"/>
+        </TableRow>
+
+        <TableRow
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="5dp">
+            <TextView
+                android:id="@+id/tv_quality"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:gravity="center_vertical"
+                android:text="@string/quality"
+                android:textSize="20sp"
+                android:textAppearance="?android:attr/textAppearanceMedium"/>
+
+            <Spinner
+                android:id="@+id/quality_spinner"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:drawSelectorOnTop="true"
+                android:spinnerMode="dropdown"/>
+        </TableRow>
+
+        <TableRow
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="5dp">
+            <TextView
+                android:id="@+id/tv_audio"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:gravity="center_vertical"
+                android:text="@string/audio"
+                android:textSize="20sp"
+                android:textAppearance="?android:attr/textAppearanceMedium"/>
+
+            <Switch
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/audio_toggle_button"
+                android:layout_marginRight="10dp"
+                android:textOff="Off"
+                android:textOn="On"/>
+        </TableRow>
+
+        <!--Secondary Stream-->
+        <TableRow
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="5dp"
+            android:paddingTop="15dp"
+            >
+            <TextView
+                android:id="@+id/tv_stream_secondary"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:text="@string/secondary_stream"
+                android:gravity="center_vertical"
+                android:textSize="15sp"
+                android:textAppearance="?android:attr/textAppearanceMedium"/>
+        </TableRow>
+
+        <!--divider-->
+        <TableRow
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+            <View
+                android:id="@+id/line2"
+                android:layout_width="match_parent"
+                android:layout_height="1dip"
+                android:layout_weight="1"
+                android:background="#FF3d3d3d"/>
+        </TableRow>
+
+        <TableRow
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="5dp">
+
+            <TextView
+                android:id="@+id/tv_resolution_secundary"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:gravity="center_vertical"
+                android:text="@string/resolution"
+                android:textSize="20sp"
+                android:textAppearance="?android:attr/textAppearanceMedium"/>
+
+            <Spinner
+                android:id="@+id/resolution_spinner_secundary"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:drawSelectorOnTop="true"
+                android:spinnerMode="dropdown"/>
+        </TableRow>
+
+        <TableRow
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="5dp">
+            <TextView
+                android:id="@+id/tv_frame_rate_secundary"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:gravity="center_vertical"
+                android:text="@string/frame_rate"
+                android:textSize="20sp"
+                android:textAppearance="?android:attr/textAppearanceMedium"/>
+
+            <Spinner
+                android:id="@+id/frame_rate_spinner_secundary"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:drawSelectorOnTop="true"
+                android:spinnerMode="dropdown"/>
+        </TableRow>
+
+        <TableRow
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="5dp">
+            <TextView
+                android:id="@+id/tv_quality_secundary"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:gravity="center_vertical"
+                android:text="@string/quality"
+                android:textSize="20sp"
+                android:textAppearance="?android:attr/textAppearanceMedium"/>
+
+            <Spinner
+                android:id="@+id/quality_spinner_secundary"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:drawSelectorOnTop="true"
+                android:spinnerMode="dropdown"/>
+        </TableRow>
+
+        <TableRow
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="5dp">
+            <TextView
+                android:id="@+id/tv_audio_secundary"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:gravity="center_vertical"
+                android:text="@string/audio"
+                android:textSize="20sp"
+                android:textAppearance="?android:attr/textAppearanceMedium"/>
+
+            <Switch
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/audio_toggle_button_secundary"
+                android:layout_marginRight="10dp"
+                android:textOff="Off"
+                android:textOn="On"/>
+        </TableRow>
+    </TableLayout>
+
+
+</ScrollView>

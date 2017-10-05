@@ -3,7 +3,6 @@ package br.inatel.icc.gigasecurity.gigamonitor.config.encode;
 import android.os.Bundle;
 import android.os.PersistableBundle;
 import android.support.v7.app.ActionBarActivity;
-import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -11,8 +10,7 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Spinner;
-import android.widget.TextView;
-import android.widget.ToggleButton;
+import android.widget.Switch;
 
 import java.util.ArrayList;
 
@@ -24,13 +22,13 @@ import br.inatel.icc.gigasecurity.gigamonitor.model.Device;
  * Created by zappts on 23/08/17.
  */
 
-public class EncodeActivity extends ActionBarActivity implements AdapterView.OnItemSelectedListener, View.OnClickListener {
+public class EncodeActivity extends ActionBarActivity implements AdapterView.OnItemSelectedListener {
 
     private Device mDevice;
     private DeviceManager mManager;
-    private TextView channelNumber, resolutionValue, frameRateValue, qualityValue;
-    private ToggleButton tbStream, tbAudio;
+    private Switch audioSwitch, audioSwitch_secundary;
     private Spinner channelSpinner, resolutionSpinner, frameRateSpinner, qualitySpinner;
+    private Spinner channelSpinner_secundary, resolutionSpinner_secundary, frameRateSpinner_secundary, qualitySpinner_secundary;
     private static int CHANNELSPINNERID = 1;
     private static int RESOLUTIONSPINNERID = 2;
     private static int FRAMETRATESPINNERID = 3;
@@ -47,42 +45,24 @@ public class EncodeActivity extends ActionBarActivity implements AdapterView.OnI
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setHomeButtonEnabled(true);
 
-        channelNumber   = (TextView) findViewById(R.id.channel_number);
         channelSpinner  = (Spinner) findViewById(R.id.channel_spinner);
-
-        tbStream        = (ToggleButton) findViewById(R.id.toggleText);
-
-        resolutionValue = (TextView) findViewById(R.id.resolution);
         resolutionSpinner   = (Spinner) findViewById(R.id.resolution_spinner);
-
-        frameRateValue      = (TextView) findViewById(R.id.frame_rate);
         frameRateSpinner    = (Spinner) findViewById(R.id.frame_rate_spinner);
-
-        qualityValue        = (TextView) findViewById(R.id.quality);
         qualitySpinner      = (Spinner) findViewById(R.id.quality_spinner);
+        audioSwitch = (Switch) findViewById(R.id.audio_toggle_button);
 
-        tbAudio             = (ToggleButton) findViewById(R.id.audio_toggle_button);
-
-        channelNumber.setText("1");
         channelSpinner.setOnItemSelectedListener(this);
         populateSpinner(CHANNELSPINNERID);
 
-        tbStream.setChecked(false);
-        tbStream.setOnClickListener(this);
 
-        resolutionValue.setText("D1");
         resolutionSpinner.setOnItemSelectedListener(this);
         populateSpinner(RESOLUTIONSPINNERID);
-
-        frameRateValue.setText("1");
         frameRateSpinner.setOnItemSelectedListener(this);
         populateSpinner(FRAMETRATESPINNERID);
-
-        qualityValue.setText("Excelente");
         qualitySpinner.setOnItemSelectedListener(this);
         populateSpinner(QUALITYSPINNERID);
 
-        tbAudio.setChecked(false);
+        audioSwitch.setChecked(false);
     }
 
     @Override
@@ -108,22 +88,22 @@ public class EncodeActivity extends ActionBarActivity implements AdapterView.OnI
 
     @Override
     public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-        switch (parent.getId()) {
-            case R.id.channel_spinner:
-                channelNumber.setText(parent.getItemAtPosition(position).toString());
-                break;
-            case R.id.resolution_spinner:
-                resolutionValue.setText(parent.getItemAtPosition(position).toString());
-                break;
-            case R.id.frame_rate_spinner:
-                frameRateValue.setText(parent.getItemAtPosition(position).toString());
-                break;
-            case R.id.quality_spinner:
-                qualityValue.setText(parent.getItemAtPosition(position).toString());
-                break;
-            default:
-                break;
-        }
+//        switch (parent.getId()) {
+//            case R.id.channel_spinner:
+//                channelNumber.setText(parent.getItemAtPosition(position).toString());
+//                break;
+//            case R.id.resolution_spinner:
+//                resolutionValue.setText(parent.getItemAtPosition(position).toString());
+//                break;
+//            case R.id.frame_rate_spinner:
+//                frameRateValue.setText(parent.getItemAtPosition(position).toString());
+//                break;
+//            case R.id.quality_spinner:
+//                qualityValue.setText(parent.getItemAtPosition(position).toString());
+//                break;
+//            default:
+//                break;
+//        }
 
     }
 
@@ -133,19 +113,9 @@ public class EncodeActivity extends ActionBarActivity implements AdapterView.OnI
     }
 
     @Override
-    public void onClick(View v) {
-        if (tbStream.isChecked()) {
-            Log.e("Stream", "HD");
-        } else {
-            Log.e("Stream", "SD");
-        }
-        populateSpinner(FRAMETRATESPINNERID);
-    }
-
-    @Override
     public void finish() {
         super.finish();
-        if (tbAudio.isChecked()) {
+        if (audioSwitch.isChecked()) {
             Log.e("Audio", "true");
         } else {
             Log.e("Audio", "false");
@@ -158,22 +128,22 @@ public class EncodeActivity extends ActionBarActivity implements AdapterView.OnI
             for (int i=0; i<mDevice.getChannelNumber(); i++) {
                 channelList.add(String.valueOf(i + 1));
             }
-            ArrayAdapter<String> channelAdapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, channelList);
+            ArrayAdapter<String> channelAdapter = new ArrayAdapter<>(this, R.layout.custom_spinner, channelList);
             channelAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
             channelSpinner.setAdapter(channelAdapter);
         } else if (spinnerId == RESOLUTIONSPINNERID) {
             ArrayList<String> resolutionList = populateResolutionSpinner();
-            ArrayAdapter<String> resolutionAdapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, resolutionList);
+            ArrayAdapter<String> resolutionAdapter = new ArrayAdapter<>(this, R.layout.custom_spinner, resolutionList);
             resolutionAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
             resolutionSpinner.setAdapter(resolutionAdapter);
         } else if (spinnerId == FRAMETRATESPINNERID) {
             ArrayList<String> frameRateList = populateFrameRateSpinner();
-            ArrayAdapter<String> frameRateAdapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, frameRateList);
+            ArrayAdapter<String> frameRateAdapter = new ArrayAdapter<>(this, R.layout.custom_spinner, frameRateList);
             frameRateAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
             frameRateSpinner.setAdapter(frameRateAdapter);
         } else if (spinnerId == QUALITYSPINNERID) {
             ArrayList<String> qualityList = populateQualitySpinner();
-            ArrayAdapter<String> qualityAdapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, qualityList);
+            ArrayAdapter<String> qualityAdapter = new ArrayAdapter<>(this, R.layout.custom_spinner, qualityList);
             qualityAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
             qualitySpinner.setAdapter(qualityAdapter);
         }
@@ -191,11 +161,11 @@ public class EncodeActivity extends ActionBarActivity implements AdapterView.OnI
     private ArrayList<String> populateFrameRateSpinner() {
         ArrayList<String> list = new ArrayList<>();
         int size;
-        if (tbStream.isChecked()) {
-            size = 12;
-        } else {
+//        if (tbStream.isChecked()) {
+//            size = 12;
+//        } else {
             size = 27;
-        }
+//        }
 
         for (int i=0; i<size; i++) {
             list.add(String.valueOf(i + 1));
