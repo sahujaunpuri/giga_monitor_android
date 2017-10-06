@@ -185,7 +185,7 @@
             android:layout_margin="5dp">
 
             <TextView
-                android:id="@+id/tv_resolution_secundary"
+                android:id="@+id/tv_resolution_secondary"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
                 android:gravity="center_vertical"
@@ -194,7 +194,7 @@
                 android:textAppearance="?android:attr/textAppearanceMedium"/>
 
             <Spinner
-                android:id="@+id/resolution_spinner_secundary"
+                android:id="@+id/resolution_spinner_secondary"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:drawSelectorOnTop="true"
@@ -206,7 +206,7 @@
             android:layout_height="wrap_content"
             android:layout_margin="5dp">
             <TextView
-                android:id="@+id/tv_frame_rate_secundary"
+                android:id="@+id/tv_frame_rate_secondary"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
                 android:gravity="center_vertical"
@@ -215,7 +215,7 @@
                 android:textAppearance="?android:attr/textAppearanceMedium"/>
 
             <Spinner
-                android:id="@+id/frame_rate_spinner_secundary"
+                android:id="@+id/frame_rate_spinner_secondary"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:drawSelectorOnTop="true"
@@ -227,7 +227,7 @@
             android:layout_height="wrap_content"
             android:layout_margin="5dp">
             <TextView
-                android:id="@+id/tv_quality_secundary"
+                android:id="@+id/tv_quality_secondary"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
                 android:gravity="center_vertical"
@@ -236,7 +236,7 @@
                 android:textAppearance="?android:attr/textAppearanceMedium"/>
 
             <Spinner
-                android:id="@+id/quality_spinner_secundary"
+                android:id="@+id/quality_spinner_secondary"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:drawSelectorOnTop="true"
@@ -248,7 +248,7 @@
             android:layout_height="wrap_content"
             android:layout_margin="5dp">
             <TextView
-                android:id="@+id/tv_audio_secundary"
+                android:id="@+id/tv_audio_secondary"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
                 android:gravity="center_vertical"
@@ -259,7 +259,7 @@
             <Switch
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:id="@+id/audio_toggle_button_secundary"
+                android:id="@+id/audio_toggle_button_secondary"
                 android:layout_marginRight="10dp"
                 android:textOff="Off"
                 android:textOn="On"/>

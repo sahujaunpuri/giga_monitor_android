@@ -6,6 +6,7 @@ import com.basic.G;
 import com.google.gson.annotations.Expose;
 import com.lib.sdk.struct.SDK_CONFIG_NET_COMMON_V2;
 
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.Serializable;
@@ -57,6 +58,24 @@ public class Device implements Serializable {
 
     @Expose private String username;
     @Expose private String password;
+
+    //CONFIG ENCODE
+    private int[] primaryBitRate;
+    private String[] primaryBitRateControl;
+    private String[] primaryCompression;
+    private int[] primaryGOP;
+    private String[] primaryResolution;
+    private int[] primaryFrameRate;
+    private int[] primaryQualities;
+    private Boolean[] primaryAudio;
+    private int[] secondaryBitRate;
+    private String[] secondaryBitRateControl;
+    private String[] secondaryCompression;
+    private int[] secondaryGOP;
+    private String[] secondaryResolution;
+    private int[] secondaryFrameRate;
+    private int[] secondaryQualities;
+    private Boolean[] secondaryAudio;
 
     //DeviceInfo
     private String gigaCode;
@@ -579,4 +598,91 @@ public class Device implements Serializable {
     public void setCloudPriorityConnection(final boolean cloudPriorityConnection) {
         this.cloudPriorityConnection = cloudPriorityConnection;
     }
+
+    public String[] getPrimaryResolution() {
+        return primaryResolution;
+    }
+
+    public int[] getPrimaryFrameRate() {
+        return primaryFrameRate;
+    }
+
+    public int[] getPrimaryQualities() {
+        return primaryQualities;
+    }
+
+    public Boolean[] getPrimaryAudio() {
+        return primaryAudio;
+    }
+
+    public String[] getSecondaryResolution() {
+        return secondaryResolution;
+    }
+
+    public int[] getSecondaryFrameRate() {
+        return secondaryFrameRate;
+    }
+
+    public int[] getSecondaryQualities() {
+        return secondaryQualities;
+    }
+
+    public Boolean[] getSecondaryAudio() {
+        return secondaryAudio;
+    }
+
+    private void initEncodeArrays(){
+        this.primaryResolution = new String[channelNumber];
+        this.primaryFrameRate = new int[channelNumber];
+        this.primaryQualities = new int[channelNumber];
+        this.primaryAudio = new Boolean[channelNumber];
+        this.secondaryResolution = new String[channelNumber];
+        this.secondaryFrameRate = new int[channelNumber];
+        this.secondaryQualities = new int[channelNumber];
+        this.secondaryAudio = new Boolean[channelNumber];
+        this.primaryBitRate  = new int[channelNumber];
+        this.primaryBitRateControl = new String[channelNumber];
+        this.primaryCompression = new String[channelNumber];
+        this.primaryGOP = new int[channelNumber];
+        this.secondaryBitRate = new int[channelNumber];
+        this.secondaryBitRateControl = new String[channelNumber];
+        this.secondaryCompression = new String[channelNumber];
+        this.secondaryGOP = new int[channelNumber];
+    }
+
+    public void parsePrimaryConfigs(int channel, JSONObject streamConfig){
+        if(primaryAudio == null)
+            initEncodeArrays();
+
+        try {
+            JSONObject videoConfig = streamConfig.getJSONObject("Video");
+            primaryBitRate[channel] = videoConfig.getInt("BitRate");
+            primaryBitRateControl[channel] = videoConfig.getString("BitRateControl");
+            primaryCompression[channel] = videoConfig.getString("Compression");
+            primaryGOP[channel] = videoConfig.getInt("GOP");
+            primaryResolution[channel] = videoConfig.getString("Resolution");
+            primaryFrameRate[channel] = videoConfig.getInt("FPS");
+            primaryQualities[channel] = videoConfig.getInt("Quality");
+            primaryAudio[channel] = streamConfig.getBoolean("AudioEnable");
+        } catch (JSONException e){
+            e.printStackTrace();
+        }
+    }
+
+    public void parseSecondaryConfigs(int channel, JSONObject streamConfig){
+        try {
+            JSONObject videoConfig = streamConfig.getJSONObject("Video");
+            secondaryBitRate[channel] = videoConfig.getInt("BitRate");
+            secondaryBitRateControl[channel] = videoConfig.getString("BitRateControl");
+            secondaryCompression[channel] = videoConfig.getString("Compression");
+            secondaryGOP[channel] = videoConfig.getInt("GOP");
+            secondaryResolution[channel] =videoConfig.getString("Resolution");
+            secondaryFrameRate[channel] = videoConfig.getInt("FPS");
+            secondaryQualities[channel] = videoConfig.getInt("Quality");
+            secondaryAudio[channel] = streamConfig.getBoolean("AudioEnable");
+        } catch (JSONException e){
+            e.printStackTrace();
+        }
+    }
+
 }

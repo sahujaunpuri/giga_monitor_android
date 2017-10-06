@@ -519,6 +519,19 @@ public class DeviceManager implements IFunSDKResult {
         expandableListAdapter.notifyDataSetChanged();
     }
 
+    private void handleEncodeConfig(JSONObject jsonObject, Device device){
+        try{
+            JSONArray json = jsonObject.getJSONArray("Simplify.Encode");
+            for(int i=0; i<device.getChannelNumber(); i++){
+                JSONObject streamJson = json.getJSONObject(i);
+                device.parsePrimaryConfigs(i, streamJson.getJSONObject("MainFormat"));
+                device.parseSecondaryConfigs(i, streamJson.getJSONObject("ExtraFormat"));
+            }
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+    }
+
     public void setEthernetConfig(Device device, ConfigListener configListener) {
         currentConfigListener = configListener;
         try {
@@ -1609,6 +1622,10 @@ public class DeviceManager implements IFunSDKResult {
                             currentConfigListener.onReceivedConfig();
                         }
                         break;
+                        case "Simplify.Encode":{
+                            handleEncodeConfig(json, device);
+                            currentConfigListener.onReceivedConfig();
+                        }
                         /*case "Uart.PTZ":{
                             Log.d(TAG, "OnFunSDKResult: Possui ptz" + device.connectionString);
                         }
