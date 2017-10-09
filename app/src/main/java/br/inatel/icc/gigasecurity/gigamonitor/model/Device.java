@@ -6,10 +6,12 @@ import com.basic.G;
 import com.google.gson.annotations.Expose;
 import com.lib.sdk.struct.SDK_CONFIG_NET_COMMON_V2;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Calendar;
 
 import br.inatel.icc.gigasecurity.gigamonitor.core.DeviceManager;
@@ -76,6 +78,13 @@ public class Device implements Serializable {
     private int[] secondaryFrameRate;
     private int[] secondaryQualities;
     private Boolean[] secondaryAudio;
+    private String[] exImageSizePerChannel;
+    private String[] imageSizePerChannel;
+    private String[] maxEncodePowerPerChannel;
+    private String primaryResolutionMask;
+    private String primaryCompressionMask;
+    private String secondaryResolutionMask;
+    private String secondaryCompressionMask;
 
     //DeviceInfo
     private String gigaCode;
@@ -631,7 +640,95 @@ public class Device implements Serializable {
         return secondaryAudio;
     }
 
-    private void initEncodeArrays(){
+    public String[] getExImageSizePerChannel() {
+        return exImageSizePerChannel;
+    }
+
+    public int getExImageSizePerChannel(int channel) {
+        return parseHexStringToInt(exImageSizePerChannel[channel]);
+    }
+
+    public String[] getImageSizePerChannel() {
+        return imageSizePerChannel;
+    }
+
+    public int getImageSizePerChannel(int channel) {
+        return parseHexStringToInt(imageSizePerChannel[channel]);
+    }
+
+    public String[] getMaxEncodePowerPerChannel() {
+        return maxEncodePowerPerChannel;
+    }
+
+    public int getMaxEncodePowerPerChannel(int channel){
+        return parseHexStringToInt(maxEncodePowerPerChannel[channel]);
+    }
+
+    public int getPrimaryResolutionMask() {
+        return parseHexStringToInt(primaryResolutionMask);
+    }
+
+    public int getPrimaryCompressionMask() {
+        return parseHexStringToInt(primaryCompressionMask);
+    }
+
+    public int getSecondaryResolutionMask() {
+        return parseHexStringToInt(secondaryResolutionMask);
+    }
+
+    public int getSecondaryCompressionMask() {
+        return parseHexStringToInt(secondaryCompressionMask);
+    }
+
+    private int parseHexStringToInt(String hexString){
+        hexString = hexString.substring(2);
+        return (int) Long.parseLong(hexString, 16);
+    }
+
+    public void setImageSizePerChannel(JSONArray jsonArray){
+        for(int i=0; i<channelNumber; i++){
+            try {
+                imageSizePerChannel[i] = jsonArray.getString(i);
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    public void setExImageSizePerChannel(JSONArray jsonArray){
+        for(int i=0; i<channelNumber; i++){
+            try {
+                exImageSizePerChannel[i] = jsonArray.getString(i);
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    public void setMaxEncodePowerPerChannel(JSONArray jsonArray){
+        for(int i=0; i<channelNumber; i++){
+            try {
+                maxEncodePowerPerChannel[i] = jsonArray.getString(i);
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    public void setEncodeMasks(JSONArray jsonArray){
+        try {
+            JSONObject jsonObject = jsonArray.getJSONObject(0);
+            primaryResolutionMask = jsonObject.getString("ResolutionMask");
+            primaryCompressionMask = jsonObject.getString("CompressionMask");
+            jsonObject = jsonArray.getJSONObject(1);
+            secondaryResolutionMask = jsonObject.getString("ResolutionMask");
+            secondaryCompressionMask = jsonObject.getString("CompressionMask");
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void initEncodeArrays(){
         this.primaryResolution = new String[channelNumber];
         this.primaryFrameRate = new int[channelNumber];
         this.primaryQualities = new int[channelNumber];
@@ -648,12 +745,13 @@ public class Device implements Serializable {
         this.secondaryBitRateControl = new String[channelNumber];
         this.secondaryCompression = new String[channelNumber];
         this.secondaryGOP = new int[channelNumber];
+
+        this.exImageSizePerChannel = new String[channelNumber];
+        this.imageSizePerChannel = new String[channelNumber];
+        this.maxEncodePowerPerChannel = new String[channelNumber];
     }
 
     public void parsePrimaryConfigs(int channel, JSONObject streamConfig){
-        if(primaryAudio == null)
-            initEncodeArrays();
-
         try {
             JSONObject videoConfig = streamConfig.getJSONObject("Video");
             primaryBitRate[channel] = videoConfig.getInt("BitRate");

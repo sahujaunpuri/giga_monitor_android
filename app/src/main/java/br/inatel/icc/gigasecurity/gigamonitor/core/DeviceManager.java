@@ -520,16 +520,31 @@ public class DeviceManager implements IFunSDKResult {
     }
 
     private void handleEncodeConfig(JSONObject jsonObject, Device device){
+        device.initEncodeArrays();
         try{
             JSONArray json = jsonObject.getJSONArray("Simplify.Encode");
             for(int i=0; i<device.getChannelNumber(); i++){
                 JSONObject streamJson = json.getJSONObject(i);
                 device.parsePrimaryConfigs(i, streamJson.getJSONObject("MainFormat"));
                 device.parseSecondaryConfigs(i, streamJson.getJSONObject("ExtraFormat"));
+                FunSDK.DevGetConfigByJson(getHandler(), device.connectionString, "EncodeCapability", 4096, -1, 10000, device.getId());
             }
         }catch (Exception e){
             e.printStackTrace();
         }
+    }
+
+    public void handleEncodeCapability(JSONObject jsonObject, Device device){
+        try {
+            JSONObject json = jsonObject.getJSONObject("EncodeCapability");
+            device.setImageSizePerChannel(json.getJSONArray("ImageSizePerChannel"));
+            device.setExImageSizePerChannel(json.getJSONArray("ExImageSizePerChannel"));
+            device.setMaxEncodePowerPerChannel(json.getJSONArray("MaxEncodePowerPerChannel"));
+            device.setEncodeMasks(json.getJSONArray("EncodeInfo"));
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        Log.d(TAG, "handleEncodeCapability: ");
     }
 
     public void setEthernetConfig(Device device, ConfigListener configListener) {
@@ -1624,8 +1639,13 @@ public class DeviceManager implements IFunSDKResult {
                         break;
                         case "Simplify.Encode":{
                             handleEncodeConfig(json, device);
+                        }
+                        break;
+                        case "EncodeCapability":{
+                            handleEncodeCapability(json, device);
                             currentConfigListener.onReceivedConfig();
                         }
+                        break;
                         /*case "Uart.PTZ":{
                             Log.d(TAG, "OnFunSDKResult: Possui ptz" + device.connectionString);
                         }
