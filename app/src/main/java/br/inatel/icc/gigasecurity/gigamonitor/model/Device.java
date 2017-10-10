@@ -67,7 +67,7 @@ public class Device implements Serializable {
     private String[] primaryCompression;
     private int[] primaryGOP;
     private String[] primaryResolution;
-    private int[] primaryFrameRate;
+    private String[] primaryFrameRate;
     private int[] primaryQualities;
     private Boolean[] primaryAudio;
     private int[] secondaryBitRate;
@@ -75,7 +75,7 @@ public class Device implements Serializable {
     private String[] secondaryCompression;
     private int[] secondaryGOP;
     private String[] secondaryResolution;
-    private int[] secondaryFrameRate;
+    private String[] secondaryFrameRate;
     private int[] secondaryQualities;
     private Boolean[] secondaryAudio;
     private String[] exImageSizePerChannel;
@@ -612,7 +612,7 @@ public class Device implements Serializable {
         return primaryResolution;
     }
 
-    public int[] getPrimaryFrameRate() {
+    public String[] getPrimaryFrameRate() {
         return primaryFrameRate;
     }
 
@@ -628,7 +628,7 @@ public class Device implements Serializable {
         return secondaryResolution;
     }
 
-    public int[] getSecondaryFrameRate() {
+    public String[] getSecondaryFrameRate() {
         return secondaryFrameRate;
     }
 
@@ -730,11 +730,11 @@ public class Device implements Serializable {
 
     public void initEncodeArrays(){
         this.primaryResolution = new String[channelNumber];
-        this.primaryFrameRate = new int[channelNumber];
+        this.primaryFrameRate = new String[channelNumber];
         this.primaryQualities = new int[channelNumber];
         this.primaryAudio = new Boolean[channelNumber];
         this.secondaryResolution = new String[channelNumber];
-        this.secondaryFrameRate = new int[channelNumber];
+        this.secondaryFrameRate = new String[channelNumber];
         this.secondaryQualities = new int[channelNumber];
         this.secondaryAudio = new Boolean[channelNumber];
         this.primaryBitRate  = new int[channelNumber];
@@ -759,7 +759,7 @@ public class Device implements Serializable {
             primaryCompression[channel] = videoConfig.getString("Compression");
             primaryGOP[channel] = videoConfig.getInt("GOP");
             primaryResolution[channel] = videoConfig.getString("Resolution");
-            primaryFrameRate[channel] = videoConfig.getInt("FPS");
+            primaryFrameRate[channel] = videoConfig.getString("FPS");
             primaryQualities[channel] = videoConfig.getInt("Quality");
             primaryAudio[channel] = streamConfig.getBoolean("AudioEnable");
         } catch (JSONException e){
@@ -774,8 +774,8 @@ public class Device implements Serializable {
             secondaryBitRateControl[channel] = videoConfig.getString("BitRateControl");
             secondaryCompression[channel] = videoConfig.getString("Compression");
             secondaryGOP[channel] = videoConfig.getInt("GOP");
-            secondaryResolution[channel] =videoConfig.getString("Resolution");
-            secondaryFrameRate[channel] = videoConfig.getInt("FPS");
+            secondaryResolution[channel] = videoConfig.getString("Resolution");
+            secondaryFrameRate[channel] = videoConfig.getString("FPS");
             secondaryQualities[channel] = videoConfig.getInt("Quality");
             secondaryAudio[channel] = streamConfig.getBoolean("AudioEnable");
         } catch (JSONException e){

@@ -1,5 +1,6 @@
 package br.inatel.icc.gigasecurity.gigamonitor.config.encode;
 
+import android.app.Activity;
 import android.app.ProgressDialog;
 import android.os.Bundle;
 import android.os.PersistableBundle;
@@ -27,21 +28,21 @@ import br.inatel.icc.gigasecurity.gigamonitor.model.Device;
 
 public class EncodeActivity extends ActionBarActivity implements AdapterView.OnItemSelectedListener {
     private final String TAG = "EncodeActivity";
+    private Activity mActivity;
     private Device mDevice;
     private DeviceManager mManager;
     private Switch audioSwitch, audioSwitch_secondary;
     private Spinner channelSpinner, resolutionSpinner, frameRateSpinner, qualitySpinner;
     private Spinner resolutionSpinner_secondary, frameRateSpinner_secondary, qualitySpinner_secondary;
     private String[] primaryResolution;
-    private int[] primaryFrameRate;
+    private String[] primaryFrameRate;
     private int[] primaryQualities;
     private Boolean[] primaryAudio;
     private String[] secondaryResolution;
-    private int[] secondaryFrameRate;
+    private String[] secondaryFrameRate;
     private int[] secondaryQualities;
     private Boolean[] secondaryAudio;
-    private ArrayList<String> currentPrimaryResolutions, currentPrimaryFPS, currentPrimaryQualities, currentPrimaryAudios;
-    private ArrayList<String> currentSecondaryResolutions, currentSecondaryFPS, currentSecondaryQualities, currentSecondaryAudios;
+    private ArrayList<String> primaryResolutionsData, primaryFPSData, secondaryResolutionsData, secondaryFPSData;
     private ProgressDialog progressDialog;
     private String[] qualities;
     private final String[] resolutions = {"D1", "HD1", "BCIF", "CIF", "QCIF", "VGA", "QVGA", "SVCD", "QQVGA", "ND1", "960H", "720P", "960", "UXGA", "1080P", "WUXGA", "2_5M", "3M", "5M", "1080N"};
@@ -68,16 +69,18 @@ public class EncodeActivity extends ActionBarActivity implements AdapterView.OnI
             secondaryQualities = Arrays.copyOf(mDevice.getSecondaryQualities() , mDevice.getChannelNumber());
             secondaryAudio = Arrays.copyOf(mDevice.getSecondaryAudio() , mDevice.getChannelNumber());
 
-            currentPrimaryResolutions = new ArrayList();
-            currentSecondaryResolutions = new ArrayList();
-            for(int i=0; i<mDevice.getChannelNumber(); i++){
-                currentPrimaryResolutions.add(resolutions[i]);
-                currentSecondaryResolutions.add(resolutions[i]);
-            }
+            initMinSubRes();
 
-            initSpinners();
 
-            progressDialog.dismiss();
+            (mActivity).runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    initSpinners();
+                    updateSpinners(0);
+                    progressDialog.dismiss();
+                }
+            });
+
         }
 
         @Override
@@ -91,6 +94,61 @@ public class EncodeActivity extends ActionBarActivity implements AdapterView.OnI
         }
     };
 
+    private void initSpinners(){
+        channelSpinner.setOnItemSelectedListener(this);
+        resolutionSpinner.setOnItemSelectedListener(this);
+        frameRateSpinner.setOnItemSelectedListener(this);
+        qualitySpinner.setOnItemSelectedListener(this);
+        resolutionSpinner_secondary.setOnItemSelectedListener(this);
+        frameRateSpinner_secondary.setOnItemSelectedListener(this);
+        qualitySpinner_secondary.setOnItemSelectedListener(this);
+
+        populateSpinner(CHANNELSPINNERID, channelSpinner, PRIMARY);
+        populateSpinner(RESOLUTIONSPINNERID, resolutionSpinner, PRIMARY);
+        populateSpinner(FRAMETRATESPINNERID, frameRateSpinner, PRIMARY);
+        populateSpinner(QUALITYSPINNERID, qualitySpinner, PRIMARY);
+        populateSpinner(RESOLUTIONSPINNERID, resolutionSpinner_secondary, SECONDARY);
+        populateSpinner(FRAMETRATESPINNERID, frameRateSpinner_secondary, SECONDARY);
+        populateSpinner(QUALITYSPINNERID, qualitySpinner_secondary, SECONDARY);
+    }
+
+    private void updateSpinners(int channel){
+        resolutionSpinner.setSelection(primaryResolutionsData.indexOf(primaryResolution[channel]));
+        frameRateSpinner.setSelection(primaryFPSData.indexOf(primaryFrameRate[channel]));
+        qualitySpinner.setSelection(primaryQualities[channel]-1);
+        audioSwitch.setChecked(primaryAudio[channel]);
+
+        resolutionSpinner_secondary.setSelection(secondaryResolutionsData.indexOf(secondaryResolution[channel]));
+        frameRateSpinner_secondary.setSelection(secondaryFPSData.indexOf(secondaryFrameRate[channel]));
+        qualitySpinner_secondary.setSelection(secondaryQualities[channel]-1);
+        audioSwitch_secondary.setChecked(secondaryAudio[channel]);
+    }
+
+    private void initData(){
+        mActivity = this;
+        mManager = DeviceManager.getInstance();
+        mDevice = mManager.findDeviceById((int) getIntent().getExtras().getSerializable("device"));
+        currentChannel = 0;
+        fps = new String[maxFPS];
+        for(int i=0; i<maxFPS; i++)
+            fps[i] = Integer.toString(i+1);
+
+        qualities = new String[]{getResources().getString(R.string.very_bad_quality), getResources().getString(R.string.bad_quality), getResources().getString(R.string.regular_quality), getResources().getString(R.string.good_quality),
+                getResources().getString(R.string.very_good_quality), getResources().getString(R.string.excellent_quality)};
+
+        this.primaryResolution = new String[mDevice.getChannelNumber()];
+        this.primaryFrameRate = new String[mDevice.getChannelNumber()];
+        this.primaryQualities = new int[mDevice.getChannelNumber()];
+        this.primaryAudio = new Boolean[mDevice.getChannelNumber()];
+        this.secondaryResolution = new String[mDevice.getChannelNumber()];
+        this.secondaryFrameRate = new String[mDevice.getChannelNumber()];
+        this.secondaryQualities = new int[mDevice.getChannelNumber()];
+        this.secondaryAudio = new Boolean[mDevice.getChannelNumber()];
+
+//        progressDialog = ProgressDialog.show(this, "Buscando Configurações", "Aguarde");
+        mManager.getJsonConfig(mDevice, "Simplify.Encode", configListener);
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -98,8 +156,6 @@ public class EncodeActivity extends ActionBarActivity implements AdapterView.OnI
         setContentView(R.layout.activity_encode);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setHomeButtonEnabled(true);
-
-        initData();
 
         channelSpinner                = (Spinner) findViewById(R.id.channel_spinner);
         resolutionSpinner             = (Spinner) findViewById(R.id.resolution_spinner);
@@ -111,63 +167,14 @@ public class EncodeActivity extends ActionBarActivity implements AdapterView.OnI
         qualitySpinner_secondary      = (Spinner) findViewById(R.id.quality_spinner_secondary);
         audioSwitch_secondary         = (Switch) findViewById(R.id.audio_toggle_button_secondary);
 
-    }
-
-    private void initData(){
-        mManager = DeviceManager.getInstance();
-        mDevice = mManager.findDeviceById((int) getIntent().getExtras().getSerializable("device"));
-        currentChannel = 0;
-        initMinSubRes();
-        fps = new String[maxFPS];
-        for(int i=0; i<maxFPS; i++)
-            fps[i] = Integer.toString(i+1);
-
-        qualities = new String[]{getResources().getString(R.string.very_bad_quality), getResources().getString(R.string.bad_quality), getResources().getString(R.string.regular_quality), getResources().getString(R.string.good_quality),
-                getResources().getString(R.string.very_good_quality), getResources().getString(R.string.excellent_quality)};
-
-        this.primaryResolution = new String[mDevice.getChannelNumber()];
-        this.primaryFrameRate = new int[mDevice.getChannelNumber()];
-        this.primaryQualities = new int[mDevice.getChannelNumber()];
-        this.primaryAudio = new Boolean[mDevice.getChannelNumber()];
-        this.secondaryResolution = new String[mDevice.getChannelNumber()];
-        this.secondaryFrameRate = new int[mDevice.getChannelNumber()];
-        this.secondaryQualities = new int[mDevice.getChannelNumber()];
-        this.secondaryAudio = new Boolean[mDevice.getChannelNumber()];
-
         progressDialog = ProgressDialog.show(this, "Buscando Configurações", "Aguarde");
-        mManager.getJsonConfig(mDevice, "Simplify.Encode", configListener);
-    }
 
-    private void initSpinners(){
-        channelSpinner.setOnItemSelectedListener(this);
-        populateSpinner(CHANNELSPINNERID, channelSpinner, PRIMARY);
-        resolutionSpinner.setOnItemSelectedListener(this);
-        populateSpinner(RESOLUTIONSPINNERID, resolutionSpinner, PRIMARY);
-        frameRateSpinner.setOnItemSelectedListener(this);
-        populateSpinner(FRAMETRATESPINNERID, frameRateSpinner, PRIMARY);
-        qualitySpinner.setOnItemSelectedListener(this);
-        populateSpinner(QUALITYSPINNERID, qualitySpinner, PRIMARY);
-
-        resolutionSpinner_secondary.setOnItemSelectedListener(this);
-        populateSpinner(RESOLUTIONSPINNERID, resolutionSpinner_secondary, SECONDARY);
-        frameRateSpinner_secondary.setOnItemSelectedListener(this);
-        populateSpinner(FRAMETRATESPINNERID, frameRateSpinner_secondary, SECONDARY);
-        qualitySpinner_secondary.setOnItemSelectedListener(this);
-        populateSpinner(QUALITYSPINNERID, qualitySpinner_secondary, SECONDARY);
-
-        updateSpinners(0);
-    }
-
-    private void updateSpinners(int channel){
-        resolutionSpinner.setSelection(currentPrimaryResolutions.indexOf(primaryResolution[channel]));
-        frameRateSpinner.setSelection(/*currentPrimaryFPS.indexOf*/(primaryFrameRate[channel])-1);
-        qualitySpinner.setSelection(primaryQualities[channel]-1);
-        audioSwitch.setChecked(primaryAudio[channel]);
-
-        resolutionSpinner_secondary.setSelection(currentSecondaryResolutions.indexOf(secondaryResolution[channel]));
-        frameRateSpinner_secondary.setSelection(/*currentSecondaryFPS.indexOf*/(secondaryFrameRate[channel])-1);
-        qualitySpinner_secondary.setSelection(secondaryQualities[channel]-1);
-        audioSwitch_secondary.setChecked(secondaryAudio[channel]);
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                initData();
+            }
+        }).start();
     }
 
     @Override
@@ -194,8 +201,17 @@ public class EncodeActivity extends ActionBarActivity implements AdapterView.OnI
     @Override
     public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
         switch (parent.getId()) {
-            case R.id.channel_spinner:
-                
+            case R.id.channel_spinner:{
+                currentChannel = position;
+                initMinSubRes();
+                populateSpinner(RESOLUTIONSPINNERID, resolutionSpinner, PRIMARY);
+                populateSpinner(FRAMETRATESPINNERID, frameRateSpinner, PRIMARY);
+                populateSpinner(RESOLUTIONSPINNERID, resolutionSpinner_secondary, SECONDARY);
+                populateSpinner(FRAMETRATESPINNERID, frameRateSpinner_secondary, SECONDARY);
+//                initSpinners();
+                updateSpinners(position);
+            }
+
                 break;
             case R.id.resolution_spinner:
 
@@ -234,11 +250,21 @@ public class EncodeActivity extends ActionBarActivity implements AdapterView.OnI
             channelAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
             channelSpinner.setAdapter(channelAdapter);
         } else if (spinnerId == RESOLUTIONSPINNERID) {
-            ArrayAdapter<String> resolutionAdapter = new ArrayAdapter<>(this, R.layout.custom_spinner, currentPrimaryResolutions);
+            updateResolutionData(stream);
+            ArrayAdapter<String> resolutionAdapter;
+            if(stream == PRIMARY)
+                resolutionAdapter = new ArrayAdapter<>(this, R.layout.custom_spinner, primaryResolutionsData.toArray(new String[0]));
+            else
+                resolutionAdapter = new ArrayAdapter<>(this, R.layout.custom_spinner, secondaryResolutionsData.toArray(new String[0]));
             resolutionAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
             spinner.setAdapter(resolutionAdapter);
         } else if (spinnerId == FRAMETRATESPINNERID) {
-            ArrayAdapter<String> frameRateAdapter = new ArrayAdapter<>(this, R.layout.custom_spinner, fps);
+            updateFPSData(stream);
+            ArrayAdapter<String> frameRateAdapter;
+            if(stream == PRIMARY)
+                frameRateAdapter = new ArrayAdapter<>(this, R.layout.custom_spinner, primaryFPSData.toArray(new String[0]));
+            else
+                frameRateAdapter = new ArrayAdapter<>(this, R.layout.custom_spinner, secondaryFPSData.toArray(new String[0]));
             frameRateAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
             spinner.setAdapter(frameRateAdapter);
         } else if (spinnerId == QUALITYSPINNERID) {
@@ -248,23 +274,17 @@ public class EncodeActivity extends ActionBarActivity implements AdapterView.OnI
         }
     }
 
-    private void updateResolutionSpinner(int nMark){
-        int nCount = 0;
+    private void updateResolutionSpinner(int nMark, int stream){
+        ArrayList<String> array = new ArrayList<>();
         for (int i = 0; i <= 20; ++i) {
-            if (0 != (nMark & (1 << i))) {
-                nCount++;
-            }
-        }
-        String sv[] = new String[nCount];
-        int j = 0;
-        for (int i = 0; i <= 20; ++i) {
-            if (0 != (nMark & (1 << i))) {
-                sv[j] = resolutions[i];
-                j++;
-            }
+            if (0 != (nMark & (1 << i)))
+                array.add(resolutions[i]);
         }
 
-        primaryResolution = sv;
+        if(stream == PRIMARY)
+             primaryResolutionsData = array;
+        else
+            secondaryResolutionsData = array;
     }
 
 
@@ -344,10 +364,10 @@ public class EncodeActivity extends ActionBarActivity implements AdapterView.OnI
         int chnMaxEncodePower = mDevice.getMaxEncodePowerPerChannel(currentChannel);
         int nLastAbility = getLastAbility(chnMaxEncodePower, minSubRes, 1);
         if(stream == PRIMARY){
-            nRetMark = getResMark(nLastAbility, Integer.parseInt(currentPrimaryFPS.get(currentChannel)), getMainResMark());
+            nRetMark = getResMark(nLastAbility, Integer.parseInt(primaryFrameRate[currentChannel]), getMainResMark());
         }else{
             int resIndex = -1;
-            String currentRes = currentPrimaryResolutions.get(currentChannel);
+            String currentRes = primaryResolution[currentChannel];
             for(int i=0; i<resolutions.length; i++)
                 if(resolutions[i].equals(currentRes)) {
                     resIndex = i;
@@ -356,15 +376,19 @@ public class EncodeActivity extends ActionBarActivity implements AdapterView.OnI
             nRetMark = getResMark(nLastAbility, 1, getSubResMark(resIndex));
         }
 
-        updateResolutionSpinner(nRetMark);
+        updateResolutionSpinner(nRetMark, stream);
     }
 
-    private void updateFPSSpinner(int nMaxRate){
-        int sv[] = new int[nMaxRate];
+    private void updateFPSSpinner(int nMaxRate, int stream){
+        ArrayList<String> array = new ArrayList<>();
         for (int i = 0; i < nMaxRate; ++i)
-            sv[i] = i + 1;
+            array.add(Integer.toString(i+1));
 
-        primaryFrameRate = sv;
+        if(stream == PRIMARY)
+            primaryFPSData = array;
+        else
+            secondaryFPSData = array;
+
     }
 
     private void updateFPSData(int stream){
@@ -372,10 +396,10 @@ public class EncodeActivity extends ActionBarActivity implements AdapterView.OnI
         int chnMaxEncodePower = mDevice.getMaxEncodePowerPerChannel(currentChannel);
         if(stream == PRIMARY){
             nLastAbility = getLastAbility(chnMaxEncodePower, minSubRes, 1);
-            nMaxRate = getMaxRate(nLastAbility, Integer.parseInt(currentPrimaryFPS.get(currentChannel)));
+            nMaxRate = getMaxRate(nLastAbility, Integer.parseInt(primaryFrameRate[currentChannel]));
         }else{
             int resIndex = -1;
-            String currentRes = currentPrimaryResolutions.get(currentChannel);
+            String currentRes = primaryResolution[currentChannel];
             for(int i=0; i<resolutions.length; i++)
                 if(resolutions[i].equals(currentRes)) {
                     resIndex = i;
@@ -384,8 +408,17 @@ public class EncodeActivity extends ActionBarActivity implements AdapterView.OnI
             nLastAbility = getLastAbility(chnMaxEncodePower, resIndex, 1);
             nMaxRate = getMaxRate(nLastAbility, getSubResMark(resIndex));
         }
-
-        updateFPSSpinner(nMaxRate);
+        updateFPSSpinner(nMaxRate, stream);
     }
+
+//    private int indexOfString(String[] array, String string){
+//        int index = -1;
+//        for(String str : array) {
+//            index++;
+//            if (string.equals(str))
+//                return index;
+//        }
+//        return -1;
+//    }
 
 }

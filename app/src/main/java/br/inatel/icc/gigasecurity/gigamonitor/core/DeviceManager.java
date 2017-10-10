@@ -527,8 +527,8 @@ public class DeviceManager implements IFunSDKResult {
                 JSONObject streamJson = json.getJSONObject(i);
                 device.parsePrimaryConfigs(i, streamJson.getJSONObject("MainFormat"));
                 device.parseSecondaryConfigs(i, streamJson.getJSONObject("ExtraFormat"));
-                FunSDK.DevGetConfigByJson(getHandler(), device.connectionString, "EncodeCapability", 4096, -1, 10000, device.getId());
             }
+            FunSDK.DevGetConfigByJson(getHandler(), device.connectionString, "EncodeCapability", 4096, -1, 10000, device.getId());
         }catch (Exception e){
             e.printStackTrace();
         }
