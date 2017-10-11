@@ -185,13 +185,15 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:textColor="#000000"
-                android:text="@string/cameras"/>
+                android:text="@string/cameras"
+                android:visibility="gone"/>
 
             <TextView
                 android:gravity="bottom"
                 android:layout_width="match_parent"
                 android:layout_height="1dp"
-                android:background="#ccced0"/>
+                android:background="#ccced0"
+                android:visibility="gone"/>
 
         </LinearLayout>
 

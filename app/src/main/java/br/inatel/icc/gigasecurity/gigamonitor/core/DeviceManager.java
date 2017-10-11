@@ -1173,7 +1173,7 @@ public class DeviceManager implements IFunSDKResult {
         }
         if (!toRemove.isEmpty()) {
             favoriteDevice.setChannelNumber(favoriteChannels);
-            expandableListAdapter.updateGrid(deviceChannelsManagers.indexOf(favoriteManager), favoriteManager);
+//            expandableListAdapter.updateGrid(deviceChannelsManagers.indexOf(favoriteManager), favoriteManager);
         }
         Log.d(TAG, "removeDeviceFromFavorite: ");
     }

@@ -43,6 +43,7 @@ public class ConfigMenuActivity extends ActionBarActivity implements OnClickList
         findViews();
         setListeners();
 
+
         Bundle extras = savedInstanceState == null ? getIntent().getExtras() : savedInstanceState;
 //        mDevice = (Device) extras.getSerializable(KEY_ARGS);
         deviceId = (int) extras.getSerializable(KEY_ARGS);
