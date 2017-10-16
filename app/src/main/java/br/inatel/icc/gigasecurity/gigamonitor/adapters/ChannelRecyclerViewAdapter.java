@@ -180,7 +180,8 @@ public class ChannelRecyclerViewAdapter extends RecyclerView.Adapter<ChannelRecy
             public void run() {
                 if(overlayMenu.getVisibility() == View.VISIBLE) {
                     overlayMenu.setVisibility(View.GONE);
-                    if (surfaceViewComponent.isPTZEnabled()) {
+                    if (deviceChannelsManager.ptzChannel > -1) {
+//                    if (surfaceViewComponent.isPTZEnabled()) {
                         final OverlayPTZ overlayPTZ = childViewHolder.overlayPTZ;
                         overlayPTZ.setSurfaceViewComponent(surfaceViewComponent);
                         overlayPTZ.setVisibility(View.VISIBLE);
@@ -190,7 +191,8 @@ public class ChannelRecyclerViewAdapter extends RecyclerView.Adapter<ChannelRecy
                     overlayMenu.setSurfaceViewComponent(surfaceViewComponent);
                     overlayMenu.updateIcons();
                     overlayMenu.setVisibility(View.VISIBLE);
-                    if (surfaceViewComponent.isPTZEnabled()) {
+                    if (deviceChannelsManager.ptzChannel > -1) {
+//                    if (surfaceViewComponent.isPTZEnabled()) {
                         final OverlayPTZ overlayPTZ = childViewHolder.overlayPTZ;
                         overlayPTZ.setSurfaceViewComponent(surfaceViewComponent);
                         overlayPTZ.setVisibility(View.GONE);

@@ -78,6 +78,7 @@ public abstract class ChannelsManager implements IFunSDKResult {
     public int lastFirstItemBeforeSelectChannel;
     public int currentPage;
     public int channelNumber;
+    public int ptzChannel;
 
     public FrameLayout.LayoutParams pbParam;
     public FrameLayout.LayoutParams surfaceViewLayout;
@@ -109,6 +110,7 @@ public abstract class ChannelsManager implements IFunSDKResult {
         this.lastFirstVisibleItem = 0;
         this.lastLastVisibleItem = 0;
         this.currentPage = 0;
+        this.ptzChannel = -1;
         surfaceViewLayout = new FrameLayout.LayoutParams(FrameLayout.LayoutParams.MATCH_PARENT, FrameLayout.LayoutParams.MATCH_PARENT);
         pbParam = new FrameLayout.LayoutParams(FrameLayout.LayoutParams.WRAP_CONTENT, FrameLayout.LayoutParams.WRAP_CONTENT, Gravity.CENTER);
         channelNumber = mDevice.getChannelNumber();
@@ -469,6 +471,16 @@ public abstract class ChannelsManager implements IFunSDKResult {
                 disableSendAudio();
             }
         }
+    }
+
+    public void enablePTZ(boolean enabled, int channelNumber){
+        if(ptzChannel != -1){
+            surfaceViewComponents.get(ptzChannel).disablePTZ();
+        }
+        if(!enabled)
+            ptzChannel = -1;
+        else
+            ptzChannel = channelNumber;
     }
 
     /** Async return from SDK**/

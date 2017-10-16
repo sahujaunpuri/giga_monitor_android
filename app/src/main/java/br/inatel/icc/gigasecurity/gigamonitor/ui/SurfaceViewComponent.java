@@ -195,11 +195,7 @@ public class SurfaceViewComponent extends FrameLayout {
 
     public void setPTZEnabled(boolean PTZEnabled) {
         isPTZEnabled = PTZEnabled;
-//        if(isPTZEnabled) {
-//            enablePTZ();
-//        } else {
-//            disablePTZ();
-//        }
+        mChannelsManager.enablePTZ(PTZEnabled, mySurfaceViewChannelId);
     }
 
     public void enablePTZ() {
@@ -218,6 +214,7 @@ public class SurfaceViewComponent extends FrameLayout {
     }
 
     public void disablePTZ() {
+        isPTZEnabled = false;
 //        this.removeView(ivTouch);
 //        ivTouch = null;
 //        this.removeView(ptzOverlay);
@@ -340,7 +337,8 @@ public class SurfaceViewComponent extends FrameLayout {
         super.onDetachedFromWindow();
         isVisible = false;
         if(playType == 0)
-            mChannelsManager.mRecyclerAdapter.closeOverlayMenu();
+//            mChannelsManager.mRecyclerAdapter.closeOverlayMenu();
+            mChannelsManager.mRecyclerAdapter.openOverlayMenu(this);
         new Thread(new Runnable() {
             @Override
             public void run() {
