@@ -23,6 +23,7 @@ import android.util.Log;
 import android.view.Display;
 import android.view.Gravity;
 import android.view.Surface;
+import android.view.View;
 import android.widget.FrameLayout;
 import android.widget.Toast;
 import android.widget.VideoView;
@@ -474,13 +475,18 @@ public abstract class ChannelsManager implements IFunSDKResult {
     }
 
     public void enablePTZ(boolean enabled, int channelNumber){
-        if(ptzChannel != -1){
-            surfaceViewComponents.get(ptzChannel).disablePTZ();
-        }
-        if(!enabled)
-            ptzChannel = -1;
-        else
+        if(enabled){
+            if(ptzChannel > -1 && ptzChannel != channelNumber) {
+                surfaceViewComponents.get(channelNumber).ptzOverlay = surfaceViewComponents.get(ptzChannel).ptzOverlay;
+                surfaceViewComponents.get(getChannelSelected(ptzChannel)).disablePTZ();
+            }
             ptzChannel = channelNumber;
+        }else if(ptzChannel > -1){
+            if(surfaceViewComponents.get(ptzChannel).ptzOverlay != null)
+                surfaceViewComponents.get(ptzChannel).ptzOverlay.setVisibility(View.GONE);
+            surfaceViewComponents.get(getChannelSelected(ptzChannel)).disablePTZ();
+            ptzChannel = -1;
+        }
     }
 
     /** Async return from SDK**/

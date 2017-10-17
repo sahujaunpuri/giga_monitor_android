@@ -337,8 +337,8 @@ public class SurfaceViewComponent extends FrameLayout {
         super.onDetachedFromWindow();
         isVisible = false;
         if(playType == 0)
-//            mChannelsManager.mRecyclerAdapter.closeOverlayMenu();
-            mChannelsManager.mRecyclerAdapter.openOverlayMenu(this);
+            mChannelsManager.mRecyclerAdapter.closeOverlayMenu();
+//            mChannelsManager.mRecyclerAdapter.openOverlayMenu(this);
         new Thread(new Runnable() {
             @Override
             public void run() {
