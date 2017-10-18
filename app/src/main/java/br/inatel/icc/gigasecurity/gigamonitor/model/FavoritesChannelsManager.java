@@ -174,4 +174,23 @@ public class FavoritesChannelsManager extends ChannelsManager implements IFunSDK
         svc.setStreamType(1);
         restartVideo(svc);
     }
+
+    @Override
+    public void enablePTZ(boolean enabled, SurfaceViewComponent svc){
+        int channel = svc.mySurfaceViewOrderId;
+        if(enabled){
+            if(ptzChannel > -1 && ptzChannel != channel) {
+                surfaceViewComponents.get(channel).ptzOverlay = surfaceViewComponents.get(ptzChannel).ptzOverlay;
+                surfaceViewComponents.get(ptzChannel).disablePTZ();
+                Log.d(TAG, "enablePTZ: enabled / disable ptzChannel:" + ptzChannel + " channel: " + channel);
+            }
+            ptzChannel = channel;
+        }else if(ptzChannel > -1){
+            if(surfaceViewComponents.get(ptzChannel).ptzOverlay != null)
+                surfaceViewComponents.get(ptzChannel).ptzOverlay.setVisibility(View.GONE);
+            surfaceViewComponents.get(ptzChannel).disablePTZ();
+            Log.d(TAG, "enablePTZ: disabled / disable ptzChannel:" + ptzChannel + " channel: " + channel);
+            ptzChannel = -1;
+        }
+    }
 }
