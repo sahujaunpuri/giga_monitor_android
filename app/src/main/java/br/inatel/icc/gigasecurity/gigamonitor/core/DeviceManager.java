@@ -1,6 +1,5 @@
 package br.inatel.icc.gigasecurity.gigamonitor.core;
 
-import android.app.Activity;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.res.Resources;
@@ -13,7 +12,6 @@ import android.net.DhcpInfo;
 import android.net.NetworkInfo;
 import android.net.Uri;
 import android.net.wifi.WifiManager;
-import android.os.AsyncTask;
 import android.os.Environment;
 import android.os.Message;
 import android.util.Log;
@@ -22,7 +20,6 @@ import android.widget.Toast;
 
 import com.basic.G;
 import com.google.gson.annotations.Expose;
-import com.lib.EDEV_JSON_ID;
 import com.lib.EFUN_ATTR;
 import com.lib.EUIMSG;
 import com.lib.FunSDK;
@@ -33,23 +30,16 @@ import com.lib.sdk.struct.H264_DVR_FINDINFO;
 import com.lib.sdk.struct.SDK_CONFIG_NET_COMMON_V2;
 import com.lib.sdk.struct.SDK_SYSTEM_TIME;
 
-
-import org.apache.commons.lang3.ObjectUtils;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
 import java.net.InetAddress;
 import java.net.InterfaceAddress;
 import java.net.NetworkInterface;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.LinkedList;
 
@@ -64,20 +54,16 @@ import br.inatel.icc.gigasecurity.gigamonitor.listeners.PlaybackSearchListener;
 import br.inatel.icc.gigasecurity.gigamonitor.model.ChannelsManager;
 import br.inatel.icc.gigasecurity.gigamonitor.model.Device;
 import br.inatel.icc.gigasecurity.gigamonitor.model.DeviceChannelsManager;
-import br.inatel.icc.gigasecurity.gigamonitor.model.FavoritesChannelsManager;
 import br.inatel.icc.gigasecurity.gigamonitor.model.FavoritePair;
+import br.inatel.icc.gigasecurity.gigamonitor.model.FavoritesChannelsManager;
 import br.inatel.icc.gigasecurity.gigamonitor.model.FileData;
 import br.inatel.icc.gigasecurity.gigamonitor.model.StatePreferences;
 import br.inatel.icc.gigasecurity.gigamonitor.ui.SurfaceViewComponent;
 import br.inatel.icc.gigasecurity.gigamonitor.util.ComplexPreferences;
-import br.inatel.icc.gigasecurity.gigamonitor.util.FunLog;
-import br.inatel.icc.gigasecurity.gigamonitor.util.OPCompressPic;
 import br.inatel.icc.gigasecurity.gigamonitor.util.Utils;
 
 import static android.content.Context.MODE_PRIVATE;
 import static br.inatel.icc.gigasecurity.gigamonitor.activities.DeviceListActivity.mContext;
-import static br.inatel.icc.gigasecurity.gigamonitor.activities.DeviceListActivity.mDevices;
-import static br.inatel.icc.gigasecurity.gigamonitor.activities.DeviceListActivity.previousGroup;
 
 /**
  * Created by rinaldo.bueno on 29/08/2014.
@@ -88,7 +74,7 @@ public class DeviceManager implements IFunSDKResult {
     private static final String APP_KEY = "d55b6614829f4d1c84d3ab2a9193234b";
     private static final String APP_SECRET = "7a58fdbc242b4f6ba95652b7a3502b91";
     private static final int APP_MOVECARD = 8;
-    private static final String SERVER_IP = "200.98.128.50";
+    private static final String SERVER_IP = "cloudgiga.com.br";
     private static final int SERVER_PORT = 8000;
     private static final String MEDIA_DISK_NAME = "MEDIA_DISK";
 

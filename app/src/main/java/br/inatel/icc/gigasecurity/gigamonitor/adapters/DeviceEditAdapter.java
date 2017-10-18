@@ -5,9 +5,6 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.v7.widget.RecyclerView;
-import android.util.Log;
-import android.view.DragEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -107,7 +104,7 @@ public class DeviceEditAdapter extends BaseAdapter {
 
     private void showDeleteConfirmation(final int deletePosition) {
         AlertDialog.Builder alert = new AlertDialog.Builder(
-                mContex);
+                mContex, R.style.Base_Theme_AppCompat_Light_Dialog);
 
         alert.setTitle(R.string.action_delete);
         alert.setMessage(R.string.action_delete_confirmation);
