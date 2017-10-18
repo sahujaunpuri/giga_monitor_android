@@ -195,7 +195,7 @@ public class SurfaceViewComponent extends FrameLayout {
 
     public void setPTZEnabled(boolean PTZEnabled) {
         isPTZEnabled = PTZEnabled;
-        mChannelsManager.enablePTZ(PTZEnabled, mySurfaceViewChannelId);
+        mChannelsManager.enablePTZ(PTZEnabled, this);
     }
 
     public void enablePTZ() {

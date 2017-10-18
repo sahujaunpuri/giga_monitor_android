@@ -474,13 +474,14 @@ public abstract class ChannelsManager implements IFunSDKResult {
         }
     }
 
-    public void enablePTZ(boolean enabled, int channelNumber){
+    public void enablePTZ(boolean enabled, SurfaceViewComponent svc){
+        int channel = svc.mySurfaceViewChannelId;
         if(enabled){
-            if(ptzChannel > -1 && ptzChannel != channelNumber) {
-                surfaceViewComponents.get(channelNumber).ptzOverlay = surfaceViewComponents.get(ptzChannel).ptzOverlay;
+            if(ptzChannel > -1 && ptzChannel != channel) {
+                surfaceViewComponents.get(channel).ptzOverlay = surfaceViewComponents.get(ptzChannel).ptzOverlay;
                 surfaceViewComponents.get(getChannelSelected(ptzChannel)).disablePTZ();
             }
-            ptzChannel = channelNumber;
+            ptzChannel = channel;
         }else if(ptzChannel > -1){
             if(surfaceViewComponents.get(ptzChannel).ptzOverlay != null)
                 surfaceViewComponents.get(ptzChannel).ptzOverlay.setVisibility(View.GONE);
