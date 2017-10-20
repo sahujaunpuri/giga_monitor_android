@@ -144,6 +144,7 @@ public class DeviceSearchListActivity extends ActionBarActivity {
         dev.setTCPPort(mDevices.get(item).getTCPPort());
         dev.setTransferPlan(mDevices.get(item).getTransferPlan());
         dev.setUdpPort(mDevices.get(item).getUdpPort());
+        dev.setMacAddress(mDevices.get(item).getMacAddress());
 
         extras.putSerializable("device", dev);
         extras.putInt("index", -3);

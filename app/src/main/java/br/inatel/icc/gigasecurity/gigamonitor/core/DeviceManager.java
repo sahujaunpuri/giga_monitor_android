@@ -560,18 +560,20 @@ public class DeviceManager implements IFunSDKResult {
     public void setEthernetConfigOffline(Device device) {
         JSONObject json = new JSONObject();
         try {
-            json.put("HostName", device.getHostname());
             json.put("GateWay", Utils.stringIpToHexString(device.getGateway()));
             json.put("HostIP", Utils.stringIpToHexString(device.getIpAddress()));
-            json.put("Submask", Utils.stringIpToHexString(device.getSubmask()));
+            json.put("HostName", device.getHostname());
             json.put("HttpPort", device.getHttpPort());
+            json.put("MAC", device.getMacAddress());
             json.put("MaxBps", device.getMaxBPS());
             json.put("MonMode", device.getMonMode());
             json.put("SSLPort", device.getSslPort());
+            json.put("Submask", Utils.stringIpToHexString(device.getSubmask()));
             json.put("TCPMaxConn", device.getTcpMaxConn());
             json.put("TCPPort", device.getTCPPort());
             json.put("TransferPlan", device.getTransferPlan());
             json.put("UDPPort", device.getUdpPort());
+            json.put("UseHSDownLoad", false);
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -1545,8 +1547,8 @@ public class DeviceManager implements IFunSDKResult {
 //                    device.loginAttempt++;
                     //next connection method
                     loginAttempt(device);
-                    Log.d(TAG, "OnFunSDKResult: Login ERROR");
-                    Log.d(device.deviceName, device.connectionString);
+//                    Log.d(TAG, "OnFunSDKResult: Login ERROR");
+//                    Log.d(device.deviceName, device.connectionString);
                 }
             }
             break;
