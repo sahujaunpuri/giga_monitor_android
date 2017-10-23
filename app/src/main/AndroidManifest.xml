@@ -18,18 +18,15 @@
     <uses-permission android:name="android.permission.WRITE_SETTINGS" />
     <uses-permission android:name="android.permission.CHANGE_WIFI_MULTICAST_STATE" />
 
-
     <application
         android:name=".activities.MyApplication"
         android:allowBackup="true"
-        android:largeHeap="true"
         android:allowClearUserData="true"
         android:hardwareAccelerated="true"
-
         android:icon="@drawable/ic_launcher"
         android:label="@string/app_name"
+        android:largeHeap="true"
         android:theme="@style/Theme.Giga">
-
         <receiver android:name=".core.ConnectionReceiver">
             <intent-filter>
                 <action android:name="android.net.conn.CONNECTIVITY_CHANGE" />
@@ -84,8 +81,8 @@
         </activity>
         <activity
             android:name=".activities.DevicePlaybackVideoActivity"
-            android:label="@string/title_activity_device_playback_video"
             android:configChanges="orientation|keyboardHidden|screenSize"
+            android:label="@string/title_activity_device_playback_video"
             android:parentActivityName=".activities.DevicePlaybackActivity">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
@@ -125,10 +122,12 @@
         <activity
             android:name=".activities.DeviceConfigActivity"
             android:label="@string/title_activity_device_config" />
-        <activity android:name=".activities.MediaVideoActivity" android:theme="@style/Theme.Transparent"/>
+        <activity
+            android:name=".activities.MediaVideoActivity"
+            android:theme="@style/Theme.Transparent" />
         <activity
             android:name=".config.encode.EncodeActivity"
-            android:label="@string/cameras"/>
+            android:label="@string/cameras" />
         <activity
             android:name=".activities.SplashScreenActivity"
             android:label="@string/app_name">
@@ -147,14 +146,21 @@
             android:screenOrientation="portrait" />
         <activity
             android:name=".activities.DeviceListActivity"
-            android:hardwareAccelerated="true"
             android:configChanges="orientation|keyboardHidden|screenSize"
-            android:label="@string/title_activity_device_list3"/>
+            android:hardwareAccelerated="true"
+            android:label="@string/title_activity_device_list3" />
+        <activity
+            android:name=".activities.FavoritesDevicesListActivity"
+            android:label="@string/title_activity_fav_devices" />
+
         <meta-data
             android:name="io.fabric.ApiKey"
-            android:value="0c6acb0e22a28d01ae5f8c1cd9fe9e25e0bc570e"
-            /><!-- ATTENTION: This was auto-generated to add Google Play services to your project for
-     App Indexing.  See https://g.co/AppIndexing/AndroidStudio for more information. -->
+            android:value="0c6acb0e22a28d01ae5f8c1cd9fe9e25e0bc570e" />
+        <!--
+ ATTENTION: This was auto-generated to add Google Play services to your project for
+     App Indexing.  See https://g.co/AppIndexing/AndroidStudio for more information.
+        -->
+
     </application>
 
 </manifest>

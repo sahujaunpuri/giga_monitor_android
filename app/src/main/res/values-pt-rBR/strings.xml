@@ -309,5 +309,6 @@
     <string name="very_bad_quality">Muito ruim</string>
     <string name="secondary_stream">Stream Secundário</string>
     <string name="primary_stream">Stream Primário</string>
+    <string name="title_activity_fav_devices">Favoritos</string>
 
 </resources>

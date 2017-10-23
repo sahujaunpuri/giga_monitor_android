@@ -26,6 +26,7 @@ import br.inatel.icc.gigasecurity.gigamonitor.R;
 import br.inatel.icc.gigasecurity.gigamonitor.activities.DeviceListActivity;
 import br.inatel.icc.gigasecurity.gigamonitor.activities.DevicePlaybackActivity;
 import br.inatel.icc.gigasecurity.gigamonitor.activities.DeviceRemoteControlActivity;
+import br.inatel.icc.gigasecurity.gigamonitor.activities.FavoritesDevicesListActivity;
 import br.inatel.icc.gigasecurity.gigamonitor.config.ConfigMenuActivity;
 import br.inatel.icc.gigasecurity.gigamonitor.core.DeviceManager;
 import br.inatel.icc.gigasecurity.gigamonitor.listeners.LoginDeviceListener;
@@ -127,6 +128,7 @@ public class DeviceExpandableListAdapter extends BaseExpandableListAdapter {
         groupViewHolder.tvDeviceName.setText(groupViewHolder.mDevice.deviceName);
         groupViewHolder.ivMore.setOnClickListener(createMoreListener(groupPosition));
         groupViewHolder.ivQuad.setOnClickListener(createQuadListener(groupPosition));
+        groupViewHolder.ivAddMore.setOnClickListener(openFavoritesList());
 
         this.groupViewHolder.add(groupViewHolder);
 
@@ -206,6 +208,16 @@ public class DeviceExpandableListAdapter extends BaseExpandableListAdapter {
                         deviceChannelsManager.reOrderSurfaceViewComponents();
                     }
                 });
+            }
+        };
+    }
+
+    private View.OnClickListener openFavoritesList(){
+        return new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(mContext, FavoritesDevicesListActivity.class);
+                mContext.startActivity(intent);
             }
         };
     }

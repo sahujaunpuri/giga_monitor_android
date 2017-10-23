@@ -311,5 +311,6 @@
     <string name="very_bad_quality">Very bad</string>
     <string name="primary_stream">Primary Stream</string>
     <string name="secondary_stream">Secondary Stream</string>
+    <string name="title_activity_fav_devices">Favorites</string>
 
 </resources>
