@@ -309,5 +309,8 @@
     <string name="very_bad_quality">Muito ruim</string>
     <string name="secondary_stream">Stream Secundário</string>
     <string name="primary_stream">Stream Primário</string>
+    <string name="media_video_activity_title">Mídia</string>
+    <string name="playback_prompt">Tipos de playback</string>
+    <string name="playback_types">Tipos de playback</string>
 
 </resources>
