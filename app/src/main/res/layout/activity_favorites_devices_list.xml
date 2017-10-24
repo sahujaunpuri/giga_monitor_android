@@ -6,9 +6,9 @@
     android:layout_height="match_parent"
     tools:context="br.inatel.icc.gigasecurity.gigamonitor.activities.FavoritesDevicesListActivity">
 
-    <ListView
+    <ExpandableListView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:id="@+id/listview_fav_devices"></ListView>
+        android:id="@+id/expandable_list_view_fav_devices"></ExpandableListView>
 
 </android.support.constraint.ConstraintLayout>

@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_height="wrap_content"
+    android:layout_width="match_parent"
+    android:orientation="vertical"
+    android:background="@color/stacked_color">
+
+    <TableLayout
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:stretchColumns="2">
+
+        <TableRow
+            android:id="@+id/tableRow1"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="15dp"
+            android:layout_marginBottom="15dp"
+            android:gravity="center" >
+
+            <TextView
+                android:id="@+id/fav_list_item_device_name"
+                android:layout_height="wrap_content"
+                android:layout_width="wrap_content"
+                android:text="Device name"
+                android:textAppearance="?android:attr/textAppearanceMedium"
+                android:gravity="center_vertical"
+                android:layout_marginRight="12dp"/>
+
+            <ImageView
+                android:layout_height="wrap_content"
+                android:layout_width="wrap_content"
+                android:id="@+id/fav_list_item_select_device"
+                android:background="@drawable/ic_star_white_36dp"
+                android:layout_gravity="right|center_vertical" />
+        </TableRow>
+    </TableLayout>
+
+</LinearLayout>

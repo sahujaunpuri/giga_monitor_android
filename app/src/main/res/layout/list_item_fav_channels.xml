@@ -18,26 +18,20 @@
             android:layout_marginBottom="15dp"
             android:gravity="center" >
 
-            <ImageView
-                android:layout_width="30dp"
-                android:layout_height="30dp"
-                android:gravity="center_vertical"
-                android:src="@android:drawable/ic_delete"
-                android:id="@+id/iv_delete_device" />
-
             <TextView
-                android:id="@+id/tv_item_edit_device"
+                android:id="@+id/fav_list_item_channel_name"
                 android:layout_height="wrap_content"
                 android:layout_width="wrap_content"
+                android:text="Channel name"
                 android:textAppearance="?android:attr/textAppearanceMedium"
                 android:gravity="center_vertical"
-                android:paddingLeft="8dp" />
+                android:layout_marginLeft="12dp"/>
 
             <ImageView
                 android:layout_height="wrap_content"
                 android:layout_width="wrap_content"
-                android:id="@+id/iv_item_edit_device"
-                android:background="@drawable/ic_list"
+                android:id="@+id/fav_list_item_select_channel"
+                android:background="@drawable/ic_star_white_36dp"
                 android:layout_gravity="right|center_vertical" />
         </TableRow>
     </TableLayout>
