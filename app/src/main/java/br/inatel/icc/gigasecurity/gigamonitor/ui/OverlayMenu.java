@@ -188,7 +188,6 @@ public class OverlayMenu extends RelativeLayout {
                     surfaceViewComponent.setPTZEnabled(true);
                     ivPTZ.setImageDrawable(mContext.getResources().getDrawable(R.drawable.ic_ptz_on));
                 }
-
             }
         });
 

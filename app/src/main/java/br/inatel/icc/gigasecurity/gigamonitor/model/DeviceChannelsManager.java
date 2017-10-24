@@ -1,6 +1,7 @@
 package br.inatel.icc.gigasecurity.gigamonitor.model;
 
 import android.app.Activity;
+import android.view.View;
 
 import com.lib.FunSDK;
 import com.lib.IFunSDKResult;

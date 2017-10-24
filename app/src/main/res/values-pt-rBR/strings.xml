@@ -289,4 +289,25 @@
     <string name="transfer">Transferir</string>
     <string name="do_not_show_message_again">Não mostrar essa mensagem novamente!</string>
 
+    <!--   ENCODE STRINGS    -->
+
+    <string name="cameras">Cameras</string>
+    <string name="stream">Stream:</string>
+    <string name="resolution">Resolução:</string>
+    <string name="frame_rate">Taxa de quadros:</string>
+    <string name="quality">Qualidade:</string>
+    <string name="audio">Áudio:</string>
+    <string name="d1_resolution">D1</string>
+    <string name="resolution_960h">960H</string>
+    <string name="resolution_720p">720P</string>
+    <string name="resolution_1080p">1080P</string>
+    <string name="excellent_quality">Excelente</string>
+    <string name="very_good_quality">Muito boa</string>
+    <string name="good_quality">Boa</string>
+    <string name="regular_quality">Regular</string>
+    <string name="bad_quality">Ruim</string>
+    <string name="very_bad_quality">Muito ruim</string>
+    <string name="secondary_stream">Stream Secundário</string>
+    <string name="primary_stream">Stream Primário</string>
+
 </resources>

@@ -1,15 +1,13 @@
 package br.inatel.icc.gigasecurity.gigamonitor.activities;
 
 import android.app.AlertDialog;
-import android.app.ProgressDialog;
-import android.content.DialogInterface;
 import android.content.Intent;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.Button;
 
 import com.mobeta.android.dslv.DragSortListView;
 
@@ -181,27 +179,56 @@ public class DeviceEditListActivity extends ActionBarActivity {
     }
 
     private void showBackConfirmation() {
-        AlertDialog.Builder alert = new AlertDialog.Builder(this);
-        alert.setTitle("Atenção");
-        alert.setMessage("Existem alterações não salvas.");
-        alert.setPositiveButton("Salvar", new DialogInterface.OnClickListener() {
+        final AlertDialog.Builder dialog = new AlertDialog.Builder(this);
+        View view = this.getLayoutInflater().inflate(R.layout.exit_config_dialog, null);
+        dialog.setView(view);
+        final AlertDialog alert = dialog.create();
+        Button cancel = (Button) view.findViewById(R.id.cancel_action);
+        cancel.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(DialogInterface dialogInterface, int which) {
-                exitAndSave();
+            public void onClick(View v) {
+                alert.dismiss();
             }
-            });
-        alert.setNeutralButton("Não Salvar", new DialogInterface.OnClickListener() {
+        });
+        Button dontSave = (Button) view.findViewById(R.id.dont_save);
+        dontSave.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(DialogInterface dialog, int which) {
+            public void onClick(View v) {
                 finish();
             }
         });
-        alert.setNegativeButton("Cancelar", new DialogInterface.OnClickListener() {
+        alert.show();
+        Button ok = (Button) view.findViewById(R.id.ok_action);
+        ok.setOnClickListener(new View.OnClickListener() {
             @Override
-             public void onClick(DialogInterface dialog, int which) {
-               dialog.dismiss();
+            public void onClick(View v) {
+                exitAndSave();
             }
         });
         alert.show();
+
+
+//        AlertDialog.Builder alert = new AlertDialog.Builder(this);
+//        alert.setTitle("Atenção");
+//        alert.setMessage("Existem alterações não salvas.");
+//        alert.setPositiveButton("Salvar", new DialogInterface.OnClickListener() {
+//            @Override
+//            public void onClick(DialogInterface dialogInterface, int which) {
+//                exitAndSave();
+//            }
+//            });
+//        alert.setNeutralButton("Não Salvar", new DialogInterface.OnClickListener() {
+//            @Override
+//            public void onClick(DialogInterface dialog, int which) {
+//                finish();
+//            }
+//        });
+//        alert.setNegativeButton("Cancelar", new DialogInterface.OnClickListener() {
+//            @Override
+//             public void onClick(DialogInterface dialog, int which) {
+//               dialog.dismiss();
+//            }
+//        });
+//        alert.show();
     }
 }

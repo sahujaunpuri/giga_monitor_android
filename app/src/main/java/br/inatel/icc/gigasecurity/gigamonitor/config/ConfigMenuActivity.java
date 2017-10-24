@@ -14,6 +14,7 @@ import br.inatel.icc.gigasecurity.gigamonitor.R;
 import br.inatel.icc.gigasecurity.gigamonitor.activities.DeviceListActivity;
 import br.inatel.icc.gigasecurity.gigamonitor.config.ddns.DDNSConfigActivity;
 import br.inatel.icc.gigasecurity.gigamonitor.config.dns.DNSConfigActivity;
+import br.inatel.icc.gigasecurity.gigamonitor.config.encode.EncodeActivity;
 import br.inatel.icc.gigasecurity.gigamonitor.config.ethernet.EthernetConfigActivity;
 import br.inatel.icc.gigasecurity.gigamonitor.config.general.GeneralConfigActivity;
 import br.inatel.icc.gigasecurity.gigamonitor.config.password.PasswordConfigActivity;
@@ -27,7 +28,7 @@ public class ConfigMenuActivity extends ActionBarActivity implements OnClickList
     // debug tag
     private final String TAG = ConfigMenuActivity.class.getSimpleName();
 
-    private Button mWifiButton, mGeneralButton, mEthernetButton, mCloudButton, mDNSButton, mDHCPButton, mDDNSButton, mUPnPButton, mPasswordButton, mRebootDeviceButton;
+    private Button mWifiButton, mGeneralButton, mEthernetButton, mCloudButton, mDNSButton, mDHCPButton, mDDNSButton, mUPnPButton, mPasswordButton, mRebootDeviceButton, mEncodeButton;
     private Device mDevice;
     private int deviceId;
     private DeviceManager mDeviceManager;
@@ -41,6 +42,7 @@ public class ConfigMenuActivity extends ActionBarActivity implements OnClickList
 
         findViews();
         setListeners();
+
 
         Bundle extras = savedInstanceState == null ? getIntent().getExtras() : savedInstanceState;
 //        mDevice = (Device) extras.getSerializable(KEY_ARGS);
@@ -60,6 +62,7 @@ public class ConfigMenuActivity extends ActionBarActivity implements OnClickList
         mUPnPButton         = (Button) findViewById(R.id.button_upnp_config);
         mPasswordButton     = (Button) findViewById(R.id.button_password_config);
         mRebootDeviceButton = (Button) findViewById(R.id.button_reboot_device);
+        mEncodeButton       = (Button) findViewById(R.id.button_encode);
     }
 
     private void setListeners() {
@@ -73,6 +76,7 @@ public class ConfigMenuActivity extends ActionBarActivity implements OnClickList
         mUPnPButton.setOnClickListener(this);
         mPasswordButton.setOnClickListener(this);
         mRebootDeviceButton.setOnClickListener(this);
+        mEncodeButton.setOnClickListener(this);
     }
 
     @Override
@@ -125,6 +129,9 @@ public class ConfigMenuActivity extends ActionBarActivity implements OnClickList
                 break;
             case R.id.button_reboot_device:
                 showRebootDialog();
+                break;
+            case R.id.button_encode:
+                intent = new Intent(this, EncodeActivity.class);
                 break;
             default:
                 break;

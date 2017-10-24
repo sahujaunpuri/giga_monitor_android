@@ -114,65 +114,69 @@ public class OverlayPTZ extends RelativeLayout implements View.OnTouchListener  
 
     @Override
     public boolean onTouch(View view, MotionEvent motionEvent) {
-        switch (view.getId()) {
-            case R.id.arrow_top_left:
-                int topLeftCommand = EPTZCMD.PAN_LEFTTOP;
-                manageImageTouch(motionEvent, topLeftCommand);
-                return true;
-            case R.id.arrow_left:
-                int leftCommand = EPTZCMD.PAN_LEFT;
-                manageImageTouch(motionEvent, leftCommand);
-                return true;
-            case R.id.arrow_top_right:
-                int topRightCommand = EPTZCMD.PAN_RIGTHTOP;
-                manageImageTouch(motionEvent, topRightCommand);
-                return true;
-            case R.id.arrow_right:
-                int rightCommand = EPTZCMD.PAN_RIGHT;
-                manageImageTouch(motionEvent, rightCommand);
-                return true;
-            case R.id.arrow_up:
-                int upCommand = EPTZCMD.TILT_UP;
-                manageImageTouch(motionEvent, upCommand);
-                return true;
-            case R.id.arrow_down_left:
-                int downLeftCommand = EPTZCMD.PAN_LEFTDOWN;
-                manageImageTouch(motionEvent, downLeftCommand);
-                return true;
-            case R.id.arrow_down:
-                int downCommand = EPTZCMD.TILT_DOWN;
-                manageImageTouch(motionEvent, downCommand);
-                return true;
-            case R.id.arrow_down_right:
-                int downRightCommand = EPTZCMD.PAN_RIGTHDOWN;
-                manageImageTouch(motionEvent, downRightCommand);
-                return true;
-            case R.id.zoom_in:
-                int zoomInCommand = EPTZCMD.ZOOM_IN;
-                manageImageTouch(motionEvent, zoomInCommand);
-                return true;
-            case R.id.zoom_out:
-                int zoomOutCommand = EPTZCMD.ZOOM_OUT;
-                manageImageTouch(motionEvent, zoomOutCommand);
-                return true;
-            case R.id.focus_in:
-                int focusInCommand = EPTZCMD.FOCUS_NEAR;
-                manageImageTouch(motionEvent, focusInCommand);
-                return true;
-            case R.id.focus_out:
-                int focusOutCommand = EPTZCMD.FOCUS_FAR;
-                manageImageTouch(motionEvent, focusOutCommand);
-                return true;
-            case R.id.iris_up:
-                int irisUpCommand = EPTZCMD.IRIS_OPEN;
-                manageImageTouch(motionEvent, irisUpCommand);
-                return true;
-            case R.id.iris_down:
-                int irisDownCommand = EPTZCMD.IRIS_CLOSE;
-                manageImageTouch(motionEvent, irisDownCommand);
-                return true;
-            default:
-                break;
+        if(motionEvent.getActionMasked() == MotionEvent.ACTION_DOWN || motionEvent.getActionMasked() == MotionEvent.ACTION_UP) {
+            switch (view.getId()) {
+                case R.id.arrow_top_left:
+                    int topLeftCommand = EPTZCMD.PAN_LEFTTOP;
+                    manageImageTouch(motionEvent, topLeftCommand);
+                    return true;
+                case R.id.arrow_left:
+                    int leftCommand = EPTZCMD.PAN_LEFT;
+                    manageImageTouch(motionEvent, leftCommand);
+                    return true;
+                case R.id.arrow_top_right:
+                    int topRightCommand = EPTZCMD.PAN_RIGTHTOP;
+                    manageImageTouch(motionEvent, topRightCommand);
+                    return true;
+                case R.id.arrow_right:
+                    int rightCommand = EPTZCMD.PAN_RIGHT;
+                    manageImageTouch(motionEvent, rightCommand);
+                    return true;
+                case R.id.arrow_up:
+                    int upCommand = EPTZCMD.TILT_UP;
+                    manageImageTouch(motionEvent, upCommand);
+                    return true;
+                case R.id.arrow_down_left:
+                    int downLeftCommand = EPTZCMD.PAN_LEFTDOWN;
+                    manageImageTouch(motionEvent, downLeftCommand);
+                    return true;
+                case R.id.arrow_down:
+                    int downCommand = EPTZCMD.TILT_DOWN;
+                    manageImageTouch(motionEvent, downCommand);
+                    return true;
+                case R.id.arrow_down_right:
+                    int downRightCommand = EPTZCMD.PAN_RIGTHDOWN;
+                    manageImageTouch(motionEvent, downRightCommand);
+                    return true;
+                case R.id.zoom_in:
+                    int zoomInCommand = EPTZCMD.ZOOM_IN;
+                    Log.d("ptz", "onTouch: in " + motionEvent);
+                    manageImageTouch(motionEvent, zoomInCommand);
+                    return true;
+                case R.id.zoom_out:
+                    int zoomOutCommand = EPTZCMD.ZOOM_OUT;
+                    Log.d("ptz", "onTouch: out " + motionEvent);
+                    manageImageTouch(motionEvent, zoomOutCommand);
+                    return true;
+                case R.id.focus_in:
+                    int focusInCommand = EPTZCMD.FOCUS_NEAR;
+                    manageImageTouch(motionEvent, focusInCommand);
+                    return true;
+                case R.id.focus_out:
+                    int focusOutCommand = EPTZCMD.FOCUS_FAR;
+                    manageImageTouch(motionEvent, focusOutCommand);
+                    return true;
+                case R.id.iris_up:
+                    int irisUpCommand = EPTZCMD.IRIS_OPEN;
+                    manageImageTouch(motionEvent, irisUpCommand);
+                    return true;
+                case R.id.iris_down:
+                    int irisDownCommand = EPTZCMD.IRIS_CLOSE;
+                    manageImageTouch(motionEvent, irisDownCommand);
+                    return true;
+                default:
+                    break;
+            }
         }
         return false;
     }

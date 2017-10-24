@@ -50,13 +50,21 @@
                     android:layout_gravity="left|center_vertical"
                     android:id="@+id/tv_hostname_list_device" />
 
+                <ImageView
+                    android:layout_width="35dp"
+                    android:layout_height="35dp"
+                    android:layout_gravity="right|center_vertical"
+                    android:visibility="invisible"
+                    android:layout_marginRight="7dp"
+                    android:src="@drawable/ic_action_add_fav"
+                    android:id="@+id/iv_add_fav" />
+
 
                 <ImageView
                     android:layout_width="35dp"
                     android:layout_height="35dp"
                     android:layout_gravity="right|center_vertical"
                     android:layout_marginRight="7dp"
-
                     android:visibility="invisible"
                     android:src="@drawable/ic_grid"
                     android:id="@+id/iv_grid_list_device" />
@@ -67,7 +75,6 @@
                     android:layout_height="35dp"
                     android:layout_marginRight="30dp"
                     android:layout_marginLeft="7dp"
-
                     android:visibility="invisible"
                     android:src="@drawable/ic_more"
                     android:id="@+id/iv_device_more" />

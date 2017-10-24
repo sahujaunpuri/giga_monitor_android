@@ -6,9 +6,12 @@ import com.basic.G;
 import com.google.gson.annotations.Expose;
 import com.lib.sdk.struct.SDK_CONFIG_NET_COMMON_V2;
 
+import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Calendar;
 
 import br.inatel.icc.gigasecurity.gigamonitor.core.DeviceManager;
@@ -57,6 +60,31 @@ public class Device implements Serializable {
 
     @Expose private String username;
     @Expose private String password;
+
+    //CONFIG ENCODE
+    private int[] primaryBitRate;
+    private String[] primaryBitRateControl;
+    private String[] primaryCompression;
+    private int[] primaryGOP;
+    private String[] primaryResolution;
+    private String[] primaryFrameRate;
+    private int[] primaryQualities;
+    private Boolean[] primaryAudio;
+    private int[] secondaryBitRate;
+    private String[] secondaryBitRateControl;
+    private String[] secondaryCompression;
+    private int[] secondaryGOP;
+    private String[] secondaryResolution;
+    private String[] secondaryFrameRate;
+    private int[] secondaryQualities;
+    private Boolean[] secondaryAudio;
+    private String[] exImageSizePerChannel;
+    private String[] imageSizePerChannel;
+    private String[] maxEncodePowerPerChannel;
+    private String primaryResolutionMask;
+    private String primaryCompressionMask;
+    private String secondaryResolutionMask;
+    private String secondaryCompressionMask;
 
     //DeviceInfo
     private String gigaCode;
@@ -579,4 +607,180 @@ public class Device implements Serializable {
     public void setCloudPriorityConnection(final boolean cloudPriorityConnection) {
         this.cloudPriorityConnection = cloudPriorityConnection;
     }
+
+    public String[] getPrimaryResolution() {
+        return primaryResolution;
+    }
+
+    public String[] getPrimaryFrameRate() {
+        return primaryFrameRate;
+    }
+
+    public int[] getPrimaryQualities() {
+        return primaryQualities;
+    }
+
+    public Boolean[] getPrimaryAudio() {
+        return primaryAudio;
+    }
+
+    public String[] getSecondaryResolution() {
+        return secondaryResolution;
+    }
+
+    public String[] getSecondaryFrameRate() {
+        return secondaryFrameRate;
+    }
+
+    public int[] getSecondaryQualities() {
+        return secondaryQualities;
+    }
+
+    public Boolean[] getSecondaryAudio() {
+        return secondaryAudio;
+    }
+
+    public String[] getExImageSizePerChannel() {
+        return exImageSizePerChannel;
+    }
+
+    public int getExImageSizePerChannel(int channel) {
+        return parseHexStringToInt(exImageSizePerChannel[channel]);
+    }
+
+    public String[] getImageSizePerChannel() {
+        return imageSizePerChannel;
+    }
+
+    public int getImageSizePerChannel(int channel) {
+        return parseHexStringToInt(imageSizePerChannel[channel]);
+    }
+
+    public String[] getMaxEncodePowerPerChannel() {
+        return maxEncodePowerPerChannel;
+    }
+
+    public int getMaxEncodePowerPerChannel(int channel){
+        return parseHexStringToInt(maxEncodePowerPerChannel[channel]);
+    }
+
+    public int getPrimaryResolutionMask() {
+        return parseHexStringToInt(primaryResolutionMask);
+    }
+
+    public int getPrimaryCompressionMask() {
+        return parseHexStringToInt(primaryCompressionMask);
+    }
+
+    public int getSecondaryResolutionMask() {
+        return parseHexStringToInt(secondaryResolutionMask);
+    }
+
+    public int getSecondaryCompressionMask() {
+        return parseHexStringToInt(secondaryCompressionMask);
+    }
+
+    private int parseHexStringToInt(String hexString){
+        hexString = hexString.substring(2);
+        return (int) Long.parseLong(hexString, 16);
+    }
+
+    public void setImageSizePerChannel(JSONArray jsonArray){
+        for(int i=0; i<channelNumber; i++){
+            try {
+                imageSizePerChannel[i] = jsonArray.getString(i);
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    public void setExImageSizePerChannel(JSONArray jsonArray){
+        for(int i=0; i<channelNumber; i++){
+            try {
+                exImageSizePerChannel[i] = jsonArray.getString(i);
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    public void setMaxEncodePowerPerChannel(JSONArray jsonArray){
+        for(int i=0; i<channelNumber; i++){
+            try {
+                maxEncodePowerPerChannel[i] = jsonArray.getString(i);
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    public void setEncodeMasks(JSONArray jsonArray){
+        try {
+            JSONObject jsonObject = jsonArray.getJSONObject(0);
+            primaryResolutionMask = jsonObject.getString("ResolutionMask");
+            primaryCompressionMask = jsonObject.getString("CompressionMask");
+            jsonObject = jsonArray.getJSONObject(1);
+            secondaryResolutionMask = jsonObject.getString("ResolutionMask");
+            secondaryCompressionMask = jsonObject.getString("CompressionMask");
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void initEncodeArrays(){
+        this.primaryResolution = new String[channelNumber];
+        this.primaryFrameRate = new String[channelNumber];
+        this.primaryQualities = new int[channelNumber];
+        this.primaryAudio = new Boolean[channelNumber];
+        this.secondaryResolution = new String[channelNumber];
+        this.secondaryFrameRate = new String[channelNumber];
+        this.secondaryQualities = new int[channelNumber];
+        this.secondaryAudio = new Boolean[channelNumber];
+        this.primaryBitRate  = new int[channelNumber];
+        this.primaryBitRateControl = new String[channelNumber];
+        this.primaryCompression = new String[channelNumber];
+        this.primaryGOP = new int[channelNumber];
+        this.secondaryBitRate = new int[channelNumber];
+        this.secondaryBitRateControl = new String[channelNumber];
+        this.secondaryCompression = new String[channelNumber];
+        this.secondaryGOP = new int[channelNumber];
+
+        this.exImageSizePerChannel = new String[channelNumber];
+        this.imageSizePerChannel = new String[channelNumber];
+        this.maxEncodePowerPerChannel = new String[channelNumber];
+    }
+
+    public void parsePrimaryConfigs(int channel, JSONObject streamConfig){
+        try {
+            JSONObject videoConfig = streamConfig.getJSONObject("Video");
+            primaryBitRate[channel] = videoConfig.getInt("BitRate");
+            primaryBitRateControl[channel] = videoConfig.getString("BitRateControl");
+            primaryCompression[channel] = videoConfig.getString("Compression");
+            primaryGOP[channel] = videoConfig.getInt("GOP");
+            primaryResolution[channel] = videoConfig.getString("Resolution");
+            primaryFrameRate[channel] = videoConfig.getString("FPS");
+            primaryQualities[channel] = videoConfig.getInt("Quality");
+            primaryAudio[channel] = streamConfig.getBoolean("AudioEnable");
+        } catch (JSONException e){
+            e.printStackTrace();
+        }
+    }
+
+    public void parseSecondaryConfigs(int channel, JSONObject streamConfig){
+        try {
+            JSONObject videoConfig = streamConfig.getJSONObject("Video");
+            secondaryBitRate[channel] = videoConfig.getInt("BitRate");
+            secondaryBitRateControl[channel] = videoConfig.getString("BitRateControl");
+            secondaryCompression[channel] = videoConfig.getString("Compression");
+            secondaryGOP[channel] = videoConfig.getInt("GOP");
+            secondaryResolution[channel] = videoConfig.getString("Resolution");
+            secondaryFrameRate[channel] = videoConfig.getString("FPS");
+            secondaryQualities[channel] = videoConfig.getInt("Quality");
+            secondaryAudio[channel] = streamConfig.getBoolean("AudioEnable");
+        } catch (JSONException e){
+            e.printStackTrace();
+        }
+    }
+
 }

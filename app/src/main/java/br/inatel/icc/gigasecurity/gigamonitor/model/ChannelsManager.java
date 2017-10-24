@@ -23,6 +23,7 @@ import android.util.Log;
 import android.view.Display;
 import android.view.Gravity;
 import android.view.Surface;
+import android.view.View;
 import android.widget.FrameLayout;
 import android.widget.Toast;
 import android.widget.VideoView;
@@ -78,6 +79,7 @@ public abstract class ChannelsManager implements IFunSDKResult {
     public int lastFirstItemBeforeSelectChannel;
     public int currentPage;
     public int channelNumber;
+    public int ptzChannel;
 
     public FrameLayout.LayoutParams pbParam;
     public FrameLayout.LayoutParams surfaceViewLayout;
@@ -109,6 +111,7 @@ public abstract class ChannelsManager implements IFunSDKResult {
         this.lastFirstVisibleItem = 0;
         this.lastLastVisibleItem = 0;
         this.currentPage = 0;
+        this.ptzChannel = -1;
         surfaceViewLayout = new FrameLayout.LayoutParams(FrameLayout.LayoutParams.MATCH_PARENT, FrameLayout.LayoutParams.MATCH_PARENT);
         pbParam = new FrameLayout.LayoutParams(FrameLayout.LayoutParams.WRAP_CONTENT, FrameLayout.LayoutParams.WRAP_CONTENT, Gravity.CENTER);
         channelNumber = mDevice.getChannelNumber();
@@ -468,6 +471,22 @@ public abstract class ChannelsManager implements IFunSDKResult {
             if (sfvc.isSendAudioEnabled) {
                 disableSendAudio();
             }
+        }
+    }
+
+    public void enablePTZ(boolean enabled, SurfaceViewComponent svc){
+        int channel = svc.mySurfaceViewChannelId;
+        if(enabled){
+            if(ptzChannel > -1 && ptzChannel != channel) {
+                surfaceViewComponents.get(channel).ptzOverlay = surfaceViewComponents.get(ptzChannel).ptzOverlay;
+                surfaceViewComponents.get(getChannelSelected(ptzChannel)).disablePTZ();
+            }
+            ptzChannel = channel;
+        }else if(ptzChannel > -1){
+            if(surfaceViewComponents.get(ptzChannel).ptzOverlay != null)
+                surfaceViewComponents.get(ptzChannel).ptzOverlay.setVisibility(View.GONE);
+            surfaceViewComponents.get(getChannelSelected(ptzChannel)).disablePTZ();
+            ptzChannel = -1;
         }
     }
 
