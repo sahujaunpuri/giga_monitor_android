@@ -51,11 +51,9 @@ import br.inatel.icc.gigasecurity.gigamonitor.listeners.DownloadPlaybackListener
 import br.inatel.icc.gigasecurity.gigamonitor.listeners.PlaybackListener;
 import br.inatel.icc.gigasecurity.gigamonitor.listeners.PlaybackSearchListener;
 import br.inatel.icc.gigasecurity.gigamonitor.model.Device;
-import br.inatel.icc.gigasecurity.gigamonitor.model.FileData;
 import br.inatel.icc.gigasecurity.gigamonitor.model.DeviceChannelsManager;
+import br.inatel.icc.gigasecurity.gigamonitor.model.FileData;
 import br.inatel.icc.gigasecurity.gigamonitor.ui.SurfaceViewComponent;
-import br.inatel.icc.gigasecurity.gigamonitor.util.OPCompressPic;
-import br.inatel.icc.gigasecurity.gigamonitor.util.Utils;
 
 public class DevicePlaybackVideoActivity extends ActionBarActivity {
 
@@ -215,7 +213,7 @@ public class DevicePlaybackVideoActivity extends ActionBarActivity {
     final DownloadPlaybackListener downloadListener = new DownloadPlaybackListener() {
         @Override
         public void onStartDownload(int fileSize) {
-            mProgressDialog = new ProgressDialog(DevicePlaybackVideoActivity.this);
+            mProgressDialog = new ProgressDialog(DevicePlaybackVideoActivity.this, ProgressDialog.THEME_HOLO_LIGHT);
             mProgressDialog.setMessage(getResources().getString(R.string.downloading));
             mProgressDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
             mProgressDialog.setCancelable(false);

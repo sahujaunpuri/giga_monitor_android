@@ -14,7 +14,6 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.DatePicker;
-import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
@@ -202,6 +201,7 @@ public class DevicePlaybackActivity extends ActionBarActivity
                 endDate.set(Calendar.DAY_OF_MONTH, dayOfMonth);
 
                 setDateButtonText(mInitialTime.getTime());
+                setTheme(R.style.Base_Theme_AppCompat_Light_Dialog);
             }
         });
 
