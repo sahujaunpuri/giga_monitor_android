@@ -570,7 +570,7 @@ public class DevicePlaybackVideoActivity extends ActionBarActivity {
     }
 
     private void downloadFile() {
-        final AlertDialog.Builder alert = new AlertDialog.Builder(this);
+        final AlertDialog.Builder alert = new AlertDialog.Builder(this, R.style.Base_Theme_AppCompat_Light_Dialog);
         alert.setTitle("Download");
         String message = String.valueOf(mFileData.getFileData().st_1_size);
         alert.setMessage("Tem certeza que deseja baixar um arquivo de " + message + " KB?");

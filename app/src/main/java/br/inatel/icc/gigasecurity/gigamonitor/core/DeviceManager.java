@@ -122,6 +122,8 @@ public class DeviceManager implements IFunSDKResult {
     private ArrayList<Uri> videoUris = new ArrayList<>();
     private ArrayList<Boolean> savedMediaVideosPositionOk = new ArrayList<>();
 
+    public boolean mediaViewDidSelectMovies = false;
+
     private DeviceManager() {
     }
 

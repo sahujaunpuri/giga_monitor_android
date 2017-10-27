@@ -60,16 +60,17 @@ public class MediaActivity extends ActionBarActivity {
         };
 
         mDeviceManager = DeviceManager.getInstance();
-
         mAdapter = new MediaGridAdapter(MediaActivity.this, mMediaListener);
 
         initComponents();
 
         gvMedia.setAdapter(mAdapter);
-
         gvMedia.setFriction(ViewConfiguration.getScrollFriction() * 10);
-
         gvMedia.setVerticalScrollBarEnabled(false);
+
+        if (mDeviceManager.mediaViewDidSelectMovies) {
+            didSelectMovies();
+        }
 
         gvMedia.setOnTouchListener(new View.OnTouchListener() {
             @Override
@@ -92,6 +93,7 @@ public class MediaActivity extends ActionBarActivity {
                     ivImage.setImageDrawable(getResources().getDrawable(R.drawable.ic_camera_on));
                     ivImageSelected = true;
                     verifyButtonsVisibility();
+                    mDeviceManager.mediaViewDidSelectMovies = false;
                 }
             }
         });
@@ -100,16 +102,21 @@ public class MediaActivity extends ActionBarActivity {
         ivVideo.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(ivImageSelected) {
-                    mAdapter.changeGridMode(false);
-                    mAdapter.notifyDataSetChanged();
-                    ivVideo.setImageDrawable(getResources().getDrawable(R.drawable.ic_video_on));
-                    ivImage.setImageDrawable(getResources().getDrawable(R.drawable.ic_camera_off));
-                    ivImageSelected = false;
-                    verifyButtonsVisibility();
-                }
+                mDeviceManager.mediaViewDidSelectMovies = true;
+                didSelectMovies();
             }
         });
+    }
+
+    private void didSelectMovies() {
+        if(ivImageSelected) {
+            mAdapter.changeGridMode(false);
+            mAdapter.notifyDataSetChanged();
+            ivVideo.setImageDrawable(getResources().getDrawable(R.drawable.ic_video_on));
+            ivImage.setImageDrawable(getResources().getDrawable(R.drawable.ic_camera_off));
+            ivImageSelected = false;
+            verifyButtonsVisibility();
+        }
     }
 
     private void verifyButtonsVisibility() {
