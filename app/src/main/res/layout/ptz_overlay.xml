@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:background="@drawable/scrim">
 
     <ImageView
         android:id="@+id/arrow_top_left"
@@ -126,8 +127,7 @@
         android:layout_above="@+id/arrow_right"
         android:layout_below="@+id/arrow_top_right"
         android:layout_alignRight="@+id/arrow_right"
-        android:layout_marginBottom="10dp"
-        />
+        android:layout_marginBottom="10dp" />
 
     <ImageView
         android:id="@+id/focus_out"
@@ -137,8 +137,7 @@
         android:background="@android:color/transparent"
         android:layout_above="@+id/arrow_down_right"
         android:layout_below="@+id/arrow_right"
-        android:layout_alignRight="@+id/arrow_right"
-        />
+        android:layout_alignRight="@+id/arrow_right" />
 
     <ImageView
         android:id="@+id/iris_up"
@@ -148,8 +147,7 @@
         android:background="@android:color/transparent"
         android:layout_above="@+id/arrow_left"
         android:layout_below="@+id/arrow_top_left"
-        android:layout_alignLeft="@+id/arrow_left"
-        />
+        android:layout_alignLeft="@+id/arrow_left" />
 
     <ImageView
         android:id="@+id/iris_down"
@@ -159,8 +157,7 @@
         android:background="@android:color/transparent"
         android:layout_below="@+id/arrow_left"
         android:layout_above="@+id/arrow_down_left"
-        android:layout_alignLeft="@+id/arrow_left"
-        />
+        android:layout_alignLeft="@+id/arrow_left" />
 
     <!--<ImageView-->
         <!--android:id="@+id/ptz_on"-->
