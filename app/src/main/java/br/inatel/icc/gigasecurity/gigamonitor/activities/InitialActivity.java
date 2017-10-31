@@ -7,7 +7,6 @@ import android.graphics.Color;
 import android.graphics.PorterDuff;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -215,17 +214,21 @@ public class InitialActivity extends ActionBarActivity implements View.OnClickLi
 
     private ArrayList<Device> devicesThatAreNotAddedYet(ArrayList<Device> devices) {
         ArrayList<Device> newDevices = new ArrayList<>();
-        for (Device dev: devices) {
-            boolean alreadyAdded = false;
-            for (Device device: mDeviceManager.getDevices()) {
-                if (dev.getSerialNumber().equals(device.getSerialNumber())) {
-                    alreadyAdded = true;
-                    break;
+        try {
+            for (Device dev: devices) {
+                boolean alreadyAdded = false;
+                for (Device device: mDeviceManager.getDevices()) {
+                    if (dev.getSerialNumber().equals(device.getSerialNumber())) {
+                        alreadyAdded = true;
+                        break;
+                    }
+                }
+                if (!alreadyAdded) {
+                    newDevices.add(dev);
                 }
             }
-            if (!alreadyAdded) {
-                newDevices.add(dev);
-            }
+        } catch (Exception error) {
+            error.printStackTrace();
         }
         return newDevices;
     }
