@@ -151,13 +151,17 @@ public class InitialActivity extends ActionBarActivity implements View.OnClickLi
             InitialActivity.this.runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
-                    if(Locale.getDefault().toString().equals("pt_BR")) {
-                        tvDevicesFound.setText(mDevices.size() + " dispositivos encontrados.");
-                    } else {
-                        tvDevicesFound.setText("Found " + mDevices.size() + " devices.");
+                    try {
+                        if(Locale.getDefault().toString().equals("pt_BR")) {
+                            tvDevicesFound.setText(mDevices.size() + " dispositivos encontrados.");
+                        } else {
+                            tvDevicesFound.setText("Found " + mDevices.size() + " devices.");
+                        }
+                        atualizeButton.setVisible(true);
+                        pbInitial.setVisibility(View.GONE);
+                    } catch (Exception error){
+                        error.printStackTrace();
                     }
-                    atualizeButton.setVisible(true);
-                    pbInitial.setVisibility(View.GONE);
                 }
             });
         }
