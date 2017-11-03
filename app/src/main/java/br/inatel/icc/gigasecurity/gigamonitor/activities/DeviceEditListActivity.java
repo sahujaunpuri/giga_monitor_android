@@ -206,29 +206,5 @@ public class DeviceEditListActivity extends ActionBarActivity {
             }
         });
         alert.show();
-
-
-//        AlertDialog.Builder alert = new AlertDialog.Builder(this);
-//        alert.setTitle("Atenção");
-//        alert.setMessage("Existem alterações não salvas.");
-//        alert.setPositiveButton("Salvar", new DialogInterface.OnClickListener() {
-//            @Override
-//            public void onClick(DialogInterface dialogInterface, int which) {
-//                exitAndSave();
-//            }
-//            });
-//        alert.setNeutralButton("Não Salvar", new DialogInterface.OnClickListener() {
-//            @Override
-//            public void onClick(DialogInterface dialog, int which) {
-//                finish();
-//            }
-//        });
-//        alert.setNegativeButton("Cancelar", new DialogInterface.OnClickListener() {
-//            @Override
-//             public void onClick(DialogInterface dialog, int which) {
-//               dialog.dismiss();
-//            }
-//        });
-//        alert.show();
     }
 }
