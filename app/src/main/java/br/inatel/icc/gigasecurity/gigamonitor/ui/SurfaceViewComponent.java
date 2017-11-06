@@ -449,7 +449,9 @@ public class SurfaceViewComponent extends FrameLayout {
                     public void run() {
                         Log.d(TAG, "long press: ");
                         if(/*ivTouch != null && */isPTZEnabled()) {
-                            ptzOverlay.setPartialVisibility(View.INVISIBLE);
+                            if (ptzOverlay != null) {
+                                ptzOverlay.setPartialVisibility(View.INVISIBLE);
+                            }
 //                        ivTouch.setVisibility(GONE);
 //                        ptzOverlay.setVisibility(VISIBLE);
                         }

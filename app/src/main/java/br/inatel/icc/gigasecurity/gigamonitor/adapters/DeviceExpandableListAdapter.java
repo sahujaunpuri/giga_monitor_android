@@ -135,8 +135,8 @@ public class DeviceExpandableListAdapter extends BaseExpandableListAdapter {
 
 
     private ChildViewHolder initChildViewHolder(ViewGroup parent, int groupPosition){
-        ChildViewHolder currentChildViewHolder = childViewHolder.get(groupPosition);
         try {
+            ChildViewHolder currentChildViewHolder = childViewHolder.get(groupPosition);
             currentChildViewHolder.convertView = mInflater.inflate(R.layout.expandable_list_view_child, parent, false);
             currentChildViewHolder.recyclerViewChannels = (RecyclerView) currentChildViewHolder.convertView.findViewById(R.id.recycler_view_channels);
             currentChildViewHolder.tvMessage = (TextView) currentChildViewHolder.convertView.findViewById(R.id.tv_message_connecting);

@@ -147,6 +147,7 @@ public class DeviceFormActivity extends ActionBarActivity{
             mDevice.setTCPPort(Integer.parseInt(etDevicePort.getText().toString()));
             mDevice.setExternalPort(Integer.parseInt(etDevicePort.getText().toString()));
 
+
             if(isUsernameFilled)
                 mDevice.setUsername(etUsername.getText().toString());
             else
