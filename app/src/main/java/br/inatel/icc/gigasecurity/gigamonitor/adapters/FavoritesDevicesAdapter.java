@@ -1,7 +1,6 @@
 package br.inatel.icc.gigasecurity.gigamonitor.adapters;
 
 import android.content.Context;
-import android.graphics.Color;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -25,21 +24,11 @@ public class FavoritesDevicesAdapter extends BaseExpandableListAdapter {
     private ArrayList<Device> mDevices;
     private DeviceManager mDeviceManager;
     private Context mContext;
-    TextView textViewDeviceName;
-    ImageView imageViewDeviceStar;
-    TextView textViewChannelName;
     ImageView imageViewChannelStar;
 
     public FavoritesDevicesAdapter(Context context, ArrayList<Device> Devices){
         this.mContext = context;
         this.mDeviceManager = DeviceManager.getInstance();
-
-//        for (int index = 0; index < Devices.size(); index++) {
-//            if (Devices.get(index).getSerialNumber().equals("Favoritos")) {
-//                Devices.remove(index);
-//            }
-//        }
-
         this.mDevices = Devices;
     }
 
@@ -79,80 +68,146 @@ public class FavoritesDevicesAdapter extends BaseExpandableListAdapter {
     }
 
     @Override
-    public View getGroupView(int groupPosition, boolean isExpanded, View convertView, ViewGroup parent) {
-        return createDeviceView(groupPosition, isExpanded, convertView, parent);
-    }
-
-    @Override
-    public View getChildView(int groupPosition, int childPosition, boolean isLastChild, View convertView, ViewGroup parent) {
-        return createChannelView(groupPosition, childPosition, isLastChild, convertView, parent);
-    }
-
-    @Override
     public boolean isChildSelectable(int groupPosition, int childPosition) {
         return false;
     }
 
-    public View createDeviceView(final int groupPosition, boolean isExpanded, View convertView, ViewGroup parent) {
-        Device mDevice = mDevices.get(groupPosition);
+    @Override
+    public View getGroupView(int groupPosition, boolean isExpanded, View convertView, ViewGroup parent) {
+        final Device mDevice = mDevices.get(groupPosition);
 
         if (convertView == null) {
             LayoutInflater inflater = (LayoutInflater) mContext.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
             convertView = inflater.inflate(R.layout.list_group_fav_devices, null);
         }
 
-        textViewDeviceName = (TextView) convertView.findViewById(R.id.fav_list_item_device_name);
-        textViewDeviceName.setText(mDevice.deviceName);
+        imageViewChannelStar = (ImageView) convertView.findViewById(R.id.fav_list_item_select_device);
 
-        imageViewDeviceStar = (ImageView) convertView.findViewById(R.id.fav_list_item_select_device);
-        imageViewDeviceStar.setOnClickListener(addDeviceToFavorites(mDevice));
+        if (isDeviceFav(mDevice)) {
+            imageViewChannelStar.setImageResource(R.drawable.ic_star_yellow_24dp);
+        }
+
+        return createDeviceView(groupPosition, isExpanded, convertView, parent);
+    }
+
+    public View createDeviceView(final int groupPosition, boolean isExpanded, View convertView, ViewGroup parent) {
+        final ViewHolder holder;
+        final Device mDevice = mDevices.get(groupPosition);
 
 
+        LayoutInflater inflater = (LayoutInflater) mContext.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        convertView = inflater.inflate(R.layout.list_group_fav_devices, null);
+
+        holder = new ViewHolder();
+        holder.name = (TextView) convertView.findViewById(R.id.fav_list_item_device_name);
+        holder.star = (ImageView) convertView.findViewById(R.id.fav_list_item_select_device);
+
+        if (mDevices.get(groupPosition).getId() == ("Favoritos").hashCode()) {
+            holder.star.setVisibility(View.INVISIBLE);
+        } else {
+            holder.star.setVisibility(View.VISIBLE);
+        }
+
+        if (isDeviceFav(mDevice)) {
+            holder.star.setImageResource(R.drawable.ic_star_yellow_24dp);
+        }
+
+        convertView.setTag(holder);
+
+        holder.name.setText(mDevices.get(groupPosition).deviceName);
+
+        holder.star.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (isDeviceFav(mDevice)) {
+                    holder.star.setImageResource(R.drawable.ic_star_white_36dp);
+                } else {
+                    holder.star.setImageResource(R.drawable.ic_star_yellow_24dp);
+                    for (int channel = 0; channel < mDevice.getChannelNumber(); channel ++) {
+                        mDeviceManager.addFavorite(mDeviceManager.findChannelManagerByDevice(mDevice).surfaceViewComponents.get(channel));
+                    }
+                }
+            }
+        });
+
+        convertView.setTag(holder);
         return convertView;
     }
 
-    public View createChannelView(final int groupPosition, final int childPosition, boolean isLastChild, View convertView, ViewGroup parent){
-        SurfaceViewComponent mChannel =  mDeviceManager.findChannelManagerByDevice(mDeviceManager.getDevices().get(groupPosition)).surfaceViewComponents.get(childPosition);
+    @Override
+    public View getChildView(int groupPosition, int childPosition, boolean isLastChild, View convertView, ViewGroup parent) {
+        final SurfaceViewComponent mChannel =  mDeviceManager.findChannelManagerByDevice(mDeviceManager.getDevices().get(groupPosition)).surfaceViewComponents.get(childPosition);
 
         if (convertView == null) {
             LayoutInflater inflater = (LayoutInflater) mContext.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
             convertView = inflater.inflate(R.layout.list_item_fav_channels, null);
         }
 
-        textViewChannelName = (TextView) convertView.findViewById(R.id.fav_list_item_channel_name);
-        textViewChannelName.setText("Channel " + childPosition);
-
         imageViewChannelStar = (ImageView) convertView.findViewById(R.id.fav_list_item_select_channel);
-        imageViewChannelStar.setOnClickListener(addChannelToFavorites(mChannel));
+
+        if (mChannel.isFavorite()) {
+            imageViewChannelStar.setImageResource(R.drawable.ic_star_yellow_24dp);
+        }
+
+        return createChannelView(groupPosition, childPosition, isLastChild, convertView, parent);
+    }
+
+    public View createChannelView(final int groupPosition, final int childPosition, boolean isLastChild, View convertView, ViewGroup parent){
+        final ViewHolder holder;
+        final SurfaceViewComponent mChannel =  mDeviceManager.findChannelManagerByDevice(mDeviceManager.getDevices().get(groupPosition)).surfaceViewComponents.get(childPosition);
+
+        LayoutInflater inflater = (LayoutInflater) mContext.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        convertView = inflater.inflate(R.layout.list_item_fav_channels, null);
+
+        holder = new ViewHolder();
+        holder.name = (TextView) convertView.findViewById(R.id.fav_list_item_channel_name);
+        holder.star = (ImageView) convertView.findViewById(R.id.fav_list_item_select_channel);
+
+        if (mChannel.isFavorite()) {
+            holder.star.setImageResource(R.drawable.ic_star_yellow_24dp);
+        }
+
+        convertView.setTag(holder);
+
+        int position = childPosition + 1;
+
+        holder.name.setText("Channel " + position);
+        holder.star.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (mChannel.isFavorite()) {
+                    holder.star.setImageResource(R.drawable.ic_star_white_36dp);
+                    mDeviceManager.removeFavorite(mChannel);
+                    notifyDataSetChanged();
+                } else {
+                    holder.star.setImageResource(R.drawable.ic_star_yellow_24dp);
+                    mDeviceManager.addFavorite(mChannel);
+                }
+
+            }
+        });
 
         return convertView;
-    }
-
-    private View.OnClickListener addDeviceToFavorites(final Device device){
-        return new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                imageViewDeviceStar.setColorFilter(Color.parseColor("#FFFF00"));
-                for (int channel = 0; channel < device.getChannelNumber(); channel ++) {
-                    mDeviceManager.addFavorite(mDeviceManager.findChannelManagerByDevice(device).surfaceViewComponents.get(channel));
-                }
-            }
-        };
-    }
-
-    private View.OnClickListener addChannelToFavorites(final SurfaceViewComponent channel){
-        return new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                imageViewChannelStar.setColorFilter(Color.parseColor("#FFFF00"));
-                mDeviceManager.addFavorite(channel);
-            }
-        };
     }
 
     private class ViewHolder {
         private ImageView star;
         private TextView name;
+    }
+
+    private boolean isDeviceFav(Device device) {
+        int mChannelsCount = 0;
+        for (int channel = 0; channel < device.getChannelNumber(); channel ++) {
+           if (mDeviceManager.findChannelManagerByDevice(device).surfaceViewComponents.get(channel).isFavorite()) {
+               mChannelsCount += 1;
+           }
+        }
+
+        if (mChannelsCount == mDeviceManager.findChannelManagerByDevice(device).channelNumber && mDeviceManager.findChannelManagerByDevice(device).channelNumber > 0) {
+            return true;
+        } else {
+            return false;
+        }
     }
 
 }
