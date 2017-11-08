@@ -121,12 +121,16 @@ public class FavoritesDevicesAdapter extends BaseExpandableListAdapter {
             public void onClick(View v) {
                 if (isDeviceFav(mDevice)) {
                     holder.star.setImageResource(R.drawable.ic_star_white_36dp);
-                } else {
+                    removeFavDevice(mDevice);
+                } else if (mDevice.getChannelNumber() > 0) {
                     holder.star.setImageResource(R.drawable.ic_star_yellow_24dp);
                     for (int channel = 0; channel < mDevice.getChannelNumber(); channel ++) {
-                        mDeviceManager.addFavorite(mDeviceManager.findChannelManagerByDevice(mDevice).surfaceViewComponents.get(channel));
+                        if (!mDeviceManager.findChannelManagerByDevice(mDevice).surfaceViewComponents.get(channel).isFavorite()) {
+                            mDeviceManager.addFavorite(mDeviceManager.findChannelManagerByDevice(mDevice).surfaceViewComponents.get(channel));
+                        }
                     }
                 }
+                notifyDataSetChanged();
             }
         });
 
@@ -171,19 +175,18 @@ public class FavoritesDevicesAdapter extends BaseExpandableListAdapter {
 
         int position = childPosition + 1;
 
-        holder.name.setText("Channel " + position);
+        holder.name.setText("Canal " + position);
         holder.star.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 if (mChannel.isFavorite()) {
-                    holder.star.setImageResource(R.drawable.ic_star_white_36dp);
+                    holder.star.setImageResource(R.drawable.ic_star_grey_24dp);
                     mDeviceManager.removeFavorite(mChannel);
-                    notifyDataSetChanged();
                 } else {
                     holder.star.setImageResource(R.drawable.ic_star_yellow_24dp);
                     mDeviceManager.addFavorite(mChannel);
                 }
-
+                notifyDataSetChanged();
             }
         });
 
@@ -207,6 +210,13 @@ public class FavoritesDevicesAdapter extends BaseExpandableListAdapter {
             return true;
         } else {
             return false;
+        }
+    }
+
+    private void removeFavDevice(Device device) {
+        for (int channel = 0; channel < device.getChannelNumber(); channel ++) {
+            mDeviceManager.removeFavorite(mDeviceManager.findChannelManagerByDevice(device).surfaceViewComponents.get(channel));
+            notifyDataSetChanged();
         }
     }
 
