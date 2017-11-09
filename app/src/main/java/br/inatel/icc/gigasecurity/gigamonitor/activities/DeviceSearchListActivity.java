@@ -19,11 +19,8 @@ import java.util.ArrayList;
 import br.inatel.icc.gigasecurity.gigamonitor.R;
 import br.inatel.icc.gigasecurity.gigamonitor.adapters.DeviceSearchAdapter;
 import br.inatel.icc.gigasecurity.gigamonitor.config.ethernet.EthernetConfigActivity;
-import br.inatel.icc.gigasecurity.gigamonitor.core.DeviceManager;
-import br.inatel.icc.gigasecurity.gigamonitor.core.DeviceManager;
 import br.inatel.icc.gigasecurity.gigamonitor.core.Discovery;
 import br.inatel.icc.gigasecurity.gigamonitor.model.Device;
-import br.inatel.icc.gigasecurity.gigamonitor.util.Utils;
 
 
 public class DeviceSearchListActivity extends ActionBarActivity {
@@ -89,14 +86,13 @@ public class DeviceSearchListActivity extends ActionBarActivity {
 
         String text = getResources().getString(R.string.searching_dialog_messsage);
 
-        mLoadingDialog = ProgressDialog.show(mContext, "", text, true, true,
-                new DialogInterface.OnCancelListener() {
-                    @Override
-                    public void onCancel(DialogInterface dialog) {
-                        stopAndRefresh();
-                        mLoadingDialog.dismiss();
-                    }
-                });
+        mLoadingDialog = ProgressDialog.show(mContext, "", text, true, true, new DialogInterface.OnCancelListener() {
+            @Override
+            public void onCancel(DialogInterface dialog) {
+                stopAndRefresh();
+                mLoadingDialog.dismiss();
+            }
+        });
     }
 
     private void verifyOptionSelected(final int item) {

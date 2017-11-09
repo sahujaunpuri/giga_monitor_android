@@ -14,8 +14,8 @@
             android:id="@+id/tableRow1"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="15dp"
-            android:layout_marginBottom="15dp"
+            android:layout_marginTop="0dp"
+            android:layout_marginBottom="0dp"
             android:gravity="center" >
 
             <ImageView
@@ -27,18 +27,19 @@
 
             <TextView
                 android:id="@+id/tv_item_edit_device"
-                android:layout_height="wrap_content"
-                android:layout_width="wrap_content"
+                android:layout_height="50dp"
+                android:layout_width="match_parent"
                 android:textAppearance="?android:attr/textAppearanceMedium"
                 android:gravity="center_vertical"
+                android:textSize="20dp"
                 android:paddingLeft="8dp" />
 
             <ImageView
-                android:layout_height="wrap_content"
-                android:layout_width="wrap_content"
                 android:id="@+id/iv_item_edit_device"
-                android:background="@drawable/ic_list"
-                android:layout_gravity="right|center_vertical" />
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="right|center_vertical"
+                android:background="@drawable/ic_list" />
         </TableRow>
     </TableLayout>
 

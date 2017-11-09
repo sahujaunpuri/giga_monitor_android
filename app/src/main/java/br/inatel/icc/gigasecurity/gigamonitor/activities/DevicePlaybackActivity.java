@@ -14,7 +14,6 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.DatePicker;
-import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
@@ -40,8 +39,8 @@ import br.inatel.icc.gigasecurity.gigamonitor.core.DeviceManager;
 import br.inatel.icc.gigasecurity.gigamonitor.listeners.PlaybackSearchListener;
 import br.inatel.icc.gigasecurity.gigamonitor.model.Device;
 import br.inatel.icc.gigasecurity.gigamonitor.model.FileData;
-import br.inatel.icc.gigasecurity.gigamonitor.ui.DatePickerFragment;
 
+import static br.inatel.icc.gigasecurity.gigamonitor.R.id.calendar;
 import static br.inatel.icc.gigasecurity.gigamonitor.R.string.label_begin_hour_playback;
 import static br.inatel.icc.gigasecurity.gigamonitor.R.string.label_end_hour_playback;
 
@@ -85,7 +84,7 @@ public class DevicePlaybackActivity extends ActionBarActivity
         tvEndHour          = (TextView) findViewById(R.id.textview_end_hour_playback);
         initialTimePicker  = (ImageView) findViewById(R.id.initial_time_button);
         endTimePicker      = (ImageView) findViewById(R.id.end_time_button);
-        datePicker         = (ImageView) findViewById(R.id.calendar);
+        datePicker         = (ImageView) findViewById(calendar);
         nbChannel          = (NumberPicker) findViewById(R.id.nb_playback);
         layoutFindPlayback = (LinearLayout) findViewById(R.id.linear_layout_find_playback);
         layoutListPlayback = (LinearLayout) findViewById(R.id.linear_layout_list_playback);
@@ -188,9 +187,11 @@ public class DevicePlaybackActivity extends ActionBarActivity
     }
 
     private void showDatePicker() {
-        DatePickerFragment fragment = new DatePickerFragment();
+        int yy = mInitialTime.get(Calendar.YEAR);
+        int mm = mInitialTime.get(Calendar.MONTH);
+        int dd = mInitialTime.get(Calendar.DAY_OF_MONTH);
 
-        fragment.setOnDateSetListener(new DatePickerDialog.OnDateSetListener() {
+        DatePickerDialog datePicker = new DatePickerDialog(DevicePlaybackActivity.this, R.style.Base_Theme_AppCompat_Light_Dialog, new DatePickerDialog.OnDateSetListener() {
             @Override
             public void onDateSet(DatePicker view, int year, int monthOfYear, int dayOfMonth) {
                 mInitialTime.set(Calendar.YEAR, year);
@@ -203,13 +204,8 @@ public class DevicePlaybackActivity extends ActionBarActivity
 
                 setDateButtonText(mInitialTime.getTime());
             }
-        });
-
-        Bundle extras = new Bundle();
-        extras.putSerializable(DatePickerFragment.KEY_SERIALIZABLE_CALENDAR, mInitialTime);
-
-        fragment.setArguments(extras);
-        fragment.show(getSupportFragmentManager(), "datePicker");
+        }, yy, mm, dd);
+        datePicker.show();
     }
 
     private void showTimePicker(final Boolean initial) {
@@ -264,11 +260,14 @@ public class DevicePlaybackActivity extends ActionBarActivity
 //    }
 
     private void findPlaybacks(final Integer type) {
+        final ProgressDialog progressDialog = new ProgressDialog(mActivity, R.style.Base_Theme_AppCompat_Light_Dialog);
+
         String title = getResources().getString(R.string.label_searching_files);
         String msg = getResources().getString(R.string.label_please_wait);
 
-        final ProgressDialog progressDialog = ProgressDialog.show(mActivity, title,
-                msg);
+        progressDialog.setTitle(title);
+        progressDialog.setMessage(msg);
+        progressDialog.show();
 
         new Thread(new Runnable() {
 

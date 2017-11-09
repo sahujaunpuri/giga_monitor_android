@@ -122,6 +122,8 @@ public class DeviceManager implements IFunSDKResult {
     private ArrayList<Uri> videoUris = new ArrayList<>();
     private ArrayList<Boolean> savedMediaVideosPositionOk = new ArrayList<>();
 
+    public boolean mediaViewDidSelectMovies = false;
+
     private DeviceManager() {
     }
 
@@ -228,8 +230,8 @@ public class DeviceManager implements IFunSDKResult {
 //        device.checkConnectionMethod();
         mDevices.add(position, device);
 //        expandableListAdapter.mDevices = mDevices;
-        expandableListAdapter.groupViewHolder.get(position).mDevice = device;
-        expandableListAdapter.groupViewHolder.get(position).tvDeviceName.setText(device.deviceName);
+//        expandableListAdapter.groupViewHolder.get(position).mDevice = device;
+//        expandableListAdapter.groupViewHolder.get(position).tvDeviceName.setText(device.deviceName);
         expandableListAdapter.notifyDataSetChanged();
         deviceChannelsManagers.get(position).mDevice = mDevices.get(position);
         saveData();
@@ -596,17 +598,21 @@ public class DeviceManager implements IFunSDKResult {
 
     public void setDDNSConfig(Device device) {
         try {
-            currentConfig.put("DDNSKey", "Giga DDNS");
-            currentConfig.put("Enable", device.isDdnsEnable());
-            if (!device.isDdnsEnable())
-                device.setDomain("");
-            currentConfig.put("HostName", device.getDdnsDomain());
-            currentConfig.put("Online", "true");
-            currentConfigB.put("UserName", device.getDdnsUserName());
-            currentConfigB.put("Name", "gigaddns.com.br");
-            currentConfigB.put("Address", "0x0A060001"/*Utils.stringIpToHexString("10.6.0.1")*/);
-            currentConfig.put("Server", currentConfigB);
-            currentConfigArray.put(0, currentConfig);
+            if (currentConfig == null){
+                currentConfigListener.onError();
+            } else {
+                currentConfig.put("DDNSKey", "Giga DDNS");
+                currentConfig.put("Enable", device.isDdnsEnable());
+                if (!device.isDdnsEnable())
+                    device.setDomain("");
+                currentConfig.put("HostName", device.getDdnsDomain());
+                currentConfig.put("Online", "true");
+                currentConfigB.put("UserName", device.getDdnsUserName());
+                currentConfigB.put("Name", "gigaddns.com.br");
+                currentConfigB.put("Address", "0x0A060001"/*Utils.stringIpToHexString("10.6.0.1")*/);
+                currentConfig.put("Server", currentConfigB);
+                currentConfigArray.put(0, currentConfig);
+            }
         } catch (JSONException e) {
             e.printStackTrace();
         }

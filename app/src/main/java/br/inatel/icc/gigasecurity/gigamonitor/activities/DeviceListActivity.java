@@ -1,16 +1,9 @@
 package br.inatel.icc.gigasecurity.gigamonitor.activities;
 
-import android.app.Activity;
-import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
-import android.content.pm.PackageManager;
 import android.content.res.Configuration;
-import android.net.ConnectivityManager;
-import android.net.NetworkInfo;
 import android.os.Bundle;
-import android.os.StrictMode;
 import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
 import android.view.Menu;
@@ -21,19 +14,17 @@ import android.view.WindowManager;
 import android.widget.ExpandableListView;
 import android.widget.Toast;
 
-import java.util.ArrayList;
-import java.util.Map;
+import com.crashlytics.android.Crashlytics;
 
+import java.util.ArrayList;
+
+import br.inatel.icc.gigasecurity.gigamonitor.BuildConfig;
 import br.inatel.icc.gigasecurity.gigamonitor.R;
 import br.inatel.icc.gigasecurity.gigamonitor.adapters.DeviceExpandableListAdapter;
-import br.inatel.icc.gigasecurity.gigamonitor.core.ConnectionReceiver;
 import br.inatel.icc.gigasecurity.gigamonitor.core.DeviceManager;
 import br.inatel.icc.gigasecurity.gigamonitor.model.ChannelsManager;
 import br.inatel.icc.gigasecurity.gigamonitor.model.Device;
-import com.crashlytics.android.Crashlytics;
-
 import br.inatel.icc.gigasecurity.gigamonitor.model.StatePreferences;
-import br.inatel.icc.gigasecurity.gigamonitor.ui.SurfaceViewComponent;
 import io.fabric.sdk.android.Fabric;
 
 public class DeviceListActivity extends ActionBarActivity {
@@ -53,7 +44,9 @@ public class DeviceListActivity extends ActionBarActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_device_list);
-        Fabric.with(this, new Crashlytics());
+        if (!BuildConfig.DEBUG) {
+            Fabric.with(this, new Crashlytics());
+        }
 
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
         getWindow().setFlags(

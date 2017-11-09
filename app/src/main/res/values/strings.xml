@@ -160,6 +160,7 @@
     <string name="domain">Domain or External IP</string>
     <string name="port">Internal Port</string>
     <string name="external_port">External Port</string>
+    <string name="device_port">Port</string>
     <string name="user">User</string>
     <string name="password">Password</string>
     <string name="invalid_device_save">Unable to save. Incomplete Data.</string>
