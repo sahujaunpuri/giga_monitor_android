@@ -135,8 +135,8 @@ public class DeviceExpandableListAdapter extends BaseExpandableListAdapter {
 
 
     private ChildViewHolder initChildViewHolder(ViewGroup parent, int groupPosition){
-        ChildViewHolder currentChildViewHolder = childViewHolder.get(groupPosition);
         try {
+            ChildViewHolder currentChildViewHolder = childViewHolder.get(groupPosition);
             currentChildViewHolder.convertView = mInflater.inflate(R.layout.expandable_list_view_child, parent, false);
             currentChildViewHolder.recyclerViewChannels = (RecyclerView) currentChildViewHolder.convertView.findViewById(R.id.recycler_view_channels);
             currentChildViewHolder.tvMessage = (TextView) currentChildViewHolder.convertView.findViewById(R.id.tv_message_connecting);
@@ -294,6 +294,7 @@ public class DeviceExpandableListAdapter extends BaseExpandableListAdapter {
     @Override
     public View getChildView(final int groupPosition, int childPosition, boolean isLastChild, View convertView, ViewGroup parent) {
         ChildViewHolder childViewHolder;
+
         if(convertView == null || this.childViewHolder.get(groupPosition).recyclerViewChannels == null){
             childViewHolder = initChildViewHolder(parent, groupPosition);
             convertView = childViewHolder.convertView;
@@ -307,7 +308,6 @@ public class DeviceExpandableListAdapter extends BaseExpandableListAdapter {
         }
 
         GroupViewHolder currentGroupViewHolder = groupViewHolder.get(groupPosition);
-
 
         if(!currentGroupViewHolder.mDevice.isLogged) {
             loginDevice(currentGroupViewHolder.mDevice, currentGroupViewHolder, childViewHolder, groupPosition);
@@ -341,7 +341,7 @@ public class DeviceExpandableListAdapter extends BaseExpandableListAdapter {
                 }
                 else if (groupViewHolder.mDevice.getChannelNumber() > 0 && groupViewHolder.mDevice.isLogged) {
                     if (groupViewHolder.mDevice.getSerialNumber().equals("Favoritos")) {
-//                        groupViewHolder.ivAddMore.setVisibility(View.VISIBLE);
+    //                        groupViewHolder.ivAddMore.setVisibility(View.VISIBLE);
                     }
                     childViewHolder.recyclerViewChannels.setVisibility(View.VISIBLE);
                     groupViewHolder.ivMore.setVisibility(View.VISIBLE);
@@ -691,7 +691,7 @@ public class DeviceExpandableListAdapter extends BaseExpandableListAdapter {
     }
 
     public void stopActions() {
-        for (int position=0; position<childViewHolder.size(); position++) {
+        for (int position=0; position<mDeviceManager.getDeviceChannelsManagers().size(); position++) {
             for (SurfaceViewComponent svc : mDeviceManager.getDeviceChannelsManagers().get(position).surfaceViewComponents) {
                 mDeviceManager.getDeviceChannelsManagers().get(position).stopActions();
             }

@@ -4,10 +4,8 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
 import android.text.TextUtils;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
 import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.Toast;
@@ -28,8 +26,7 @@ public class DeviceFormActivity extends ActionBarActivity{
     EditText etSerial;
     EditText etIpAddress;
     EditText etDomain;
-    EditText etPort;
-    EditText etExternalPort;
+    EditText etDevicePort;
     EditText etUsername;
     EditText etPassword;
     CheckBox cbSerial;
@@ -67,16 +64,13 @@ public class DeviceFormActivity extends ActionBarActivity{
 
         arrayList = deviceManager.getDevices();
 
-        etDomain.setOnFocusChangeListener(new View.OnFocusChangeListener() {
-            @Override
-            public void onFocusChange(View view, boolean b) {
-                if (!b) {
-                    if (etExternalPort.getText().toString().equals("") || etExternalPort.getText().toString().equals("0")) {
-                        etExternalPort.setText(etPort.getText().toString());
-                    }
-                }
-            }
-        });
+//        etDomain.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+//            @Override
+//            public void onFocusChange(View view, boolean b) {
+//                if (!b) {
+//                }
+//            }
+//        });
     }
 
     private void checkEdit() {
@@ -90,8 +84,7 @@ public class DeviceFormActivity extends ActionBarActivity{
         etSerial        = (EditText) findViewById(R.id.edit_text_device_form_serial);
         etIpAddress     = (EditText) findViewById(R.id.edit_text_device_form_ip_address);
         etDomain        = (EditText) findViewById(R.id.edit_text_device_form_domain);
-        etPort          = (EditText) findViewById(R.id.edit_text_device_form_Port);
-        etExternalPort  = (EditText) findViewById(R.id.edit_text_device_form_extern_port);
+        etDevicePort    = (EditText) findViewById(R.id.edit_text_device_form_port);
         etUsername      = (EditText) findViewById(R.id.edit_text_device_form_username);
         etPassword      = (EditText) findViewById(R.id.edit_text_device_form_password);
         cbSerial        = (CheckBox) findViewById(R.id.serial_checkbox);
@@ -104,10 +97,10 @@ public class DeviceFormActivity extends ActionBarActivity{
         etSerial.setText(device.getSerialNumber());
         etIpAddress.setText(device.getIpAddress());
         etDomain.setText(device.getDomain());
-        etPort.setText(String.valueOf(device.getTCPPort()));
-        if(etPort.getText().toString().isEmpty())
-            etPort.setText("34567");
-        etExternalPort.setText(String.valueOf(device.getExternalPort()));
+        etDevicePort.setText(String.valueOf(device.getTCPPort()));
+        if(etDevicePort.getText().toString().isEmpty())
+            etDevicePort.setText("34567");
+        //etExternalPort.setText(String.valueOf(device.getExternalPort()));
         etUsername.setText(device.getUsername());
         if(etUsername.getText().toString().isEmpty())
             etUsername.setText("admin");
@@ -129,7 +122,7 @@ public class DeviceFormActivity extends ActionBarActivity{
 
     public boolean save() {
         boolean isHostnameFilled = !TextUtils.isEmpty(etName.getText().toString());
-        boolean isPortFilled = !TextUtils.isEmpty(etPort.getText().toString());
+        boolean isPortFilled = !TextUtils.isEmpty(etDevicePort.getText().toString());
         boolean isSerialNumberFilled = !TextUtils.isEmpty(etSerial.getText().toString());
         boolean isIPFilled = isIPFilled();
         boolean isDNSFilled = !TextUtils.isEmpty(etDomain.getText().toString());
@@ -151,12 +144,9 @@ public class DeviceFormActivity extends ActionBarActivity{
             mDevice.setIpPriorityConnection(cbIpAddress.isChecked());
             mDevice.setSerialNumber(etSerial.getText().toString());
             mDevice.setCloudPriorityConnection(cbSerial.isChecked());
-            mDevice.setTCPPort(Integer.parseInt(etPort.getText().toString()));
-            if (etExternalPort.getText().toString().equals("0") || etExternalPort.getText().toString().equals("")) {
-                mDevice.setExternalPort(Integer.parseInt(etPort.getText().toString()));
-            } else {
-                mDevice.setExternalPort(Integer.parseInt(etExternalPort.getText().toString()));
-            }
+            mDevice.setTCPPort(Integer.parseInt(etDevicePort.getText().toString()));
+            mDevice.setExternalPort(Integer.parseInt(etDevicePort.getText().toString()));
+
 
             if(isUsernameFilled)
                 mDevice.setUsername(etUsername.getText().toString());

@@ -141,7 +141,7 @@
     <string name="title_activity_ethernet_config">Ethernet Config</string>
     <string name="title_activity_ddnsconfig">DDNS Config</string>
     <string name="title_activity_upnp_config">UPnP Config</string>
-    <string name="media_video_activity_title">Mídia</string>
+    <string name="media_video_activity_title">Media</string>
     <string name="media_delete_various">Do you really like to delete the selected items?</string>
     <string name="label_action">Action</string>
     <string name="label_add">Add</string>
@@ -160,6 +160,7 @@
     <string name="domain">Domain or External IP</string>
     <string name="port">Internal Port</string>
     <string name="external_port">External Port</string>
+    <string name="device_port">Port</string>
     <string name="user">User</string>
     <string name="password">Password</string>
     <string name="invalid_device_save">Unable to save. Incomplete Data.</string>

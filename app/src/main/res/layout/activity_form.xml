@@ -108,25 +108,6 @@
                 android:inputType="numberDecimal"
                 android:imeOptions="actionNext"/>
 
-            <TextView
-                android:id="@+id/internal_port"
-                android:layout_width="wrap_content"
-                android:layout_height="28dp"
-                android:text="@string/port" />
-
-            <EditText
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:ems="10"
-                android:id="@+id/edit_text_device_form_Port"
-                android:textColor="@color/secondary_color"
-                android:hint="34567"
-                android:text="34567"
-                android:textColorHint="@android:color/secondary_text_light_nodisable"
-                android:digits="0123456789"
-                android:inputType="number"
-                android:imeOptions="actionNext"/>
-
             <LinearLayout
                 android:id="@+id/domain_linear_layout"
                 android:orientation="horizontal"
@@ -162,17 +143,17 @@
                 android:imeOptions="actionNext"/>
 
             <TextView
-                android:id="@+id/tv_external_port"
+                android:id="@+id/tv_port"
                 android:layout_width="wrap_content"
                 android:layout_height="28dp"
-                android:hint="@string/external_port"
-                android:text="@string/external_port" />
+                android:hint="@string/device_port"
+                android:text="@string/device_port" />
 
             <EditText
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:ems="10"
-                android:id="@+id/edit_text_device_form_extern_port"
+                android:id="@+id/edit_text_device_form_port"
                 android:textColor="@color/secondary_color"
                 android:hint="34567"
                 android:text="34567"
@@ -182,7 +163,7 @@
                 android:imeOptions="actionNext"/>
 
             <TextView
-                android:id="@+id/tvExternalPort"
+                android:id="@+id/tvPort"
                 android:layout_width="wrap_content"
                 android:layout_height="28dp"
                 android:text="@string/user" />

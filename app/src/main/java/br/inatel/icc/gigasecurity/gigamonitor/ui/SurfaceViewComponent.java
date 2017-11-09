@@ -2,18 +2,15 @@ package br.inatel.icc.gigasecurity.gigamonitor.ui;
 
 import android.app.Activity;
 import android.content.Context;
-import android.graphics.Color;
 import android.opengl.GLSurfaceView;
 import android.os.Handler;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.GestureDetector;
 import android.view.Gravity;
-import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.ScaleGestureDetector;
 import android.view.View;
-import android.view.ViewConfiguration;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
@@ -24,12 +21,8 @@ import android.widget.Toast;
 import com.lib.EPTZCMD;
 import com.video.opengl.GLSurfaceView20;
 
-import org.w3c.dom.Text;
-
-import br.inatel.icc.gigasecurity.gigamonitor.R;
 import br.inatel.icc.gigasecurity.gigamonitor.core.DeviceManager;
 import br.inatel.icc.gigasecurity.gigamonitor.model.ChannelsManager;
-import br.inatel.icc.gigasecurity.gigamonitor.model.DeviceChannelsManager;
 
 /**
  * Created by zappts on 4/6/17.
@@ -449,19 +442,24 @@ public class SurfaceViewComponent extends FrameLayout {
     final Handler handler = new Handler();
     Runnable mLongPressed = new Runnable() {
         public void run() {
-            longPress = true;
-            ((Activity) mContext).runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    Log.d(TAG, "long press: ");
-                    if(/*ivTouch != null && */isPTZEnabled()) {
-                        ptzOverlay.setPartialVisibility(View.INVISIBLE);
+            try {
+                longPress = true;
+                ((Activity) mContext).runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        Log.d(TAG, "long press: ");
+                        if(/*ivTouch != null && */isPTZEnabled()) {
+                            if (ptzOverlay != null) {
+                                ptzOverlay.setPartialVisibility(View.INVISIBLE);
+                            }
 //                        ivTouch.setVisibility(GONE);
 //                        ptzOverlay.setVisibility(VISIBLE);
-
+                        }
                     }
-                }
-            });
+                });
+            } catch (Exception error){
+                error.printStackTrace();
+            }
         }
     };
 

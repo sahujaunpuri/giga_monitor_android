@@ -15,8 +15,8 @@
     dslv:drag_enabled="true"
     dslv:float_background_color="@android:color/white"
     dslv:collapsed_height="2dp"
-    dslv:drag_scroll_start="0.33"
-    dslv:max_drag_scroll_speed="0.5"
+    dslv:drag_scroll_start="3.30"
+    dslv:max_drag_scroll_speed="2.30"
     dslv:float_alpha="0.6"
     dslv:slide_shuffle_speed="0.3"
     dslv:track_drag_sort="false"
@@ -25,4 +25,6 @@
     dslv:remove_enabled="true"
     dslv:drag_start_mode="onDown"
     dslv:remove_mode="flingRemove" />
+
+
 

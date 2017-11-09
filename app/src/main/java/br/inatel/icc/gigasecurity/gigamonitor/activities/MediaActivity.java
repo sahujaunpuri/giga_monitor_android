@@ -1,18 +1,9 @@
 package br.inatel.icc.gigasecurity.gigamonitor.activities;
 
-import android.annotation.TargetApi;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.pm.PackageManager;
-import android.content.pm.ResolveInfo;
-import android.content.res.Resources;
-import android.graphics.drawable.Drawable;
-import android.net.Uri;
-import android.os.Build;
 import android.os.Bundle;
-import android.os.Environment;
-import android.provider.MediaStore;
 import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
 import android.view.Menu;
@@ -20,18 +11,13 @@ import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewConfiguration;
-import android.widget.AdapterView;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.GridView;
 import android.widget.ImageView;
-import android.widget.ListAdapter;
-import android.widget.TextView;
 import android.widget.Toast;
 
-import java.io.File;
-import java.util.List;
-
+import br.inatel.icc.gigasecurity.gigamonitor.BuildConfig;
 import br.inatel.icc.gigasecurity.gigamonitor.R;
 import br.inatel.icc.gigasecurity.gigamonitor.adapters.MediaGridAdapter;
 import br.inatel.icc.gigasecurity.gigamonitor.core.DeviceManager;
@@ -74,16 +60,17 @@ public class MediaActivity extends ActionBarActivity {
         };
 
         mDeviceManager = DeviceManager.getInstance();
-
         mAdapter = new MediaGridAdapter(MediaActivity.this, mMediaListener);
 
         initComponents();
 
         gvMedia.setAdapter(mAdapter);
-
         gvMedia.setFriction(ViewConfiguration.getScrollFriction() * 10);
-
         gvMedia.setVerticalScrollBarEnabled(false);
+
+        if (mDeviceManager.mediaViewDidSelectMovies) {
+            didSelectMovies();
+        }
 
         gvMedia.setOnTouchListener(new View.OnTouchListener() {
             @Override
@@ -106,6 +93,7 @@ public class MediaActivity extends ActionBarActivity {
                     ivImage.setImageDrawable(getResources().getDrawable(R.drawable.ic_camera_on));
                     ivImageSelected = true;
                     verifyButtonsVisibility();
+                    mDeviceManager.mediaViewDidSelectMovies = false;
                 }
             }
         });
@@ -114,16 +102,21 @@ public class MediaActivity extends ActionBarActivity {
         ivVideo.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(ivImageSelected) {
-                    mAdapter.changeGridMode(false);
-                    mAdapter.notifyDataSetChanged();
-                    ivVideo.setImageDrawable(getResources().getDrawable(R.drawable.ic_video_on));
-                    ivImage.setImageDrawable(getResources().getDrawable(R.drawable.ic_camera_off));
-                    ivImageSelected = false;
-                    verifyButtonsVisibility();
-                }
+                mDeviceManager.mediaViewDidSelectMovies = true;
+                didSelectMovies();
             }
         });
+    }
+
+    private void didSelectMovies() {
+        if(ivImageSelected) {
+            mAdapter.changeGridMode(false);
+            mAdapter.notifyDataSetChanged();
+            ivVideo.setImageDrawable(getResources().getDrawable(R.drawable.ic_video_on));
+            ivImage.setImageDrawable(getResources().getDrawable(R.drawable.ic_camera_off));
+            ivImageSelected = false;
+            verifyButtonsVisibility();
+        }
     }
 
     private void verifyButtonsVisibility() {

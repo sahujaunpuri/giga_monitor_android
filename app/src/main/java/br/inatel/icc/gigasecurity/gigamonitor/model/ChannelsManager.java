@@ -2,68 +2,42 @@ package br.inatel.icc.gigasecurity.gigamonitor.model;
 
 import android.app.Activity;
 import android.content.Context;
-import android.content.Intent;
 import android.content.res.Configuration;
-import android.graphics.Bitmap;
-import android.graphics.drawable.BitmapDrawable;
-import android.graphics.drawable.Drawable;
-import android.media.CamcorderProfile;
-import android.media.MediaCodec;
-import android.media.MediaFormat;
-import android.media.MediaMetadataRetriever;
-import android.media.MediaMuxer;
-import android.media.MediaPlayer;
-import android.net.Uri;
-import android.os.AsyncTask;
-import android.os.Bundle;
 import android.os.Environment;
 import android.os.Message;
-import android.provider.MediaStore;
 import android.util.Log;
-import android.view.Display;
 import android.view.Gravity;
-import android.view.Surface;
 import android.view.View;
 import android.widget.FrameLayout;
 import android.widget.Toast;
-import android.widget.VideoView;
 
 import com.basic.G;
-import com.lib.EFUN_ERROR;
-import com.lib.EPTZCMD;
 import com.lib.EUIMSG;
 import com.lib.FunSDK;
 import com.lib.IFunSDKResult;
 import com.lib.MsgContent;
-import com.lib.SDKCONST;
 import com.lib.sdk.struct.H264_DVR_FILE_DATA;
 import com.video.opengl.GLSurfaceView20;
 
 import java.io.File;
-import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.Date;
 import java.util.GregorianCalendar;
-import java.util.List;
 import java.util.Locale;
 
 import br.inatel.icc.gigasecurity.gigamonitor.R;
-import br.inatel.icc.gigasecurity.gigamonitor.activities.DeviceListActivity;
-import br.inatel.icc.gigasecurity.gigamonitor.activities.MediaVideoActivity;
 import br.inatel.icc.gigasecurity.gigamonitor.adapters.ChannelRecyclerViewAdapter;
 import br.inatel.icc.gigasecurity.gigamonitor.core.DeviceManager;
 import br.inatel.icc.gigasecurity.gigamonitor.listeners.PlaybackListener;
 import br.inatel.icc.gigasecurity.gigamonitor.task.AudioRecordThread;
 import br.inatel.icc.gigasecurity.gigamonitor.ui.SurfaceViewComponent;
+import br.inatel.icc.gigasecurity.gigamonitor.util.Utils;
+
 //import br.inatel.icc.gigasecurity.gigamonitor.util.FunLog;
 //import br.inatel.icc.gigasecurity.gigamonitor.util.MediaConverter;
 //import br.inatel.icc.gigasecurity.gigamonitor.util.MediaConverter;
-import br.inatel.icc.gigasecurity.gigamonitor.util.MediaService;
-import br.inatel.icc.gigasecurity.gigamonitor.util.Utils;
 
 
 public abstract class ChannelsManager implements IFunSDKResult {
@@ -493,7 +467,7 @@ public abstract class ChannelsManager implements IFunSDKResult {
     /** Async return from SDK**/
     @Override
     public int OnFunSDKResult(Message msg, MsgContent msgContent) {
-        if(!(msg.what == EUIMSG.ON_PLAY_INFO && playType == 0)) {
+//        if(!(msg.what == EUIMSG.ON_PLAY_INFO && playType == 0)) {
             Log.d(TAG, "msg.what : " + msg.what);
             Log.d(TAG, "msg.arg1 : " + msg.arg1);
             Log.d(TAG, "msg.arg2 : " + msg.arg2);
@@ -504,7 +478,7 @@ public abstract class ChannelsManager implements IFunSDKResult {
                 Log.d(TAG, "msgContent.arg3 : " + msgContent.arg3);
                 Log.d(TAG, "msgContent.pData : " + msgContent.pData);
             }
-        }
+//        }
         switch (msg.what) {
             case EUIMSG.START_PLAY: {
                 Log.i(TAG, "EUIMSG.START_PLAY");
