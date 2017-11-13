@@ -312,5 +312,6 @@
     <string name="media_video_activity_title">Mídia</string>
     <string name="playback_prompt">Tipos de playback</string>
     <string name="playback_types">Tipos de playback</string>
+    <string name="title_activity_fav_devices">Favoritos</string>
 
 </resources>

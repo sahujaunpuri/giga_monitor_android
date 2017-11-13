@@ -26,6 +26,7 @@ import br.inatel.icc.gigasecurity.gigamonitor.R;
 import br.inatel.icc.gigasecurity.gigamonitor.activities.DeviceListActivity;
 import br.inatel.icc.gigasecurity.gigamonitor.activities.DevicePlaybackActivity;
 import br.inatel.icc.gigasecurity.gigamonitor.activities.DeviceRemoteControlActivity;
+import br.inatel.icc.gigasecurity.gigamonitor.activities.FavoritesDevicesListActivity;
 import br.inatel.icc.gigasecurity.gigamonitor.config.ConfigMenuActivity;
 import br.inatel.icc.gigasecurity.gigamonitor.core.DeviceManager;
 import br.inatel.icc.gigasecurity.gigamonitor.listeners.LoginDeviceListener;
@@ -120,13 +121,14 @@ public class DeviceExpandableListAdapter extends BaseExpandableListAdapter {
         groupViewHolder.ivQuad       = (ImageView) convertView.findViewById(R.id.iv_grid_list_device);
         groupViewHolder.ivMore       = (ImageView) convertView.findViewById(R.id.iv_device_more);
         groupViewHolder.ivIndicator  = (ImageView) convertView.findViewById(R.id.iv_indicator);
-//        groupViewHolder.ivAddMore    = (ImageView) convertView.findViewById(R.id.iv_add_fav);
+        groupViewHolder.ivAddMore    = (ImageView) convertView.findViewById(R.id.iv_add_fav);
         groupViewHolder.tvDeviceName = (TextView) convertView.findViewById(R.id.tv_hostname_list_device);
         groupViewHolder.mDevice      = mDevices.get(groupPosition);
         groupViewHolder.position    = groupPosition;
         groupViewHolder.tvDeviceName.setText(groupViewHolder.mDevice.deviceName);
         groupViewHolder.ivMore.setOnClickListener(createMoreListener(groupPosition));
         groupViewHolder.ivQuad.setOnClickListener(createQuadListener(groupPosition));
+        groupViewHolder.ivAddMore.setOnClickListener(openFavoritesList());
 
         this.groupViewHolder.add(groupViewHolder);
 
@@ -206,6 +208,16 @@ public class DeviceExpandableListAdapter extends BaseExpandableListAdapter {
                         deviceChannelsManager.reOrderSurfaceViewComponents();
                     }
                 });
+            }
+        };
+    }
+
+    private View.OnClickListener openFavoritesList(){
+        return new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(mContext, FavoritesDevicesListActivity.class);
+                mContext.startActivity(intent);
             }
         };
     }
@@ -330,7 +342,7 @@ public class DeviceExpandableListAdapter extends BaseExpandableListAdapter {
                 groupViewHolder.ivQuad.setVisibility(View.INVISIBLE);
                 groupViewHolder.ivIndicator.setImageDrawable(mContext.getResources().getDrawable(R.drawable.ic_indicator_minus));
                 if (groupViewHolder.mDevice.getChannelNumber() == 0) {
-//                    groupViewHolder.ivAddMore.setVisibility(View.VISIBLE);
+                    groupViewHolder.ivAddMore.setVisibility(View.VISIBLE);
                     if(groupViewHolder.mDevice.getSerialNumber().equals("Favoritos"))
                         childViewHolder.tvMessage.setText("Nenhum favorito adicionado.");
                     else
@@ -341,7 +353,7 @@ public class DeviceExpandableListAdapter extends BaseExpandableListAdapter {
                 }
                 else if (groupViewHolder.mDevice.getChannelNumber() > 0 && groupViewHolder.mDevice.isLogged) {
                     if (groupViewHolder.mDevice.getSerialNumber().equals("Favoritos")) {
-    //                        groupViewHolder.ivAddMore.setVisibility(View.VISIBLE);
+                            groupViewHolder.ivAddMore.setVisibility(View.VISIBLE);
                     }
                     childViewHolder.recyclerViewChannels.setVisibility(View.VISIBLE);
                     groupViewHolder.ivMore.setVisibility(View.VISIBLE);
@@ -367,7 +379,7 @@ public class DeviceExpandableListAdapter extends BaseExpandableListAdapter {
             ((DeviceListActivity) mContext).runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
-//                    currentGroupViewHolder.ivAddMore.setVisibility(View.INVISIBLE);
+                    currentGroupViewHolder.ivAddMore.setVisibility(View.INVISIBLE);
                     currentGroupViewHolder.ivMore.setVisibility(View.INVISIBLE);
                     currentGroupViewHolder.ivIndicator.setImageDrawable(mContext.getResources().getDrawable(R.drawable.ic_indicator_plus));
                     currentGroupViewHolder.ivQuad.setVisibility(View.INVISIBLE);
@@ -712,7 +724,7 @@ public class DeviceExpandableListAdapter extends BaseExpandableListAdapter {
         public ImageView ivIndicator;
         public ImageView ivMore;
         public ImageView ivQuad;
-//        public ImageView ivAddMore;
+        public ImageView ivAddMore;
         public View convertView;
         public View blank;
         public int position;
