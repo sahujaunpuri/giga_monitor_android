@@ -313,5 +313,8 @@
     <string name="primary_stream">Primary Stream</string>
     <string name="secondary_stream">Secondary Stream</string>
     <string name="title_activity_fav_devices">Favorites</string>
+    <string name="about">About</string>
+    <string name="label_video_channel">Video Channel</string>
+    <string name="label_mac_address">MAC Address</string>
 
 </resources>

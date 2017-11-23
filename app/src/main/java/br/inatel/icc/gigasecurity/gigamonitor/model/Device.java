@@ -11,10 +11,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.Calendar;
-
-import br.inatel.icc.gigasecurity.gigamonitor.core.DeviceManager;
 
 
 /**
@@ -109,6 +106,7 @@ public class Device implements Serializable {
     @Expose private boolean ipPriorityConnection;
     @Expose private boolean domainPriorityConnection;
     @Expose private boolean cloudPriorityConnection;
+    @Expose private String connectionMethodString;
 
     private Calendar systemTime;
 
@@ -548,6 +546,14 @@ public class Device implements Serializable {
 
     public void setConnectionMethod(int connectionMethod) {
         this.connectionMethod = connectionMethod;
+    }
+
+    public String getConnectionMethodString() {
+        return connectionMethodString;
+    }
+
+    public void setConnectionMethodString(String connectionMethodString) {
+        this.connectionMethodString = connectionMethodString;
     }
 
     public String getHostID() {

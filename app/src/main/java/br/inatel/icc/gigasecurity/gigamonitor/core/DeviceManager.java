@@ -145,8 +145,8 @@ public class DeviceManager implements IFunSDKResult {
         InitParam initparam = new InitParam();
 
 //        FunSDK.InitEx(0, G.ObjToBytes(initparam), "GIGA_", "", 0);
-        FunSDK.InitExV2(0, G.ObjToBytes(initparam), 4, "GIGA_", "cloudgiga.com.br", 8765);
-        FunSDK.SysSetServerIPPort("MI_SERVER", "cloudgiga.com.br", 80);
+        FunSDK.InitExV2(0, G.ObjToBytes(initparam), 4, "GIGA_", SERVER_IP, 8765);
+        FunSDK.SysSetServerIPPort("MI_SERVER", SERVER_IP, 80);
 
 //        FunSDK.Init(0, G.ObjToBytes(initparam));
 
@@ -346,6 +346,10 @@ public class DeviceManager implements IFunSDKResult {
                 device.talkInChannel = systemInfo.getInt("TalkInChannel");
             if (systemInfo.has("TalkOutChannel"))
                 device.talkOutChannel = systemInfo.getInt("TalkOutChannel");
+            if (systemInfo.has("HardWare"))
+                device.setHardwareVersion(systemInfo.getString("HardWare"));
+            if (systemInfo.has("SoftWareVersion"))
+                device.setSoftwareVersion(systemInfo.getString("SoftWareVersion"));
 //            if(systemInfo.has("VideoInChannel"))
 //                device.setChannelNumber(systemInfo.getInt("VideoInChannel") + systemInfo.getInt("DigChannel") + systemInfo.getInt("VideoOutChannel"));
             saveData();
@@ -1518,6 +1522,7 @@ public class DeviceManager implements IFunSDKResult {
                     device.isLogged = true;
                     device.loginAttempt = 0;
                     device.setConnectionMethod(-1);
+                    device.setConnectionMethodString(connectionMethod(msgContent.arg3));
 
                     favoriteManager.refreshFromDevice(device.getId());
                     /*if(loginList.get(device.connectionString) != null)
@@ -1811,6 +1816,25 @@ public class DeviceManager implements IFunSDKResult {
             break;
         }
         return 0;
+    }
+
+    public String connectionMethod(int methodNumber){
+        String connectionString = "";
+        switch (methodNumber){
+            case 0:
+                connectionString = "P2P";
+                break;
+            case 1:
+                connectionString = "Transmit Mode / Proxy";
+                break;
+            case 2:
+                connectionString = "IP";
+                break;
+            case 5:
+                connectionString = "RPS";
+                break;
+        }
+        return connectionString;
     }
 
 }
