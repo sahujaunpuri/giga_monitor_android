@@ -1522,7 +1522,6 @@ public class DeviceManager implements IFunSDKResult {
                     device.isLogged = true;
                     device.loginAttempt = 0;
                     device.setConnectionMethod(-1);
-                    device.setConnectionMethodString(connectionMethod(msgContent.arg3));
 
                     favoriteManager.refreshFromDevice(device.getId());
                     /*if(loginList.get(device.connectionString) != null)
@@ -1610,7 +1609,7 @@ public class DeviceManager implements IFunSDKResult {
                     switch(msgContent.str){
                         case "SystemInfo":{
                             setDeviceInfo(json, device);
-
+                            device.setConnectionMethodString(connectionMethod(msg.arg2));
                             FunSDK.DevGetChnName(getHandler(), device.connectionString, device.getUsername(), device.getPassword(), device.getId());
                         }
                         break;

@@ -68,7 +68,7 @@ public class AboutActivity extends ActionBarActivity {
         mSerialNumberTxt.setHint(mDevice.getSerialNumber());
         mSoftwareTxt.setHint(mDevice.getSoftwareVersion());
         mHardwareTxt.setHint(mDevice.getHardwareVersion());
-        mVideoChannelTxt.setHint("new text");
+        mVideoChannelTxt.setHint(String.valueOf(mDevice.getChannelNumber()));
         mMacAddressTxt.setHint(mDevice.getMacAddress());
         mVideoModeTxt.setHint(mDevice.getConnectionMethodString());
     }
