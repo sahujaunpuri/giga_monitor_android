@@ -74,7 +74,8 @@ public class DeviceManager implements IFunSDKResult {
     private static final String APP_KEY = "d55b6614829f4d1c84d3ab2a9193234b";
     private static final String APP_SECRET = "7a58fdbc242b4f6ba95652b7a3502b91";
     private static final int APP_MOVECARD = 8;
-    private static final String SERVER_IP = "cloudgiga.com.br";
+//    private static final String SERVER_IP = "cloudgiga.com.br";
+    private static final String SERVER_IP = "200.169.104.100";
     private static final int SERVER_PORT = 8000;
     private static final String MEDIA_DISK_NAME = "MEDIA_DISK";
 
@@ -866,7 +867,7 @@ public class DeviceManager implements IFunSDKResult {
                 if (device.setConnectionString(nextConnectionType) < 0) {
                     loginAttempt(device);
                 } else {
-                    Log.d(TAG, "loginAttempt: " + device.loginAttempt + " " + device.connectionString);
+                    Log.d(TAG, "deviceName: " + device.deviceName + " loginAttempt: " + device.loginAttempt + " connectionString: " + device.connectionString);
                     device.loginAttempt++;
                     if (expandableListAdapter != null)
                         expandableListAdapter.setMessage(mDevices.indexOf(device), device.message);
@@ -1519,6 +1520,7 @@ public class DeviceManager implements IFunSDKResult {
 //                    FunSDK.DevGetConfigByJson(getHandler(), device.connectionString, "NetWork", 4096, -1, 10000, device.getId());
 
                     Log.d(device.deviceName, device.connectionString);
+
                     device.isLogged = true;
                     device.loginAttempt = 0;
                     device.setConnectionMethod(-1);

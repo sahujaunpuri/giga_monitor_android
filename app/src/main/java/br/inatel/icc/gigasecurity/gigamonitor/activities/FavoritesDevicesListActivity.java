@@ -2,6 +2,7 @@ package br.inatel.icc.gigasecurity.gigamonitor.activities;
 
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
+import android.view.MenuItem;
 import android.widget.ExpandableListView;
 
 import java.util.ArrayList;
@@ -22,6 +23,7 @@ public class FavoritesDevicesListActivity extends ActionBarActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_favorites_devices_list);
 
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
     }
 
     @Override
@@ -34,6 +36,16 @@ public class FavoritesDevicesListActivity extends ActionBarActivity {
         mListView = (ExpandableListView)findViewById(R.id.expandable_list_view_fav_devices);
         mCustomAdapter = new FavoritesDevicesAdapter(FavoritesDevicesListActivity.this, mDevices);
         mListView.setAdapter(mCustomAdapter);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case android.R.id.home:
+                finish();
+                return true;
+        }
+        return super.onOptionsItemSelected(item);
     }
 
 }
