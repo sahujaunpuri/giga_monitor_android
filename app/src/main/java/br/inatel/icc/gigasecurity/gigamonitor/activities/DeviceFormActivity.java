@@ -34,6 +34,7 @@ public class DeviceFormActivity extends ActionBarActivity{
     CheckBox cbDomain;
     String TAG = "DeviceForm";
 
+    boolean byIp = false, byDomain = false, byCloud = false;
     int editPosition = -1;
     DeviceManager deviceManager = DeviceManager.getInstance();
     Device mDevice;
@@ -146,7 +147,9 @@ public class DeviceFormActivity extends ActionBarActivity{
             mDevice.setCloudPriorityConnection(cbSerial.isChecked());
             mDevice.setTCPPort(Integer.parseInt(etDevicePort.getText().toString()));
             mDevice.setExternalPort(Integer.parseInt(etDevicePort.getText().toString()));
-
+            mDevice.setLoginByIp(byIp);
+            mDevice.setLoginByDomain(byDomain);
+            mDevice.setLoginByCloud(byCloud);
 
             if(isUsernameFilled)
                 mDevice.setUsername(etUsername.getText().toString());
@@ -183,6 +186,19 @@ public class DeviceFormActivity extends ActionBarActivity{
 
     private boolean somePriorityConnectionIsMarked() {
         if (cbIpAddress.isChecked() || cbDomain.isChecked() || cbSerial.isChecked()) {
+            if (cbIpAddress.isChecked()) {
+                byIp = true;
+                mDevice.setConnectionMethod(1);
+            }
+
+            if (cbDomain.isChecked()) {
+                byDomain = true;
+            }
+
+            if (cbSerial.isChecked()){
+                byCloud = true;
+            }
+
             return true;
         }
         return false;

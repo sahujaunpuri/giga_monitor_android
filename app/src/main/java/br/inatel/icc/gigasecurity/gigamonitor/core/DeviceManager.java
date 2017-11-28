@@ -74,8 +74,9 @@ public class DeviceManager implements IFunSDKResult {
     private static final String APP_KEY = "d55b6614829f4d1c84d3ab2a9193234b";
     private static final String APP_SECRET = "7a58fdbc242b4f6ba95652b7a3502b91";
     private static final int APP_MOVECARD = 8;
-//    private static final String SERVER_IP = "cloudgiga.com.br";
-    private static final String SERVER_IP = "200.169.104.100";
+    private static final String SERVER_IP_OLD = "cloudgiga.com.br";
+    private static String SERVER_IP = "200.169.104.100";
+    private static final String SERVER_IP_NEW = "200.169.104.100";
     private static final int SERVER_PORT = 8000;
     private static final String MEDIA_DISK_NAME = "MEDIA_DISK";
 
@@ -823,9 +824,81 @@ public class DeviceManager implements IFunSDKResult {
 
     public void loginDevice(final Device device, final LoginDeviceListener loginDeviceListener) {
         if (!loginList.containsKey(device.getId())) {
-            loginAttempt(device);
+            loginAttemptByIp(device);
         }
         loginList.put(device.getId(), loginDeviceListener);
+    }
+
+    private void loginAttemptByIp(final Device device) throws NullPointerException {
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                if (device == null)
+                    return;
+                if (device.ipAttempts > 3) {
+                    device.ipAttempts = 0;
+                    expandableListAdapter.setMessage(mDevices.indexOf(device), "Falha na conexão");
+                    device.ipAttemptsFail = true;
+                    return;
+                }
+
+                device.setConnectionString(0);
+
+                Log.d(TAG, "deviceName: " + device.deviceName + " ipAttempts: " + device.ipAttempts + " connectionString: " + device.connectionString);
+                device.ipAttempts++;
+                if (expandableListAdapter != null)
+                    expandableListAdapter.setMessage(mDevices.indexOf(device), device.message);
+                FunSDK.DevLogin(getHandler(), device.connectionString, device.getUsername(), device.getPassword(), device.getId());
+            }
+        }).start();
+    }
+
+    private void loginAttemptByDomain(final Device device) throws NullPointerException {
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                if (device == null)
+                    return;
+                if (device.domainAttempts > 3) {
+                    device.domainAttempts = 0;
+                    expandableListAdapter.setMessage(mDevices.indexOf(device), "Falha na conexão");
+                    device.domainAttemptsFail = true;
+                    return;
+                }
+
+                device.setConnectionString(1);
+
+                Log.d(TAG, "deviceName: " + device.deviceName + " domainAttempts: " + device.domainAttempts + " connectionString: " + device.connectionString);
+                device.domainAttempts++;
+                if (expandableListAdapter != null)
+                    expandableListAdapter.setMessage(mDevices.indexOf(device), device.message);
+                FunSDK.DevLogin(getHandler(), device.connectionString, device.getUsername(), device.getPassword(), device.getId());
+            }
+        }).start();
+    }
+
+    private void loginAttemptByCloud(final Device device) throws NullPointerException {
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                if (device == null)
+                    return;
+                if (device.cloudAttempts > 3) {
+                    device.cloudAttempts = 0;
+                    expandableListAdapter.setMessage(mDevices.indexOf(device), "Falha na conexão");
+                    device.cloudAttemptsFail = true;
+                    return;
+                }
+
+                device.setConnectionString(2);
+
+                Log.d(TAG, "deviceName: " + device.deviceName + " cloudAttempts: " + device.cloudAttempts + " connectionString: " + device.connectionString);
+                device.cloudAttempts++;
+                if (expandableListAdapter != null)
+                    expandableListAdapter.setMessage(mDevices.indexOf(device), device.message);
+                FunSDK.DevLogin(getHandler(), device.connectionString, device.getUsername(), device.getPassword(), device.getId());
+            }
+        }).start();
     }
 
     private void loginAttempt(final Device device) throws NullPointerException {
@@ -1558,6 +1631,7 @@ public class DeviceManager implements IFunSDKResult {
                 } else{ /*if(loginAttempt == 2){*/
 //                    device.loginAttempt++;
                     //next connection method
+
                     loginAttempt(device);
 //                    Log.d(TAG, "OnFunSDKResult: Login ERROR");
 //                    Log.d(device.deviceName, device.connectionString);
@@ -1837,5 +1911,4 @@ public class DeviceManager implements IFunSDKResult {
         }
         return connectionString;
     }
-
 }

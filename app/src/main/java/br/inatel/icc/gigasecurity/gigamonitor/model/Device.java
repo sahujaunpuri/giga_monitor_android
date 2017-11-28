@@ -107,6 +107,17 @@ public class Device implements Serializable {
     @Expose private boolean domainPriorityConnection;
     @Expose private boolean cloudPriorityConnection;
     @Expose private String connectionMethodString;
+    @Expose private boolean loginByIp = true;
+    @Expose private boolean loginByDomain = true;
+    @Expose private boolean loginByCloud = true;
+    @Expose private int nextConnectionType = 0;
+    public int ipAttempts = 0;
+    public int domainAttempts = 0;
+    public int cloudAttempts = 0;
+    public boolean ipAttemptsFail = false;
+    public boolean domainAttemptsFail = false;
+    public boolean cloudAttemptsFail = false;
+
 
     private Calendar systemTime;
 
@@ -734,6 +745,46 @@ public class Device implements Serializable {
         }
     }
 
+    public String getDeviceName() {
+        return deviceName;
+    }
+
+    public void setDeviceName(String deviceName) {
+        this.deviceName = deviceName;
+    }
+
+    public boolean isLoginByIp() {
+        return loginByIp;
+    }
+
+    public void setLoginByIp(boolean loginByIp) {
+        this.loginByIp = loginByIp;
+    }
+
+    public boolean isLoginByDomain() {
+        return loginByDomain;
+    }
+
+    public void setLoginByDomain(boolean loginByDomain) {
+        this.loginByDomain = loginByDomain;
+    }
+
+    public boolean isLoginByCloud() {
+        return loginByCloud;
+    }
+
+    public void setLoginByCloud(boolean loginByCloud) {
+        this.loginByCloud = loginByCloud;
+    }
+
+    public int getNextConnectionType() {
+        return nextConnectionType;
+    }
+
+    public void setNextConnectionType(int nextConnectionType) {
+        this.nextConnectionType = nextConnectionType;
+    }
+
     public void initEncodeArrays(){
         this.primaryResolution = new String[channelNumber];
         this.primaryFrameRate = new String[channelNumber];
@@ -788,5 +839,4 @@ public class Device implements Serializable {
             e.printStackTrace();
         }
     }
-
 }
