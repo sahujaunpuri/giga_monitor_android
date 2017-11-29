@@ -839,4 +839,13 @@ public class Device implements Serializable {
             e.printStackTrace();
         }
     }
+
+    public void resetAttempts() {
+        this.ipAttempts = 0;
+        this.domainAttempts = 0;
+        this.cloudAttempts = 0;
+        this.ipAttemptsFail = false;
+        this.domainAttemptsFail = false;
+        this.cloudAttemptsFail = false;
+    }
 }

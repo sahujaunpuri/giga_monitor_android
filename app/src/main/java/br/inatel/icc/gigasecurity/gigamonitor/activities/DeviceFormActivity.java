@@ -188,7 +188,6 @@ public class DeviceFormActivity extends ActionBarActivity{
         if (cbIpAddress.isChecked() || cbDomain.isChecked() || cbSerial.isChecked()) {
             if (cbIpAddress.isChecked()) {
                 byIp = true;
-                mDevice.setConnectionMethod(1);
             }
 
             if (cbDomain.isChecked()) {
@@ -198,7 +197,7 @@ public class DeviceFormActivity extends ActionBarActivity{
             if (cbSerial.isChecked()){
                 byCloud = true;
             }
-
+            mDevice.resetAttempts();
             return true;
         }
         return false;
