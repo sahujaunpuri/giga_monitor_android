@@ -39,7 +39,6 @@ public class DeviceListActivity extends ActionBarActivity {
     public static boolean running = false;
     private StatePreferences statePreferences;
 
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

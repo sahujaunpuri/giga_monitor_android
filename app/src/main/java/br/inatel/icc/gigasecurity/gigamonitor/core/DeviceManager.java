@@ -837,7 +837,7 @@ public class DeviceManager implements IFunSDKResult {
                     if (device == null)
                         return;
                     if (device.ipAttempts > 3) {
-                        expandableListAdapter.setMessage(mDevices.indexOf(device), "Falha na conexão");
+                        expandableListAdapter.setMessage(mDevices.indexOf(device), "Falha na conexão via IP");
                         device.ipAttemptsFail = true;
                         if (device.ipAttemptsFail && device.isDomainPriorityConnection() && !device.domainAttemptsFail) {
                             loginAttemptByDomain(device);
@@ -868,7 +868,7 @@ public class DeviceManager implements IFunSDKResult {
                     if (device == null)
                         return;
                     if (device.domainAttempts > 3) {
-                        expandableListAdapter.setMessage(mDevices.indexOf(device), "Falha na conexão");
+                        expandableListAdapter.setMessage(mDevices.indexOf(device), "Falha na conexão via IP externo");
                         device.domainAttemptsFail = true;
                         if (device.domainAttemptsFail && device.isCloudPriorityConnection() && !device.cloudAttemptsFail) {
                             loginAttemptByCloud(device);
@@ -899,7 +899,7 @@ public class DeviceManager implements IFunSDKResult {
                     if (device == null)
                         return;
                     if (device.cloudAttempts > 3) {
-                        expandableListAdapter.setMessage(mDevices.indexOf(device), "Falha na conexão");
+                        expandableListAdapter.setMessage(mDevices.indexOf(device), "Falha na conexão via Cloud");
                         device.cloudAttemptsFail = true;
                         return;
                     }

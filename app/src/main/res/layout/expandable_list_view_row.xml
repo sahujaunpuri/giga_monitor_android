@@ -36,7 +36,6 @@
                     android:layout_height="15dp"
                     android:layout_gravity="right|center_vertical"
                     android:layout_marginRight="5dp"
-
                     android:visibility="visible"
                     android:src="@drawable/ic_indicator_plus"
                     android:id="@+id/iv_indicator" />
