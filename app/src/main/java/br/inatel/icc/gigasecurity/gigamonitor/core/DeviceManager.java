@@ -1926,7 +1926,7 @@ public class DeviceManager implements IFunSDKResult {
         return connectionString;
     }
 
-    private void tryToConnect(Device device) {
+    public void tryToConnect(Device device) {
         if (!device.ipAttemptsFail && device.isIpPriorityConnection()) {
             loginAttemptByIp(device);
         } else if (!device.domainAttemptsFail && device.isDomainPriorityConnection()) {

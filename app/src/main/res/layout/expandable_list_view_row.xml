@@ -40,6 +40,15 @@
                     android:src="@drawable/ic_indicator_plus"
                     android:id="@+id/iv_indicator" />
 
+                <ImageView
+                    android:layout_width="35dp"
+                    android:layout_height="35dp"
+                    android:layout_gravity="left|center_vertical"
+                    android:layout_marginLeft="5dp"
+                    android:src="@drawable/ic_refresh_gray_48dp"
+                    android:visibility="invisible"
+                    android:id="@+id/iv_refresh" />
+
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
