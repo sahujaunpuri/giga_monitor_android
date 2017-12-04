@@ -39,7 +39,6 @@ public class DeviceListActivity extends ActionBarActivity {
     public static boolean running = false;
     private StatePreferences statePreferences;
 
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -245,6 +244,7 @@ public class DeviceListActivity extends ActionBarActivity {
                 startMediaActivity();
 
                 return true;
+
             default:
                 return super.onOptionsItemSelected(item);
         }
@@ -295,6 +295,4 @@ public class DeviceListActivity extends ActionBarActivity {
         setIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         startActivity(setIntent);
     }
-
-
 }

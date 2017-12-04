@@ -122,6 +122,7 @@ public class DeviceExpandableListAdapter extends BaseExpandableListAdapter {
         groupViewHolder.ivMore       = (ImageView) convertView.findViewById(R.id.iv_device_more);
         groupViewHolder.ivIndicator  = (ImageView) convertView.findViewById(R.id.iv_indicator);
         groupViewHolder.ivAddMore    = (ImageView) convertView.findViewById(R.id.iv_add_fav);
+        groupViewHolder.ivRefresh    = (ImageView) convertView.findViewById(R.id.iv_refresh);
         groupViewHolder.tvDeviceName = (TextView) convertView.findViewById(R.id.tv_hostname_list_device);
         groupViewHolder.mDevice      = mDevices.get(groupPosition);
         groupViewHolder.position    = groupPosition;
@@ -129,6 +130,11 @@ public class DeviceExpandableListAdapter extends BaseExpandableListAdapter {
         groupViewHolder.ivMore.setOnClickListener(createMoreListener(groupPosition));
         groupViewHolder.ivQuad.setOnClickListener(createQuadListener(groupPosition));
         groupViewHolder.ivAddMore.setOnClickListener(openFavoritesList());
+        groupViewHolder.ivRefresh.setOnClickListener(refreshDeviceConnection(groupViewHolder.mDevice,groupPosition));
+        groupViewHolder.ivRefresh.setVisibility(View.VISIBLE);
+        if (groupViewHolder.mDevice.getSerialNumber().equals("Favoritos")) {
+            groupViewHolder.ivRefresh.setVisibility(View.INVISIBLE);
+        }
 
         this.groupViewHolder.add(groupViewHolder);
 
@@ -369,6 +375,27 @@ public class DeviceExpandableListAdapter extends BaseExpandableListAdapter {
 //        super.onGroupExpanded(groupPosition);
 //    }
 
+
+    @Override
+    public void onGroupExpanded(int groupPosition) {
+        super.onGroupExpanded(groupPosition);
+        try {
+            super.onGroupCollapsed(groupPosition);
+            final GroupViewHolder currentGroupViewHolder = groupViewHolder.get(groupPosition);
+            ((DeviceListActivity) mContext).runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    currentGroupViewHolder.ivRefresh.setVisibility(View.VISIBLE);
+                    if (currentGroupViewHolder.mDevice.getSerialNumber().equals("Favoritos")) {
+                        currentGroupViewHolder.ivRefresh.setVisibility(View.INVISIBLE);
+                    }
+                }
+            });
+        } catch (IndexOutOfBoundsException |  NullPointerException e) {
+            e.printStackTrace();
+        }
+    }
+
     @Override
     public void onGroupCollapsed(int groupPosition){
         try {
@@ -383,6 +410,7 @@ public class DeviceExpandableListAdapter extends BaseExpandableListAdapter {
                     currentGroupViewHolder.ivMore.setVisibility(View.INVISIBLE);
                     currentGroupViewHolder.ivIndicator.setImageDrawable(mContext.getResources().getDrawable(R.drawable.ic_indicator_plus));
                     currentGroupViewHolder.ivQuad.setVisibility(View.INVISIBLE);
+                    currentGroupViewHolder.ivRefresh.setVisibility(View.INVISIBLE);
                     currentChildViewHolder.recyclerViewChannels.setVisibility(View.INVISIBLE);
                     currentChildViewHolder.overlayMenu.setVisibility(View.GONE);
                     currentChildViewHolder.recyclerViewChannels.removeAllViewsInLayout();
@@ -494,6 +522,7 @@ public class DeviceExpandableListAdapter extends BaseExpandableListAdapter {
                             groupViewHolder.ivMore.setVisibility(View.INVISIBLE);
                             childViewHolder.recyclerViewChannels.setVisibility(View.GONE);
                             childViewHolder.tvMessage.setVisibility(View.VISIBLE);
+                            groupViewHolder.ivRefresh.setVisibility(View.VISIBLE);
                             String errorMsg;
                             if(error == -11301)
                                 errorMsg = "Login ou senha incorretos.";
@@ -718,6 +747,19 @@ public class DeviceExpandableListAdapter extends BaseExpandableListAdapter {
         }
     }
 
+    private View.OnClickListener refreshDeviceConnection(final Device device,final int groupPosition){
+        return new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                stopChannels(groupPosition);
+                device.resetAttempts();
+                mDeviceManager.removeLoginListener(device.getId());
+                mDeviceManager.clearStart();
+                mDeviceManager.tryToConnect(device);
+            }
+        };
+    }
+
     public class GroupViewHolder {
         public TextView tvDeviceName;
         public Device mDevice;
@@ -725,6 +767,7 @@ public class DeviceExpandableListAdapter extends BaseExpandableListAdapter {
         public ImageView ivMore;
         public ImageView ivQuad;
         public ImageView ivAddMore;
+        public ImageView ivRefresh;
         public View convertView;
         public View blank;
         public int position;
@@ -740,5 +783,7 @@ public class DeviceExpandableListAdapter extends BaseExpandableListAdapter {
         public CustomGridLayoutManager gridLayoutManager;
         public int position;
     }
+
+
 
 }
