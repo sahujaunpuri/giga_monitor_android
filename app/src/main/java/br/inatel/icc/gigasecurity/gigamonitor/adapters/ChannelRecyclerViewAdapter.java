@@ -1,8 +1,6 @@
 package br.inatel.icc.gigasecurity.gigamonitor.adapters;
 
 import android.content.Context;
-import android.os.Handler;
-import android.os.Looper;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -16,7 +14,6 @@ import br.inatel.icc.gigasecurity.gigamonitor.core.DeviceManager;
 import br.inatel.icc.gigasecurity.gigamonitor.managers.CustomGridLayoutManager;
 import br.inatel.icc.gigasecurity.gigamonitor.model.ChannelsManager;
 import br.inatel.icc.gigasecurity.gigamonitor.model.Device;
-import br.inatel.icc.gigasecurity.gigamonitor.model.DeviceChannelsManager;
 import br.inatel.icc.gigasecurity.gigamonitor.ui.OverlayMenu;
 import br.inatel.icc.gigasecurity.gigamonitor.ui.OverlayPTZ;
 import br.inatel.icc.gigasecurity.gigamonitor.ui.SurfaceViewComponent;
@@ -102,9 +99,9 @@ public class ChannelRecyclerViewAdapter extends RecyclerView.Adapter<ChannelRecy
 
 
             if(mDevice.isLogged && !mDevice.getSerialNumber().equals("Favoritos")) {
-                deviceChannelsManager.onPlayLive(currentSurfaceView);
+//                deviceChannelsManager.onPlayLive(currentSurfaceView);
 //                currentSurfaceView.isLoading(true);
-//                deviceChannelsManager.onStartVideo(currentSurfaceView);
+                deviceChannelsManager.onStartVideo(currentSurfaceView);
             } else if (mDevice.isLogged){
                 currentSurfaceView.isLoading(true);
                 deviceChannelsManager.onStartVideo(currentSurfaceView);

@@ -1,15 +1,12 @@
 package br.inatel.icc.gigasecurity.gigamonitor.model;
 
 import android.app.Activity;
-import android.view.View;
 
-import com.lib.FunSDK;
 import com.lib.IFunSDKResult;
 import com.video.opengl.GLSurfaceView20;
 
 import java.util.Collections;
 import java.util.Comparator;
-
 
 import br.inatel.icc.gigasecurity.gigamonitor.ui.SurfaceViewComponent;
 
@@ -51,9 +48,7 @@ public class DeviceChannelsManager extends ChannelsManager implements IFunSDKRes
         if(mDeviceManager.isFavorite(mDevice.getId(), i))
             surfaceViewComponent.setFavorite(true);
 
-//            surfaceViewComponent.setLayoutParams(new FrameLayout.LayoutParams(FrameLayout.LayoutParams.MATCH_PARENT, FrameLayout.LayoutParams.MATCH_PARENT));
         surfaceViewComponent.setLayoutParams(surfaceViewLayout);
-
         surfaceViewComponents.add(i,surfaceViewComponent);
     }
 
