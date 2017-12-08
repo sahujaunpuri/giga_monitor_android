@@ -399,11 +399,11 @@ public abstract class ChannelsManager implements IFunSDKResult {
                 for(int i = start; i < surfaceViewComponents.size(); i++){
                     if(surfaceViewComponents.get(i).isConnected())
                         onStop(surfaceViewComponents.get(i));
-                }
 //            }
 //        }).start();
 
     }
+}
 
     public boolean verifyIfSomeChannelIsRecording() {
         boolean hasRecording = false;
@@ -487,7 +487,7 @@ public abstract class ChannelsManager implements IFunSDKResult {
                     if (msg.arg1 == 0) {
                         svc.setConnected(true);
                         if (svc.playType == 0) {
-                            mDeviceManager.requestStart();
+//                            mDeviceManager.requestStart();
                         } else if (svc.isSeeking) {
                             currentPlaybackListener.onCompleteSeek();
                         }
@@ -501,7 +501,10 @@ public abstract class ChannelsManager implements IFunSDKResult {
                                 startTry = 0;
                                 mDeviceManager.logoutDevice(mDevice);
                             }*/
-                            mDeviceManager.addToStart(svc);
+//                            mDeviceManager.addToStart(svc);
+
+                            onStartVideo(svc);
+
                         } else{
                             onPlayPlayback(fileToStart, svc);
                         }

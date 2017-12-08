@@ -117,6 +117,7 @@ public class Device implements Serializable {
     public boolean ipAttemptsFail = false;
     public boolean domainAttemptsFail = false;
     public boolean cloudAttemptsFail = false;
+    public boolean allAttempstFail = false;
 
 
     private Calendar systemTime;
