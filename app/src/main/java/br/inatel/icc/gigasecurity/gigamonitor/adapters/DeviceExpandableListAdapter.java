@@ -673,13 +673,6 @@ public class DeviceExpandableListAdapter extends BaseExpandableListAdapter {
         }
     }
 
-    public void playChannels(int groupPosition) {
-        for (SurfaceViewComponent svc : mDeviceManager.getDeviceChannelsManagers().get(groupPosition).surfaceViewComponents) {
-            if (!svc.isPlaying && svc.isConnected()) {
-                mDeviceManager.getDeviceChannelsManagers().get(groupPosition).onPlayLive(svc);
-            }
-        }
-    }
 
     public void resumeChannels(int groupPosition) {
         for (SurfaceViewComponent svc : mDeviceManager.getDeviceChannelsManagers().get(groupPosition).surfaceViewComponents) {

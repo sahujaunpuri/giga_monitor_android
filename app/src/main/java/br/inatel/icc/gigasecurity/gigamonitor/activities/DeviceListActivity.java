@@ -80,8 +80,8 @@ public class DeviceListActivity extends ActionBarActivity {
                     Toast.makeText(mContext, "Finalize a gravação", Toast.LENGTH_SHORT).show();
                     return true;
                 } else if(previousGroup == groupPosition){
-                    /*parent.collapseGroup(previousGroup);
-                    previousGroup = -1;*/
+                    parent.collapseGroup(previousGroup);
+                    previousGroup = -1;
                     Log.d(TAG, "onGroupClick: ");
                     return true;
                 } else {

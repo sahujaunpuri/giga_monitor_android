@@ -1777,5 +1777,25 @@ public class DeviceManager implements IFunSDKResult {
         }
     }
 
+    public static String getAppUuid() {
+        return APP_UUID;
+    }
+
+    public static String getServerIpOld() {
+        return SERVER_IP_OLD;
+    }
+
+    public static String getServerIp() {
+        return SERVER_IP;
+    }
+
+    public static void setServerIp(String serverIp) {
+        SERVER_IP = serverIp;
+    }
+
+    public static String getServerIpNew() {
+        return SERVER_IP_NEW;
+    }
+
 
 }

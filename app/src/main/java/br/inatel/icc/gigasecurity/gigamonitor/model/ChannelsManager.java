@@ -212,9 +212,9 @@ public abstract class ChannelsManager implements IFunSDKResult {
     /**
      * Media Control Functions
      **/
-    public void onPlayLive(SurfaceViewComponent svc) {
-        mDeviceManager.addToStart(svc);
-    }
+//   // public void onPlayLive(SurfaceViewComponent svc) {
+//        mDeviceManager.addToStart(svc);
+//    }
 
     public void onStartVideo(final SurfaceViewComponent svc) {
         svc.mPlayerHandler = FunSDK.MediaRealPlay(mUserID, mDevice.connectionString, svc.mySurfaceViewChannelId, svc.streamType, svc.mySurfaceView, svc.mySurfaceViewOrderId);
