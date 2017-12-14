@@ -61,10 +61,15 @@ public class InitialActivity extends ActionBarActivity implements View.OnClickLi
         tvDevicesFound.setOnClickListener(this);
 
         try {
+            String serverVersion = "2.0";
+            if (mDeviceManager.getServerIp().equals(mDeviceManager.getServerIpNew())) {
+                serverVersion = "3.0";
+            }
+
             String versionName = getPackageManager().getPackageInfo(getPackageName(), 0).versionName;
             String text = getResources().getString(R.string.label_version);
 
-            tvAppVersion.setText(text + " " + versionName);
+            tvAppVersion.setText(text + " " + versionName + " Server Version: " + serverVersion);
         } catch (PackageManager.NameNotFoundException e) {
             e.printStackTrace();
         }

@@ -98,11 +98,7 @@ public class ChannelRecyclerViewAdapter extends RecyclerView.Adapter<ChannelRecy
             }
 
 
-            if(mDevice.isLogged && !mDevice.getSerialNumber().equals("Favoritos")) {
-//                deviceChannelsManager.onPlayLive(currentSurfaceView);
-//                currentSurfaceView.isLoading(true);
-                deviceChannelsManager.onStartVideo(currentSurfaceView);
-            } else if (mDevice.isLogged){
+            if (mDevice.isLogged){
                 currentSurfaceView.isLoading(true);
                 deviceChannelsManager.onStartVideo(currentSurfaceView);
             }
