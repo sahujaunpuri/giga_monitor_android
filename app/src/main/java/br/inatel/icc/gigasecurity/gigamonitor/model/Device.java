@@ -111,9 +111,9 @@ public class Device implements Serializable {
     @Expose private boolean loginByDomain = true;
     @Expose private boolean loginByCloud = true;
     @Expose private int nextConnectionType = 0;
-    public int ipAttempts = 0;
-    public int domainAttempts = 0;
-    public int cloudAttempts = 0;
+    public int ipAttempts = 1;
+    public int domainAttempts = 1;
+    public int cloudAttempts = 1;
     public boolean ipAttemptsFail = false;
     public boolean domainAttemptsFail = false;
     public boolean cloudAttemptsFail = false;

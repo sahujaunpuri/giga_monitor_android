@@ -57,6 +57,7 @@ public class SurfaceViewComponent extends FrameLayout {
     private float previousX = 0, previousY = 0, dx, dy;
     private int previsousPTZCommand;
     private boolean longPress = false;
+    private boolean isLoading = false;
 
     public SurfaceViewComponent(Context context, ChannelsManager channelsManager, int id) {
         super(context);
@@ -225,8 +226,10 @@ public class SurfaceViewComponent extends FrameLayout {
             public void run() {
                 if(isLoading) {
                     progressBar.setVisibility(VISIBLE);
+                    setLoading(true);
                 }else {
                     progressBar.setVisibility(GONE);
+                    setLoading(false);
 //                    mySurfaceView.setVisibility(VISIBLE);
                 }
             }
@@ -538,6 +541,11 @@ public class SurfaceViewComponent extends FrameLayout {
         }*/
     }
 
+    public boolean isLoading() {
+        return isLoading;
+    }
 
-
+    public void setLoading(boolean loading) {
+        isLoading = loading;
+    }
 }

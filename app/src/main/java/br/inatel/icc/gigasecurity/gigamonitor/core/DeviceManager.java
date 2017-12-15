@@ -850,8 +850,6 @@ public class DeviceManager implements IFunSDKResult {
                             loginAttemptByDomain(device);
                         } else if (device.ipAttemptsFail && device.isCloudPriorityConnection() && !device.cloudAttemptsFail) {
                             loginAttemptByCloud(device);
-                        } else {
-                            return;
                         }
                     }
 
@@ -881,8 +879,6 @@ public class DeviceManager implements IFunSDKResult {
                             loginAttemptByCloud(device);
                         } else if (device.domainAttemptsFail && device.isDomainPriorityConnection() && !device.ipAttemptsFail) {
                             loginAttemptByIp(device);
-                        } else {
-                            return;
                         }
                     }
 
@@ -908,7 +904,6 @@ public class DeviceManager implements IFunSDKResult {
                     if (device.cloudAttempts > 3) {
                         expandableListAdapter.setMessage(mDevices.indexOf(device), "Falha na conexão via Cloud");
                         device.cloudAttemptsFail = true;
-                        return;
                     }
 
                     device.setConnectionString(2);
@@ -1764,6 +1759,7 @@ public class DeviceManager implements IFunSDKResult {
             loginAttemptByCloud(device);
         } else {
             device.allAttempstFail = true;
+            expandableListAdapter.setMessage(mDevices.indexOf(device), "Falha na conexão");
         }
     }
 

@@ -99,7 +99,7 @@ public class OverlayMenu extends RelativeLayout {
             ivPTZ.setImageDrawable(mContext.getResources().getDrawable(R.drawable.ic_ptz));
         }
 
-        if(surfaceViewComponent.isConnected()) {
+        if(surfaceViewComponent.isConnected() && !surfaceViewComponent.isLoading()) {
             if (surfaceViewComponent.isPlaying) {
                 ivPlayPause.setImageDrawable(mContext.getResources().getDrawable(R.drawable.ic_pause_white_48dp));
             } else {
@@ -140,7 +140,7 @@ public class OverlayMenu extends RelativeLayout {
         ivPlayPause.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (surfaceViewComponent.isConnected()) {
+                if (surfaceViewComponent.isConnected() && !surfaceViewComponent.isLoading()) {
                     if (surfaceViewComponent.isPlaying) {
                         deviceChannelsManager.onPause(surfaceViewComponent);
                         ivPlayPause.setImageDrawable(mContext.getResources().getDrawable(R.drawable.ic_play_arrow_white_48dp));
