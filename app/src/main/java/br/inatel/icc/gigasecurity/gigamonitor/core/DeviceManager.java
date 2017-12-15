@@ -1065,16 +1065,16 @@ public class DeviceManager implements IFunSDKResult {
         startPlay = false;
     }
 
-    public void addToStart(SurfaceViewComponent svc) {
-        synchronized (startList) {
-            if (!isOnStartQueue(svc) && !svc.isConnected()) {
-                svc.isLoading(true);
-                startList.add(svc);
-            }
-            if (!startPlay)
-                requestStart();
-        }
-    }
+//    public void addToStart(SurfaceViewComponent svc) {
+//        synchronized (startList) {
+//            if (!isOnStartQueue(svc) && !svc.isConnected()) {
+//                svc.isLoading(true);
+//                startList.add(svc);
+//            }
+//            if (!startPlay)
+//                requestStart();
+//        }
+//    }
 
     public void requestStart() {
         if (!startList.isEmpty()) {
@@ -1475,7 +1475,7 @@ public class DeviceManager implements IFunSDKResult {
                     device = findDeviceById(msgContent.seq);
                 }
                 if(msg.arg1 == 0 && device != null) {
-                    Log.d(TAG, "OnFunSDKResult: Login SUCCESS");
+                    Log.d(TAG, "OnFunSDKResult: Login SUCCESS " + device.deviceName);
 //                    FunSDK.DevGetConfigByJson(getHandler(), device.connectionString, "NetWork", 4096, -1, 10000, device.getId());
 
                     Log.d(device.deviceName, device.connectionString);

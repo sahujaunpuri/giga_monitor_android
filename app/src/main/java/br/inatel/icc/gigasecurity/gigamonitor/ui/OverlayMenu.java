@@ -3,6 +3,7 @@ package br.inatel.icc.gigasecurity.gigamonitor.ui;
 import android.content.Context;
 import android.graphics.Color;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
@@ -149,6 +150,7 @@ public class OverlayMenu extends RelativeLayout {
                         ivPlayPause.setImageDrawable(mContext.getResources().getDrawable(R.drawable.ic_pause_white_48dp));
                     }
                 } else {
+                    Log.d("OverlayMenu", "Refresh SurfaceViewComponent");
                     deviceChannelsManager.onStartVideo(surfaceViewComponent);
                 }
             }

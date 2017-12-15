@@ -12,6 +12,7 @@ import org.json.JSONObject;
 
 import java.io.Serializable;
 import java.util.Calendar;
+import java.util.Date;
 
 
 /**
@@ -268,7 +269,9 @@ public class Device implements Serializable {
     }
 
     public int getId() {
-//        return (this.serialNumber).hashCode();
+        int i = (int) (new Date().getTime()/1000);
+        Date currentTime = Calendar.getInstance().getTime();
+
         if ( null != this.serialNumber && !this.serialNumber.equals("")) {
             return (this.serialNumber).hashCode();
         } else
