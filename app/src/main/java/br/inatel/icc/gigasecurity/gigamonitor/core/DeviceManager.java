@@ -1751,11 +1751,11 @@ public class DeviceManager implements IFunSDKResult {
     }
 
     public void tryToConnect(Device device) {
-        if (!device.ipAttemptsFail && device.isIpPriorityConnection()) {
+        if (!device.ipAttemptsFail && device.isIpPriorityConnection() && device.getIpAddress()!= "") {
             loginAttemptByIp(device);
-        } else if (!device.domainAttemptsFail && device.isDomainPriorityConnection()) {
+        } else if (!device.domainAttemptsFail && device.isDomainPriorityConnection() && device.getDomain() != "") {
             loginAttemptByDomain(device);
-        } else if (!device.cloudAttemptsFail && device.isCloudPriorityConnection()) {
+        } else if (!device.cloudAttemptsFail && device.isCloudPriorityConnection() && device.getSerialNumber() != "") {
             loginAttemptByCloud(device);
         } else {
             device.allAttempstFail = true;

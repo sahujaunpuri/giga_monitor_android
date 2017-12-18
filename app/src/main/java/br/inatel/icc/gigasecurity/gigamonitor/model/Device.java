@@ -12,7 +12,6 @@ import org.json.JSONObject;
 
 import java.io.Serializable;
 import java.util.Calendar;
-import java.util.Date;
 
 
 /**
@@ -23,6 +22,7 @@ public class Device implements Serializable {
     //Expose as need by GSON to exclude fields which should not be saved in Device List and void circular reference
     @Expose public String deviceName;
     @Expose public String hostname;
+    @Expose private int deviceId;
 
     //CONFIG_IPAddress
     @Expose private String ipAddress;
@@ -260,22 +260,30 @@ public class Device implements Serializable {
 
     @Override
     public int hashCode() {
-        if ( null != this.serialNumber && !this.serialNumber.equals("")) {
-            return (this.serialNumber).hashCode();
-        } else
-            return (this.deviceName).hashCode();
+//        if ( null != this.serialNumber && !this.serialNumber.equals("")) {
+//            return (this.serialNumber).hashCode();
+//        } else
+//            return (this.deviceName).hashCode();
+
+        return deviceId;
 
 //        return super.hashCode();
     }
 
     public int getId() {
-        int i = (int) (new Date().getTime()/1000);
-        Date currentTime = Calendar.getInstance().getTime();
+//        if ( null != this.serialNumber && !this.serialNumber.equals("")) {
+//            return (this.serialNumber).hashCode();
+//        } else
+//            return (this.deviceName).hashCode();
+        return deviceId;
+    }
 
-        if ( null != this.serialNumber && !this.serialNumber.equals("")) {
-            return (this.serialNumber).hashCode();
-        } else
-            return (this.deviceName).hashCode();
+    public int getDeviceId() {
+        return deviceId;
+    }
+
+    public void setDeviceId(int deviceId) {
+        this.deviceId = deviceId;
     }
 
     public boolean hasLogin(){

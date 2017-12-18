@@ -66,7 +66,8 @@ public class DeviceEditAdapter extends BaseAdapter {
             holder = (ViewHolder) convertView.getTag();
         }
 
-        if(mDevices.get(position).getId() == ("Favoritos").hashCode()) {
+//        if(mDevices.get(position).getId() == ("Favoritos").hashCode()) {
+        if(mDevices.get(position).getDeviceName().equals("Favoritos")) {
             holder.delete.setVisibility(View.INVISIBLE);
         } else {
             holder.delete.setVisibility(View.VISIBLE);
@@ -79,7 +80,8 @@ public class DeviceEditAdapter extends BaseAdapter {
                 showDeleteConfirmation(position);
             }
         });
-        if(mDevices.get(position).getId() != ("Favoritos").hashCode())
+//        if(mDevices.get(position).getId() != ("Favoritos").hashCode())
+        if(!mDevices.get(position).getDeviceName().equals("Favoritos"))
             holder.deviceName.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
