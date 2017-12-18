@@ -216,7 +216,7 @@ public class Device implements Serializable {
                 if(ipAddress != null && !ipAddress.isEmpty()) {
                     loginAttempt++;
                     connectionString = ipAddress + ":" + tcpPort;
-                    message = "Conectando via IP" + "\n Tentativa: " + ipAttempts;
+                    message = "Conectando via IP" + "\nTentativa: " + ipAttempts;
                 } else {
                     return -1;
                 }
@@ -229,7 +229,7 @@ public class Device implements Serializable {
                     } else {
                         connectionString = domain + ":" + tcpPort;
                     }
-                    message = "Conectando via domínio/IP externo" + "\n Tentativa: " + domainAttempts;
+                    message = "Conectando via domínio/IP externo" + "\nTentativa: " + domainAttempts;
                 } else {
                     return -1;
                 }
@@ -238,7 +238,7 @@ public class Device implements Serializable {
             case 2: {     //cloud
                 if(!serialNumber.isEmpty()) {
                     connectionString = serialNumber;
-                    message = "Conectando via cloud" + "\n Tentativa: " + cloudAttempts;
+                    message = "Conectando via cloud" + "\nTentativa: " + cloudAttempts;
                 } else {
                     return -1;
                 }

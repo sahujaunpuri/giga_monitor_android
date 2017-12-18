@@ -290,6 +290,7 @@ public class DeviceExpandableListAdapter extends BaseExpandableListAdapter {
         } catch (Exception e) {
             e.printStackTrace();
         }
+
         GroupViewHolder groupViewHolder = (GroupViewHolder) convertView.getTag();
         try {
             if (groupViewHolder.position != groupPosition) {

@@ -1065,16 +1065,6 @@ public class DeviceManager implements IFunSDKResult {
         startPlay = false;
     }
 
-//    public void addToStart(SurfaceViewComponent svc) {
-//        synchronized (startList) {
-//            if (!isOnStartQueue(svc) && !svc.isConnected()) {
-//                svc.isLoading(true);
-//                startList.add(svc);
-//            }
-//            if (!startPlay)
-//                requestStart();
-//        }
-//    }
 
     public void requestStart() {
         if (!startList.isEmpty()) {
@@ -1751,11 +1741,11 @@ public class DeviceManager implements IFunSDKResult {
     }
 
     public void tryToConnect(Device device) {
-        if (!device.ipAttemptsFail && device.isIpPriorityConnection() && device.getIpAddress()!= "") {
+        if (!device.ipAttemptsFail && device.isIpPriorityConnection() && !device.getIpAddress().equals("")) {
             loginAttemptByIp(device);
-        } else if (!device.domainAttemptsFail && device.isDomainPriorityConnection() && device.getDomain() != "") {
+        } else if (!device.domainAttemptsFail && device.isDomainPriorityConnection() && !device.getDomain().equals("")) {
             loginAttemptByDomain(device);
-        } else if (!device.cloudAttemptsFail && device.isCloudPriorityConnection() && device.getSerialNumber() != "") {
+        } else if (!device.cloudAttemptsFail && device.isCloudPriorityConnection() && !device.getSerialNumber().equals("")) {
             loginAttemptByCloud(device);
         } else {
             device.allAttempstFail = true;
