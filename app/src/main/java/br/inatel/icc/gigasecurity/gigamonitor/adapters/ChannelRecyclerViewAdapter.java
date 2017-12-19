@@ -99,6 +99,7 @@ public class ChannelRecyclerViewAdapter extends RecyclerView.Adapter<ChannelRecy
 
 
             if (mDevice.isLogged){
+                Log.d("ChannelsRecyclerViewAdapter", " Play device: " + mDevice.deviceName + " Channel: " + position);
                 currentSurfaceView.isLoading(true);
                 deviceChannelsManager.onStartVideo(currentSurfaceView);
             }

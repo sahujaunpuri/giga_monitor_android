@@ -22,6 +22,7 @@ public class Device implements Serializable {
     //Expose as need by GSON to exclude fields which should not be saved in Device List and void circular reference
     @Expose public String deviceName;
     @Expose public String hostname;
+    @Expose private int deviceId;
 
     //CONFIG_IPAddress
     @Expose private String ipAddress;
@@ -111,9 +112,9 @@ public class Device implements Serializable {
     @Expose private boolean loginByDomain = true;
     @Expose private boolean loginByCloud = true;
     @Expose private int nextConnectionType = 0;
-    public int ipAttempts = 0;
-    public int domainAttempts = 0;
-    public int cloudAttempts = 0;
+    public int ipAttempts = 1;
+    public int domainAttempts = 1;
+    public int cloudAttempts = 1;
     public boolean ipAttemptsFail = false;
     public boolean domainAttemptsFail = false;
     public boolean cloudAttemptsFail = false;
@@ -215,7 +216,7 @@ public class Device implements Serializable {
                 if(ipAddress != null && !ipAddress.isEmpty()) {
                     loginAttempt++;
                     connectionString = ipAddress + ":" + tcpPort;
-                    message = "Conectando via IP" + "\n Tentativa: " + ipAttempts;
+                    message = "Conectando via IP" + "\nTentativa: " + ipAttempts;
                 } else {
                     return -1;
                 }
@@ -228,7 +229,7 @@ public class Device implements Serializable {
                     } else {
                         connectionString = domain + ":" + tcpPort;
                     }
-                    message = "Conectando via domínio/IP externo" + "\n Tentativa: " + domainAttempts;
+                    message = "Conectando via domínio/IP externo" + "\nTentativa: " + domainAttempts;
                 } else {
                     return -1;
                 }
@@ -237,7 +238,7 @@ public class Device implements Serializable {
             case 2: {     //cloud
                 if(!serialNumber.isEmpty()) {
                     connectionString = serialNumber;
-                    message = "Conectando via cloud" + "\n Tentativa: " + cloudAttempts;
+                    message = "Conectando via cloud" + "\nTentativa: " + cloudAttempts;
                 } else {
                     return -1;
                 }
@@ -259,20 +260,30 @@ public class Device implements Serializable {
 
     @Override
     public int hashCode() {
-        if ( null != this.serialNumber && !this.serialNumber.equals("")) {
-            return (this.serialNumber).hashCode();
-        } else
-            return (this.deviceName).hashCode();
+//        if ( null != this.serialNumber && !this.serialNumber.equals("")) {
+//            return (this.serialNumber).hashCode();
+//        } else
+//            return (this.deviceName).hashCode();
+
+        return deviceId;
 
 //        return super.hashCode();
     }
 
     public int getId() {
-//        return (this.serialNumber).hashCode();
-        if ( null != this.serialNumber && !this.serialNumber.equals("")) {
-            return (this.serialNumber).hashCode();
-        } else
-            return (this.deviceName).hashCode();
+//        if ( null != this.serialNumber && !this.serialNumber.equals("")) {
+//            return (this.serialNumber).hashCode();
+//        } else
+//            return (this.deviceName).hashCode();
+        return deviceId;
+    }
+
+    public int getDeviceId() {
+        return deviceId;
+    }
+
+    public void setDeviceId(int deviceId) {
+        this.deviceId = deviceId;
     }
 
     public boolean hasLogin(){

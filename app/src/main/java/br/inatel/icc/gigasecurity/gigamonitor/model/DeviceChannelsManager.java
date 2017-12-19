@@ -83,9 +83,9 @@ public class DeviceChannelsManager extends ChannelsManager implements IFunSDKRes
     }
 
     /** Media Control Functions **/
-    public void onPlayLive(SurfaceViewComponent svc) {
-        mDeviceManager.addToStart(svc);
-    }
+//    public void onPlayLive(SurfaceViewComponent svc) {
+//        mDeviceManager.addToStart(svc);
+//    }
 
     public void enableHD(SurfaceViewComponent svc){
         if(hdChannel > -1) {

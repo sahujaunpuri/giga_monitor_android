@@ -75,8 +75,8 @@ public class DeviceManager implements IFunSDKResult {
     private static final String APP_SECRET = "7a58fdbc242b4f6ba95652b7a3502b91";
     private static final int APP_MOVECARD = 8;
     private static final String SERVER_IP_OLD = "cloudgiga.com.br";
-    private static String SERVER_IP = "200.169.104.100";
     private static final String SERVER_IP_NEW = "200.169.104.100";
+    private static String SERVER_IP = SERVER_IP_NEW;
     private static final int SERVER_PORT = 8000;
     private static final String MEDIA_DISK_NAME = "MEDIA_DISK";
 
@@ -850,8 +850,6 @@ public class DeviceManager implements IFunSDKResult {
                             loginAttemptByDomain(device);
                         } else if (device.ipAttemptsFail && device.isCloudPriorityConnection() && !device.cloudAttemptsFail) {
                             loginAttemptByCloud(device);
-                        } else {
-                            return;
                         }
                     }
 
@@ -881,8 +879,6 @@ public class DeviceManager implements IFunSDKResult {
                             loginAttemptByCloud(device);
                         } else if (device.domainAttemptsFail && device.isDomainPriorityConnection() && !device.ipAttemptsFail) {
                             loginAttemptByIp(device);
-                        } else {
-                            return;
                         }
                     }
 
@@ -908,7 +904,6 @@ public class DeviceManager implements IFunSDKResult {
                     if (device.cloudAttempts > 3) {
                         expandableListAdapter.setMessage(mDevices.indexOf(device), "Falha na conexão via Cloud");
                         device.cloudAttemptsFail = true;
-                        return;
                     }
 
                     device.setConnectionString(2);
@@ -1070,16 +1065,6 @@ public class DeviceManager implements IFunSDKResult {
         startPlay = false;
     }
 
-    public void addToStart(SurfaceViewComponent svc) {
-        synchronized (startList) {
-            if (!isOnStartQueue(svc) && !svc.isConnected()) {
-                svc.isLoading(true);
-                startList.add(svc);
-            }
-            if (!startPlay)
-                requestStart();
-        }
-    }
 
     public void requestStart() {
         if (!startList.isEmpty()) {
@@ -1480,7 +1465,7 @@ public class DeviceManager implements IFunSDKResult {
                     device = findDeviceById(msgContent.seq);
                 }
                 if(msg.arg1 == 0 && device != null) {
-                    Log.d(TAG, "OnFunSDKResult: Login SUCCESS");
+                    Log.d(TAG, "OnFunSDKResult: Login SUCCESS " + device.deviceName);
 //                    FunSDK.DevGetConfigByJson(getHandler(), device.connectionString, "NetWork", 4096, -1, 10000, device.getId());
 
                     Log.d(device.deviceName, device.connectionString);
@@ -1756,14 +1741,15 @@ public class DeviceManager implements IFunSDKResult {
     }
 
     public void tryToConnect(Device device) {
-        if (!device.ipAttemptsFail && device.isIpPriorityConnection()) {
+        if (!device.ipAttemptsFail && device.isIpPriorityConnection() && !device.getIpAddress().equals("")) {
             loginAttemptByIp(device);
-        } else if (!device.domainAttemptsFail && device.isDomainPriorityConnection()) {
+        } else if (!device.domainAttemptsFail && device.isDomainPriorityConnection() && !device.getDomain().equals("")) {
             loginAttemptByDomain(device);
-        } else if (!device.cloudAttemptsFail && device.isCloudPriorityConnection()) {
+        } else if (!device.cloudAttemptsFail && device.isCloudPriorityConnection() && !device.getSerialNumber().equals("")) {
             loginAttemptByCloud(device);
         } else {
             device.allAttempstFail = true;
+            expandableListAdapter.setMessage(mDevices.indexOf(device), "Falha na conexão");
         }
     }
 
