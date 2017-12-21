@@ -28,7 +28,7 @@ public class InitialActivity extends ActionBarActivity implements View.OnClickLi
     private Discovery mDiscoveryThread;
     private MenuItem atualizeButton;
     private ProgressBar pbInitial;
-    private TextView tvDevicesFound, tvQrCode, tvNewDevice, tvAppVersion;
+    private TextView tvDevicesFound, tvQrCode, tvNewDevice, tvAppVersion, tvCancel;
     private Context mContext;
     private DeviceManager mDeviceManager;
 
@@ -45,6 +45,10 @@ public class InitialActivity extends ActionBarActivity implements View.OnClickLi
         initComponents();
 
         searchDevices();
+
+        getSupportActionBar().hide();
+
+        setCancelAction();
     }
 
     private void initComponents() {
@@ -53,12 +57,14 @@ public class InitialActivity extends ActionBarActivity implements View.OnClickLi
         tvNewDevice    = (TextView) findViewById(R.id.tv_setup_new_device);
         tvAppVersion   = (TextView) findViewById(R.id.app_version);
         pbInitial      = (ProgressBar) findViewById(R.id.pb_initial);
+        tvCancel       = (TextView) findViewById(R.id.text_view_cancel);
 
         pbInitial.getIndeterminateDrawable().setColorFilter(Color.parseColor("#009900"), PorterDuff.Mode.SRC_IN);
 
         tvQrCode.setOnClickListener(this);
         tvNewDevice.setOnClickListener(this);
         tvDevicesFound.setOnClickListener(this);
+        tvCancel.setOnClickListener(this);
 
         try {
             String serverVersion = "2.0";
@@ -86,6 +92,9 @@ public class InitialActivity extends ActionBarActivity implements View.OnClickLi
                 break;
             case R.id.tv_devices_founds:
                 startSearchActivity();
+                break;
+            case R.id.text_view_cancel:
+
                 break;
         }
     }
@@ -181,6 +190,14 @@ public class InitialActivity extends ActionBarActivity implements View.OnClickLi
             });
         }
     };
+
+    public void setCancelAction() {
+        if(DeviceManager.getInstance().getDevices().size()<2) {
+            tvCancel.setVisibility(View.INVISIBLE);
+        } else {
+            tvCancel.setVisibility(View.VISIBLE);
+        }
+    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {

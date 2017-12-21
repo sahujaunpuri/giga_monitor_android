@@ -248,8 +248,8 @@
     <string name="no_device_list">Nenhum Dispositivo</string>
     <string name="name">Nome</string>
     <string name="serial">Número Serial</string>
-    <string name="ip">IP Interno</string>
-    <string name="domain">Domínio ou IP Externo</string>
+    <string name="ip">Endereço IP</string>
+    <string name="domain">Domínio</string>
     <string name="domain_hint">dominio.gigaddns.com.br</string>
     <string name="port">Porta Interna</string>
     <string name="external_port">Porta Externa</string>
@@ -316,5 +316,9 @@
     <string name="about">Sobre</string>
     <string name="label_video_channel">Canal de Video</string>
     <string name="label_mac_address">Endereço MAC</string>
+    <string name="back">Voltar</string>
+    <string name="save">Salvar</string>
+    <string name="new_device">Novo Dispositivo</string>
+    <string name="title_activity_add_device">Adicionar Dispositivo</string>
 
 </resources>

@@ -6,6 +6,28 @@
     android:background="#FFF"
     tools:context="br.inatel.icc.gigasecurity.gigamonitor.activities.InitialActivity">
 
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center">
+
+        <TextView
+            style="@style/ActionBarTextView"
+            android:text="@string/button_cancel"
+            android:id="@+id/text_view_cancel"/>
+
+        <TextView
+            style="@style/ActionBarTitle"
+            android:text="@string/new_device"/>
+
+        <TextView
+            style="@style/ActionBarTextView"
+            android:text="@string/button_cancel"
+            android:visibility="invisible"/>
+
+    </LinearLayout>
+
     <ScrollView
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
