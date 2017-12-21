@@ -515,6 +515,8 @@ public class DeviceExpandableListAdapter extends BaseExpandableListAdapter {
                             String errorMsg;
                             if(error == -11301)
                                 errorMsg = "Login ou senha incorretos.";
+                            else if(error == -11302)
+                                errorMsg = "Login ou senha incorretos.";
                             else if(error == -11307)
                                 errorMsg = "Dispositivo não encontrado.";
                             else if(error == -1)
