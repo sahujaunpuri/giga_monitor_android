@@ -139,6 +139,10 @@ public class DeviceManager implements IFunSDKResult {
         return mFunUserHandler;
     }
 
+    /**
+     * SDK INITIALIZATION
+     */
+
     public void init(Context context) {
         currentContext = context;
         Log.d(TAG, "DeviceManager: INIT");
@@ -1480,6 +1484,13 @@ public class DeviceManager implements IFunSDKResult {
                     loginList.remove(device.connectionString);*/
                     FunSDK.DevGetConfigByJson(getHandler(), device.connectionString, "SystemInfo", 4096, -1, 10000, device.getId());
                 } else if(msg.arg1 == -11301){ //wrong password or login
+                    if(device != null) {
+                        if (loginList.get(device.getId()) != null)
+                            loginList.get(device.getId()).onLoginError(msg.arg1, device);
+                        loginList.remove(device.getId());
+                        device.setConnectionMethod(-1);
+                    }
+                } else if(msg.arg1 == -11302){ //wrong password or login
                     if(device != null) {
                         if (loginList.get(device.getId()) != null)
                             loginList.get(device.getId()).onLoginError(msg.arg1, device);
