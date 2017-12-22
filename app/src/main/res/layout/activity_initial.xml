@@ -46,32 +46,26 @@
 
             <TextView
                 android:layout_width="fill_parent"
-                android:layout_height="50dp"
-                android:layout_marginRight="40dp"
-                android:layout_marginLeft="40dp"
-                android:textAppearance="?android:attr/textAppearanceMedium"
-                android:textColor="#FFF"
-                android:background="#ff96d802"
-                android:gravity="center"
-                android:text="@string/label_scan_qr_code"
-                android:textStyle="bold"
-                android:id="@+id/tv_scan_qr_code"
-                android:layout_gravity="center_horizontal" />
-
-            <TextView
-                android:layout_width="fill_parent"
-                android:layout_height="50dp"
+                android:layout_height="65dp"
                 android:layout_marginRight="40dp"
                 android:layout_marginLeft="40dp"
                 android:layout_marginTop="10dp"
-                android:textAppearance="?android:attr/textAppearanceMedium"
-                android:textColor="#FFF"
-                android:background="#ffbababa"
+                android:textColor="@color/btn_blue_text_color"
+                android:background="@drawable/rounded_corner_button_blue"
+                android:textAppearance="?android:attr/textAppearanceLarge"
                 android:gravity="center"
-                android:text="@string/label_setup_new_device"
                 android:textStyle="bold"
-                android:id="@+id/tv_setup_new_device"
+                android:text="@string/label_devices_found"
+                android:focusable="true"
+                android:clickable="true"
+                android:id="@+id/tv_devices_founds"
                 android:layout_gravity="center_horizontal" />
+
+            <ProgressBar
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="10dp"
+                android:id="@+id/pb_initial" />
 
             <LinearLayout
                 android:orientation="horizontal"
@@ -81,22 +75,37 @@
                 android:gravity="center">
 
                 <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:textColor="@android:color/holo_green_dark"
-                    android:textAppearance="?android:attr/textAppearanceLarge"
+                    android:layout_width="80dp"
+                    android:layout_height="65dp"
+                    android:layout_marginRight="40dp"
+                    android:layout_marginLeft="40dp"
+                    android:textAppearance="?android:attr/textAppearanceMedium"
+                    android:textColor="#FFF"
+                    android:background="@drawable/rounded_corner_button_green"
+                    android:gravity="center"
+                    android:text="@string/label_scan_qr_code"
                     android:textStyle="bold"
-                    android:text="@string/label_devices_found"
-                    android:focusable="true"
-                    android:clickable="true"
-                    android:id="@+id/tv_devices_founds"
-                    android:gravity="center_vertical"/>
+                    android:id="@+id/tv_scan_qr_code"
+                    android:layout_gravity="center_horizontal" />
 
-                <ProgressBar
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginLeft="10dp"
-                    android:id="@+id/pb_initial" />
+                <TextView
+                    android:layout_width="80dp"
+                    android:layout_height="50dp"
+                    android:layout_marginRight="40dp"
+                    android:layout_marginLeft="40dp"
+                    android:layout_marginTop="10dp"
+                    android:textAppearance="?android:attr/textAppearanceMedium"
+                    android:textColor="#FFF"
+                    android:background="@drawable/rounded_corner_button_green"
+                    android:gravity="center"
+                    android:text="@string/label_setup_new_device"
+                    android:textStyle="bold"
+                    android:id="@+id/tv_setup_new_device"
+                    android:layout_gravity="center_horizontal" />
+
+
+
+
 
             </LinearLayout>
 
