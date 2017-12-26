@@ -6,6 +6,40 @@
     android:orientation="vertical"
     tools:context="br.inatel.icc.gigasecurity.gigamonitor.activities.MediaActivity">
 
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center">
+
+        <TextView
+            android:text="voltar"
+            android:id="@+id/cancel_action"
+            style="@style/ActionBarTextView"
+            android:layout_marginLeft="90dp"/>
+
+        <LinearLayout
+            style="@style/ToggleActivityMedia">
+
+            <TextView
+                style="@style/ToggleTextViewActivityMedia"
+                android:text="Fotos"
+                android:background="@color/toggle_on" />
+
+            <TextView
+                style="@style/ToggleTextViewActivityMedia"
+                android:text="Vídeos"
+                android:background="@color/toggle_off" />
+
+        </LinearLayout>
+
+        <TextView
+            android:text="selecionar"
+            style="@style/ActionBarTextView"
+            android:id="@+id/refresh_action"/>
+
+    </LinearLayout>
+
 
     <LinearLayout
             android:orientation="horizontal"
@@ -34,11 +68,15 @@
         android:layout_height="match_parent"
         android:id="@+id/grid_view_media"
         android:numColumns="3"
-        android:padding="10dp"
-        android:layout_gravity="center"
-        android:horizontalSpacing="5dp"
-        android:verticalSpacing="5dp"
         android:gravity="center"
+        android:columnWidth="270dp"
+        android:paddingRight="20dp"
+        android:paddingLeft="20dp"
+        android:clipToPadding="true"
+        android:fitsSystemWindows="true"
+        android:stretchMode="columnWidth"
+        android:horizontalSpacing="10dp"
+        android:verticalSpacing="10dp"
         android:layout_margin="10px"/>
 
 </LinearLayout>

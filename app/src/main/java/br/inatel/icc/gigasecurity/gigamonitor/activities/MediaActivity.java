@@ -15,6 +15,7 @@ import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.GridView;
 import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import br.inatel.icc.gigasecurity.gigamonitor.BuildConfig;
@@ -29,6 +30,7 @@ public class MediaActivity extends ActionBarActivity {
     public static MediaGridAdapter mAdapter;
     private DeviceManager mDeviceManager;
     public static ImageView ivImage, ivVideo;
+    private TextView tvCancel, tvSelect, tvImage, tvVideo;
     public boolean ivImageSelected = true;
 
     private String SELECT_TITLE_BUTTON = "Selecionar";
@@ -106,6 +108,15 @@ public class MediaActivity extends ActionBarActivity {
                 didSelectMovies();
             }
         });
+
+        tvCancel.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                finish();
+            }
+        });
+
+//        getSupportActionBar().hide();
     }
 
     private void didSelectMovies() {
@@ -126,9 +137,10 @@ public class MediaActivity extends ActionBarActivity {
     }
 
     private void initComponents() {
-        gvMedia = (GridView) findViewById(R.id.grid_view_media);
-        ivImage = (ImageView) findViewById(R.id.iv_image);
-        ivVideo = (ImageView) findViewById(R.id.iv_video);
+        gvMedia  = (GridView) findViewById(R.id.grid_view_media);
+        ivImage  = (ImageView) findViewById(R.id.iv_image);
+        ivVideo  = (ImageView) findViewById(R.id.iv_video);
+        tvCancel = (TextView) findViewById(R.id.cancel_action);
         if(ivImageSelected){
             ivVideo.setImageDrawable(getResources().getDrawable(R.drawable.ic_video_off));
             ivImage.setImageDrawable(getResources().getDrawable(R.drawable.ic_camera_on));

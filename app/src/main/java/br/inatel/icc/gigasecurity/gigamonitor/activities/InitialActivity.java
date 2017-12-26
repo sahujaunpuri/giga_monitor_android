@@ -3,14 +3,13 @@ package br.inatel.icc.gigasecurity.gigamonitor.activities;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.graphics.Color;
-import android.graphics.PorterDuff;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.ProgressBar;
+import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import java.util.ArrayList;
@@ -27,8 +26,9 @@ public class InitialActivity extends ActionBarActivity implements View.OnClickLi
     private ArrayList<Device> mDevices;
     private Discovery mDiscoveryThread;
     private MenuItem atualizeButton;
-    private ProgressBar pbInitial;
-    private TextView tvDevicesFound, tvQrCode, tvNewDevice, tvAppVersion, tvCancel;
+    private ImageView ivSearch;
+    private TextView tvDevicesFound, tvAppVersion, tvCancel, tvSearchingDevices;
+    private ImageButton imgBtnNewDevice, imgBtnQrCode, imgBtnRefresh;
     private Context mContext;
     private DeviceManager mDeviceManager;
 
@@ -52,17 +52,18 @@ public class InitialActivity extends ActionBarActivity implements View.OnClickLi
     }
 
     private void initComponents() {
-        tvDevicesFound = (TextView) findViewById(R.id.tv_devices_founds);
-        tvQrCode       = (TextView) findViewById(R.id.tv_scan_qr_code);
-        tvNewDevice    = (TextView) findViewById(R.id.tv_setup_new_device);
-        tvAppVersion   = (TextView) findViewById(R.id.app_version);
-        pbInitial      = (ProgressBar) findViewById(R.id.pb_initial);
-        tvCancel       = (TextView) findViewById(R.id.text_view_cancel);
+        tvDevicesFound     = (TextView) findViewById(R.id.tv_devices_founds);
+        imgBtnQrCode       = (ImageButton) findViewById(R.id.tv_scan_qr_code);
+        imgBtnNewDevice    = (ImageButton) findViewById(R.id.tv_setup_new_device);
+        tvAppVersion       = (TextView) findViewById(R.id.app_version);
+        tvCancel           = (TextView) findViewById(R.id.text_view_cancel);
+        ivSearch           = (ImageView) findViewById(R.id.ic_search);
+        tvSearchingDevices = (TextView) findViewById(R.id.text_view_searching);
+        imgBtnRefresh      = (ImageButton) findViewById(R.id.image_btn_refresh);
 
-        pbInitial.getIndeterminateDrawable().setColorFilter(Color.parseColor("#009900"), PorterDuff.Mode.SRC_IN);
-
-        tvQrCode.setOnClickListener(this);
-        tvNewDevice.setOnClickListener(this);
+        imgBtnRefresh.setOnClickListener(this);
+        imgBtnQrCode.setOnClickListener(this);
+        imgBtnNewDevice.setOnClickListener(this);
         tvDevicesFound.setOnClickListener(this);
         tvCancel.setOnClickListener(this);
 
@@ -94,7 +95,12 @@ public class InitialActivity extends ActionBarActivity implements View.OnClickLi
                 startSearchActivity();
                 break;
             case R.id.text_view_cancel:
-
+                finish();
+                break;
+            case R.id.image_btn_refresh:
+                atualizeButton.setVisible(false);
+                imgBtnRefresh.setVisibility(View.GONE);
+                searchDevices();
                 break;
         }
     }
@@ -115,18 +121,15 @@ public class InitialActivity extends ActionBarActivity implements View.OnClickLi
 
     private void startQrCode() {
         Intent i = new Intent(InitialActivity.this, com.google.zxing.client.android.CaptureActivity.class);
-//        startActivity(i);
         startActivityForResult(i, REQUEST_EXIT);
     }
 
     private void startNewDeviceActivity() {
         Intent i = new Intent(this, DeviceFormActivity.class);
-//        startActivity(i);
         startActivityForResult(i, REQUEST_EXIT);
     }
 
     public void searchDevices(){
-//        atualizeButton.setVisible(false);
         if (mDiscoveryThread == null) {
             mDiscoveryThread = prepareDiscoveryThread();
         } else {
@@ -139,7 +142,10 @@ public class InitialActivity extends ActionBarActivity implements View.OnClickLi
 
         tvDevicesFound.setText(text);
 
-        pbInitial.setVisibility(View.VISIBLE);
+        tvSearchingDevices.setVisibility(View.VISIBLE);
+        ivSearch.setVisibility(View.VISIBLE);
+        tvDevicesFound.setVisibility(View.GONE);
+        imgBtnRefresh.setVisibility(View.GONE);
     }
 
     private void stopAndRefresh() {
@@ -149,7 +155,9 @@ public class InitialActivity extends ActionBarActivity implements View.OnClickLi
         } catch (RuntimeException e) {
             e.printStackTrace();
         } finally {
-            pbInitial.setVisibility(View.GONE);
+            tvSearchingDevices.setVisibility(View.GONE);
+            ivSearch.setVisibility(View.GONE);
+            imgBtnRefresh.setVisibility(View.VISIBLE);
         }
     }
 
@@ -172,7 +180,10 @@ public class InitialActivity extends ActionBarActivity implements View.OnClickLi
                             tvDevicesFound.setText("Found " + mDevices.size() + " devices.");
                         }
                         atualizeButton.setVisible(true);
-                        pbInitial.setVisibility(View.GONE);
+                        tvSearchingDevices.setVisibility(View.GONE);
+                        ivSearch.setVisibility(View.GONE);
+                        tvDevicesFound.setVisibility(View.VISIBLE);
+                        imgBtnRefresh.setVisibility(View.VISIBLE);
                     } catch (Exception error){
                         error.printStackTrace();
                     }

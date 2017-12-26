@@ -8,36 +8,84 @@
     tools:context="br.inatel.icc.gigasecurity.gigamonitor.activities.DeviceRemoteControlActivity">
 
     <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center">
+
+        <TextView
+            style="@style/ActionBarTextView"
+            android:text="@string/button_cancel"
+            android:id="@+id/text_view_cancel"/>
+
+        <TextView
+            style="@style/ActionBarTitle"
+            android:text="@string/new_device"/>
+
+        <TextView
+            style="@style/ActionBarTextView"
+            android:text="@string/button_cancel"
+            android:visibility="invisible"/>
+
+    </LinearLayout>
+
+    <LinearLayout
         android:orientation="horizontal"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal"
-        android:layout_margin="20dp"
+        android:layout_margin="5dp"
         android:gravity="center">
 
-        <ImageView
+        <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:id="@+id/iv_control_esc"
-            android:src="@drawable/ic_esc"
-            android:layout_margin="15dp"
-            android:layout_gravity="left" />
+            android:orientation="vertical">
 
-        <ImageView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:src="@drawable/ic_quad"
-            android:id="@+id/iv_control_quad"
-            android:layout_margin="15dp"
-            android:layout_gravity="center_horizontal" />
+            <ImageView
+                style="@style/ImageButtonActivityRemoteControl"
+                android:src="@drawable/ic_power_settings_new_green_40dp"
+                android:id="@+id/iv_control_esc" />
 
-        <ImageView
+            <TextView
+                style="@style/TextViewActivityRemoteControl"
+                android:text="esc" />
+
+        </LinearLayout>
+
+        <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:id="@+id/iv_control_menu"
-            android:src="@drawable/ic_menu"
-            android:layout_margin="15dp"
-            android:layout_gravity="right" />
+            android:orientation="vertical">
+
+            <ImageView
+                style="@style/ImageButtonActivityRemoteControl"
+                android:src="@drawable/ic_power_settings_new_green_40dp"
+                android:background="@drawable/rounded_corner_btn_orange"
+                android:id="@+id/iv_control_quad" />
+
+            <TextView
+                style="@style/TextViewActivityRemoteControl"
+                android:text="telas" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <ImageView
+                style="@style/ImageButtonActivityRemoteControl"
+                android:src="@drawable/ic_power_settings_new_green_40dp"
+                android:background="@drawable/rounded_corner_btn_blue"
+                android:id="@+id/iv_control_menu" />
+
+            <TextView
+                style="@style/TextViewActivityRemoteControl"
+                android:text="menu" />
+
+        </LinearLayout>
 
     </LinearLayout>
 

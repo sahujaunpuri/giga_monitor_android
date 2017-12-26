@@ -38,34 +38,46 @@
             android:orientation="vertical">
 
             <ImageView
-                android:layout_width="200dp"
-                android:layout_height="250dp"
-                android:id="@+id/imageView"
-                android:src="@drawable/initial"
-                android:layout_gravity="center_horizontal" />
+                style="@style/ImageViewInitial"
+                android:id="@+id/imageView" />
 
-            <TextView
-                android:layout_width="fill_parent"
-                android:layout_height="65dp"
-                android:layout_marginRight="40dp"
-                android:layout_marginLeft="40dp"
-                android:layout_marginTop="10dp"
-                android:textColor="@color/btn_blue_text_color"
-                android:background="@drawable/rounded_corner_button_blue"
-                android:textAppearance="?android:attr/textAppearanceLarge"
-                android:gravity="center"
-                android:textStyle="bold"
-                android:text="@string/label_devices_found"
-                android:focusable="true"
-                android:clickable="true"
-                android:id="@+id/tv_devices_founds"
-                android:layout_gravity="center_horizontal" />
-
-            <ProgressBar
-                android:layout_width="wrap_content"
+            <LinearLayout
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginLeft="10dp"
-                android:id="@+id/pb_initial" />
+                android:orientation="vertical"
+                android:gravity="center">
+
+                <ImageView
+                    style="@style/ImageViewSearchingInitialActivity"
+                    android:id="@+id/ic_search"
+                    android:src="@drawable/ic_search_30dp" />
+
+                <TextView
+                    style="@style/TextViewSearchingDevicesInitialActivity"
+                    android:id="@+id/text_view_searching"
+                    android:text="@string/searching_devices_in_the_network_text_1"
+                    android:textColor="@color/default_color"/>
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center">
+
+                <TextView
+                    style="@style/TextViewDevicesFound"
+                    android:text="@string/label_devices_found"
+                    android:id="@+id/tv_devices_founds" />
+
+                <ImageButton
+                    style="@style/ImageButtonRefreshInitialActivity"
+                    android:id="@+id/image_btn_refresh" />
+
+
+
+            </LinearLayout>
 
             <LinearLayout
                 android:orientation="horizontal"
@@ -74,39 +86,38 @@
                 android:layout_marginTop="25dp"
                 android:gravity="center">
 
-                <TextView
-                    android:layout_width="80dp"
-                    android:layout_height="65dp"
-                    android:layout_marginRight="40dp"
-                    android:layout_marginLeft="40dp"
-                    android:textAppearance="?android:attr/textAppearanceMedium"
-                    android:textColor="#FFF"
-                    android:background="@drawable/rounded_corner_button_green"
-                    android:gravity="center"
-                    android:text="@string/label_scan_qr_code"
-                    android:textStyle="bold"
-                    android:id="@+id/tv_scan_qr_code"
-                    android:layout_gravity="center_horizontal" />
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical">
 
-                <TextView
-                    android:layout_width="80dp"
-                    android:layout_height="50dp"
-                    android:layout_marginRight="40dp"
-                    android:layout_marginLeft="40dp"
-                    android:layout_marginTop="10dp"
-                    android:textAppearance="?android:attr/textAppearanceMedium"
-                    android:textColor="#FFF"
-                    android:background="@drawable/rounded_corner_button_green"
-                    android:gravity="center"
-                    android:text="@string/label_setup_new_device"
-                    android:textStyle="bold"
-                    android:id="@+id/tv_setup_new_device"
-                    android:layout_gravity="center_horizontal" />
+                    <ImageButton
+                        style="@style/ImageButtonInitialActivity"
+                        android:src="@drawable/about_normal"
+                        android:id="@+id/tv_scan_qr_code" />
 
+                    <TextView
+                        style="@style/TextViewInitialActivity"
+                        android:text="QR CODE" />
 
+                </LinearLayout>
 
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical">
 
+                    <ImageButton
+                        style="@style/ImageButtonInitialActivity"
+                        android:src="@drawable/about_normal"
+                        android:id="@+id/tv_setup_new_device" />
 
+                    <TextView
+                        style="@style/TextViewInitialActivity"
+                        android:text="MANUALMENTE" />
+
+                </LinearLayout>
+                
             </LinearLayout>
 
         </LinearLayout>
