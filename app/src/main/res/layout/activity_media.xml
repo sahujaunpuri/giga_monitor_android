@@ -14,9 +14,16 @@
 
         <TextView
             android:text="voltar"
-            android:id="@+id/cancel_action"
+            android:id="@+id/back_action"
             style="@style/ActionBarTextView"
             android:layout_marginLeft="90dp"/>
+
+        <TextView
+            android:text="cancelar"
+            android:id="@+id/cancel_action"
+            style="@style/ActionBarTextView"
+            android:layout_marginLeft="90dp"
+            android:visibility="gone"/>
 
         <LinearLayout
             style="@style/ToggleActivityMedia">
@@ -24,19 +31,27 @@
             <TextView
                 style="@style/ToggleTextViewActivityMedia"
                 android:text="Fotos"
-                android:background="@color/toggle_on" />
+                android:background="@color/toggle_on"
+                android:id="@+id/tv_image"/>
 
             <TextView
                 style="@style/ToggleTextViewActivityMedia"
                 android:text="Vídeos"
-                android:background="@color/toggle_off" />
+                android:background="@color/toggle_off"
+                android:id="@+id/tv_video"/>
 
         </LinearLayout>
 
         <TextView
             android:text="selecionar"
             style="@style/ActionBarTextView"
-            android:id="@+id/refresh_action"/>
+            android:id="@+id/select_action"/>
+
+        <TextView
+            android:text="apagar"
+            style="@style/ActionBarTextView"
+            android:id="@+id/delete_action"
+            android:visibility="gone"/>
 
     </LinearLayout>
 
@@ -47,7 +62,8 @@
             android:layout_height="wrap_content"
             android:gravity="center"
             android:layout_gravity="center"
-            android:layout_centerHorizontal="true">
+            android:layout_centerHorizontal="true"
+            android:visibility="gone">
 
             <ImageView
                 android:layout_width="30dp"
