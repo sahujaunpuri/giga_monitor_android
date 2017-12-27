@@ -350,7 +350,6 @@ public class DeviceExpandableListAdapter extends BaseExpandableListAdapter {
                 }
                 groupViewHolder.ivIndicator.setImageDrawable(mContext.getResources().getDrawable(R.drawable.ic_indicator_minus));
                 if (groupViewHolder.mDevice.getChannelNumber() == 0) {
-                    groupViewHolder.ivAddMore.setVisibility(View.VISIBLE);
                     if(groupViewHolder.mDevice.getSerialNumber().equals("Favoritos"))
                         childViewHolder.tvMessage.setText("Nenhum favorito adicionado.");
                     else
@@ -617,6 +616,9 @@ public class DeviceExpandableListAdapter extends BaseExpandableListAdapter {
 
     private void startDeviceRemoteControlActivity(Device mDevice) {
         try {
+            Log.d("DeviceExpandableListAdapter", "Device index: " + mDevices.indexOf(mDevice));
+            Log.d("DeviceExpandableListAdapter", "Device index: " + indexOfDeviceByName(mDevice.deviceName));
+
             Bundle extras = new Bundle();
             extras.putSerializable("device", mDevices.indexOf(mDevice));
 
@@ -628,6 +630,16 @@ public class DeviceExpandableListAdapter extends BaseExpandableListAdapter {
             e.printStackTrace();
         }
     }
+
+    private int indexOfDeviceByName (String name) {
+        for (int index = 0; index < mDevices.size(); index ++) {
+            if (mDevices.get(index).getDeviceName().equals(name)){
+                return index;
+            }
+        }
+        return -1;
+    }
+
 
     public int nextNumQuad(int numQuad,int totalChannels) {
         int nextNumQuad = 1;

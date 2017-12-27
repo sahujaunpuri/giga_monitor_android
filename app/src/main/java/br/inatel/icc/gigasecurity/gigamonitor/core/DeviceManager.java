@@ -1497,12 +1497,15 @@ public class DeviceManager implements IFunSDKResult {
                         loginList.remove(device.getId());
                         device.setConnectionMethod(-1);
                     }
-                } else if (device.allAttempstFail) {
-                    if (loginList.get(device.getId()) != null)
+                } else if (device != null) {
+                    if (device.allAttempstFail) {
+                        if (loginList.get(device.getId()) != null)
+                            loginList.get(device.getId()).onLoginError(msg.arg1, device);
+                        loginList.remove(device.getId());
+                    } else {
+                        tryToConnect(device);
                         loginList.get(device.getId()).onLoginError(msg.arg1, device);
-                    loginList.remove(device.getId());
-                } else {
-                    tryToConnect(device);
+                    }
                 }
             }
             break;

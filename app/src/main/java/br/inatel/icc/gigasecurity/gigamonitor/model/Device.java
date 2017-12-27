@@ -853,11 +853,12 @@ public class Device implements Serializable {
     }
 
     public void resetAttempts() {
-        this.ipAttempts = 0;
-        this.domainAttempts = 0;
-        this.cloudAttempts = 0;
+        this.ipAttempts = 1;
+        this.domainAttempts = 1;
+        this.cloudAttempts = 1;
         this.ipAttemptsFail = false;
         this.domainAttemptsFail = false;
         this.cloudAttemptsFail = false;
+        this.allAttempstFail = false;
     }
 }
