@@ -1,6 +1,5 @@
 package br.inatel.icc.gigasecurity.gigamonitor.config.ethernet;
 
-import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
@@ -15,8 +14,6 @@ import android.widget.CompoundButton.OnCheckedChangeListener;
 import android.widget.EditText;
 import android.widget.Toast;
 
-import com.lib.FunSDK;
-
 import br.inatel.icc.gigasecurity.gigamonitor.R;
 import br.inatel.icc.gigasecurity.gigamonitor.activities.DeviceListActivity;
 import br.inatel.icc.gigasecurity.gigamonitor.core.DeviceManager;
@@ -24,7 +21,6 @@ import br.inatel.icc.gigasecurity.gigamonitor.listeners.ConfigListener;
 import br.inatel.icc.gigasecurity.gigamonitor.model.Device;
 import br.inatel.icc.gigasecurity.gigamonitor.util.Utils;
 
-import static br.inatel.icc.gigasecurity.gigamonitor.activities.DeviceListActivity.mContext;
 import static br.inatel.icc.gigasecurity.gigamonitor.activities.DeviceListActivity.mDeviceManager;
 
 public class EthernetConfigActivity extends ActionBarActivity implements OnCheckedChangeListener {
@@ -73,6 +69,7 @@ public class EthernetConfigActivity extends ActionBarActivity implements OnCheck
 
             Toast.makeText(getApplicationContext(), messageId, Toast.LENGTH_SHORT).show();
             task.cancel(true);
+            pd.dismiss();
             finish();
 
         }
@@ -116,7 +113,8 @@ public class EthernetConfigActivity extends ActionBarActivity implements OnCheck
         } else {
             mDevice = mManager.findDeviceById((int) getIntent().getExtras().getSerializable("device"));
             position = mManager.getDevicePosition(mDevice);
-            temp = new Device(mDevice);
+            Log.d("EthernetConfigActivity", "Device ID: " + String.valueOf(mDevice.getDeviceId()));
+            temp = mDevice;
             mManager.getJsonConfig(mDevice, "NetWork.NetCommon", mListener);
         }
 
