@@ -321,5 +321,7 @@
     <string name="new_device">New Device</string>
     <string name="title_activity_add_device">Add Device</string>
     <string name="searching_devices_in_the_network_text_1">Searching for devices\nin the network</string>
+    <string name="string_network">Network</string>
+    <string name="title_activity_network_config_menu">NetworkConfigMenuActivity</string>
 
 </resources>

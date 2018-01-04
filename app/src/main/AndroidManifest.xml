@@ -161,8 +161,12 @@
      App Indexing.  See https://g.co/AppIndexing/AndroidStudio for more information.
         -->
 
-        <activity android:name=".activities.AboutActivity"
-            android:label="@string/about"></activity>
+        <activity
+            android:name=".activities.AboutActivity"
+            android:label="@string/about" />
+        <activity
+            android:name=".config.ConfigMenuNetworkActivity"
+            android:label="@string/title_activity_network_config_menu"></activity>
     </application>
 
 </manifest>

@@ -1,0 +1,97 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center">
+
+        <TextView
+            android:text="CANCELAR"
+            android:id="@+id/text_view_cancel"
+            style="@style/ActionBarTextView" />
+
+        <TextView
+            style="@style/ActionBarTitle"
+            android:text="REDE"
+            android:layout_marginTop="30dp"/>
+
+        <TextView
+            android:text="ATUALIZAR"
+            style="@style/ActionBarTextView"
+            android:id="@+id/refresh_action"
+            android:visibility="invisible"/>
+
+    </LinearLayout>
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical">
+
+            <LinearLayout
+                style="@style/LinearLayoutConfigMenuItem"
+                android:id="@+id/linear_layout_ethernet">
+
+                <ImageView
+                    style="@style/ImageViewMenuIconFeature"
+                    android:src="@drawable/play_btn_style" />
+
+                <TextView
+                    style="@style/TextViewFeature"
+                    android:text="@string/label_ethernet" />
+
+                <ImageView
+                    style="@style/ImageViewMenuIconCallToAction"
+                    android:background="@drawable/play_btn_style" />
+
+            </LinearLayout>
+
+            <LinearLayout
+                style="@style/LinearLayoutConfigMenuItem"
+                android:id="@+id/linear_layout_ddns">
+
+                <ImageView
+                    style="@style/ImageViewMenuIconFeature"
+                    android:src="@drawable/play_btn_style" />
+
+                <TextView
+                    style="@style/TextViewFeature"
+                    android:text="GIGA DDNS" />
+
+                <ImageView
+                    style="@style/ImageViewMenuIconCallToAction"
+                    android:background="@drawable/play_btn_style" />
+
+            </LinearLayout>
+
+            <LinearLayout
+                style="@style/LinearLayoutConfigMenuItem"
+                android:id="@+id/linear_layout_dns">
+
+                <ImageView
+                    style="@style/ImageViewMenuIconFeature"
+                    android:src="@drawable/play_btn_style" />
+
+                <TextView
+                    style="@style/TextViewFeature"
+                    android:text="DNS" />
+
+                <ImageView
+                    style="@style/ImageViewMenuIconCallToAction"
+                    android:background="@drawable/play_btn_style" />
+
+            </LinearLayout>
+
+        </LinearLayout>
+
+    </ScrollView>
+
+</LinearLayout>
