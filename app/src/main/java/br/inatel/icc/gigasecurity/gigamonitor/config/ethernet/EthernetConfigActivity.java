@@ -1,21 +1,19 @@
 package br.inatel.icc.gigasecurity.gigamonitor.config.ethernet;
 
-import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.CompoundButton;
 import android.widget.CompoundButton.OnCheckedChangeListener;
 import android.widget.EditText;
+import android.widget.TextView;
 import android.widget.Toast;
-
-import com.lib.FunSDK;
 
 import br.inatel.icc.gigasecurity.gigamonitor.R;
 import br.inatel.icc.gigasecurity.gigamonitor.activities.DeviceListActivity;
@@ -24,10 +22,9 @@ import br.inatel.icc.gigasecurity.gigamonitor.listeners.ConfigListener;
 import br.inatel.icc.gigasecurity.gigamonitor.model.Device;
 import br.inatel.icc.gigasecurity.gigamonitor.util.Utils;
 
-import static br.inatel.icc.gigasecurity.gigamonitor.activities.DeviceListActivity.mContext;
 import static br.inatel.icc.gigasecurity.gigamonitor.activities.DeviceListActivity.mDeviceManager;
 
-public class EthernetConfigActivity extends ActionBarActivity implements OnCheckedChangeListener {
+public class EthernetConfigActivity extends ActionBarActivity implements OnCheckedChangeListener, View.OnClickListener  {
 
     private final String TAG = EthernetConfigActivity.class.getSimpleName();
 
@@ -37,6 +34,7 @@ public class EthernetConfigActivity extends ActionBarActivity implements OnCheck
     private int position;
     private EditText mHostIPEditText, mSubmaskEditText, mGatewayEditText;
     private int intentIndex;
+    private TextView mTextViewBack, mTextViewSave;
 
     private String mHostIP, mSubmask, mGateway;
 
@@ -107,12 +105,10 @@ public class EthernetConfigActivity extends ActionBarActivity implements OnCheck
             position = -1;
 
             temp = new Device(mDevice);
-//            mHostIP = (String) getIntent().getExtras().getSerializable("ipAddress");
-//            mSubmask = (String) getIntent().getExtras().getSerializable("submask");
-//            mGateway = (String) getIntent().getExtras().getSerializable("gateway");
-            initData();
 
+            initData();
             initViews();
+
         } else {
             mDevice = mManager.findDeviceById((int) getIntent().getExtras().getSerializable("device"));
             position = mManager.getDevicePosition(mDevice);
@@ -154,37 +150,13 @@ public class EthernetConfigActivity extends ActionBarActivity implements OnCheck
             }
         };
 
+        setListeners();
+        getSupportActionBar().hide();
+
     }
 
     @Override
     protected void onSaveInstanceState(Bundle outState) {
-//        final EthernetCommonConfig commonConfig = mEthernetConfig.getCommonConfig();
-//        commonConfig
-//                .setHostName(mHostName)
-//                .setHostIP(Utils.parseIp(mHostIP))
-//                .setSubmask(Utils.parseIp(mSubmask))
-//                .setGateway(Utils.parseIp(mGateway))
-//                .setHttpPort(mHttpPort)
-//                .setTcpPort(mTcpPort)
-//                .setSslPort(mSslPort)
-//                .setUdpPort(mUdpPort)
-//                .setMaxConn(mMaxConn)
-//                .setMonMode(mMonMode)
-//                .setMaxBps(mMaxBps)
-//                .setTransferPlan(mTransferPlan)
-//                .setUseHSDownLoad(mHSDownloadEnabled)
-//                .setMac(mMac)
-//                .setZarg0(mArg0);
-//
-//        final EthernetDHCPConfig dhcpConfig = mEthernetConfig.getDHCPConfig();
-//        dhcpConfig.setDhcp1Enabled(mDhcpEnabled);
-//
-//        final EthernetDNSConfig dnsConfig = mEthernetConfig.getDNSConfig();
-//        dnsConfig.setPrimaryDNS(mPrimaryDns).setSecondaryDNS(mSecondaryDns);
-//
-//        mDevice.setCurrentConfig(mEthernetConfig);
-//
-//        outState.putSerializable("device", mDevice);
         super.onSaveInstanceState(outState);
     }
 
@@ -192,6 +164,13 @@ public class EthernetConfigActivity extends ActionBarActivity implements OnCheck
         mHostIPEditText = (EditText) findViewById(R.id.edit_text_ethernet_host_ip);
         mSubmaskEditText = (EditText) findViewById(R.id.edit_text_ethernet_submask);
         mGatewayEditText = (EditText) findViewById(R.id.edit_text_ethernet_gateway);
+        mTextViewBack    = (TextView) findViewById(R.id.text_view_back);
+        mTextViewSave    = (TextView) findViewById(R.id.text_view_save);
+    }
+
+    private void setListeners () {
+        mTextViewBack.setOnClickListener(this);
+        mTextViewSave.setOnClickListener(this);
     }
 
     private void initData() {
@@ -289,4 +268,20 @@ public class EthernetConfigActivity extends ActionBarActivity implements OnCheck
                 return super.onOptionsItemSelected(item);
         }
     }
+
+    @Override
+    public void onClick(View v) {
+        switch (v.getId()) {
+            case R.id.text_view_back:
+                finish();
+                break;
+            case R.id.text_view_save:
+                Utils.hideKeyboard(this);
+                if (isFieldsValid()) {
+                    save();
+                }
+                break;
+        }
+    }
+
 }

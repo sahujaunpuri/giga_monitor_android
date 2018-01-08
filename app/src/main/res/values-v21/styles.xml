@@ -4,18 +4,12 @@
     <style name="Theme.Giga" parent="Theme.AppCompat.Light">
         <item name="android:actionBarStyle" tools:ignore="NewApi">@style/ActionBarGiga</item>
         <item name="actionBarStyle">@style/ActionBarGiga</item>
-        <item name="android:textColorPrimary">@color/title</item>
-        <item name="android:textColorSecondary">@color/secondary_color</item>
-        <item name="android:editTextStyle">@style/EditTextColorsGiga</item>
-        <item name="android:colorAccent">@color/stacked_color</item>
+        <item name="colorPrimaryDark">@color/primary_color</item>
     </style>
 
     <style name="ActionBarGiga" parent="@style/Widget.AppCompat.Light.ActionBar.Solid.Inverse">
-        <item name="background">@color/action_bar_color</item>
-        <item name="android:background">@color/action_bar_color</item>
+        <item name="background">@color/giga_green</item>
+        <item name="android:background">@color/giga_green</item>
     </style>
 
-    <style name="EditTextColorsGiga" parent="Widget.AppCompat.EditText">
-        <item name="android:textColor">@color/secondary_color</item>
-    </style>
 </resources>

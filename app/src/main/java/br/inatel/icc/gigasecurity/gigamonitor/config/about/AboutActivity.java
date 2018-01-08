@@ -1,8 +1,9 @@
-package br.inatel.icc.gigasecurity.gigamonitor.activities;
+package br.inatel.icc.gigasecurity.gigamonitor.config.about;
 
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.TextView;
 
 import br.inatel.icc.gigasecurity.gigamonitor.R;
@@ -14,7 +15,7 @@ public class AboutActivity extends ActionBarActivity {
     /**
      * Labels
      */
-    private TextView mSerialNumberLabel, mSoftwareLabel, mHardwareLabel, mVideoChannelLabel, mMacAddressLabel, mVideoModeLabel;
+    private TextView mSerialNumberLabel, mSoftwareLabel, mHardwareLabel, mVideoChannelLabel, mMacAddressLabel, mVideoModeLabel, mTextViewBack;
 
     /**
      * Texts
@@ -34,6 +35,15 @@ public class AboutActivity extends ActionBarActivity {
         findViews();
         mManager = DeviceManager.getInstance();
         mDevice = mManager.findDeviceById((int) getIntent().getExtras().getSerializable("device"));
+
+        mTextViewBack.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                finish();
+            }
+        });
+
+        getSupportActionBar().hide();
     }
 
     @Override
@@ -59,6 +69,7 @@ public class AboutActivity extends ActionBarActivity {
         mVideoChannelTxt   = (TextView) findViewById(R.id.video_channel_txt);
         mMacAddressTxt     = (TextView) findViewById(R.id.mac_address_txt);
         mVideoModeTxt      = (TextView) findViewById(R.id.video_mode_txt);
+        mTextViewBack     = (TextView) findViewById(R.id.text_view_back);
     }
 
     @Override

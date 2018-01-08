@@ -2,8 +2,34 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
-    android:background="#e6e6e6">
+    android:orientation="vertical">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center"
+        android:layout_gravity="center_horizontal">
+
+        <TextView
+            style="@style/ActionBarTextView"
+            android:text="@string/back"
+            android:layout_width="60dp"
+            android:id="@+id/text_view_back"/>
+
+        <TextView
+            style="@style/ActionBarTitle"
+            android:layout_width="90dp"
+            android:text="@string/about"/>
+
+        <TextView
+            style="@style/ActionBarTextView"
+            android:id="@+id/text_view_save"
+            android:layout_width="60dp"
+            android:visibility="invisible"
+            android:text="@string/save"/>
+
+    </LinearLayout>
 
     <ScrollView
         android:layout_width="match_parent"
@@ -12,15 +38,13 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-
             android:orientation="vertical"
-            android:background="#e6e6e6">
+            android:layout_margin="12dp">
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:orientation="horizontal"
-                android:background="#e6e6e6">
+                android:orientation="horizontal">
 
                 <TextView
                     style="?attr/actionButtonStyle"
@@ -52,8 +76,7 @@
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:orientation="horizontal"
-                android:background="#e6e6e6">
+                android:orientation="horizontal">
 
                 <TextView
                     style="?attr/actionButtonStyle"
@@ -85,8 +108,7 @@
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:orientation="horizontal"
-                android:background="#e6e6e6">
+                android:orientation="horizontal">
 
                 <TextView
                     style="?attr/actionButtonStyle"
@@ -118,8 +140,7 @@
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:orientation="horizontal"
-                android:background="#e6e6e6">
+                android:orientation="horizontal">
 
                 <TextView
                     style="?attr/actionButtonStyle"
@@ -151,8 +172,7 @@
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:orientation="horizontal"
-                android:background="#e6e6e6">
+                android:orientation="horizontal">
 
                 <TextView
                     style="?attr/actionButtonStyle"
@@ -184,8 +204,7 @@
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:orientation="horizontal"
-                android:background="#e6e6e6">
+                android:orientation="horizontal">
 
                 <TextView
                     style="?attr/actionButtonStyle"

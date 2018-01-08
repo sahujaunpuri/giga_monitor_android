@@ -72,7 +72,7 @@ public class DeviceFormActivity extends ActionBarActivity {
 
 
         getSupportActionBar().hide();
-    }
+}
 
     private void checkEdit() {
         if(editPosition != -1){

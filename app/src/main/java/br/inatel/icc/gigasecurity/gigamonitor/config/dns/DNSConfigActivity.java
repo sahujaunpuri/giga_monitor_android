@@ -5,7 +5,9 @@ import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.EditText;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import br.inatel.icc.gigasecurity.gigamonitor.R;
@@ -24,6 +26,9 @@ public class DNSConfigActivity extends ActionBarActivity {
     private Device mDevice;
     private DeviceManager mManager;
     private Context mContext;
+
+    private TextView mTextViewBack;
+    private TextView mTextViewSave;
 
     EditText editTextDNSPrimaryAddress;
     EditText editTextDNSSecundaryAddress;
@@ -69,6 +74,8 @@ public class DNSConfigActivity extends ActionBarActivity {
 
         mManager.getJsonConfig(mDevice, "NetWork.NetDNS", listener);
 
+        getSupportActionBar().hide();
+
     }
 
     @Override
@@ -77,6 +84,8 @@ public class DNSConfigActivity extends ActionBarActivity {
     }
 
     private void findViews() {
+        mTextViewBack = (TextView) findViewById(R.id.text_view_back);
+        mTextViewSave = (TextView) findViewById(R.id.text_view_save);
         editTextDNSPrimaryAddress = (EditText) findViewById(R.id.edit_text_dns_primary_address);
         editTextDNSSecundaryAddress = (EditText) findViewById(R.id.edit_text_dns_secondary_address);
     }
@@ -91,6 +100,20 @@ public class DNSConfigActivity extends ActionBarActivity {
     }
 
     private void initViews() {
+        mTextViewBack.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                finish();
+            }
+        });
+
+        mTextViewSave.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                save();
+            }
+        });
+
         editTextDNSPrimaryAddress.setText(String.valueOf(mPrimaryAddress));
         editTextDNSSecundaryAddress.setText(String.valueOf(mSecondaryAddress));
 

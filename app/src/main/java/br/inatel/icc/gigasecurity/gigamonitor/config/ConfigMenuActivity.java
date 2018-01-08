@@ -12,7 +12,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import br.inatel.icc.gigasecurity.gigamonitor.R;
-import br.inatel.icc.gigasecurity.gigamonitor.activities.AboutActivity;
+import br.inatel.icc.gigasecurity.gigamonitor.config.about.AboutActivity;
 import br.inatel.icc.gigasecurity.gigamonitor.activities.DeviceListActivity;
 import br.inatel.icc.gigasecurity.gigamonitor.config.password.PasswordConfigActivity;
 import br.inatel.icc.gigasecurity.gigamonitor.core.DeviceManager;

@@ -4,11 +4,13 @@ import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.ArrayAdapter;
-import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.Spinner;
+import android.widget.Switch;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import br.inatel.icc.gigasecurity.gigamonitor.R;
@@ -30,7 +32,8 @@ public class DDNSConfigActivity extends ActionBarActivity {
 
     private Spinner mTypeSpinner;
     private EditText mDomainET, mUserNameET, mPasswordET;
-    private CheckBox mEnabledCheckBox;
+    private TextView mTextViewBack, mTextViewSave;
+    private Switch mSwitch;
 
     private int mType;
     private boolean mEnabled;
@@ -71,6 +74,8 @@ public class DDNSConfigActivity extends ActionBarActivity {
         setContentView(R.layout.activity_ddns_config);
         findViews();
 
+        getSupportActionBar().hide();
+
         if (savedInstanceState == null) {
 
             mManager = DeviceManager.getInstance();
@@ -88,11 +93,13 @@ public class DDNSConfigActivity extends ActionBarActivity {
     }
 
     private void findViews() {
-        mEnabledCheckBox = (CheckBox) findViewById(R.id.check_box_ddns_enable);
+        mSwitch = (Switch) findViewById(R.id.switch_ddns);
         mTypeSpinner = (Spinner) findViewById(R.id.spinner_ddns_type);
         mDomainET = (EditText) findViewById(R.id.edit_text_ddns_domain);
         mUserNameET = (EditText) findViewById(R.id.edit_text_ddns_user_name);
         mPasswordET = (EditText) findViewById(R.id.edit_text_ddns_password);
+        mTextViewBack = (TextView) findViewById(R.id.text_view_back);
+        mTextViewSave = (TextView) findViewById(R.id.text_view_save);
     }
 
     private void initData() {
@@ -102,7 +109,25 @@ public class DDNSConfigActivity extends ActionBarActivity {
     }
 
     private void initViews() {
-        mEnabledCheckBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+        mTextViewBack.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                finish();
+            }
+        });
+
+        mTextViewSave.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Utils.hideKeyboard(DDNSConfigActivity.this);
+                if (validate()) {
+                    save();
+                }
+            }
+        });
+
+
+        mSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 mEnabled = isChecked;
@@ -110,7 +135,7 @@ public class DDNSConfigActivity extends ActionBarActivity {
             }
         });
 
-        mEnabledCheckBox.setChecked(mEnabled);
+        mSwitch.setChecked(mEnabled);
 
         // TODO Load all items
         ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this,
@@ -132,7 +157,7 @@ public class DDNSConfigActivity extends ActionBarActivity {
     }
 
     private boolean validate() {
-        mEnabled = mEnabledCheckBox.isChecked();
+        mEnabled = mSwitch.isChecked();
         if (!mEnabled) {
             return true;
         }

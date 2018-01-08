@@ -12,6 +12,8 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.ExpandableListView;
+import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.crashlytics.android.Crashlytics;
@@ -27,7 +29,7 @@ import br.inatel.icc.gigasecurity.gigamonitor.model.Device;
 import br.inatel.icc.gigasecurity.gigamonitor.model.StatePreferences;
 import io.fabric.sdk.android.Fabric;
 
-public class DeviceListActivity extends ActionBarActivity {
+public class DeviceListActivity extends ActionBarActivity implements View.OnClickListener {
     private final String TAG = "MainActivity";
     public static Context mContext;
     public static ExpandableListView mExpandableListView;
@@ -38,6 +40,8 @@ public class DeviceListActivity extends ActionBarActivity {
     public static int expandedGroups = 0;
     public static boolean running = false;
     private StatePreferences statePreferences;
+    private TextView mTextViewEdit;
+    private ImageView mImageViewAdd, mImageViewGallery;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -58,6 +62,7 @@ public class DeviceListActivity extends ActionBarActivity {
             mDeviceManager.init(this);
 
         initComponents();
+        setListeners();
 
 //        Thread.setDefaultUncaughtExceptionHandler(new MyExceptionHandler(this, DeviceListActivity.class));
 
@@ -94,6 +99,8 @@ public class DeviceListActivity extends ActionBarActivity {
         });
 
         mDeviceManager.setSharedPreferences(mContext.getSharedPreferences("state", MODE_PRIVATE));
+
+        getSupportActionBar().hide();
 
     }
 
@@ -210,7 +217,16 @@ public class DeviceListActivity extends ActionBarActivity {
 
         mExpandableListView.setAdapter(mAdapter);
         mAdapter.notifyDataSetChanged();
+        mImageViewGallery = (ImageView) findViewById(R.id.image_view_gallery);
+        mTextViewEdit     = (TextView) findViewById(R.id.text_view_edit);
+        mImageViewAdd     = (ImageView) findViewById(R.id.image_view_add);
 
+    }
+
+    private void setListeners() {
+        mImageViewGallery.setOnClickListener(this);
+        mTextViewEdit.setOnClickListener(this);
+        mImageViewAdd.setOnClickListener(this);
     }
 
     private void verifyIfSomeChannelIsSoundingOrRecording() {
@@ -296,5 +312,20 @@ public class DeviceListActivity extends ActionBarActivity {
         setIntent.addCategory(Intent.CATEGORY_HOME);
         setIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         startActivity(setIntent);
+    }
+
+    @Override
+    public void onClick(View v) {
+        switch (v.getId()) {
+            case R.id.text_view_edit:
+                startEditActivity();
+                break;
+            case R.id.image_view_add:
+                startInitialActivity();
+                break;
+            case R.id.image_view_gallery:
+                startMediaActivity();
+                break;
+        }
     }
 }

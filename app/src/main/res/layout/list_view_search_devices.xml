@@ -35,7 +35,7 @@
                 <TextView
                     style="@style/TextViewSearchActivityList"
                     android:id="@+id/tv_search_serial_number"
-                    android:textColor="@color/action_bar_color"/>
+                    android:textColor="@color/giga_green"/>
 
                 <TextView
                     style="@style/TextViewSearchActivityList"

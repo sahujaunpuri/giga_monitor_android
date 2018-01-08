@@ -10,7 +10,7 @@
         android:gravity="center">
 
         <TextView
-            android:text="CANCELAR"
+            android:text="Voltar"
             android:id="@+id/text_view_cancel"
             style="@style/ActionBarTextView" />
 
@@ -42,7 +42,7 @@
 
                 <ImageView
                     style="@style/ImageViewMenuIconFeature"
-                    android:src="@drawable/play_btn_style" />
+                    android:src="@drawable/network_btn_style" />
 
                 <TextView
                     style="@style/TextViewFeature"
@@ -60,11 +60,11 @@
 
                 <ImageView
                     style="@style/ImageViewMenuIconFeature"
-                    android:src="@drawable/play_btn_style" />
+                    android:src="@drawable/ddns_btn_style" />
 
                 <TextView
                     style="@style/TextViewFeature"
-                    android:text="GIGA DDNS" />
+                    android:text="Giga DDNS" />
 
                 <ImageView
                     style="@style/ImageViewMenuIconCallToAction"
@@ -78,7 +78,7 @@
 
                 <ImageView
                     style="@style/ImageViewMenuIconFeature"
-                    android:src="@drawable/play_btn_style" />
+                    android:src="@drawable/dns_btn_style" />
 
                 <TextView
                     style="@style/TextViewFeature"

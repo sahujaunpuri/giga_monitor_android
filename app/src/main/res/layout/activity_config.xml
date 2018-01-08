@@ -12,7 +12,7 @@
         android:gravity="center">
 
         <TextView
-            android:text="CANCELAR"
+            android:text="Voltar"
             android:id="@+id/text_view_cancel"
             style="@style/ActionBarTextView" />
 
@@ -44,7 +44,7 @@
 
                 <ImageView
                     style="@style/ImageViewMenuIconFeature"
-                    android:src="@drawable/play_btn_style" />
+                    android:src="@drawable/network_btn_style" />
 
                 <TextView
                     style="@style/TextViewFeature"
@@ -54,6 +54,7 @@
                 <ImageView
                     style="@style/ImageViewMenuIconCallToAction"
                     android:background="@drawable/play_btn_style" />
+
             </LinearLayout>
 
 
@@ -64,7 +65,7 @@
 
                 <ImageView
                     style="@style/ImageViewMenuIconFeature"
-                    android:background="@drawable/play_btn_style"
+                    android:background="@drawable/password_btn_style"
                     android:focusable="false"/>
 
                 <TextView
@@ -84,7 +85,7 @@
 
                 <ImageView
                     style="@style/ImageViewMenuIconFeature"
-                    android:background="@drawable/play_btn_style"
+                    android:background="@drawable/restart_btn_style"
                     android:focusable="false"/>
 
                 <TextView
