@@ -4,33 +4,60 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:paddingLeft="@dimen/activity_horizontal_margin"
-    android:paddingRight="@dimen/activity_horizontal_margin"
-    android:paddingTop="@dimen/activity_vertical_margin"
     android:focusableInTouchMode="true"
     tools:context="br.inatel.icc.gigasecurity.gigamonitor.activities.DevicePlaybackActivity">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center"
+        android:layout_gravity="center_horizontal">
+
+        <TextView
+            style="@style/ActionBarTextView"
+            android:layout_width="60dp"
+            android:text="@string/back"
+            android:id="@+id/text_view_back"/>
+
+        <TextView
+            style="@style/ActionBarTitle"
+            android:layout_width="110dp"
+            android:text="PlayBack"/>
+
+        <TextView
+            style="@style/ActionBarTextView"
+            android:layout_width="70dp"
+            android:id="@+id/text_view_search"
+            android:text="procurar" />
+
+    </LinearLayout>
+
 
     <LinearLayout
         android:id="@+id/linear_layout_spinner"
         android:orientation="horizontal"
         android:visibility="gone"
         android:layout_width="match_parent"
-        android:layout_height="50dp">
+        android:layout_height="50dp"
+        android:background="@color/giga_green"
+        android:gravity="center">
 
         <TextView
             android:id="@+id/spinnerTitle"
             android:layout_width="wrap_content"
-            android:layout_height="50dp"
+            android:layout_height="wrap_content"
             android:paddingLeft="20dp"
-            android:text="Tipo: "
-            android:textAppearance="?android:attr/textAppearanceMedium" />
+            android:textColor="@android:color/white"
+            android:text="Tipo: " />
 
         <Spinner
             android:id="@+id/playback_filter"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:drawSelectorOnTop="true"
-            android:spinnerMode="dropdown"/>
+            android:spinnerMode="dropdown"
+            android:backgroundTint="@android:color/white"/>
 
     </LinearLayout>
 
@@ -40,41 +67,31 @@
         android:layout_height="wrap_content"
         android:layout_gravity="center"
         android:id="@+id/linear_layout_find_playback"
-        android:layout_marginTop="5dp"
+        android:layout_marginTop="30dp"
         android:layout_marginBottom="5dp"
-        >
+        android:layout_marginRight="12dp"
+        android:layout_marginLeft="12dp">
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
             android:layout_marginBottom="10dp">
+
             <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="left"
-                android:layout_weight="1"
-                android:text="@string/label_date_playback"
-                android:textAppearance="?android:attr/textAppearanceMedium"
-                android:textColor="#000"
-                android:textSize="26dp"/>
+                style="@style/DevicePlayBlackTextViewBlack"
+                android:text="@string/label_date_playback" />
+
             <TextView
+                style="@style/DevicePlayBlackTextViewGreen"
                 android:id="@+id/text_view_playback_date"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:gravity="right"
-                android:layout_marginRight="10dp"
-                android:text="00/00/0000"
-                android:textAppearance="?android:attr/textAppearanceMedium"
-                android:textColor="#99cc00"
-                android:textSize="26dp" />
+                android:text="00/00/0000" />
+
             <ImageView
+                style="@style/DevicePlayBlackIcon"
                 android:id="@+id/calendar"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:gravity="right"
-                android:tint="#99cc00"
                 android:src="@drawable/ic_date_range_black_36dp" />
+
         </LinearLayout>
 
         <LinearLayout
@@ -82,32 +99,21 @@
             android:layout_height="wrap_content"
             android:orientation="horizontal"
             android:layout_marginBottom="10dp">
+
             <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:gravity="left"
-                android:layout_weight="1"
-                android:text="@string/label_begin_hour_playback"
-                android:textAppearance="?android:attr/textAppearanceMedium"
-                android:textColor="#000"
-                android:textSize="26dp"/>
+                style="@style/DevicePlayBlackTextViewBlack"
+                android:text="@string/label_begin_hour_playback" />
+
             <TextView
+                style="@style/DevicePlayBlackTextViewGreen"
                 android:id="@+id/textview_begin_hour_playback"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:gravity="right"
-                android:layout_marginRight="10dp"
-                android:text="00:00"
-                android:textAppearance="?android:attr/textAppearanceMedium"
-                android:textColor="#99cc00"
-                android:textSize="26dp" />
+                android:text="00:00" />
+
             <ImageView
+                style="@style/DevicePlayBlackIcon"
                 android:id="@+id/initial_time_button"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:gravity="right"
-                android:tint="#99cc00"
                 android:src="@drawable/ic_query_builder_black_36dp" />
+
         </LinearLayout>
 
         <LinearLayout
@@ -115,54 +121,40 @@
             android:layout_height="wrap_content"
             android:orientation="horizontal"
             android:layout_marginBottom="10dp">
+
             <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:gravity="left"
-                android:layout_weight="1"
-                android:text="@string/label_end_hour_playback"
-                android:textAppearance="?android:attr/textAppearanceMedium"
-                android:textColor="#000"
-                android:textSize="26dp" />
+                style="@style/DevicePlayBlackTextViewBlack"
+                android:text="@string/label_end_hour_playback" />
+
             <TextView
+                style="@style/DevicePlayBlackTextViewGreen"
                 android:id="@+id/textview_end_hour_playback"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:gravity="right"
-                android:layout_marginRight="10dp"
-                android:text="00:00"
-                android:textAppearance="?android:attr/textAppearanceMedium"
-                android:textColor="#99cc00"
-                android:textSize="26dp" />
+                android:text="00:00" />
+
             <ImageView
+                style="@style/DevicePlayBlackIcon"
                 android:id="@+id/end_time_button"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:gravity="right"
-                android:tint="#99cc00"
                 android:src="@drawable/ic_query_builder_black_36dp" />
+
         </LinearLayout>
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:orientation="horizontal">
+            android:orientation="horizontal"
+            android:gravity="center">
+
             <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:layout_gravity="left|center"
+                style="@style/DevicePlayBlackTextViewBlack"
                 android:textAppearance="?android:attr/textAppearanceMedium"
                 android:text="@string/label_channel_playback"
-                android:textSize="26dp"
-                android:textColor="#000"/>
+                android:layout_gravity="left|center"/>
+
             <NumberPicker
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                style="@style/GigaNumberPickerTheme"
+                android:theme="@style/GigaNumberPickerTheme"
                 android:id="@+id/nb_playback"
-                android:visibility="visible"
-                android:gravity="right"/>
+                android:visibility="visible" />
 
         </LinearLayout>
 
@@ -196,7 +188,10 @@
         <ListView
             android:id="@+id/list_view_playbacks"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="12dp"
+            android:layout_marginRight="12dp"/>
+
     </LinearLayout>
 
 </LinearLayout>

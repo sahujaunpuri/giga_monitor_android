@@ -322,7 +322,41 @@
         <item name="android:colorForeground">#42221f1f</item>
     </style>
 
+    <!--DevicePlayBlack-->
+    <style name="DevicePlayBlackTextViewBlack">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:textColor">@color/text_color</item>
+        <item name="android:textSize">16dp</item>
+        <item name="android:layout_weight">1</item>
+        <item name="android:layout_gravity">left</item>
+    </style>
 
+    <style name="DevicePlayBlackTextViewGreen">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:textColor">@color/giga_green</item>
+        <item name="android:textSize">16dp</item>
+        <item name="android:layout_marginRight">10dp</item>
+        <item name="android:gravity">right</item>
+    </style>
+
+    <style name="DevicePlayBlackIcon">
+        <item name="android:layout_width">24dp</item>
+        <item name="android:layout_height">24dp</item>
+        <item name="android:tint">@color/giga_green</item>
+        <item name="android:gravity">right</item>
+    </style>
+
+    <style name="GigaNumberPickerTheme">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="colorControlNormal">@color/giga_green</item>
+        <item name="android:scaleY">0.75</item>
+        <item name="android:scaleX">0.75</item>
+        <item name="android:gravity">right</item>
+        <item name="android:visibility">visible</item>
+    </style>
 
 
 </resources>
