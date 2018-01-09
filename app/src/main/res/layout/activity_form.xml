@@ -73,7 +73,8 @@
 
                 <Switch
                     style="@style/Switch"
-                    android:id="@+id/serial_checkbox" />
+                    android:id="@+id/serial_checkbox"
+                    android:theme="@style/GigaSwitch"/>
 
             </LinearLayout>
 
@@ -94,7 +95,8 @@
 
                 <Switch
                     style="@style/Switch"
-                    android:id="@+id/ip_checkbox" />
+                    android:id="@+id/ip_checkbox"
+                    android:theme="@style/GigaSwitch"/>
 
             </LinearLayout>
 
@@ -114,7 +116,8 @@
 
                 <Switch
                     style="@style/Switch"
-                    android:id="@+id/domain_checkbox" />
+                    android:id="@+id/domain_checkbox"
+                    android:theme="@style/GigaSwitch"/>
 
             </LinearLayout>
 

@@ -459,6 +459,8 @@ public class DevicePlaybackVideoActivity extends ActionBarActivity {
                 recordPlayback();
             }
         });
+
+        getSupportActionBar().hide();
     }
 
     @Override

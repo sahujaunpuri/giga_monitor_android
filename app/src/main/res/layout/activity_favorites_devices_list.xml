@@ -1,14 +1,38 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context="br.inatel.icc.gigasecurity.gigamonitor.activities.FavoritesDevicesListActivity">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center">
+
+        <TextView
+            style="@style/ActionBarTextView"
+            android:text="@string/back"
+            android:layout_marginRight="15dp"
+            android:id="@+id/text_view_back"/>
+
+        <TextView
+            style="@style/ActionBarTitle"
+            android:text="Favoritos"/>
+
+        <TextView
+            style="@style/ActionBarTextView"
+            android:id="@+id/text_view_save"
+            android:text="@string/save"
+            android:visibility="invisible"/>
+
+    </LinearLayout>
 
     <ExpandableListView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:id="@+id/expandable_list_view_fav_devices"></ExpandableListView>
 
-</android.support.constraint.ConstraintLayout>
+</LinearLayout>
