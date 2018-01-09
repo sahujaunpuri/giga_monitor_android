@@ -74,6 +74,8 @@ public class DeviceFormActivity extends ActionBarActivity{
 //                }
 //            }
 //        });
+
+
     }
 
     private void checkEdit() {
