@@ -24,6 +24,8 @@
 
         <Switch
             style="@style/SwitchEnableDeviceEditDevice"
+            android:checked="true"
+            android:theme="@style/GigaSwitch"
             android:id="@+id/switch_item_enable_device"/>
 
     </LinearLayout>

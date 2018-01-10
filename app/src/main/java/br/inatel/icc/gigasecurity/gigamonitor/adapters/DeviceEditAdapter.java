@@ -10,6 +10,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
+import android.widget.Switch;
 import android.widget.TextView;
 
 import java.util.ArrayList;
@@ -61,6 +62,7 @@ public class DeviceEditAdapter extends BaseAdapter {
 
             holder.delete = (ImageView) convertView.findViewById(R.id.iv_delete_device);
             holder.deviceName = (TextView) convertView.findViewById(R.id.tv_item_edit_device);
+            holder.mSwitchEnable = (Switch) convertView.findViewById(R.id.switch_item_enable_device);
             convertView.setTag(holder);
         } else {
             holder = (ViewHolder) convertView.getTag();
@@ -69,6 +71,7 @@ public class DeviceEditAdapter extends BaseAdapter {
 //        if(mDevices.get(position).getId() == ("Favoritos").hashCode()) {
         if(mDevices.get(position).getDeviceName().equals("Favoritos")) {
             holder.delete.setVisibility(View.INVISIBLE);
+            holder.mSwitchEnable.setVisibility(View.INVISIBLE);
         } else {
             holder.delete.setVisibility(View.VISIBLE);
         }
@@ -129,5 +132,6 @@ public class DeviceEditAdapter extends BaseAdapter {
     private class ViewHolder {
         private ImageView delete;
         private TextView deviceName;
+        private Switch mSwitchEnable;
     }
 }

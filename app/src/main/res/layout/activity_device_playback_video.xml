@@ -81,7 +81,11 @@
                 android:id="@+id/seek_bar_playback"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_below="@id/surface_view_test_1" />
+                android:layout_below="@id/surface_view_test_1"
+                android:minHeight="60dp"
+                android:maxHeight="60dp"
+                android:progressTint="@color/giga_green"
+                android:thumbTint="@color/giga_green"/>
             
             <LinearLayout
                 android:id="@+id/view_playback_status"
