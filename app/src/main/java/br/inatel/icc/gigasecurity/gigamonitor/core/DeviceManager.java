@@ -871,7 +871,7 @@ public class DeviceManager implements IFunSDKResult {
 
     private void loginAttemptByDomain(final Device device) throws NullPointerException {
         if (device.isDomainPriorityConnection()) {
-            new Thread(new Runnable() {
+            new Thread( new Runnable() {
                 @Override
                 public void run() {
                     if (device == null)
@@ -1479,9 +1479,6 @@ public class DeviceManager implements IFunSDKResult {
                     device.setConnectionMethod(-1);
 
                     favoriteManager.refreshFromDevice(device.getId());
-                    /*if(loginList.get(device.connectionString) != null)
-                        loginList.get(device.connectionString).onLoginSuccess(device);
-                    loginList.remove(device.connectionString);*/
                     FunSDK.DevGetConfigByJson(getHandler(), device.connectionString, "SystemInfo", 4096, -1, 10000, device.getId());
                 } else if(msg.arg1 == -11301){ //wrong password or login
                     if(device != null) {
@@ -1503,8 +1500,12 @@ public class DeviceManager implements IFunSDKResult {
                             loginList.get(device.getId()).onLoginError(msg.arg1, device);
                         loginList.remove(device.getId());
                     } else {
-                        tryToConnect(device);
-                        loginList.get(device.getId()).onLoginError(msg.arg1, device);
+                        try {
+                            tryToConnect(device);
+                            loginList.get(device.getId()).onLoginError(msg.arg1, device);
+                        } catch (Exception error) {
+                            error.printStackTrace();
+                        }
                     }
                 }
             }
