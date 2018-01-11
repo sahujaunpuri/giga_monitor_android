@@ -19,7 +19,7 @@
 
         <TextView
             style="@style/ActionBarTitle"
-            android:text="@string/new_device"/>
+            android:text="@string/new_device" />
 
         <TextView
             style="@style/ActionBarTextView"
@@ -28,18 +28,42 @@
 
     </LinearLayout>
 
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="300dp"
+        android:layout_marginBottom="10dp">
+
+        <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+            android:id="@+id/activity_landing"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <ImageView
+                style="@style/ImageViewInitial"
+                android:scaleType="fitXY"
+                android:id="@+id/imageView"/>
+
+            <ImageView
+                android:layout_width="140dp"
+                android:layout_height="140dp"
+                android:layout_below="@+id/imageView"
+                android:layout_centerHorizontal="true"
+                android:layout_marginTop="-50dp"
+                android:src="@drawable/add_device_icon" />
+
+        </RelativeLayout>
+
+    </LinearLayout>
+
+
     <ScrollView
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="fill_parent"
+            android:layout_height="match_parent"
             android:orientation="vertical">
-
-            <ImageView
-                style="@style/ImageViewInitial"
-                android:id="@+id/imageView" />
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -56,7 +80,7 @@
                     style="@style/TextViewSearchingDevicesInitialActivity"
                     android:id="@+id/text_view_searching"
                     android:text="@string/searching_devices_in_the_network_text_1"
-                    android:textColor="@color/default_color"/>
+                    android:textColor="@color/default_color" />
 
             </LinearLayout>
 
@@ -75,15 +99,13 @@
                     style="@style/ImageButtonRefreshInitialActivity"
                     android:id="@+id/image_btn_refresh" />
 
-
-
             </LinearLayout>
 
             <LinearLayout
                 android:orientation="horizontal"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:layout_marginTop="25dp"
+                android:layout_marginTop="15dp"
                 android:gravity="center">
 
                 <LinearLayout
@@ -93,7 +115,7 @@
 
                     <ImageButton
                         style="@style/ImageButtonInitialActivity"
-                        android:src="@drawable/about_normal"
+                        android:src="@drawable/qrcode_btn_style"
                         android:id="@+id/tv_scan_qr_code" />
 
                     <TextView
@@ -109,7 +131,7 @@
 
                     <ImageButton
                         style="@style/ImageButtonInitialActivity"
-                        android:src="@drawable/about_normal"
+                        android:src="@drawable/manual_btn_style"
                         android:id="@+id/tv_setup_new_device" />
 
                     <TextView
@@ -123,20 +145,6 @@
         </LinearLayout>
 
     </ScrollView>
-
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="match_parent">
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Version 1.0.0"
-            android:id="@+id/app_version"
-            android:layout_gravity="right|bottom" />
-
-    </LinearLayout>
-
 
 
 </LinearLayout>

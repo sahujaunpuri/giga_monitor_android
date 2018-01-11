@@ -70,17 +70,10 @@ public class DeviceSearchAdapter extends BaseAdapter {
             itemHolder.tvMacAddress.setText(mDevices.get(position).getMacAddress());
 
             /**LOGIN ON LAN?**/
-            //mDeviceManager.loginOnDevice(mDevices.get(position), LoginMethod.LAN);
 
             if (mDevices.get(position).getChannelNumber() > 1) {
-                itemHolder.ivImg.setImageDrawable(mContext.getResources().getDrawable(R.drawable.img_dvr));
+                itemHolder.ivImg.setImageDrawable(mContext.getResources().getDrawable(R.drawable.dvr_icon));
             }
-
-            /*try {
-                mDeviceManager.logout(mDevices.get(position));
-            } catch (Exception e) {
-                e.printStackTrace();
-            }*/
 
             mView[position].setTag(itemHolder);
         }

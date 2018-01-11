@@ -10,6 +10,7 @@
         android:id="@+id/iv_delete_device" />
 
     <ImageView
+        android:id="@+id/image_view_device_icon"
         style="@style/ImageViewDeviceIconEditDevice" />
 
     <LinearLayout
@@ -21,12 +22,6 @@
         <TextView
             style="@style/TextViewDeviceNameEditDevice"
             android:id="@+id/tv_item_edit_device" />
-
-        <Switch
-            style="@style/SwitchEnableDeviceEditDevice"
-            android:checked="true"
-            android:theme="@style/GigaSwitch"
-            android:id="@+id/switch_item_enable_device"/>
 
     </LinearLayout>
 

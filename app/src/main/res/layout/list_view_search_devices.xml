@@ -1,13 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical" android:layout_width="match_parent"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
     android:layout_height="match_parent">
 
 
 
     <LinearLayout
-        android:layout_width="fill_parent"
-        android:layout_height="fill_parent"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
         android:orientation="vertical">
 
         <TextView
@@ -16,14 +17,13 @@
             android:id="@+id/tv_search_device_name" />
 
         <LinearLayout
-            android:layout_width="fill_parent"
-            android:layout_height="fill_parent"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
             android:orientation="horizontal">
-
 
             <ImageView
                 style="@style/ImageViewDeviceImageSearchActivityList"
-                android:src="@drawable/img_camera"
+                android:src="@drawable/ip_cam_icon"
                 android:id="@+id/iv_device_image" />
 
             <LinearLayout
@@ -50,8 +50,8 @@
 
             <ImageView
                 style="@style/ImageViewDeviceImageSearchActivityList"
-                android:layout_width="35dp"
-                android:layout_height="35dp"
+                android:layout_width="30dp"
+                android:layout_height="30dp"
                 android:background="@drawable/play_btn_style"
                 android:layout_marginLeft="30dp"/>
 

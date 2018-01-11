@@ -35,6 +35,10 @@
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal"
         android:layout_margin="5dp"
+        android:layout_marginTop="5dp"
+        android:layout_marginRight="5dp"
+        android:layout_marginLeft="5dp"
+        android:layout_marginBottom="5dp"
         android:gravity="center">
 
         <LinearLayout
@@ -44,7 +48,7 @@
 
             <ImageView
                 style="@style/ImageButtonActivityRemoteControl"
-                android:src="@drawable/ic_power_settings_new_green_40dp"
+                android:src="@drawable/ptz_esc_btn_style"
                 android:id="@+id/iv_control_esc" />
 
             <TextView
@@ -60,8 +64,7 @@
 
             <ImageView
                 style="@style/ImageButtonActivityRemoteControl"
-                android:src="@drawable/ic_power_settings_new_green_40dp"
-                android:background="@drawable/rounded_corner_btn_orange"
+                android:src="@drawable/ptz_screen_btn_style"
                 android:id="@+id/iv_control_quad" />
 
             <TextView
@@ -77,8 +80,7 @@
 
             <ImageView
                 style="@style/ImageButtonActivityRemoteControl"
-                android:src="@drawable/ic_power_settings_new_green_40dp"
-                android:background="@drawable/rounded_corner_btn_blue"
+                android:src="@drawable/ptz_menu_btn_style"
                 android:id="@+id/iv_control_menu" />
 
             <TextView
@@ -90,11 +92,12 @@
     </LinearLayout>
 
     <ImageView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="150dp"
+        android:layout_height="80dp"
+        android:layout_marginBottom="-30dp"
+        android:layout_marginTop="45dp"
         android:id="@+id/iv_control_up"
-        android:src="@drawable/ic_up"
-        android:layout_margin="15dp"
+        android:src="@drawable/ptz_up_btn_style"
         android:layout_gravity="center" />
 
     <LinearLayout
@@ -104,36 +107,35 @@
         android:gravity="center">
 
         <ImageView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="80dp"
+            android:layout_height="150dp"
             android:id="@+id/iv_controle_left"
-            android:src="@drawable/ic_left"
-            android:layout_margin="15dp"
+            android:src="@drawable/ptz_left_btn_style"
             android:layout_gravity="left|center_vertical" />
 
         <ImageView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="90dp"
+            android:layout_height="90dp"
+            android:layout_marginBottom="30dp"
             android:id="@+id/iv_control_ok"
-            android:src="@drawable/ic_ok"
-            android:layout_margin="15dp"
+            android:src="@drawable/ptz_ok_btn_style"
             android:layout_gravity="left|bottom" />
 
         <ImageView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="80dp"
+            android:layout_height="150dp"
             android:id="@+id/iv_control_right"
-            android:src="@drawable/ic_right"
-            android:layout_margin="15dp"
+            android:src="@drawable/ptz_right_btn_style"
             android:layout_gravity="right|center_vertical" />
     </LinearLayout>
 
     <ImageView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_marginTop="-30dp"
+        android:layout_width="150dp"
+        android:layout_height="80dp"
         android:id="@+id/iv_control_down"
-        android:src="@drawable/ic_down"
-        android:layout_margin="15dp"
+        android:src="@drawable/ptz_down_btn_style"
+        android:layout_marginBottom="20dp"
         android:layout_gravity="center_horizontal|bottom" />
 
 </LinearLayout>

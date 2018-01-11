@@ -2,7 +2,6 @@ package br.inatel.icc.gigasecurity.gigamonitor.activities;
 
 import android.content.Context;
 import android.content.Intent;
-import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
 import android.view.Menu;
@@ -27,7 +26,7 @@ public class InitialActivity extends ActionBarActivity implements View.OnClickLi
     private Discovery mDiscoveryThread;
     private MenuItem atualizeButton;
     private ImageView ivSearch;
-    private TextView tvDevicesFound, tvAppVersion, tvCancel, tvSearchingDevices;
+    private TextView tvDevicesFound, tvCancel, tvSearchingDevices;
     private ImageButton imgBtnNewDevice, imgBtnQrCode, imgBtnRefresh;
     private Context mContext;
     private DeviceManager mDeviceManager;
@@ -55,7 +54,6 @@ public class InitialActivity extends ActionBarActivity implements View.OnClickLi
         tvDevicesFound     = (TextView) findViewById(R.id.tv_devices_founds);
         imgBtnQrCode       = (ImageButton) findViewById(R.id.tv_scan_qr_code);
         imgBtnNewDevice    = (ImageButton) findViewById(R.id.tv_setup_new_device);
-        tvAppVersion       = (TextView) findViewById(R.id.app_version);
         tvCancel           = (TextView) findViewById(R.id.text_view_cancel);
         ivSearch           = (ImageView) findViewById(R.id.ic_search);
         tvSearchingDevices = (TextView) findViewById(R.id.text_view_searching);
@@ -66,20 +64,6 @@ public class InitialActivity extends ActionBarActivity implements View.OnClickLi
         imgBtnNewDevice.setOnClickListener(this);
         tvDevicesFound.setOnClickListener(this);
         tvCancel.setOnClickListener(this);
-
-        try {
-            String serverVersion = "2.0";
-            if (mDeviceManager.getServerIp().equals(mDeviceManager.getServerIpNew())) {
-                serverVersion = "3.0";
-            }
-
-            String versionName = getPackageManager().getPackageInfo(getPackageName(), 0).versionName;
-            String text = getResources().getString(R.string.label_version);
-
-            tvAppVersion.setText(text + " " + versionName + " Server Version: " + serverVersion);
-        } catch (PackageManager.NameNotFoundException e) {
-            e.printStackTrace();
-        }
     }
 
     @Override

@@ -130,7 +130,7 @@ public class DevicePlaybackVideoActivity extends ActionBarActivity {
                         mActivity.runOnUiThread(new Runnable() {
                             @Override
                             public void run() {
-                                ivPlayPause.setImageDrawable(getResources().getDrawable(R.drawable.ic_pause_playback));
+                                ivPlayPause.setImageDrawable(getResources().getDrawable(R.drawable.pause_btn_style));
                                 mProgressBar.setVisibility(View.INVISIBLE);
                             }
                         });
@@ -675,7 +675,7 @@ public class DevicePlaybackVideoActivity extends ActionBarActivity {
 
         updateStatusTextView(text);
 
-        ivPlayPause.setImageDrawable(getResources().getDrawable(R.drawable.ic_pause_playback));
+        ivPlayPause.setImageDrawable(getResources().getDrawable(R.drawable.pause_btn_style));
     }
 
     public void stop() {
