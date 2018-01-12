@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:gravity="center_horizontal">
+
+    <TextView
+        style="@style/CustomDialogCloud3TextView1"
+        android:id="@+id/text_view_dialog_1"
+        android:text="Você está prestes a atualizar\n seu aplicativo para a versão\n mais recente de acesso via nuvem"/>
+
+    <ImageView
+        android:layout_width="150dp"
+        android:layout_height="wrap_content"
+        android:gravity="center_horizontal"
+        android:src="@drawable/logo_cloud3"
+        android:layout_marginBottom="2dp"/>
+
+    <TextView
+        style="@style/CustomDialogCloud3TextView2"
+        android:id="@+id/text_view_dialog_2"
+        android:text="Você terá muito mais\n velocidade de acesso às suas imagens!" />
+
+    <TextView
+        style="@style/CustomDialogCloud3TextView3"
+        android:id="@+id/CustomDialogCloud3TextView3"
+        android:text="Atenção!"/>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textColor="@android:color/white"
+        android:gravity="center_horizontal"
+        android:text="Após a atualização, você não terá acesso\n a dispositivos que tenham sido fabricados\n até 31 de dezembro de 2014.\n As linhas de gravadores que NÃO são \n compatíveis com essa nova versão são:"/>
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_marginTop="12dp">
+
+        <ImageView
+            android:layout_width="200dp"
+            android:layout_height="wrap_content"
+            android:src="@drawable/dvr"/>
+
+        <TextView
+            style="@style/CustomDialogCloud3TextView4"
+            android:id="@+id/CustomDialogCloud3TextView4"
+            android:text="DVR Linha C\nDVR Linha E\nDVR Linha H\nDVR Linha I\nHVR 960" />
+
+    </LinearLayout>
+
+    <TextView
+        style="@style/CustomDialogCloud3TextView5"
+        android:layout_marginTop="12dp"
+        android:id="@+id/CustomDialogCloud3TextView5"
+        android:text="Para continuar a acessar os dispositivos dessas\n linhas, faça download do aplicativo Giga Monitor 2.0"/>
+
+    <TextView
+        style="@style/CustomDialogCloud3TextView6"
+        android:layout_marginTop="12dp"
+        android:id="@+id/CustomDialogCloud3TextView6"
+        android:text="Ao prosseguir, todos os dispositivos ativados no seu Monitor\n serão automaticamente reiniciados."/>
+
+    <ImageView
+        android:layout_width="260dp"
+        android:layout_height="60dp"
+        android:id="@+id/button_cloud_3"
+        android:src="@drawable/update_button"/>
+
+    <TextView
+        style="@style/CustomDialogCloud3TextView3"
+        android:id="@+id/text_view_custom_dialog_cancel"
+        android:text="Cancelar"/>
+
+    <TextView
+        style="@style/CustomDialogCloud3TextView2"
+        android:id="@+id/text_view_dialog_7"
+        android:text="Aguarde enquanto seus dispositivos são reiniciados.\n Isso pode levar alguns minutos." />
+
+
+</LinearLayout>

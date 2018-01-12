@@ -1,17 +1,18 @@
 package br.inatel.icc.gigasecurity.gigamonitor.util;
 
 import android.app.Activity;
+import android.app.Dialog;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.drawable.ColorDrawable;
 import android.util.Log;
 import android.util.Patterns;
 import android.view.View;
+import android.view.Window;
 import android.view.inputmethod.InputMethodManager;
 
 import com.lib.SDKCONST;
-import com.lib.sdk.struct.H264_DVR_FILE_DATA;
-import com.lib.sdk.struct.SDK_SYSTEM_TIME;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -24,10 +25,10 @@ import java.security.NoSuchAlgorithmException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Arrays;
-import java.util.Calendar;
 import java.util.Date;
-import java.util.GregorianCalendar;
 import java.util.Locale;
+
+import br.inatel.icc.gigasecurity.gigamonitor.R;
 
 /**
  * Created by Denis Vilela on 04/09/2014.
@@ -422,6 +423,14 @@ public class Utils {
                 return 0;
             }
         }
+    }
+
+    public static void showCustomDialog(Context context, Activity activity) {
+        final Dialog dialog = new Dialog(activity);
+        dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+        dialog.setContentView(R.layout.alert_dialog_cloud3);
+        dialog.getWindow().setBackgroundDrawable(new ColorDrawable(android.graphics.Color.TRANSPARENT));
+        dialog.show();
     }
 
 }

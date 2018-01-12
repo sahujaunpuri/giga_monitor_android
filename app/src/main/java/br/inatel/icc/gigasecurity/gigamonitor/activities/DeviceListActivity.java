@@ -27,6 +27,7 @@ import br.inatel.icc.gigasecurity.gigamonitor.core.DeviceManager;
 import br.inatel.icc.gigasecurity.gigamonitor.model.ChannelsManager;
 import br.inatel.icc.gigasecurity.gigamonitor.model.Device;
 import br.inatel.icc.gigasecurity.gigamonitor.model.StatePreferences;
+import br.inatel.icc.gigasecurity.gigamonitor.util.Utils;
 import io.fabric.sdk.android.Fabric;
 
 public class DeviceListActivity extends ActionBarActivity implements View.OnClickListener {
@@ -101,6 +102,8 @@ public class DeviceListActivity extends ActionBarActivity implements View.OnClic
         mDeviceManager.setSharedPreferences(mContext.getSharedPreferences("state", MODE_PRIVATE));
 
         getSupportActionBar().hide();
+
+        Utils.showCustomDialog(mContext, DeviceListActivity.this);
 
     }
 

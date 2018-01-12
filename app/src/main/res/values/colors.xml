@@ -26,4 +26,5 @@
     <color name="Giga">#88d70c</color>
     <color name="toggle_off">#80a62b</color>
     <color name="toggle_on">#a3d635</color>
+    <color name="dialog_background_color">#2c2c2d00</color>
 </resources>
