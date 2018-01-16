@@ -12,6 +12,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.ExpandableListView;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -43,6 +44,7 @@ public class DeviceListActivity extends ActionBarActivity implements View.OnClic
     private StatePreferences statePreferences;
     private TextView mTextViewEdit;
     private ImageView mImageViewAdd, mImageViewGallery;
+    private ImageButton mImageViewCloud3Btn;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -102,8 +104,6 @@ public class DeviceListActivity extends ActionBarActivity implements View.OnClic
         mDeviceManager.setSharedPreferences(mContext.getSharedPreferences("state", MODE_PRIVATE));
 
         getSupportActionBar().hide();
-
-        Utils.showCustomDialog(mContext, DeviceListActivity.this);
 
     }
 
@@ -175,6 +175,8 @@ public class DeviceListActivity extends ActionBarActivity implements View.OnClic
         }
 
         mDeviceManager.loginAllDevices();
+
+        getSupportActionBar().hide();
     }
 
     @Override
@@ -223,13 +225,14 @@ public class DeviceListActivity extends ActionBarActivity implements View.OnClic
         mImageViewGallery = (ImageView) findViewById(R.id.image_view_gallery);
         mTextViewEdit     = (TextView) findViewById(R.id.text_view_edit);
         mImageViewAdd     = (ImageView) findViewById(R.id.image_view_add);
-
+        mImageViewCloud3Btn = (ImageButton) findViewById(R.id.image_button_cloud3);
     }
 
     private void setListeners() {
         mImageViewGallery.setOnClickListener(this);
         mTextViewEdit.setOnClickListener(this);
         mImageViewAdd.setOnClickListener(this);
+        mImageViewCloud3Btn.setOnClickListener(this);
     }
 
     private void verifyIfSomeChannelIsSoundingOrRecording() {
@@ -263,9 +266,7 @@ public class DeviceListActivity extends ActionBarActivity implements View.OnClic
             case (R.id.action_media):
 //                collapseAll();
                 startMediaActivity();
-
                 return true;
-
             default:
                 return super.onOptionsItemSelected(item);
         }
@@ -328,6 +329,9 @@ public class DeviceListActivity extends ActionBarActivity implements View.OnClic
                 break;
             case R.id.image_view_gallery:
                 startMediaActivity();
+                break;
+            case (R.id.image_button_cloud3):
+                Utils.showCustomDialog(mContext, DeviceListActivity.this);
                 break;
         }
     }

@@ -49,12 +49,14 @@
         android:layout_height="wrap_content"
         android:orientation="vertical">
 
-        <ImageView
+        <ImageButton
             android:layout_width="match_parent"
             android:layout_height="80dp"
+            android:background="@null"
             android:scaleType="fitXY"
-            android:src="@drawable/cloud3_button"
-            android:visibility="visible"/>
+            android:id="@+id/image_button_cloud3"
+            android:clickable="true"
+            android:src="@drawable/cloud3_button" />
 
     </LinearLayout>
 
