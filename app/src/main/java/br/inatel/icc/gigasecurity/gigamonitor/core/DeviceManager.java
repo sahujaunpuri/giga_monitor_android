@@ -76,7 +76,7 @@ public class DeviceManager implements IFunSDKResult {
     private static final int APP_MOVECARD = 8;
     private static final String SERVER_IP_OLD = "cloudgiga.com.br";
     private static final String SERVER_IP_NEW = "200.169.104.100";
-    private static String SERVER_IP = SERVER_IP_NEW;
+    private static String SERVER_IP = SERVER_IP_OLD;
     private static final int SERVER_PORT = 8000;
     private static final String MEDIA_DISK_NAME = "MEDIA_DISK";
 
