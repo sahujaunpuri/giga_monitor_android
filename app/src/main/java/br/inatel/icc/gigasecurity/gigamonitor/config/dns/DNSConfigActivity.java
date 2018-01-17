@@ -1,5 +1,6 @@
 package br.inatel.icc.gigasecurity.gigamonitor.config.dns;
 
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
@@ -14,7 +15,7 @@ import br.inatel.icc.gigasecurity.gigamonitor.listeners.ConfigListener;
 import br.inatel.icc.gigasecurity.gigamonitor.model.Device;
 import br.inatel.icc.gigasecurity.gigamonitor.util.Utils;
 
-public class DNSConfigActivity extends ActionBarActivity {
+public class  DNSConfigActivity extends ActionBarActivity {
 
     // Debug tag
     private static String TAG = DNSConfigActivity.class.getSimpleName();
@@ -24,6 +25,7 @@ public class DNSConfigActivity extends ActionBarActivity {
     private Device mDevice;
     private DeviceManager mManager;
     private Context mContext;
+    private ProgressDialog dialog;
 
     EditText editTextDNSPrimaryAddress;
     EditText editTextDNSSecundaryAddress;
@@ -45,7 +47,24 @@ public class DNSConfigActivity extends ActionBarActivity {
             mManager.collapse = mManager.getDevices().indexOf(mDevice);
             mManager.saveData();
 
-            finish();
+            //TODO: get others fields
+            dialog = new ProgressDialog(mContext);
+            dialog.setMessage("Carregando");
+            dialog.show();
+
+            new Thread(new Runnable() {
+                public void run() {
+                    try {
+                        Thread.sleep(3000);
+                        if (dialog.isShowing()) {
+                            dialog.dismiss();
+                            finish();
+                        }
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }).start();
         }
 
         @Override
@@ -116,10 +135,8 @@ public class DNSConfigActivity extends ActionBarActivity {
 
     private void save() {
         if(isFieldsValid()){
-            //TODO: get others fields
             mDevice.setPrimaryDNS(mPrimaryAddress);
             mDevice.setSecondaryDNS(mSecondaryAddress);
-
             mManager.setDNSConfig(mDevice);
         }
 
