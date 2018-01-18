@@ -1,19 +1,12 @@
 package br.inatel.icc.gigasecurity.gigamonitor.model;
 
-import android.graphics.Color;
 import android.util.Log;
-import android.view.Gravity;
 import android.view.View;
-import android.widget.FrameLayout;
-import android.widget.ImageView;
-import android.widget.TextView;
 
 import com.lib.FunSDK;
 import com.lib.IFunSDKResult;
 import com.video.opengl.GLSurfaceView20;
 
-import br.inatel.icc.gigasecurity.gigamonitor.R;
-import br.inatel.icc.gigasecurity.gigamonitor.activities.DeviceListActivity;
 import br.inatel.icc.gigasecurity.gigamonitor.ui.SurfaceViewComponent;
 
 /**
@@ -50,26 +43,32 @@ public class FavoritesChannelsManager extends ChannelsManager implements IFunSDK
     }
 
     public void createComponent(ChannelsManager channelsManager, int i, int position){
+        try {
+            GLSurfaceView20 mySurfaceView;
+            mySurfaceView = new GLSurfaceView20(mContext);
+            mySurfaceView.setLayoutParams(surfaceViewLayout);
+            mySurfaceViews.add(mySurfaceView);
 
-        GLSurfaceView20 mySurfaceView;
-        mySurfaceView = new GLSurfaceView20(mContext);
-        mySurfaceView.setLayoutParams(surfaceViewLayout);
-        mySurfaceViews.add(mySurfaceView);
+            SurfaceViewComponent surfaceViewComponent = new SurfaceViewComponent(mContext, this, position);
+            surfaceViewComponent.mySurfaceViewChannelId = i;
+            surfaceViewComponent.mySurfaceViewOrderId = position;
+            surfaceViewComponent.deviceConnection = channelsManager.mDevice.connectionString;
+            surfaceViewComponent.deviceId = channelsManager.mDevice.getId();
 
-        SurfaceViewComponent surfaceViewComponent = new SurfaceViewComponent(mContext, this, position);
-
-        surfaceViewComponent.mySurfaceViewChannelId = i;
-        surfaceViewComponent.mySurfaceViewOrderId = position;
-        surfaceViewComponent.deviceConnection = channelsManager.mDevice.connectionString;
-        surfaceViewComponent.deviceId = channelsManager.mDevice.getId();
-
-        if(mDeviceManager.isFavorite(channelsManager.mDevice.getId(), i))
-            surfaceViewComponent.isFavorite = true;
+            if(mDeviceManager.isFavorite(channelsManager.mDevice.getId(), i))
+                surfaceViewComponent.isFavorite = true;
 
 //            surfaceViewComponent.setLayoutParams(new FrameLayout.LayoutParams(FrameLayout.LayoutParams.MATCH_PARENT, FrameLayout.LayoutParams.MATCH_PARENT));
-        surfaceViewComponent.setLayoutParams(surfaceViewLayout);
-
-        surfaceViewComponents.add(surfaceViewComponent);
+            surfaceViewComponent.setLayoutParams(surfaceViewLayout);
+            surfaceViewComponents.add(surfaceViewComponent);
+        } catch (Exception error) {
+            mDeviceManager.favoriteDevice.setChannelNumber(0);
+            for(FavoritePair favorite : mDeviceManager.favoritesList){
+                mDeviceManager.favoritesList.remove(favorite);
+            }
+            error.printStackTrace();
+            return;
+        }
     }
 
     public void refreshFromDevice(final int deviceId){
@@ -141,8 +140,12 @@ public class FavoritesChannelsManager extends ChannelsManager implements IFunSDK
         new Thread(new Runnable() {
             @Override
             public void run() {
-                if(mDeviceManager.findDeviceById(svc.deviceId).isLogged)
-                    svc.mPlayerHandler = FunSDK.MediaRealPlay(mUserID, svc.deviceConnection, svc.mySurfaceViewChannelId, svc.streamType, svc.mySurfaceView, svc.mySurfaceViewOrderId);
+                try {
+                    if (mDeviceManager.findDeviceById(svc.deviceId).isLogged)
+                        svc.mPlayerHandler = FunSDK.MediaRealPlay(mUserID, svc.deviceConnection, svc.mySurfaceViewChannelId, svc.streamType, svc.mySurfaceView, svc.mySurfaceViewOrderId);
+                } catch (Exception error) {
+                    error.printStackTrace();
+                }
             }
         }).start();
     }
