@@ -340,7 +340,6 @@ public class DeviceExpandableListAdapter extends BaseExpandableListAdapter {
         ((DeviceListActivity) mContext).runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                
                 childViewHolder.tvMessage.setVisibility(View.GONE);
                 groupViewHolder.ivQuad.setVisibility(View.INVISIBLE);
                 Log.d("Device Name:", groupViewHolder.mDevice.deviceName);

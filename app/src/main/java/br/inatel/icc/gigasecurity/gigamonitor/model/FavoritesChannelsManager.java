@@ -52,6 +52,9 @@ public class FavoritesChannelsManager extends ChannelsManager implements IFunSDK
             SurfaceViewComponent surfaceViewComponent = new SurfaceViewComponent(mContext, this, position);
             surfaceViewComponent.mySurfaceViewChannelId = i;
             surfaceViewComponent.mySurfaceViewOrderId = position;
+            if (channelsManager.mDevice == null) {
+                return;
+            }
             surfaceViewComponent.deviceConnection = channelsManager.mDevice.connectionString;
             surfaceViewComponent.deviceId = channelsManager.mDevice.getId();
 
@@ -61,11 +64,9 @@ public class FavoritesChannelsManager extends ChannelsManager implements IFunSDK
 //            surfaceViewComponent.setLayoutParams(new FrameLayout.LayoutParams(FrameLayout.LayoutParams.MATCH_PARENT, FrameLayout.LayoutParams.MATCH_PARENT));
             surfaceViewComponent.setLayoutParams(surfaceViewLayout);
             surfaceViewComponents.add(surfaceViewComponent);
+
+
         } catch (Exception error) {
-            mDeviceManager.favoriteDevice.setChannelNumber(0);
-            for(FavoritePair favorite : mDeviceManager.favoritesList){
-                mDeviceManager.favoritesList.remove(favorite);
-            }
             error.printStackTrace();
             return;
         }
@@ -101,39 +102,10 @@ public class FavoritesChannelsManager extends ChannelsManager implements IFunSDK
     }
 
     public void setErrorIcon(final SurfaceViewComponent svc){
-
         svc.setConnected(false);
         svc.isLoading(false);
-
-        /*((DeviceListActivity) mDeviceManager.currentContext).runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                if(svc.errorIcon == null) {
-                    svc.errorIcon = new ImageView(mContext);
-                    svc.errorIcon.setImageResource(R.drawable.ic_error_outline_white_36dp);
-                    svc.addView(svc.errorIcon, pbParam);
-                }
-
-                svc.progressBar.setVisibility(View.INVISIBLE);
-                svc.mySurfaceView.setVisibility(View.INVISIBLE);
-                svc.errorIcon.setVisibility(ImageView.VISIBLE);
-            }
-        });*/
     }
 
-    public void removeErrorIcon(final SurfaceViewComponent svc){
-        /*((DeviceListActivity) mDeviceManager.currentContext).runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                if(svc.errorIcon != null){
-                    svc.mySurfaceView.setVisibility(View.VISIBLE);
-                    svc.errorIcon.setVisibility(ImageView.INVISIBLE);
-//                    svc.removeView(svc.errorIcon);
-//                    svc.errorIcon = null;
-                }
-            }
-        });*/
-    }
 
     @Override
     public void onStartVideo(final SurfaceViewComponent svc) {

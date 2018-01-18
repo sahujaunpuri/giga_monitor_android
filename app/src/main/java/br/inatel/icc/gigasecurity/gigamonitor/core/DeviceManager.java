@@ -807,8 +807,10 @@ public class DeviceManager implements IFunSDKResult {
                     } else {
                         for (int deviceIndex = 0; deviceIndex < deviceChannelsManagers.size(); deviceIndex++) {
                             ChannelsManager deviceChannelsManager = deviceChannelsManagers.get(deviceIndex);
-                            for (int channel = 0; channel < deviceChannelsManager.channelNumber; channel++) {
-                                deviceChannelsManager.onStartVideo(deviceChannelsManager.surfaceViewComponents.get(channel));
+                            if (deviceChannelsManager.surfaceViewComponents.size() > 0) {
+                                for (int channel = 0; channel < deviceChannelsManager.channelNumber; channel++) {
+                                    deviceChannelsManager.onStartVideo(deviceChannelsManager.surfaceViewComponents.get(channel));
+                                }
                             }
                         }
                     }
@@ -1756,7 +1758,7 @@ public class DeviceManager implements IFunSDKResult {
     }
 
     public void tryToConnect(Device device) {
-        if (device != null) {
+        if (device == null) {
             return;
         } else {
             if (!device.ipAttemptsFail && device.isIpPriorityConnection() && !device.getIpAddress().equals("")) {
