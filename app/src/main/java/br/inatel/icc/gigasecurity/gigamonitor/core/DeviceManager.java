@@ -76,7 +76,7 @@ public class DeviceManager implements IFunSDKResult {
     private static final int APP_MOVECARD = 8;
     private static final String SERVER_IP_OLD = "cloudgiga.com.br";
     private static final String SERVER_IP_NEW = "200.169.104.100";
-    private static String SERVER_IP = SERVER_IP_NEW;
+    private static String SERVER_IP = SERVER_IP_OLD;
     private static final int SERVER_PORT = 8000;
     private static final String MEDIA_DISK_NAME = "MEDIA_DISK";
 
@@ -807,8 +807,10 @@ public class DeviceManager implements IFunSDKResult {
                     } else {
                         for (int deviceIndex = 0; deviceIndex < deviceChannelsManagers.size(); deviceIndex++) {
                             ChannelsManager deviceChannelsManager = deviceChannelsManagers.get(deviceIndex);
-                            for (int channel = 0; channel < deviceChannelsManager.channelNumber; channel++) {
-                                deviceChannelsManager.onStartVideo(deviceChannelsManager.surfaceViewComponents.get(channel));
+                            if (deviceChannelsManager.surfaceViewComponents.size() > 0) {
+                                for (int channel = 0; channel < deviceChannelsManager.channelNumber; channel++) {
+                                    deviceChannelsManager.onStartVideo(deviceChannelsManager.surfaceViewComponents.get(channel));
+                                }
                             }
                         }
                     }
@@ -871,7 +873,7 @@ public class DeviceManager implements IFunSDKResult {
 
     private void loginAttemptByDomain(final Device device) throws NullPointerException {
         if (device.isDomainPriorityConnection()) {
-            new Thread(new Runnable() {
+            new Thread( new Runnable() {
                 @Override
                 public void run() {
                     if (device == null)
@@ -1479,9 +1481,6 @@ public class DeviceManager implements IFunSDKResult {
                     device.setConnectionMethod(-1);
 
                     favoriteManager.refreshFromDevice(device.getId());
-                    /*if(loginList.get(device.connectionString) != null)
-                        loginList.get(device.connectionString).onLoginSuccess(device);
-                    loginList.remove(device.connectionString);*/
                     FunSDK.DevGetConfigByJson(getHandler(), device.connectionString, "SystemInfo", 4096, -1, 10000, device.getId());
                 } else if(msg.arg1 == -11301){ //wrong password or login
                     if(device != null) {
@@ -1503,8 +1502,12 @@ public class DeviceManager implements IFunSDKResult {
                             loginList.get(device.getId()).onLoginError(msg.arg1, device);
                         loginList.remove(device.getId());
                     } else {
-                        tryToConnect(device);
-                        loginList.get(device.getId()).onLoginError(msg.arg1, device);
+                        try {
+                            tryToConnect(device);
+                            loginList.get(device.getId()).onLoginError(msg.arg1, device);
+                        } catch (Exception error) {
+                            error.printStackTrace();
+                        }
                     }
                 }
             }
@@ -1755,15 +1758,25 @@ public class DeviceManager implements IFunSDKResult {
     }
 
     public void tryToConnect(Device device) {
-        if (!device.ipAttemptsFail && device.isIpPriorityConnection() && !device.getIpAddress().equals("")) {
-            loginAttemptByIp(device);
-        } else if (!device.domainAttemptsFail && device.isDomainPriorityConnection() && !device.getDomain().equals("")) {
-            loginAttemptByDomain(device);
-        } else if (!device.cloudAttemptsFail && device.isCloudPriorityConnection() && !device.getSerialNumber().equals("")) {
-            loginAttemptByCloud(device);
-        } else {
-            device.allAttempstFail = true;
-            expandableListAdapter.setMessage(mDevices.indexOf(device), "Falha na conexão");
+        try {
+            if (device == null) {
+                return;
+            } else {
+                if (!device.ipAttemptsFail && device.isIpPriorityConnection() && !device.getIpAddress().equals("")) {
+                    loginAttemptByIp(device);
+                } else if (!device.domainAttemptsFail && device.isDomainPriorityConnection() && !device.getDomain().equals("")) {
+                    loginAttemptByDomain(device);
+                } else if (!device.cloudAttemptsFail && device.isCloudPriorityConnection() && !device.getSerialNumber().equals("")) {
+                    loginAttemptByCloud(device);
+                } else {
+                    device.allAttempstFail = true;
+                    if (mDevices.contains(device)) {
+                        expandableListAdapter.setMessage(mDevices.indexOf(device), "Falha na conexão");
+                    }
+                }
+            }
+        } catch (Exception error) {
+            error.printStackTrace();
         }
     }
 
@@ -1772,7 +1785,9 @@ public class DeviceManager implements IFunSDKResult {
         for (int device = 0; device < deviceChannelsManagers.size(); device++) {
             ChannelsManager deviceChannelsManager = deviceChannelsManagers.get(device);
             for (int channel = 0; channel < deviceChannelsManager.channelNumber; channel++) {
-                deviceChannelsManager.onStop(deviceChannelsManager.surfaceViewComponents.get(channel));
+                if (deviceChannelsManager.surfaceViewComponents.size() > 0) {
+                    deviceChannelsManager.onStop(deviceChannelsManager.surfaceViewComponents.get(channel));
+                }
             }
         }
     }

@@ -316,5 +316,6 @@
     <string name="about">Sobre</string>
     <string name="label_video_channel">Canal de Video</string>
     <string name="label_mac_address">Endereço MAC</string>
+    <string name="device_port">Port</string>
 
 </resources>
