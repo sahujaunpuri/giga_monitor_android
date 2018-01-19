@@ -1779,7 +1779,9 @@ public class DeviceManager implements IFunSDKResult {
         for (int device = 0; device < deviceChannelsManagers.size(); device++) {
             ChannelsManager deviceChannelsManager = deviceChannelsManagers.get(device);
             for (int channel = 0; channel < deviceChannelsManager.channelNumber; channel++) {
-                deviceChannelsManager.onStop(deviceChannelsManager.surfaceViewComponents.get(channel));
+                if (deviceChannelsManager.surfaceViewComponents.size() > 0) {
+                    deviceChannelsManager.onStop(deviceChannelsManager.surfaceViewComponents.get(channel));
+                }
             }
         }
     }
