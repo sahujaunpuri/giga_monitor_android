@@ -6,7 +6,6 @@ import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.CompoundButton;
@@ -113,7 +112,6 @@ public class EthernetConfigActivity extends ActionBarActivity implements OnCheck
         } else {
             mDevice = mManager.findDeviceById((int) getIntent().getExtras().getSerializable("device"));
             position = mManager.getDevicePosition(mDevice);
-            Log.d("EthernetConfigActivity", "Device ID: " + String.valueOf(mDevice.getDeviceId()));
             temp = mDevice;
             mManager.getJsonConfig(mDevice, "NetWork.NetCommon", mListener);
         }

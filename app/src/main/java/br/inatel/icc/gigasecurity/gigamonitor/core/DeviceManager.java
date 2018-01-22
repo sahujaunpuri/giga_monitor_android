@@ -798,25 +798,29 @@ public class DeviceManager implements IFunSDKResult {
     }
 
     public void loginAllDevices() {
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                for (Device device : mDevices) {
-                    if (!device.isLogged) {
-                        loginDevice(device, null);
-                    } else {
-                        for (int deviceIndex = 0; deviceIndex < deviceChannelsManagers.size(); deviceIndex++) {
-                            ChannelsManager deviceChannelsManager = deviceChannelsManagers.get(deviceIndex);
-                            if (deviceChannelsManager.surfaceViewComponents.size() > 0) {
-                                for (int channel = 0; channel < deviceChannelsManager.channelNumber; channel++) {
-                                    deviceChannelsManager.onStartVideo(deviceChannelsManager.surfaceViewComponents.get(channel));
+        try {
+            new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    for (Device device : mDevices) {
+                        if (!device.isLogged) {
+                            loginDevice(device, null);
+                        } else {
+                            for (int deviceIndex = 0; deviceIndex < deviceChannelsManagers.size(); deviceIndex++) {
+                                ChannelsManager deviceChannelsManager = deviceChannelsManagers.get(deviceIndex);
+                                if (deviceChannelsManager.surfaceViewComponents.size() > 0) {
+                                    for (int channel = 0; channel < deviceChannelsManager.channelNumber; channel++) {
+                                        deviceChannelsManager.onStartVideo(deviceChannelsManager.surfaceViewComponents.get(channel));
+                                    }
                                 }
                             }
                         }
                     }
                 }
-            }
-        }).start();
+            }).start();
+        } catch (Exception error) {
+            error.printStackTrace();
+        }
     }
 
     public void setDevicesLogout() {
@@ -1808,6 +1812,4 @@ public class DeviceManager implements IFunSDKResult {
     public static String getServerIpNew() {
         return SERVER_IP_NEW;
     }
-
-
 }

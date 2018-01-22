@@ -260,30 +260,17 @@ public class Device implements Serializable {
 
     @Override
     public int hashCode() {
-//        if ( null != this.serialNumber && !this.serialNumber.equals("")) {
-//            return (this.serialNumber).hashCode();
-//        } else
-//            return (this.deviceName).hashCode();
-
-        return deviceId;
-
-//        return super.hashCode();
+        if ( null != this.serialNumber && !this.serialNumber.equals("")) {
+            return (this.serialNumber).hashCode();
+        } else
+            return (this.deviceName).hashCode();
     }
 
     public int getId() {
-//        if ( null != this.serialNumber && !this.serialNumber.equals("")) {
-//            return (this.serialNumber).hashCode();
-//        } else
-//            return (this.deviceName).hashCode();
-        return deviceId;
-    }
-
-    public int getDeviceId() {
-        return deviceId;
-    }
-
-    public void setDeviceId(int deviceId) {
-        this.deviceId = deviceId;
+        if ( null != this.serialNumber && !this.serialNumber.equals("")) {
+            return (this.serialNumber).hashCode();
+        } else
+            return (this.deviceName).hashCode();
     }
 
     public boolean hasLogin(){
@@ -590,7 +577,6 @@ public class Device implements Serializable {
         }
         return hostID;
     }
-
 
     @Override
     public String toString() {
