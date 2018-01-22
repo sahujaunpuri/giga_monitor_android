@@ -1,6 +1,8 @@
 package br.inatel.icc.gigasecurity.gigamonitor.activities;
 
+import android.app.ProgressDialog;
 import android.content.Intent;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
 import android.text.TextUtils;
@@ -18,7 +20,7 @@ import br.inatel.icc.gigasecurity.gigamonitor.model.Device;
 import br.inatel.icc.gigasecurity.gigamonitor.util.Utils;
 
 
-public class DeviceFormActivity extends ActionBarActivity{
+public class DeviceFormActivity extends ActionBarActivity {
 
     private static final int SEARCH_ACTIVITY_REQUEST = 0;
 
@@ -33,6 +35,9 @@ public class DeviceFormActivity extends ActionBarActivity{
     CheckBox cbIpAddress;
     CheckBox cbDomain;
     String TAG = "DeviceForm";
+    private ProgressDialog pd;
+
+    private AsyncTask<Void, Void, Void> task;
 
     boolean byIp = false, byDomain = false, byCloud = false;
     int editPosition = -1;
@@ -123,6 +128,7 @@ public class DeviceFormActivity extends ActionBarActivity{
     }
 
 
+
     public boolean save() {
         boolean isHostnameFilled = !TextUtils.isEmpty(etName.getText().toString());
         boolean isPortFilled = !TextUtils.isEmpty(etDevicePort.getText().toString());
@@ -159,7 +165,7 @@ public class DeviceFormActivity extends ActionBarActivity{
                 mDevice.setUsername("admin");
 
             mDevice.setPassword(etPassword.getText().toString());
-//            mDevice.checkConnectionMethod();
+
             return true;
         }
 
@@ -250,6 +256,9 @@ public class DeviceFormActivity extends ActionBarActivity{
                 } else {
                     Toast.makeText(this, R.string.invalid_device_save, Toast.LENGTH_SHORT).show();
                 }
+
+                if(pd.isShowing())
+                    pd.dismiss();
 
                 break;
         }

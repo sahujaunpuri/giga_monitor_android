@@ -83,8 +83,12 @@ public class FavoritesDevicesAdapter extends BaseExpandableListAdapter {
 
         imageViewChannelStar = (ImageView) convertView.findViewById(R.id.fav_list_item_select_device);
 
-        if (isDeviceFav(mDevice)) {
-            imageViewChannelStar.setImageResource(R.drawable.ic_star_yellow_24dp);
+        try {
+            if (isDeviceFav(mDevice)) {
+                imageViewChannelStar.setImageResource(R.drawable.ic_star_yellow_24dp);
+            }
+        } catch (Exception error) {
+            error.printStackTrace();
         }
 
         return createDeviceView(groupPosition, isExpanded, convertView, parent);

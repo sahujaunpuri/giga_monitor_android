@@ -158,6 +158,7 @@ public class DeviceExpandableListAdapter extends BaseExpandableListAdapter {
                 currentChildViewHolder.tvMessage.setText(groupViewHolder.get(groupPosition).mDevice.message);
             }
 
+
             //        this.childViewHolder.add(currentChildViewHolder);
             return currentChildViewHolder;
         } catch (IndexOutOfBoundsException e) {
@@ -384,6 +385,7 @@ public class DeviceExpandableListAdapter extends BaseExpandableListAdapter {
                     if (currentGroupViewHolder.mDevice.getSerialNumber().equals("Favoritos") || currentGroupViewHolder.mDevice.isLogged) {
                         currentGroupViewHolder.ivRefresh.setVisibility(View.INVISIBLE);
                     }
+
                 }
             });
         } catch (IndexOutOfBoundsException |  NullPointerException e) {
