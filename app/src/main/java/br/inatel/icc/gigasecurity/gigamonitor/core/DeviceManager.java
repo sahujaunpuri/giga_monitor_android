@@ -1770,9 +1770,6 @@ public class DeviceManager implements IFunSDKResult {
                     loginAttemptByCloud(device);
                 } else {
                     device.allAttempstFail = true;
-                    if (mDevices.contains(device)) {
-                        expandableListAdapter.setMessage(mDevices.indexOf(device), "Falha na conexão");
-                    }
                 }
             }
         } catch (Exception error) {
