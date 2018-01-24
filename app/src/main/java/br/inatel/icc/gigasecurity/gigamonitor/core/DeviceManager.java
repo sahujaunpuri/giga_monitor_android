@@ -273,7 +273,7 @@ public class DeviceManager implements IFunSDKResult {
                 if (state.previousHD > -1 && channelsManager.surfaceViewComponents.size() > state.previousHD) {
                     if(!mDevices.get(state.previousGroup).getSerialNumber().equals("Favoritos"))
                         state.previousHD = findChannelManagerByDevice(mDevices.get(state.previousGroup)).getChannelSelected(state.previousHD);
-                    channelsManager.enableHD(channelsManager.surfaceViewComponents.get(state.previousHD));
+//                    channelsManager.enableHD(channelsManager.surfaceViewComponents.get(state.previousHD));
                 }
             }
         } catch (IndexOutOfBoundsException e) {
