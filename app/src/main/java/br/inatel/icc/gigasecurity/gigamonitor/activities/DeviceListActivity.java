@@ -2,8 +2,10 @@ package br.inatel.icc.gigasecurity.gigamonitor.activities;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
 import android.view.Menu;
@@ -177,6 +179,17 @@ public class DeviceListActivity extends ActionBarActivity implements View.OnClic
         mDeviceManager.loginAllDevices();
 
         getSupportActionBar().hide();
+
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
+
+        if (mDeviceManager.getDevices().size() > 1) {
+            if (!prefs.getBoolean("firstTime", false)) {
+                SharedPreferences.Editor editor = prefs.edit();
+                editor.putBoolean("firstTime", true);
+                editor.commit();
+                mImageViewCloud3Btn.setVisibility(View.VISIBLE);
+            }
+        }
     }
 
     @Override
