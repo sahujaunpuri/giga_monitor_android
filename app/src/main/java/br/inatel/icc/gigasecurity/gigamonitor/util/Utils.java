@@ -1,20 +1,13 @@
 package br.inatel.icc.gigasecurity.gigamonitor.util;
 
 import android.app.Activity;
-import android.app.Dialog;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.graphics.drawable.ColorDrawable;
 import android.util.Log;
 import android.util.Patterns;
 import android.view.View;
-import android.view.Window;
 import android.view.inputmethod.InputMethodManager;
-import android.widget.ImageButton;
-import android.widget.ImageView;
-import android.widget.LinearLayout;
-import android.widget.TextView;
 
 import com.lib.SDKCONST;
 
@@ -31,8 +24,6 @@ import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.Locale;
-
-import br.inatel.icc.gigasecurity.gigamonitor.R;
 
 /**
  * Created by Denis Vilela on 04/09/2014.
@@ -427,49 +418,6 @@ public class Utils {
                 return 0;
             }
         }
-    }
-
-    public static void showCustomDialog(Context context, Activity activity) {
-        final Dialog dialog = new Dialog(activity);
-        dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
-        dialog.setContentView(R.layout.alert_dialog_cloud3);
-        dialog.getWindow().setBackgroundDrawable(new ColorDrawable(android.graphics.Color.TRANSPARENT));
-
-        final TextView mTextViewDialog7                 = (TextView) dialog.getWindow().findViewById(R.id.text_view_dialog_7);
-        final TextView mTextViewCancel                  = (TextView) dialog.getWindow().findViewById(R.id.text_view_custom_dialog_cancel);
-        final LinearLayout mLinearLayoutButtonCloud3    = (LinearLayout) dialog.getWindow().findViewById(R.id.linear_layout_button_cloud_3);
-        final ImageButton mImageButtonCloud3            = (ImageButton) dialog.getWindow().findViewById(R.id.button_cloud_3);
-        final ImageView mImageViewUpdate                = (ImageView) dialog.getWindow().findViewById(R.id.image_view_update);
-        final LinearLayout mLinearLayoutCloud3          = (LinearLayout) dialog.getWindow().findViewById(R.id.linear_layout_cloud_3);
-        final LinearLayout mLinearLayoutCloud3BtnReboot = (LinearLayout) dialog.getWindow().findViewById(R.id.linear_layout_cloud_3_reboot_btn);
-
-        mTextViewCancel.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                dialog.dismiss();
-            }
-        });
-
-        mImageButtonCloud3.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                mImageButtonCloud3.setVisibility(View.GONE);
-                mTextViewCancel.setVisibility(View.GONE);
-                mLinearLayoutButtonCloud3.setVisibility(View.GONE);
-                mLinearLayoutCloud3.setVisibility(View.GONE);
-                mLinearLayoutCloud3BtnReboot.setVisibility(View.VISIBLE);
-
-            }
-        });
-
-        mImageViewUpdate.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                dialog.dismiss();
-            }
-        });
-
-        dialog.show();
     }
 
 }

@@ -9,6 +9,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.res.Configuration;
 import android.content.res.Resources;
+import android.graphics.PorterDuff;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
@@ -602,8 +603,14 @@ public class DevicePlaybackVideoActivity extends ActionBarActivity {
         MenuItem recordIcon = menu.findItem(R.id.playback_record);
         if (icon) {
             recordIcon.setIcon(R.mipmap.red_record);
+
+            final int newColor = getApplicationContext().getResources().getColor(R.color.giga_green);
+            mImageViewRec.setColorFilter(newColor, PorterDuff.Mode.SRC_ATOP);
         } else {
             recordIcon.setIcon(R.drawable.record);
+
+            final int newColor = getApplicationContext().getResources().getColor(R.color.default_color);
+            mImageViewRec.setColorFilter(newColor, PorterDuff.Mode.SRC_ATOP);
         }
     }
 

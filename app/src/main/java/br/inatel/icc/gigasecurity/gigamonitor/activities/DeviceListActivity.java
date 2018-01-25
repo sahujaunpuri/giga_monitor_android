@@ -30,7 +30,7 @@ import br.inatel.icc.gigasecurity.gigamonitor.core.DeviceManager;
 import br.inatel.icc.gigasecurity.gigamonitor.model.ChannelsManager;
 import br.inatel.icc.gigasecurity.gigamonitor.model.Device;
 import br.inatel.icc.gigasecurity.gigamonitor.model.StatePreferences;
-import br.inatel.icc.gigasecurity.gigamonitor.util.Utils;
+import br.inatel.icc.gigasecurity.gigamonitor.ui.CustomTypeDialog;
 import io.fabric.sdk.android.Fabric;
 
 public class DeviceListActivity extends ActionBarActivity implements View.OnClickListener {
@@ -69,7 +69,6 @@ public class DeviceListActivity extends ActionBarActivity implements View.OnClic
         initComponents();
         setListeners();
 
-//        Thread.setDefaultUncaughtExceptionHandler(new MyExceptionHandler(this, DeviceListActivity.class));
 
         //if don't have any device registered, start InitialActivity.
         if(mDevices.size() == 1) {
@@ -184,9 +183,6 @@ public class DeviceListActivity extends ActionBarActivity implements View.OnClic
 
         if (mDeviceManager.getDevices().size() > 1) {
             if (!prefs.getBoolean("firstTime", false)) {
-                SharedPreferences.Editor editor = prefs.edit();
-                editor.putBoolean("firstTime", true);
-                editor.commit();
                 mImageViewCloud3Btn.setVisibility(View.VISIBLE);
             }
         }
@@ -331,6 +327,15 @@ public class DeviceListActivity extends ActionBarActivity implements View.OnClic
         startActivity(setIntent);
     }
 
+    private void showCustomDialog () {
+        CustomTypeDialog customTypeDialog = new CustomTypeDialog(mContext, new CustomTypeDialog.OnDialogClickListener() {
+            @Override
+            public void onDialogImageRunClick() {
+                mImageViewCloud3Btn.setVisibility(View.GONE);
+            }
+        });
+    }
+
     @Override
     public void onClick(View v) {
         switch (v.getId()) {
@@ -344,7 +349,8 @@ public class DeviceListActivity extends ActionBarActivity implements View.OnClic
                 startMediaActivity();
                 break;
             case (R.id.image_button_cloud3):
-                Utils.showCustomDialog(mContext, DeviceListActivity.this);
+//                Utils.showCustomDialog(mContext, DeviceListActivity.this);
+                showCustomDialog();
                 break;
         }
     }
