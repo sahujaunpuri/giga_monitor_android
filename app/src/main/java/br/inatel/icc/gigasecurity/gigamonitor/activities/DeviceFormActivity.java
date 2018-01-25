@@ -1,6 +1,8 @@
 package br.inatel.icc.gigasecurity.gigamonitor.activities;
 
+import android.app.ProgressDialog;
 import android.content.Intent;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
 import android.text.TextUtils;
@@ -11,8 +13,6 @@ import android.widget.EditText;
 import android.widget.Toast;
 
 import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
 
 import br.inatel.icc.gigasecurity.gigamonitor.R;
 import br.inatel.icc.gigasecurity.gigamonitor.core.DeviceManager;
@@ -20,7 +20,7 @@ import br.inatel.icc.gigasecurity.gigamonitor.model.Device;
 import br.inatel.icc.gigasecurity.gigamonitor.util.Utils;
 
 
-public class DeviceFormActivity extends ActionBarActivity{
+public class DeviceFormActivity extends ActionBarActivity {
 
     private static final int SEARCH_ACTIVITY_REQUEST = 0;
 
@@ -35,6 +35,9 @@ public class DeviceFormActivity extends ActionBarActivity{
     CheckBox cbIpAddress;
     CheckBox cbDomain;
     String TAG = "DeviceForm";
+    private ProgressDialog pd;
+
+    private AsyncTask<Void, Void, Void> task;
 
     boolean byIp = false, byDomain = false, byCloud = false;
     int editPosition = -1;
@@ -125,6 +128,7 @@ public class DeviceFormActivity extends ActionBarActivity{
     }
 
 
+
     public boolean save() {
         boolean isHostnameFilled = !TextUtils.isEmpty(etName.getText().toString());
         boolean isPortFilled = !TextUtils.isEmpty(etDevicePort.getText().toString());
@@ -161,7 +165,7 @@ public class DeviceFormActivity extends ActionBarActivity{
                 mDevice.setUsername("admin");
 
             mDevice.setPassword(etPassword.getText().toString());
-//            mDevice.checkConnectionMethod();
+
             return true;
         }
 
@@ -224,8 +228,8 @@ public class DeviceFormActivity extends ActionBarActivity{
                 return true;
             case R.id.action_save:
                 if(save()) {
-//                    int id = mDevice.getId();
-                    mDevice.setDeviceId(setId());
+                    int id = mDevice.getId();
+//                    mDevice.setDeviceId(setId());
                     if(editPosition > -1){
                         deviceManager.logoutDevice(mDevice);
                         checkEdit();
@@ -236,8 +240,8 @@ public class DeviceFormActivity extends ActionBarActivity{
                         deviceManager.addDevice(mDevice, editPosition);
                         deviceManager.updateSurfaceViewManager(editPosition);
                         deviceManager.collapse = editPosition;
-                    } else if (deviceManager.findDeviceById(mDevice.getDeviceId()) != null) {
-//                    } else if (deviceManager.findDeviceById(id) != null) {
+//                    } else if (deviceManager.findDeviceById(mDevice.getDeviceId()) != null) {
+                    } else if (deviceManager.findDeviceById(id) != null) {
                         Toast.makeText(this, "Dispositivo já adicionado.", Toast.LENGTH_SHORT).show();
 //                        deviceManager.logoutDevice(deviceManager.findDeviceById(mDevice.getId()));
 //                        startDeviceListActivity();
@@ -253,16 +257,13 @@ public class DeviceFormActivity extends ActionBarActivity{
                     Toast.makeText(this, R.string.invalid_device_save, Toast.LENGTH_SHORT).show();
                 }
 
+                if(pd.isShowing())
+                    pd.dismiss();
+
                 break;
         }
 
         return super.onOptionsItemSelected(item);
-    }
-
-    private int setId(){
-        Date currentTime = Calendar.getInstance().getTime();
-        int id = currentTime.hashCode();
-        return id;
     }
 
 

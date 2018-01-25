@@ -83,8 +83,12 @@ public class FavoritesDevicesAdapter extends BaseExpandableListAdapter {
 
         imageViewChannelStar = (ImageView) convertView.findViewById(R.id.fav_list_item_select_device);
 
-        if (isDeviceFav(mDevice)) {
-            imageViewChannelStar.setImageResource(R.drawable.ic_star_yellow_24dp);
+        try {
+            if (isDeviceFav(mDevice)) {
+                imageViewChannelStar.setImageResource(R.drawable.ic_star_yellow_24dp);
+            }
+        } catch (Exception error) {
+            error.printStackTrace();
         }
 
         return createDeviceView(groupPosition, isExpanded, convertView, parent);
@@ -201,9 +205,11 @@ public class FavoritesDevicesAdapter extends BaseExpandableListAdapter {
     private boolean isDeviceFav(Device device) {
         int mChannelsCount = 0;
         for (int channel = 0; channel < device.getChannelNumber(); channel ++) {
-           if (mDeviceManager.findChannelManagerByDevice(device).surfaceViewComponents.get(channel).isFavorite()) {
-               mChannelsCount += 1;
-           }
+            if (mDeviceManager.findChannelManagerByDevice(device).surfaceViewComponents.size() > 0 ) {
+                if (mDeviceManager.findChannelManagerByDevice(device).surfaceViewComponents.get(channel).isFavorite()) {
+                    mChannelsCount += 1;
+                }
+            }
         }
 
         if (mChannelsCount == mDeviceManager.findChannelManagerByDevice(device).channelNumber && mDeviceManager.findChannelManagerByDevice(device).channelNumber > 0) {

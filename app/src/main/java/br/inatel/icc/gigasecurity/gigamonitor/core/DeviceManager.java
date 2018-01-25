@@ -273,7 +273,7 @@ public class DeviceManager implements IFunSDKResult {
                 if (state.previousHD > -1 && channelsManager.surfaceViewComponents.size() > state.previousHD) {
                     if(!mDevices.get(state.previousGroup).getSerialNumber().equals("Favoritos"))
                         state.previousHD = findChannelManagerByDevice(mDevices.get(state.previousGroup)).getChannelSelected(state.previousHD);
-                    channelsManager.enableHD(channelsManager.surfaceViewComponents.get(state.previousHD));
+//                    channelsManager.enableHD(channelsManager.surfaceViewComponents.get(state.previousHD));
                 }
             }
         } catch (IndexOutOfBoundsException e) {
@@ -798,25 +798,29 @@ public class DeviceManager implements IFunSDKResult {
     }
 
     public void loginAllDevices() {
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                for (Device device : mDevices) {
-                    if (!device.isLogged) {
-                        loginDevice(device, null);
-                    } else {
-                        for (int deviceIndex = 0; deviceIndex < deviceChannelsManagers.size(); deviceIndex++) {
-                            ChannelsManager deviceChannelsManager = deviceChannelsManagers.get(deviceIndex);
-                            if (deviceChannelsManager.surfaceViewComponents.size() > 0) {
-                                for (int channel = 0; channel < deviceChannelsManager.channelNumber; channel++) {
-                                    deviceChannelsManager.onStartVideo(deviceChannelsManager.surfaceViewComponents.get(channel));
+        try {
+            new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    for (Device device : mDevices) {
+                        if (!device.isLogged) {
+                            loginDevice(device, null);
+                        } else {
+                            for (int deviceIndex = 0; deviceIndex < deviceChannelsManagers.size(); deviceIndex++) {
+                                ChannelsManager deviceChannelsManager = deviceChannelsManagers.get(deviceIndex);
+                                if (deviceChannelsManager.surfaceViewComponents.size() > 0) {
+                                    for (int channel = 0; channel < deviceChannelsManager.channelNumber; channel++) {
+                                        deviceChannelsManager.onStartVideo(deviceChannelsManager.surfaceViewComponents.get(channel));
+                                    }
                                 }
                             }
                         }
                     }
                 }
-            }
-        }).start();
+            }).start();
+        } catch (Exception error) {
+            error.printStackTrace();
+        }
     }
 
     public void setDevicesLogout() {
@@ -1770,9 +1774,6 @@ public class DeviceManager implements IFunSDKResult {
                     loginAttemptByCloud(device);
                 } else {
                     device.allAttempstFail = true;
-                    if (mDevices.contains(device)) {
-                        expandableListAdapter.setMessage(mDevices.indexOf(device), "Falha na conexão");
-                    }
                 }
             }
         } catch (Exception error) {
@@ -1811,6 +1812,4 @@ public class DeviceManager implements IFunSDKResult {
     public static String getServerIpNew() {
         return SERVER_IP_NEW;
     }
-
-
 }
