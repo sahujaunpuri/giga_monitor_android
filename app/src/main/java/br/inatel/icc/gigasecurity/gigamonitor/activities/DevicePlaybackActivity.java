@@ -347,6 +347,7 @@ public class DevicePlaybackActivity extends ActionBarActivity
                                 layoutListPlayback.setVisibility(View.GONE);
                                 Toast.makeText(DevicePlaybackActivity.this, msg, Toast.LENGTH_SHORT).show();
                                 progressDialog.dismiss();
+                                mTextViewSearch.setVisibility(View.VISIBLE);
                             }
                         });
                     }

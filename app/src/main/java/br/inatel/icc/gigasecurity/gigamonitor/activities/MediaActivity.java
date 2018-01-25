@@ -29,7 +29,7 @@ public class MediaActivity extends ActionBarActivity {
     public static MediaGridAdapter mAdapter;
     private DeviceManager mDeviceManager;
     public static ImageView ivImage, ivVideo;
-    private TextView tvBack, tvCancel, tvSelect, tvImage, tvVideo, tvDelete;
+    private TextView tvBack, tvCancel, tvSelect, tvImage, tvVideo, tvDelete, tvEmpty;
     public boolean ivImageSelected = true;
 
     private String SELECT_TITLE_BUTTON = "Selecionar";
@@ -185,12 +185,13 @@ public class MediaActivity extends ActionBarActivity {
         gvMedia  = (GridView) findViewById(R.id.grid_view_media);
         ivImage  = (ImageView) findViewById(R.id.iv_image);
         ivVideo  = (ImageView) findViewById(R.id.iv_video);
-        tvBack = (TextView) findViewById(R.id.back_action);
+        tvBack   = (TextView) findViewById(R.id.back_action);
         tvCancel = (TextView) findViewById(R.id.cancel_action);
         tvSelect = (TextView) findViewById(R.id.select_action);
         tvDelete = (TextView) findViewById(R.id.delete_action);
         tvImage  = (TextView) findViewById(R.id.tv_image);
         tvVideo  = (TextView) findViewById(R.id.tv_video);
+        tvEmpty  = (TextView) findViewById(R.id.text_view_gallery_empty);
 
         if(ivImageSelected){
             ivVideo.setImageDrawable(getResources().getDrawable(R.drawable.ic_video_off));
@@ -203,6 +204,8 @@ public class MediaActivity extends ActionBarActivity {
             mAdapter.changeGridMode(false);
             mAdapter.notifyDataSetChanged();
         }
+
+        isEmpty();
     }
 
     private void deleteMedias() {
@@ -228,6 +231,7 @@ public class MediaActivity extends ActionBarActivity {
         } else {
             Toast.makeText(getApplicationContext(), "Não há itens selecionados!", Toast.LENGTH_SHORT).show();
         }
+        isEmpty();
     }
 
     private void changeButtonsVisibility(boolean visible) {
@@ -376,6 +380,7 @@ public class MediaActivity extends ActionBarActivity {
         ivImageSelected = true;
         verifyButtonsVisibility();
         mDeviceManager.mediaViewDidSelectMovies = false;
+        isEmpty();
     }
 
     private void toggleToVideos() {
@@ -383,6 +388,7 @@ public class MediaActivity extends ActionBarActivity {
         tvVideo.setBackgroundColor(getResources().getColor(R.color.toggle_on));
         mDeviceManager.mediaViewDidSelectMovies = true;
         didSelectMovies();
+        isEmpty();
     }
 
     private void didStartSelectMedia() {
@@ -397,5 +403,13 @@ public class MediaActivity extends ActionBarActivity {
         tvSelect.setVisibility(View.VISIBLE);
         tvCancel.setVisibility(View.GONE);
         tvDelete.setVisibility(View.GONE);
+    }
+
+    private void isEmpty() {
+        if (mAdapter.getCount() > 0) {
+            tvEmpty.setVisibility(View.GONE);
+        } else {
+            tvEmpty.setVisibility(View.VISIBLE);
+        }
     }
 }

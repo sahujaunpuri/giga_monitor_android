@@ -1,12 +1,13 @@
-<FrameLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:focusable="false"
-    android:background="@color/transparent">
+<!--<FrameLayout-->
+    <!--xmlns:android="http://schemas.android.com/apk/res/android"-->
+    <!--android:layout_width="match_parent"-->
+    <!--android:layout_height="match_parent"-->
+    <!--android:focusable="false"-->
+    <!--android:background="@color/transparent">-->
 
 
     <LinearLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
         android:orientation="vertical"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -15,14 +16,14 @@
 
 
         <TableLayout
-            android:layout_width="match_parent"
+            android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="3dp"
             android:stretchColumns="1">
 
             <TableRow
                 android:id="@+id/tableRow1"
-                android:layout_width="match_parent"
+                android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="10dp"
                 android:layout_marginBottom="10dp"
@@ -35,7 +36,7 @@
                 <ImageView
                     android:layout_width="30dp"
                     android:layout_height="30dp"
-                    android:layout_marginLeft="4dp"
+                    android:layout_marginLeft="6dp"
                     android:visibility="gone"
                     android:src="@drawable/add_btn_style"
                     android:id="@+id/iv_add_fav" />
@@ -43,7 +44,7 @@
                 <ImageView
                     android:layout_width="30dp"
                     android:layout_height="30dp"
-                    android:layout_marginLeft="4dp"
+                    android:layout_marginLeft="6dp"
                     android:visibility="invisible"
                     android:src="@drawable/grid_btn_style"
                     android:id="@+id/iv_grid_list_device" />
@@ -51,7 +52,7 @@
                 <ImageView
                     android:layout_width="30dp"
                     android:layout_height="30dp"
-                    android:layout_marginLeft="4dp"
+                    android:layout_marginLeft="6dp"
                     android:visibility="gone"
                     android:src="@drawable/config_btn_style"
                     android:id="@+id/iv_device_more" />
@@ -59,7 +60,7 @@
                 <ImageView
                     android:layout_width="30dp"
                     android:layout_height="30dp"
-                    android:layout_marginLeft="4dp"
+                    android:layout_marginLeft="6dp"
                     android:src="@drawable/refresh_btn_style"
                     android:visibility="gone"
                     android:id="@+id/iv_refresh" />
@@ -71,6 +72,6 @@
     </LinearLayout>
 
 
-</FrameLayout>
+<!--</FrameLayout>-->
 
 
