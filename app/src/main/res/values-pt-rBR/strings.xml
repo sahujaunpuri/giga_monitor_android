@@ -322,5 +322,7 @@
     <string name="title_activity_add_device">Adicionar Dispositivo</string>
     <string name="searching_devices_in_the_network_text_1">Buscando dispositivos\nna rede...</string>
     <string name="string_network">Rede</string>
+    <string name="device_port">Port</string>
+    <string name="title_activity_network_config_menu">ConfiguraçõesRede</string>
 
 </resources>

@@ -351,6 +351,8 @@ public class DeviceManager implements IFunSDKResult {
                 device.setHardwareVersion(systemInfo.getString("HardWare"));
             if (systemInfo.has("SoftWareVersion"))
                 device.setSoftwareVersion(systemInfo.getString("SoftWareVersion"));
+            if (systemInfo.has("BuildTime"))
+                device.setBuildTime(systemInfo.getString("BuildTime"));
 //            if(systemInfo.has("VideoInChannel"))
 //                device.setChannelNumber(systemInfo.getInt("VideoInChannel") + systemInfo.getInt("DigChannel") + systemInfo.getInt("VideoOutChannel"));
             saveData();

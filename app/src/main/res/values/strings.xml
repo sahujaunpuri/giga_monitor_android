@@ -323,5 +323,6 @@
     <string name="searching_devices_in_the_network_text_1">Searching for devices\nin the network</string>
     <string name="string_network">Network</string>
     <string name="title_activity_network_config_menu">NetworkConfigMenuActivity</string>
+    <string name="playback_types">Playback Types</string>
 
 </resources>

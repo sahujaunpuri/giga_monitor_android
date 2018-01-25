@@ -88,6 +88,7 @@ public class Device implements Serializable {
     private String gigaCode;
     private String softwareVersion;
     private String hardwareVersion;
+    private String buildTime;
     @Expose private int channelNumber = 0;
     @Expose private int numberOfAlarmsIn;
     @Expose private int numberOfAlarmsOut;
@@ -260,30 +261,22 @@ public class Device implements Serializable {
 
     @Override
     public int hashCode() {
-//        if ( null != this.serialNumber && !this.serialNumber.equals("")) {
-//            return (this.serialNumber).hashCode();
-//        } else
-//            return (this.deviceName).hashCode();
+        if ( null != this.serialNumber && !this.serialNumber.equals("")) {
+            return (this.serialNumber).hashCode();
+        } else
+            return (this.deviceName).hashCode();
 
-        return deviceId;
+//        return deviceId;
 
 //        return super.hashCode();
     }
 
     public int getId() {
-//        if ( null != this.serialNumber && !this.serialNumber.equals("")) {
-//            return (this.serialNumber).hashCode();
-//        } else
-//            return (this.deviceName).hashCode();
-        return deviceId;
-    }
-
-    public int getDeviceId() {
-        return deviceId;
-    }
-
-    public void setDeviceId(int deviceId) {
-        this.deviceId = deviceId;
+        if ( null != this.serialNumber && !this.serialNumber.equals("")) {
+            return (this.serialNumber).hashCode();
+        } else
+            return (this.deviceName).hashCode();
+//        return deviceId;
     }
 
     public boolean hasLogin(){
@@ -795,6 +788,14 @@ public class Device implements Serializable {
 
     public void setNextConnectionType(int nextConnectionType) {
         this.nextConnectionType = nextConnectionType;
+    }
+
+    public String getBuildTime() {
+        return buildTime;
+    }
+
+    public void setBuildTime(String buildTime) {
+        this.buildTime = buildTime;
     }
 
     public void initEncodeArrays(){

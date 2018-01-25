@@ -216,7 +216,8 @@ public class DeviceFormActivity extends ActionBarActivity {
 
     public  void saveDevice () {
         if(save()) {
-            mDevice.setDeviceId(setId());
+            int id = mDevice.getId();
+//            mDevice.setDeviceId(setId());
             if(editPosition > -1){
                 deviceManager.logoutDevice(mDevice);
                 checkEdit();
@@ -226,7 +227,8 @@ public class DeviceFormActivity extends ActionBarActivity {
                 deviceManager.addDevice(mDevice, editPosition);
                 deviceManager.updateSurfaceViewManager(editPosition);
                 deviceManager.collapse = editPosition;
-            } else if (deviceManager.findDeviceById(mDevice.getDeviceId()) != null) {
+//            } else if (deviceManager.findDeviceById(mDevice.getDeviceId()) != null) {
+            } else if (deviceManager.findDeviceById(id) != null) {
                 Toast.makeText(this, "Dispositivo já adicionado.", Toast.LENGTH_SHORT).show();
             } else {
                 checkIfConnectionIsWifi();
