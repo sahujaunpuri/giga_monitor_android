@@ -39,7 +39,6 @@ public class DeviceListActivity extends ActionBarActivity {
     public static boolean running = false;
     private StatePreferences statePreferences;
 
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -81,8 +80,8 @@ public class DeviceListActivity extends ActionBarActivity {
                     Toast.makeText(mContext, "Finalize a gravação", Toast.LENGTH_SHORT).show();
                     return true;
                 } else if(previousGroup == groupPosition){
-                    /*parent.collapseGroup(previousGroup);
-                    previousGroup = -1;*/
+//                    parent.collapseGroup(previousGroup);
+//                    previousGroup = -1;
                     Log.d(TAG, "onGroupClick: ");
                     return true;
                 } else {
@@ -129,7 +128,8 @@ public class DeviceListActivity extends ActionBarActivity {
     @Override
     protected void onStop() {
         super.onStop();
-        Log.e("DeviceList", "Stop");
+        Log.e("DeviceList", "StopActions");
+        Log.e("DeviceList", "StopAllChannels");
         verifyIfSomeChannelIsSoundingOrRecording();
     }
 
@@ -215,6 +215,7 @@ public class DeviceListActivity extends ActionBarActivity {
 
     private void verifyIfSomeChannelIsSoundingOrRecording() {
         mDeviceManager.getExpandableListAdapter().stopActions();
+        mDeviceManager.stopAllChannels();
 //        mDeviceManager.getExpandableListAdapter().verifyOverlayMenuVisibility();
     }
 
@@ -245,6 +246,7 @@ public class DeviceListActivity extends ActionBarActivity {
                 startMediaActivity();
 
                 return true;
+
             default:
                 return super.onOptionsItemSelected(item);
         }
@@ -295,6 +297,4 @@ public class DeviceListActivity extends ActionBarActivity {
         setIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         startActivity(setIntent);
     }
-
-
 }

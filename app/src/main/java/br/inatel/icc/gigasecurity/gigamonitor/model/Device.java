@@ -11,10 +11,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.Calendar;
-
-import br.inatel.icc.gigasecurity.gigamonitor.core.DeviceManager;
 
 
 /**
@@ -25,6 +22,7 @@ public class Device implements Serializable {
     //Expose as need by GSON to exclude fields which should not be saved in Device List and void circular reference
     @Expose public String deviceName;
     @Expose public String hostname;
+    @Expose private int deviceId;
 
     //CONFIG_IPAddress
     @Expose private String ipAddress;
@@ -109,6 +107,19 @@ public class Device implements Serializable {
     @Expose private boolean ipPriorityConnection;
     @Expose private boolean domainPriorityConnection;
     @Expose private boolean cloudPriorityConnection;
+    @Expose private String connectionMethodString;
+    @Expose private boolean loginByIp = true;
+    @Expose private boolean loginByDomain = true;
+    @Expose private boolean loginByCloud = true;
+    @Expose private int nextConnectionType = 0;
+    public int ipAttempts = 1;
+    public int domainAttempts = 1;
+    public int cloudAttempts = 1;
+    public boolean ipAttemptsFail = false;
+    public boolean domainAttemptsFail = false;
+    public boolean cloudAttemptsFail = false;
+    public boolean allAttempstFail = false;
+
 
     private Calendar systemTime;
 
@@ -205,7 +216,7 @@ public class Device implements Serializable {
                 if(ipAddress != null && !ipAddress.isEmpty()) {
                     loginAttempt++;
                     connectionString = ipAddress + ":" + tcpPort;
-                    message = "Conectando via IP";
+                    message = "Conectando via IP" + "\nTentativa: " + ipAttempts;
                 } else {
                     return -1;
                 }
@@ -218,7 +229,7 @@ public class Device implements Serializable {
                     } else {
                         connectionString = domain + ":" + tcpPort;
                     }
-                    message = "Conectando via domínio/IP externo";
+                    message = "Conectando via domínio/IP externo" + "\nTentativa: " + domainAttempts;
                 } else {
                     return -1;
                 }
@@ -227,7 +238,7 @@ public class Device implements Serializable {
             case 2: {     //cloud
                 if(!serialNumber.isEmpty()) {
                     connectionString = serialNumber;
-                    message = "Conectando via cloud";
+                    message = "Conectando via cloud" + "\nTentativa: " + cloudAttempts;
                 } else {
                     return -1;
                 }
@@ -253,12 +264,9 @@ public class Device implements Serializable {
             return (this.serialNumber).hashCode();
         } else
             return (this.deviceName).hashCode();
-
-//        return super.hashCode();
     }
 
     public int getId() {
-//        return (this.serialNumber).hashCode();
         if ( null != this.serialNumber && !this.serialNumber.equals("")) {
             return (this.serialNumber).hashCode();
         } else
@@ -550,6 +558,14 @@ public class Device implements Serializable {
         this.connectionMethod = connectionMethod;
     }
 
+    public String getConnectionMethodString() {
+        return connectionMethodString;
+    }
+
+    public void setConnectionMethodString(String connectionMethodString) {
+        this.connectionMethodString = connectionMethodString;
+    }
+
     public String getHostID() {
         String hostID;
         if (getIpAddress() != null && !getIpAddress().isEmpty()) {
@@ -561,7 +577,6 @@ public class Device implements Serializable {
         }
         return hostID;
     }
-
 
     @Override
     public String toString() {
@@ -728,6 +743,46 @@ public class Device implements Serializable {
         }
     }
 
+    public String getDeviceName() {
+        return deviceName;
+    }
+
+    public void setDeviceName(String deviceName) {
+        this.deviceName = deviceName;
+    }
+
+    public boolean isLoginByIp() {
+        return loginByIp;
+    }
+
+    public void setLoginByIp(boolean loginByIp) {
+        this.loginByIp = loginByIp;
+    }
+
+    public boolean isLoginByDomain() {
+        return loginByDomain;
+    }
+
+    public void setLoginByDomain(boolean loginByDomain) {
+        this.loginByDomain = loginByDomain;
+    }
+
+    public boolean isLoginByCloud() {
+        return loginByCloud;
+    }
+
+    public void setLoginByCloud(boolean loginByCloud) {
+        this.loginByCloud = loginByCloud;
+    }
+
+    public int getNextConnectionType() {
+        return nextConnectionType;
+    }
+
+    public void setNextConnectionType(int nextConnectionType) {
+        this.nextConnectionType = nextConnectionType;
+    }
+
     public void initEncodeArrays(){
         this.primaryResolution = new String[channelNumber];
         this.primaryFrameRate = new String[channelNumber];
@@ -783,4 +838,13 @@ public class Device implements Serializable {
         }
     }
 
+    public void resetAttempts() {
+        this.ipAttempts = 1;
+        this.domainAttempts = 1;
+        this.cloudAttempts = 1;
+        this.ipAttemptsFail = false;
+        this.domainAttemptsFail = false;
+        this.cloudAttemptsFail = false;
+        this.allAttempstFail = false;
+    }
 }

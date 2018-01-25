@@ -28,7 +28,7 @@
         android:layout_marginLeft="8dp"
         android:layout_marginBottom="10dp"
         android:layout_gravity="center"
-        android:text="Conectando..."
+        android:text="Carregando informações para iniciar conexão..."
         android:id="@+id/tv_message_connecting" />
 
     <br.inatel.icc.gigasecurity.gigamonitor.ui.OverlayMenu

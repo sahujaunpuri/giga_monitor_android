@@ -16,7 +16,6 @@ import br.inatel.icc.gigasecurity.gigamonitor.R;
 import br.inatel.icc.gigasecurity.gigamonitor.activities.DeviceListActivity;
 import br.inatel.icc.gigasecurity.gigamonitor.core.DeviceManager;
 import br.inatel.icc.gigasecurity.gigamonitor.model.ChannelsManager;
-import br.inatel.icc.gigasecurity.gigamonitor.model.DeviceChannelsManager;
 import br.inatel.icc.gigasecurity.gigamonitor.util.Utils;
 
 /**
@@ -101,14 +100,14 @@ public class OverlayMenu extends RelativeLayout {
             ivPTZ.setImageDrawable(mContext.getResources().getDrawable(R.drawable.ic_ptz));
         }
 
-        if(surfaceViewComponent.isConnected()) {
+        if(surfaceViewComponent.isConnected() && !surfaceViewComponent.isLoading()) {
             if (surfaceViewComponent.isPlaying) {
                 ivPlayPause.setImageDrawable(mContext.getResources().getDrawable(R.drawable.ic_pause_white_48dp));
             } else {
                 ivPlayPause.setImageDrawable(mContext.getResources().getDrawable(R.drawable.ic_play_arrow_white_48dp));
             }
         } else{
-            ivPlayPause.setVisibility(INVISIBLE);
+            ivPlayPause.setImageDrawable(mContext.getResources().getDrawable(R.drawable.ic_refresh_white_48dp));
         }
 
         if (surfaceViewComponent.isREC()) {
@@ -142,7 +141,7 @@ public class OverlayMenu extends RelativeLayout {
         ivPlayPause.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (surfaceViewComponent.isConnected()) {
+                if (surfaceViewComponent.isConnected() && !surfaceViewComponent.isLoading()) {
                     if (surfaceViewComponent.isPlaying) {
                         deviceChannelsManager.onPause(surfaceViewComponent);
                         ivPlayPause.setImageDrawable(mContext.getResources().getDrawable(R.drawable.ic_play_arrow_white_48dp));
@@ -150,6 +149,9 @@ public class OverlayMenu extends RelativeLayout {
                         deviceChannelsManager.onResume(surfaceViewComponent);
                         ivPlayPause.setImageDrawable(mContext.getResources().getDrawable(R.drawable.ic_pause_white_48dp));
                     }
+                } else {
+                    Log.d("OverlayMenu", "Refresh SurfaceViewComponent");
+                    deviceChannelsManager.onStartVideo(surfaceViewComponent);
                 }
             }
         });

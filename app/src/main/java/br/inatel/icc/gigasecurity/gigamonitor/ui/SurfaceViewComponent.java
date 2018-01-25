@@ -7,13 +7,11 @@ import android.os.Handler;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.GestureDetector;
-import android.view.Gravity;
 import android.view.MotionEvent;
 import android.view.ScaleGestureDetector;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
-import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -21,25 +19,17 @@ import android.widget.Toast;
 import com.lib.EPTZCMD;
 import com.video.opengl.GLSurfaceView20;
 
-import br.inatel.icc.gigasecurity.gigamonitor.core.DeviceManager;
 import br.inatel.icc.gigasecurity.gigamonitor.model.ChannelsManager;
-
-/**
- * Created by zappts on 4/6/17.
- */
 
 public class SurfaceViewComponent extends FrameLayout {
     String TAG = "SurfaceViewLayout";
     String TAG2 = "SurfaceViewLayoutTouch";
     public ChannelsManager mChannelsManager;
-    private DeviceManager mDeviceManager;
     public GLSurfaceView20 mySurfaceView;
     public ProgressBar progressBar;
     public TextView message;
-    public ImageView errorIcon;
     public OverlayPTZ ptzOverlay;
 
-    private FrameLayout.LayoutParams lp;
     private Context mContext;
     public int deviceId;
     public String deviceConnection;
@@ -66,8 +56,8 @@ public class SurfaceViewComponent extends FrameLayout {
     public boolean isPTZEnabled = false;
     private float previousX = 0, previousY = 0, dx, dy;
     private int previsousPTZCommand;
-    private ImageView ivTouch;
     private boolean longPress = false;
+    private boolean isLoading = false;
 
     public SurfaceViewComponent(Context context, ChannelsManager channelsManager, int id) {
         super(context);
@@ -92,7 +82,6 @@ public class SurfaceViewComponent extends FrameLayout {
 
     private void init(){
         this.setLongClickable(true);
-        mDeviceManager = DeviceManager.getInstance();
         mScaleDetector = new ScaleGestureDetector(mContext, new ScaleListener());
         mClickListener = new GestureDetector(mContext, new SimpleGestureDetector());
 
@@ -133,14 +122,14 @@ public class SurfaceViewComponent extends FrameLayout {
         return this;
     }
 
-    public void setViewSize(final int width, final int height){
-        FrameLayout.LayoutParams pbParam = new FrameLayout.LayoutParams(width, height, Gravity.CENTER);
-        progressBar.setLayoutParams(pbParam);
-        FrameLayout.LayoutParams svParam = new FrameLayout.LayoutParams(width, height, Gravity.CENTER);
-        mySurfaceView.setLayoutParams(svParam);
-
-        this.requestLayout();
-    }
+//    public void setViewSize(final int width, final int height){
+//        FrameLayout.LayoutParams pbParam = new FrameLayout.LayoutParams(width, height, Gravity.CENTER);
+//        progressBar.setLayoutParams(pbParam);
+//        FrameLayout.LayoutParams svParam = new FrameLayout.LayoutParams(width, height, Gravity.CENTER);
+//        mySurfaceView.setLayoutParams(svParam);
+//
+//        this.requestLayout();
+//    }
 
     public boolean isHD(){
         return (streamType == 0);
@@ -154,9 +143,9 @@ public class SurfaceViewComponent extends FrameLayout {
         return isPlaying;
     }
 
-    public void setIsPlaying(boolean isPlaying) {
-        this.isPlaying = isPlaying;
-    }
+//    public void setIsPlaying(boolean isPlaying) {
+//        this.isPlaying = isPlaying;
+//    }
 
     public boolean isConnected(){
         return isConnected;
@@ -191,20 +180,20 @@ public class SurfaceViewComponent extends FrameLayout {
         mChannelsManager.enablePTZ(PTZEnabled, this);
     }
 
-    public void enablePTZ() {
+//    public void enablePTZ() {
 //        ivTouch = new ImageView(mContext);
 //        ivTouch.setImageResource(R.drawable.ic_touch_white_36dp);
 //        FrameLayout.LayoutParams params = new FrameLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT, Gravity.CENTER);
 //        this.addView(ivTouch, params);
 //        ivTouch.setScaleX(0.6f);
 //        ivTouch.setScaleY(0.6f);
-
+//
 //        LayoutInflater inflater = (LayoutInflater)mDeviceManager.currentContext.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 //        ptzOverlay = inflater.inflate(R.layout.ptz_overlay, null);
 //        this.addView(ptzOverlay);
 //        ivTouch = (ImageView) findViewById(R.id.touch_icon);
-        Log.d(TAG, "enablePTZ: ");
-    }
+//        Log.d(TAG, "enablePTZ: ");
+//    }
 
     public void disablePTZ() {
         isPTZEnabled = false;
@@ -223,13 +212,13 @@ public class SurfaceViewComponent extends FrameLayout {
         return mySurfaceViewChannelId;
     }
 
-    public void setMySurfaceViewChannelId(int mySurfaceViewChannelId) {
-        this.mySurfaceViewChannelId = mySurfaceViewChannelId;
-    }
-
-    public int getDeviceId(){
-        return deviceId;
-    }
+//    public void setMySurfaceViewChannelId(int mySurfaceViewChannelId) {
+//        this.mySurfaceViewChannelId = mySurfaceViewChannelId;
+//    }
+//
+//    public int getDeviceId(){
+//        return deviceId;
+//    }
 
     public void isLoading(final boolean isLoading){
         ((Activity) mContext).runOnUiThread(new Runnable() {
@@ -237,8 +226,10 @@ public class SurfaceViewComponent extends FrameLayout {
             public void run() {
                 if(isLoading) {
                     progressBar.setVisibility(VISIBLE);
+                    setLoading(true);
                 }else {
                     progressBar.setVisibility(GONE);
+                    setLoading(false);
 //                    mySurfaceView.setVisibility(VISIBLE);
                 }
             }
@@ -249,8 +240,8 @@ public class SurfaceViewComponent extends FrameLayout {
         int command = -1;
         int sensitivity = 20;
         int sensitivityDiagonal = 10;
-        float absDX = Math.abs(dx);
-        float absDY = Math.abs(dy);
+//        float absDX = Math.abs(dx);
+//        float absDY = Math.abs(dy);
         if(dx>sensitivityDiagonal && dy>sensitivityDiagonal){
             //direita baixo
 //            label.setText(" DB");
@@ -355,7 +346,7 @@ public class SurfaceViewComponent extends FrameLayout {
     public GLSurfaceView20.OnZoomListener mScaleListener = new GLSurfaceView20.OnZoomListener(){
         @Override
         public void onScale(float v, View view, MotionEvent motionEvent) {
-            float oldScale = mScaleFactor;
+//            float oldScale = mScaleFactor;
             mScaleFactor = v;
 //            if (mScaleFactor > 1.0 && isPTZEnabled() && oldScale != mScaleFactor) {
 //                ivTouch.setVisibility(INVISIBLE);
@@ -378,7 +369,7 @@ public class SurfaceViewComponent extends FrameLayout {
 
     @Override
     public boolean onInterceptTouchEvent(MotionEvent ev) {
-        boolean ret = false;
+//        boolean ret = false;
         final int action = ev.getActionMasked();
         final int pointerCount = ev.getPointerCount();
 
@@ -436,7 +427,7 @@ public class SurfaceViewComponent extends FrameLayout {
             }
         }
 
-        return ret;
+        return false;
     }
 
     final Handler handler = new Handler();
@@ -550,6 +541,11 @@ public class SurfaceViewComponent extends FrameLayout {
         }*/
     }
 
+    public boolean isLoading() {
+        return isLoading;
+    }
 
-
+    public void setLoading(boolean loading) {
+        isLoading = loading;
+    }
 }
