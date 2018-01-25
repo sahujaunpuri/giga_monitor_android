@@ -11,6 +11,7 @@
         android:layout_height="match_parent"
         android:orientation="vertical"
         android:gravity="center_horizontal"
+        android:id="@+id/linear_layout_cloud_3"
         android:visibility="visible">
 
         <TextView
@@ -105,7 +106,8 @@
         android:layout_height="match_parent"
         android:orientation="vertical"
         android:gravity="center_horizontal"
-        android:visibility="gone">
+        android:visibility="gone"
+        android:id="@+id/linear_layout_cloud_3_reboot_btn">
 
         <TextView
             style="@style/CustomDialogCloud3TextView8"
@@ -128,6 +130,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="60dp"
                 android:gravity="center_horizontal"
+                android:id="@+id/image_view_update"
                 android:src="@drawable/update_icon" />
 
         </LinearLayout>

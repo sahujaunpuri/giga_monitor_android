@@ -1743,15 +1743,22 @@ public class DeviceManager implements IFunSDKResult {
     }
 
     public void tryToConnect(Device device) {
-        if (!device.ipAttemptsFail && device.isIpPriorityConnection() && !device.getIpAddress().equals("")) {
-            loginAttemptByIp(device);
-        } else if (!device.domainAttemptsFail && device.isDomainPriorityConnection() && !device.getDomain().equals("")) {
-            loginAttemptByDomain(device);
-        } else if (!device.cloudAttemptsFail && device.isCloudPriorityConnection() && !device.getSerialNumber().equals("")) {
-            loginAttemptByCloud(device);
-        } else {
-            device.allAttempstFail = true;
-            expandableListAdapter.setMessage(mDevices.indexOf(device), "Falha na conexão");
+        try {
+            if (device == null) {
+                return;
+            } else {
+                if (!device.ipAttemptsFail && device.isIpPriorityConnection() && !device.getIpAddress().equals("")) {
+                    loginAttemptByIp(device);
+                } else if (!device.domainAttemptsFail && device.isDomainPriorityConnection() && !device.getDomain().equals("")) {
+                    loginAttemptByDomain(device);
+                } else if (!device.cloudAttemptsFail && device.isCloudPriorityConnection() && !device.getSerialNumber().equals("")) {
+                    loginAttemptByCloud(device);
+                } else {
+                    device.allAttempstFail = true;
+                }
+            }
+        } catch (Exception error) {
+            error.printStackTrace();
         }
     }
 

@@ -12,6 +12,7 @@ import android.view.View;
 import android.view.Window;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
@@ -434,10 +435,13 @@ public class Utils {
         dialog.setContentView(R.layout.alert_dialog_cloud3);
         dialog.getWindow().setBackgroundDrawable(new ColorDrawable(android.graphics.Color.TRANSPARENT));
 
-        final TextView mTextViewDialog7              = (TextView) dialog.getWindow().findViewById(R.id.text_view_dialog_7);
-        final TextView mTextViewCancel               = (TextView) dialog.getWindow().findViewById(R.id.text_view_custom_dialog_cancel);
-        final LinearLayout mLinearLayoutButtonCloud3 = (LinearLayout) dialog.getWindow().findViewById(R.id.linear_layout_button_cloud_3);
-        final ImageButton mImageButtonCloud3         = (ImageButton) dialog.getWindow().findViewById(R.id.button_cloud_3);
+        final TextView mTextViewDialog7                 = (TextView) dialog.getWindow().findViewById(R.id.text_view_dialog_7);
+        final TextView mTextViewCancel                  = (TextView) dialog.getWindow().findViewById(R.id.text_view_custom_dialog_cancel);
+        final LinearLayout mLinearLayoutButtonCloud3    = (LinearLayout) dialog.getWindow().findViewById(R.id.linear_layout_button_cloud_3);
+        final ImageButton mImageButtonCloud3            = (ImageButton) dialog.getWindow().findViewById(R.id.button_cloud_3);
+        final ImageView mImageViewUpdate                = (ImageView) dialog.getWindow().findViewById(R.id.image_view_update);
+        final LinearLayout mLinearLayoutCloud3          = (LinearLayout) dialog.getWindow().findViewById(R.id.linear_layout_cloud_3);
+        final LinearLayout mLinearLayoutCloud3BtnReboot = (LinearLayout) dialog.getWindow().findViewById(R.id.linear_layout_cloud_3_reboot_btn);
 
         mTextViewCancel.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -452,7 +456,16 @@ public class Utils {
                 mImageButtonCloud3.setVisibility(View.GONE);
                 mTextViewCancel.setVisibility(View.GONE);
                 mLinearLayoutButtonCloud3.setVisibility(View.GONE);
-                mTextViewDialog7.setVisibility(View.VISIBLE);
+                mLinearLayoutCloud3.setVisibility(View.GONE);
+                mLinearLayoutCloud3BtnReboot.setVisibility(View.VISIBLE);
+
+            }
+        });
+
+        mImageViewUpdate.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                dialog.dismiss();
             }
         });
 
