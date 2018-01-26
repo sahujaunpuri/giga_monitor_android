@@ -1,6 +1,5 @@
 package br.inatel.icc.gigasecurity.gigamonitor.activities;
 
-import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -35,7 +34,6 @@ public class DeviceFormActivity extends ActionBarActivity {
     CheckBox cbIpAddress;
     CheckBox cbDomain;
     String TAG = "DeviceForm";
-    private ProgressDialog pd;
 
     private AsyncTask<Void, Void, Void> task;
 
@@ -256,9 +254,6 @@ public class DeviceFormActivity extends ActionBarActivity {
                 } else {
                     Toast.makeText(this, R.string.invalid_device_save, Toast.LENGTH_SHORT).show();
                 }
-
-                if(pd.isShowing())
-                    pd.dismiss();
 
                 break;
         }
