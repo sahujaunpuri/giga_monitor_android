@@ -186,7 +186,7 @@ public class DeviceListActivity extends ActionBarActivity implements View.OnClic
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
 
         if (mDeviceManager.getDevices().size() > 1) {
-            if (prefs.getBoolean("firstTime", true && !prefs.getBoolean("newUser", false))) {
+            if (prefs.getBoolean("firstTime", true)) {
                 mImageViewCloud3Btn.setVisibility(View.VISIBLE);
             }
         }
