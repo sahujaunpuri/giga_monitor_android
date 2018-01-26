@@ -663,6 +663,20 @@ public class DeviceManager implements IFunSDKResult {
         FunSDK.DevCmdGeneral(getHandler(), device.connectionString, 1450, "OPMachine", 2048, 10000, reboot.toString().getBytes(), -1, device.getId());
     }
 
+    public void rebootAllDevices(){
+        Device mDevice;
+        try {
+            for (int device = 0; device < mDevices.size(); device++) {
+                mDevice = mDevices.get(device);
+                if (!mDevice.getSerialNumber().equals("Favoritos")) {
+                    rebootDevice(mDevice);
+                }
+            }
+        } catch (Exception error) {
+            error.printStackTrace();
+        }
+    }
+
     public void generalCommand(JSONObject json, Device device, int commandId) throws JSONException {
         FunSDK.DevCmdGeneral(getHandler(), device.connectionString,
                 commandId, json.getString("Name"), 0, 10000,
@@ -1503,11 +1517,17 @@ public class DeviceManager implements IFunSDKResult {
                         device.setConnectionMethod(-1);
                     }
                 } else if (device != null) {
-                    try {
-                        tryToConnect(device);
-                        loginList.get(device.getId()).onLoginError(msg.arg1, device);
-                    } catch (Exception error) {
-                        error.printStackTrace();
+                    if (device.allAttempstFail) {
+                        if (loginList.get(device.getId()) != null)
+                            loginList.get(device.getId()).onLoginError(msg.arg1, device);
+                        loginList.remove(device.getId());
+                    } else {
+                        try {
+                            tryToConnect(device);
+                            loginList.get(device.getId()).onLoginError(msg.arg1, device);
+                        } catch (Exception error) {
+                            error.printStackTrace();
+                        }
                     }
                 }
             }

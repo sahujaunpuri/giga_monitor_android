@@ -73,6 +73,10 @@ public class DeviceListActivity extends ActionBarActivity implements View.OnClic
         //if don't have any device registered, start InitialActivity.
         if(mDevices.size() == 1) {
             startInitialActivity();
+            SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(mContext);
+            SharedPreferences.Editor editor = prefs.edit();
+            editor.putBoolean("newUser", true);
+            editor.commit();
 //            finish();
         }
 
@@ -182,7 +186,7 @@ public class DeviceListActivity extends ActionBarActivity implements View.OnClic
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
 
         if (mDeviceManager.getDevices().size() > 1) {
-            if (!prefs.getBoolean("firstTime", false)) {
+            if (prefs.getBoolean("firstTime", true && !prefs.getBoolean("newUser", false))) {
                 mImageViewCloud3Btn.setVisibility(View.VISIBLE);
             }
         }
@@ -349,7 +353,6 @@ public class DeviceListActivity extends ActionBarActivity implements View.OnClic
                 startMediaActivity();
                 break;
             case (R.id.image_button_cloud3):
-//                Utils.showCustomDialog(mContext, DeviceListActivity.this);
                 showCustomDialog();
                 break;
         }
