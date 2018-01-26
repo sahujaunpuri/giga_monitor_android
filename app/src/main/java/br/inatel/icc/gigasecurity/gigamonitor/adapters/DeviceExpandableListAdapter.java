@@ -120,7 +120,6 @@ public class DeviceExpandableListAdapter extends BaseExpandableListAdapter {
         groupViewHolder.blank        = mInflater.inflate(R.layout.blank_layout, parent, false);
         groupViewHolder.ivQuad       = (ImageView) convertView.findViewById(R.id.iv_grid_list_device);
         groupViewHolder.ivMore       = (ImageView) convertView.findViewById(R.id.iv_device_more);
-        groupViewHolder.ivIndicator  = (ImageView) convertView.findViewById(R.id.iv_indicator);
         groupViewHolder.ivAddMore    = (ImageView) convertView.findViewById(R.id.iv_add_fav);
         groupViewHolder.ivRefresh    = (ImageView) convertView.findViewById(R.id.iv_refresh);
         groupViewHolder.tvDeviceName = (TextView) convertView.findViewById(R.id.tv_hostname_list_device);
@@ -342,13 +341,12 @@ public class DeviceExpandableListAdapter extends BaseExpandableListAdapter {
             @Override
             public void run() {
                 childViewHolder.tvMessage.setVisibility(View.GONE);
-                groupViewHolder.ivQuad.setVisibility(View.INVISIBLE);
+                groupViewHolder.ivQuad.setVisibility(View.GONE);
                 Log.d("Device Name:", groupViewHolder.mDevice.deviceName);
                 groupViewHolder.ivRefresh.setVisibility(View.VISIBLE);
                 if (groupViewHolder.mDevice.getSerialNumber().equals("Favoritos") || groupViewHolder.mDevice.isLogged) {
-                    groupViewHolder.ivRefresh.setVisibility(View.INVISIBLE);
+                    groupViewHolder.ivRefresh.setVisibility(View.GONE);
                 }
-                groupViewHolder.ivIndicator.setImageDrawable(mContext.getResources().getDrawable(R.drawable.ic_indicator_minus));
                 if (groupViewHolder.mDevice.getChannelNumber() == 0) {
                     if(groupViewHolder.mDevice.getSerialNumber().equals("Favoritos"))
                         childViewHolder.tvMessage.setText("Nenhum favorito adicionado.");
@@ -356,7 +354,7 @@ public class DeviceExpandableListAdapter extends BaseExpandableListAdapter {
                         childViewHolder.tvMessage.setText("Nenhum canal encontrado.");
                     childViewHolder.tvMessage.setVisibility(View.VISIBLE);
                     childViewHolder.recyclerViewChannels.setVisibility(View.GONE);
-                    groupViewHolder.ivMore.setVisibility(View.INVISIBLE);
+                    groupViewHolder.ivMore.setVisibility(View.GONE);
                 }
                 else if (groupViewHolder.mDevice.getChannelNumber() > 0 && groupViewHolder.mDevice.isLogged) {
                     if (groupViewHolder.mDevice.getSerialNumber().equals("Favoritos")) {
@@ -383,7 +381,7 @@ public class DeviceExpandableListAdapter extends BaseExpandableListAdapter {
                 public void run() {
                     currentGroupViewHolder.ivRefresh.setVisibility(View.VISIBLE);
                     if (currentGroupViewHolder.mDevice.getSerialNumber().equals("Favoritos") || currentGroupViewHolder.mDevice.isLogged) {
-                        currentGroupViewHolder.ivRefresh.setVisibility(View.INVISIBLE);
+                        currentGroupViewHolder.ivRefresh.setVisibility(View.GONE);
                     }
 
                 }
@@ -403,12 +401,11 @@ public class DeviceExpandableListAdapter extends BaseExpandableListAdapter {
             ((DeviceListActivity) mContext).runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
-                    currentGroupViewHolder.ivAddMore.setVisibility(View.INVISIBLE);
-                    currentGroupViewHolder.ivMore.setVisibility(View.INVISIBLE);
-                    currentGroupViewHolder.ivIndicator.setImageDrawable(mContext.getResources().getDrawable(R.drawable.ic_indicator_plus));
-                    currentGroupViewHolder.ivQuad.setVisibility(View.INVISIBLE);
-                    currentGroupViewHolder.ivRefresh.setVisibility(View.INVISIBLE);
-                    currentChildViewHolder.recyclerViewChannels.setVisibility(View.INVISIBLE);
+                    currentGroupViewHolder.ivAddMore.setVisibility(View.GONE);
+                    currentGroupViewHolder.ivMore.setVisibility(View.GONE);
+                    currentGroupViewHolder.ivQuad.setVisibility(View.GONE);
+                    currentGroupViewHolder.ivRefresh.setVisibility(View.GONE);
+                    currentChildViewHolder.recyclerViewChannels.setVisibility(View.GONE);
                     currentChildViewHolder.overlayMenu.setVisibility(View.GONE);
                     currentChildViewHolder.recyclerViewChannels.removeAllViewsInLayout();
                     currentChildViewHolder.recyclerViewChannels.removeAllViewsInLayout();
@@ -483,7 +480,7 @@ public class DeviceExpandableListAdapter extends BaseExpandableListAdapter {
 //            notifyDataSetChanged();
         }
         if(channelsManager.surfaceViewComponents.isEmpty() && childViewHolder.get(position).recyclerViewChannels != null) {
-            childViewHolder.get(position).recyclerViewChannels.setVisibility(View.INVISIBLE);
+            childViewHolder.get(position).recyclerViewChannels.setVisibility(View.GONE);
             childViewHolder.get(position).tvMessage.setVisibility(View.VISIBLE);
         }
     }
@@ -494,7 +491,7 @@ public class DeviceExpandableListAdapter extends BaseExpandableListAdapter {
             public void onLoginSuccess(Device device) {
                 mDevice.isLogged = true;
                 mDeviceManager.clearStart();
-                groupViewHolder.ivRefresh.setVisibility(View.INVISIBLE);
+                groupViewHolder.ivRefresh.setVisibility(View.GONE);
                 updateGrid(position, mDeviceManager.getDeviceChannelsManagers().get(position));
                 showExpanded(position, groupViewHolder, childViewHolder);
                 childViewHolder.gridLayoutManager.scrollToPosition(mDeviceManager.getDeviceChannelsManagers().get(position).lastFirstVisibleItem);
@@ -507,11 +504,11 @@ public class DeviceExpandableListAdapter extends BaseExpandableListAdapter {
                         @Override
                         public void run() {
                             mDevice.isLogged = false;
-                            groupViewHolder.ivQuad.setVisibility(View.INVISIBLE);
-                            groupViewHolder.ivMore.setVisibility(View.INVISIBLE);
+                            groupViewHolder.ivQuad.setVisibility(View.GONE);
+                            groupViewHolder.ivMore.setVisibility(View.GONE);
                             childViewHolder.recyclerViewChannels.setVisibility(View.GONE);
-                            childViewHolder.tvMessage.setVisibility(View.VISIBLE);
-                            groupViewHolder.ivRefresh.setVisibility(View.VISIBLE);
+                            childViewHolder.tvMessage.setVisibility(View.GONE);
+                            groupViewHolder.ivRefresh.setVisibility(View.GONE);
                             String errorMsg;
                             if(error == -11301)
                                 errorMsg = "Login ou senha incorretos.";
@@ -760,7 +757,6 @@ public class DeviceExpandableListAdapter extends BaseExpandableListAdapter {
     public class GroupViewHolder {
         public TextView tvDeviceName;
         public Device mDevice;
-        public ImageView ivIndicator;
         public ImageView ivMore;
         public ImageView ivQuad;
         public ImageView ivAddMore;

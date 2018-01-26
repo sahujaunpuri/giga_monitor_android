@@ -8,17 +8,13 @@ import android.support.v7.app.ActionBarActivity;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
-import android.widget.Button;
+import android.widget.LinearLayout;
+import android.widget.TextView;
 
 import br.inatel.icc.gigasecurity.gigamonitor.R;
-import br.inatel.icc.gigasecurity.gigamonitor.activities.AboutActivity;
+import br.inatel.icc.gigasecurity.gigamonitor.config.about.AboutActivity;
 import br.inatel.icc.gigasecurity.gigamonitor.activities.DeviceListActivity;
-import br.inatel.icc.gigasecurity.gigamonitor.config.ddns.DDNSConfigActivity;
-import br.inatel.icc.gigasecurity.gigamonitor.config.dns.DNSConfigActivity;
-import br.inatel.icc.gigasecurity.gigamonitor.config.encode.EncodeActivity;
-import br.inatel.icc.gigasecurity.gigamonitor.config.ethernet.EthernetConfigActivity;
 import br.inatel.icc.gigasecurity.gigamonitor.config.password.PasswordConfigActivity;
-import br.inatel.icc.gigasecurity.gigamonitor.config.upnp.UpnpConfigActivity;
 import br.inatel.icc.gigasecurity.gigamonitor.core.DeviceManager;
 import br.inatel.icc.gigasecurity.gigamonitor.model.Device;
 
@@ -28,10 +24,11 @@ public class ConfigMenuActivity extends ActionBarActivity implements OnClickList
     // debug tag
     private final String TAG = ConfigMenuActivity.class.getSimpleName();
 
-    private Button mWifiButton, mGeneralButton, mEthernetButton, mCloudButton, mDNSButton, mDHCPButton, mDDNSButton, mUPnPButton, mPasswordButton, mRebootDeviceButton, mEncodeButton, mAboutButton;
+    private TextView mPasswordTextView, mRebootDeviceTextView, mAboutTextView, mNetworkTextView, mBackTextView;
     private Device mDevice;
     private int deviceId;
     private DeviceManager mDeviceManager;
+    private LinearLayout mNetworkLinearLayout, mPasswordLinearLayout, mRebootDeviceLinearLayout, mAboutLinearLayout;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -40,7 +37,8 @@ public class ConfigMenuActivity extends ActionBarActivity implements OnClickList
         setContentView(R.layout.activity_config);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
-        findViews();
+        initTextViews();
+        initLayouts();
         setListeners();
 
 
@@ -49,36 +47,31 @@ public class ConfigMenuActivity extends ActionBarActivity implements OnClickList
         deviceId = (int) extras.getSerializable(KEY_ARGS);
 
         mDeviceManager = DeviceManager.getInstance();
+
+        getSupportActionBar().hide();
     }
 
-    private void findViews() {
-//        mWifiButton         = (Button) findViewById(R.id.button_wifi_config);
-        mGeneralButton      = (Button) findViewById(R.id.button_general_config);
-        mEthernetButton     = (Button) findViewById(R.id.button_ethernet_config);
-        //mCloudButton        = (Button) findViewById(R.id.button_cloud_config);
-        mDNSButton          = (Button) findViewById(R.id.button_dns_config);
-        //mDHCPButton         = (Button) findViewById(R.id.button_dhcp_config);
-        mDDNSButton         = (Button) findViewById(R.id.button_ddns_config);
-        mUPnPButton         = (Button) findViewById(R.id.button_upnp_config);
-        mPasswordButton     = (Button) findViewById(R.id.button_password_config);
-        mRebootDeviceButton = (Button) findViewById(R.id.button_reboot_device);
-        mEncodeButton       = (Button) findViewById(R.id.button_encode);
-        mAboutButton        = (Button) findViewById(R.id.button_about_device);
+    private void initTextViews() {
+        mPasswordTextView     = (TextView) findViewById(R.id.text_view_password_config);
+        mRebootDeviceTextView = (TextView) findViewById(R.id.text_view_reboot_device);
+        mAboutTextView        = (TextView) findViewById(R.id.text_view_about_device);
+        mNetworkTextView      = (TextView) findViewById(R.id.text_view_network);
+        mBackTextView         = (TextView) findViewById(R.id.text_view_cancel);
+    }
+
+    private void initLayouts() {
+        mNetworkLinearLayout      = (LinearLayout) findViewById(R.id.linear_layout_network);
+        mPasswordLinearLayout     = (LinearLayout) findViewById(R.id.linear_layout_password);
+        mRebootDeviceLinearLayout = (LinearLayout) findViewById(R.id.linear_layout_reboot);
+        mAboutLinearLayout        = (LinearLayout) findViewById(R.id.linear_layout_about);
     }
 
     private void setListeners() {
-        //mWifiButton.setOnClickListener(this);
-        mGeneralButton.setOnClickListener(this);
-        mEthernetButton.setOnClickListener(this);
-        //mCloudButton.setOnClickListener(this);
-        mDNSButton.setOnClickListener(this);
-        //mDHCPButton.setOnClickListener(this);
-        mDDNSButton.setOnClickListener(this);
-        mUPnPButton.setOnClickListener(this);
-        mPasswordButton.setOnClickListener(this);
-        mRebootDeviceButton.setOnClickListener(this);
-        mEncodeButton.setOnClickListener(this);
-        mAboutButton.setOnClickListener(this);
+        mBackTextView.setOnClickListener(this);
+        mNetworkLinearLayout.setOnClickListener(this);
+        mPasswordLinearLayout.setOnClickListener(this);
+        mRebootDeviceLinearLayout.setOnClickListener(this);
+        mAboutLinearLayout.setOnClickListener(this);
     }
 
     @Override
@@ -102,41 +95,20 @@ public class ConfigMenuActivity extends ActionBarActivity implements OnClickList
         Intent intent = null;
 
         switch (v.getId()) {
-//            case R.id.button_wifi_config:
-//                //intent = new Intent(this, WifiSearchActivity.class);
-//                break;
-//            case R.id.button_general_config:
-//                intent = new Intent(this, GeneralConfigActivity.class);
-//                break;
-            case R.id.button_ethernet_config:
-                intent = new Intent(this, EthernetConfigActivity.class);
-                break;
-//            case R.id.button_cloud_config:
-//                //intent = new Intent(this, CloudConfigActivity.class);
-//                break;
-            case R.id.button_dns_config:
-                intent = new Intent(this, DNSConfigActivity.class);
-                break;
-//            case R.id.button_dhcp_config:
-//                //intent = new Intent(this, DHCPConfigActivity.class);
-//                break;
-            case R.id.button_ddns_config:
-                intent = new Intent(this, DDNSConfigActivity.class);
-                break;
-            case R.id.button_upnp_config:
-                intent = new Intent(this, UpnpConfigActivity.class);
-                break;
-            case R.id.button_password_config:
+            case R.id.linear_layout_password:
                 intent = new Intent(this, PasswordConfigActivity.class);
                 break;
-            case R.id.button_reboot_device:
+            case R.id.linear_layout_reboot:
                 showRebootDialog();
                 break;
-            case R.id.button_encode:
-                intent = new Intent(this, EncodeActivity.class);
-                break;
-            case R.id.button_about_device:
+            case R.id.linear_layout_about:
                 intent = new Intent(this, AboutActivity.class);
+                break;
+            case R.id.linear_layout_network:
+                intent = new Intent(this, ConfigMenuNetworkActivity.class);
+                break;
+            case R.id.text_view_cancel:
+                finish();
                 break;
             default:
                 break;

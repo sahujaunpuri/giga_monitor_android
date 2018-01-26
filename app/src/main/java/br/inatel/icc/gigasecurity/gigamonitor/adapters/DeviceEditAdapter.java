@@ -61,12 +61,16 @@ public class DeviceEditAdapter extends BaseAdapter {
 
             holder.delete = (ImageView) convertView.findViewById(R.id.iv_delete_device);
             holder.deviceName = (TextView) convertView.findViewById(R.id.tv_item_edit_device);
+            holder.deviceIcon = (ImageView) convertView.findViewById(R.id.image_view_device_icon);
             convertView.setTag(holder);
         } else {
             holder = (ViewHolder) convertView.getTag();
         }
 
-//        if(mDevices.get(position).getId() == ("Favoritos").hashCode()) {
+        if (mDevices.get(position).getChannelNumber() > 1) {
+            holder.deviceIcon.setImageDrawable(mContex.getResources().getDrawable(R.drawable.dvr_icon));
+        }
+
         if(mDevices.get(position).getDeviceName().equals("Favoritos")) {
             holder.delete.setVisibility(View.INVISIBLE);
         } else {
@@ -80,7 +84,7 @@ public class DeviceEditAdapter extends BaseAdapter {
                 showDeleteConfirmation(position);
             }
         });
-//        if(mDevices.get(position).getId() != ("Favoritos").hashCode())
+
         if(!mDevices.get(position).getDeviceName().equals("Favoritos"))
             holder.deviceName.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -95,7 +99,6 @@ public class DeviceEditAdapter extends BaseAdapter {
     private void startDeviceFormActivity(int position) {
         Bundle args = new Bundle();
 
-//        args.putSerializable("device", mDevices.get(position));
         args.putInt("index", position);
 
         Intent intent = new Intent(mContex, DeviceFormActivity.class);
@@ -105,8 +108,7 @@ public class DeviceEditAdapter extends BaseAdapter {
     }
 
     private void showDeleteConfirmation(final int deletePosition) {
-        AlertDialog.Builder alert = new AlertDialog.Builder(
-                mContex, R.style.Base_Theme_AppCompat_Light_Dialog);
+        AlertDialog.Builder alert = new AlertDialog.Builder(mContex, R.style.Base_Theme_AppCompat_Light_Dialog);
 
         alert.setTitle(R.string.action_delete);
         alert.setMessage(R.string.action_delete_confirmation);
@@ -129,5 +131,6 @@ public class DeviceEditAdapter extends BaseAdapter {
     private class ViewHolder {
         private ImageView delete;
         private TextView deviceName;
+        private ImageView deviceIcon;
     }
 }

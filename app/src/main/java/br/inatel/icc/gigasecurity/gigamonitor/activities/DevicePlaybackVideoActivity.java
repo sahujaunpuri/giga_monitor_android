@@ -9,6 +9,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.res.Configuration;
 import android.content.res.Resources;
+import android.graphics.PorterDuff;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
@@ -27,7 +28,6 @@ import android.view.animation.AnimationUtils;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
-import android.widget.RelativeLayout;
 import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -59,18 +59,18 @@ public class DevicePlaybackVideoActivity extends ActionBarActivity {
 
     private SurfaceViewComponent mSurfaceView;
     private DeviceChannelsManager mDeviceChannelsManager;
-    private RelativeLayout playbackLayout;
+    private LinearLayout playbackLayout;
     private LinearLayout playbackControls;
     private LinearLayout playbackStatus;
     private Menu menu;
     private SeekBar mSeekBar;
     private TextView seekBarTextView;
     private float seekBarTextPosition;
-    private ImageView thumbnail;
+    private ImageView thumbnail, mImageViewDownload, mImageViewGallery;
     private ProgressBar mProgressBar;
     private String initialTimeVideo;
-    private TextView initialTime, mStatusTextView, endTime;
-    private ImageView ivPlayPause, ivStop, ivForward, ivBackward;
+    private TextView initialTime, mStatusTextView, endTime, mTextViewBack;
+    private ImageView ivPlayPause, ivStop, ivForward, ivBackward, mImageViewSnapshot, mImageViewRec;
     private final String TAG = "playback";
     private int currentBar;
 
@@ -131,7 +131,7 @@ public class DevicePlaybackVideoActivity extends ActionBarActivity {
                         mActivity.runOnUiThread(new Runnable() {
                             @Override
                             public void run() {
-                                ivPlayPause.setImageDrawable(getResources().getDrawable(R.drawable.ic_pause_playback));
+                                ivPlayPause.setImageDrawable(getResources().getDrawable(R.drawable.pause_btn_style));
                                 mProgressBar.setVisibility(View.INVISIBLE);
                             }
                         });
@@ -277,7 +277,7 @@ public class DevicePlaybackVideoActivity extends ActionBarActivity {
         mSurfaceView = mDeviceChannelsManager.surfaceViewComponents.get(0);
 
         // Find views
-        playbackLayout = (RelativeLayout) findViewById(R.id.playback_relative_layout);
+        playbackLayout = (LinearLayout) findViewById(R.id.playback_relative_layout);
         mSurfaceView = (SurfaceViewComponent) findViewById(R.id.surface_view_test_2);
         mProgressBar = (ProgressBar) findViewById(R.id.pb_playback);
         playbackControls = (LinearLayout) findViewById(R.id.view_playback_controls);
@@ -290,7 +290,12 @@ public class DevicePlaybackVideoActivity extends ActionBarActivity {
         ivStop = (ImageView) findViewById(R.id.iv_stop_playback);
         ivForward = (ImageView) findViewById(R.id.iv_forward_playback);
         ivBackward = (ImageView) findViewById(R.id.iv_backward_playback);
-        ivPlayPause.setImageDrawable(getResources().getDrawable(R.drawable.ic_play_playback));
+        mTextViewBack = (TextView) findViewById(R.id.text_view_back);
+        mImageViewDownload = (ImageView) findViewById(R.id.image_view_download);
+        mImageViewGallery = (ImageView) findViewById(R.id.image_view_gallery);
+        ivPlayPause.setImageDrawable(getResources().getDrawable(R.drawable.play_btn_style));
+        mImageViewSnapshot = (ImageView) findViewById(R.id.image_view_snapshot);
+        mImageViewRec = (ImageView) findViewById(R.id.image_view_rec);
 
         setSeekBarTextViewPosition();
 
@@ -412,6 +417,51 @@ public class DevicePlaybackVideoActivity extends ActionBarActivity {
 
 //        requestDeviceSearchPicture();
 //        thumbnailView.setVisibility(View.INVISIBLE);
+
+        mTextViewBack.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (mSurfaceView.isREC()) {
+                    Toast.makeText(mActivity, getResources().getString(R.string.playback_being_recorded), Toast.LENGTH_SHORT).show();
+                } else {
+                    finish();
+                }
+            }
+        });
+
+        mImageViewDownload.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                downloadFile();
+            }
+        });
+
+        mImageViewGallery.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (mSurfaceView.isREC()) {
+                    Toast.makeText(mActivity, getResources().getString(R.string.playback_being_recorded), Toast.LENGTH_SHORT).show();
+                } else {
+                    startMediasActivity();
+                }
+            }
+        });
+
+        mImageViewSnapshot.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                snapshotPlayback();
+            }
+        });
+
+        mImageViewRec.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                recordPlayback();
+            }
+        });
+
+        getSupportActionBar().hide();
     }
 
     @Override
@@ -553,8 +603,14 @@ public class DevicePlaybackVideoActivity extends ActionBarActivity {
         MenuItem recordIcon = menu.findItem(R.id.playback_record);
         if (icon) {
             recordIcon.setIcon(R.mipmap.red_record);
+
+            final int newColor = getApplicationContext().getResources().getColor(R.color.giga_green);
+            mImageViewRec.setColorFilter(newColor, PorterDuff.Mode.SRC_ATOP);
         } else {
             recordIcon.setIcon(R.drawable.record);
+
+            final int newColor = getApplicationContext().getResources().getColor(R.color.default_color);
+            mImageViewRec.setColorFilter(newColor, PorterDuff.Mode.SRC_ATOP);
         }
     }
 
@@ -626,7 +682,7 @@ public class DevicePlaybackVideoActivity extends ActionBarActivity {
 
         updateStatusTextView(text);
 
-        ivPlayPause.setImageDrawable(getResources().getDrawable(R.drawable.ic_pause_playback));
+        ivPlayPause.setImageDrawable(getResources().getDrawable(R.drawable.pause_btn_style));
     }
 
     public void stop() {
@@ -645,7 +701,7 @@ public class DevicePlaybackVideoActivity extends ActionBarActivity {
             public void run() {
                 mSurfaceView.setVisibility(View.INVISIBLE);
                 mProgressBar.setVisibility(View.INVISIBLE);
-                ivPlayPause.setImageDrawable(getResources().getDrawable(R.drawable.ic_play_playback));
+                ivPlayPause.setImageDrawable(getResources().getDrawable(R.drawable.play_btn_style));
             }
         });
 
@@ -666,7 +722,7 @@ public class DevicePlaybackVideoActivity extends ActionBarActivity {
             mActivity.runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
-                    ivPlayPause.setImageDrawable(getResources().getDrawable(R.drawable.ic_play_playback));
+                    ivPlayPause.setImageDrawable(getResources().getDrawable(R.drawable.play_btn_style));
                 }
             });
         }

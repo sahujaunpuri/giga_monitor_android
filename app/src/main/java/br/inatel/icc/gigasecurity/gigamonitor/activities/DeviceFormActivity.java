@@ -5,10 +5,13 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.widget.CheckBox;
+import android.view.View;
 import android.widget.EditText;
+import android.widget.Switch;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import java.util.ArrayList;
@@ -23,6 +26,8 @@ public class DeviceFormActivity extends ActionBarActivity {
 
     private static final int SEARCH_ACTIVITY_REQUEST = 0;
 
+    TextView tvBack;
+    TextView tvSave;
     EditText etName;
     EditText etSerial;
     EditText etIpAddress;
@@ -30,9 +35,9 @@ public class DeviceFormActivity extends ActionBarActivity {
     EditText etDevicePort;
     EditText etUsername;
     EditText etPassword;
-    CheckBox cbSerial;
-    CheckBox cbIpAddress;
-    CheckBox cbDomain;
+    Switch cbSerial;
+    Switch cbIpAddress;
+    Switch cbDomain;
     String TAG = "DeviceForm";
 
     private AsyncTask<Void, Void, Void> task;
@@ -68,16 +73,9 @@ public class DeviceFormActivity extends ActionBarActivity {
 
         arrayList = deviceManager.getDevices();
 
-//        etDomain.setOnFocusChangeListener(new View.OnFocusChangeListener() {
-//            @Override
-//            public void onFocusChange(View view, boolean b) {
-//                if (!b) {
-//                }
-//            }
-//        });
 
-
-    }
+        getSupportActionBar().hide();
+}
 
     private void checkEdit() {
         if(editPosition != -1){
@@ -93,9 +91,13 @@ public class DeviceFormActivity extends ActionBarActivity {
         etDevicePort    = (EditText) findViewById(R.id.edit_text_device_form_port);
         etUsername      = (EditText) findViewById(R.id.edit_text_device_form_username);
         etPassword      = (EditText) findViewById(R.id.edit_text_device_form_password);
-        cbSerial        = (CheckBox) findViewById(R.id.serial_checkbox);
-        cbIpAddress     = (CheckBox) findViewById(R.id.ip_checkbox);
-        cbDomain        = (CheckBox) findViewById(R.id.domain_checkbox);
+        cbSerial        = (Switch) findViewById(R.id.serial_checkbox);
+        cbIpAddress     = (Switch) findViewById(R.id.ip_checkbox);
+        cbDomain        = (Switch) findViewById(R.id.domain_checkbox);
+        tvBack          = (TextView) findViewById(R.id.text_view_back);
+        tvSave          = (TextView) findViewById(R.id.text_view_save);
+        tvBack.setOnClickListener(backAction());
+        tvSave.setOnClickListener(saveAction());
     }
 
     private void setForm(Device device) {
@@ -261,5 +263,51 @@ public class DeviceFormActivity extends ActionBarActivity {
         return super.onOptionsItemSelected(item);
     }
 
+    public  void saveDevice () {
+        if(save()) {
+            int id = mDevice.getId();
+//            mDevice.setDeviceId(setId());
+            if(editPosition > -1){
+                deviceManager.logoutDevice(mDevice);
+                checkEdit();
+                mDevice.isLogged = false;
+                mDevice.setChannelNumber(0);
+                deviceManager.logoutDevice(mDevice);
+                deviceManager.addDevice(mDevice, editPosition);
+                deviceManager.updateSurfaceViewManager(editPosition);
+                deviceManager.collapse = editPosition;
+//            } else if (deviceManager.findDeviceById(mDevice.getDeviceId()) != null) {
+            } else if (deviceManager.findDeviceById(id) != null) {
+                Toast.makeText(this, "Dispositivo já adicionado.", Toast.LENGTH_SHORT).show();
+            } else {
+                checkIfConnectionIsWifi();
+                deviceManager.addDevice(mDevice);
+                deviceManager.addSurfaceViewManager(mDevice);
+            }
+            startDeviceListActivity();
+        } else {
+            Toast.makeText(this, R.string.invalid_device_save, Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    private View.OnClickListener backAction(){
+        return new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Log.d("DeviceFormActivity", "backAction");
+                finish();
+            }
+        };
+    }
+
+    private View.OnClickListener saveAction(){
+        return new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Log.d("DeviceFormActivity", "saveAction");
+                saveDevice();
+            }
+        };
+    }
 
 }

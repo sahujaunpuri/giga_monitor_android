@@ -22,7 +22,6 @@ public class Device implements Serializable {
     //Expose as need by GSON to exclude fields which should not be saved in Device List and void circular reference
     @Expose public String deviceName;
     @Expose public String hostname;
-    @Expose private int deviceId;
 
     //CONFIG_IPAddress
     @Expose private String ipAddress;
@@ -88,6 +87,7 @@ public class Device implements Serializable {
     private String gigaCode;
     private String softwareVersion;
     private String hardwareVersion;
+    private String buildTime;
     @Expose private int channelNumber = 0;
     @Expose private int numberOfAlarmsIn;
     @Expose private int numberOfAlarmsOut;
@@ -781,6 +781,14 @@ public class Device implements Serializable {
 
     public void setNextConnectionType(int nextConnectionType) {
         this.nextConnectionType = nextConnectionType;
+    }
+
+    public String getBuildTime() {
+        return buildTime;
+    }
+
+    public void setBuildTime(String buildTime) {
+        this.buildTime = buildTime;
     }
 
     public void initEncodeArrays(){

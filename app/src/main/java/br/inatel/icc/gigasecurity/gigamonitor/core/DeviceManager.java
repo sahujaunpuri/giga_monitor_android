@@ -355,6 +355,8 @@ public class DeviceManager implements IFunSDKResult {
                 device.setHardwareVersion(systemInfo.getString("HardWare"));
             if (systemInfo.has("SoftWareVersion"))
                 device.setSoftwareVersion(systemInfo.getString("SoftWareVersion"));
+            if (systemInfo.has("BuildTime"))
+                device.setBuildTime(systemInfo.getString("BuildTime"));
 //            if(systemInfo.has("VideoInChannel"))
 //                device.setChannelNumber(systemInfo.getInt("VideoInChannel") + systemInfo.getInt("DigChannel") + systemInfo.getInt("VideoOutChannel"));
             saveData();
@@ -1501,17 +1503,11 @@ public class DeviceManager implements IFunSDKResult {
                         device.setConnectionMethod(-1);
                     }
                 } else if (device != null) {
-                    if (device.allAttempstFail) {
-                        if (loginList.get(device.getId()) != null)
-                            loginList.get(device.getId()).onLoginError(msg.arg1, device);
-                        loginList.remove(device.getId());
-                    } else {
-                        try {
-                            tryToConnect(device);
-                            loginList.get(device.getId()).onLoginError(msg.arg1, device);
-                        } catch (Exception error) {
-                            error.printStackTrace();
-                        }
+                    try {
+                        tryToConnect(device);
+                        loginList.get(device.getId()).onLoginError(msg.arg1, device);
+                    } catch (Exception error) {
+                        error.printStackTrace();
                     }
                 }
             }

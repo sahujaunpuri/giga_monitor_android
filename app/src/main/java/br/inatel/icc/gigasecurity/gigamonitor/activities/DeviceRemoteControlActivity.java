@@ -10,17 +10,15 @@ import android.view.animation.AlphaAnimation;
 import android.view.animation.Animation;
 import android.view.animation.LinearInterpolator;
 import android.widget.ImageView;
-
-import com.lib.SDKCONST;
+import android.widget.TextView;
 
 import br.inatel.icc.gigasecurity.gigamonitor.R;
 import br.inatel.icc.gigasecurity.gigamonitor.core.DeviceManager;
 import br.inatel.icc.gigasecurity.gigamonitor.model.Device;
 
-import static br.inatel.icc.gigasecurity.gigamonitor.R.anim.blink;
-
 public class DeviceRemoteControlActivity extends ActionBarActivity {
 
+    public TextView tvCancel;
     public ImageView ivEsc, ivQuad, ivMenu, ivLeft, ivRight, ivUp, ivDown, ivOk;
     public DeviceManager mManager;
     public Device mDevice;
@@ -32,6 +30,12 @@ public class DeviceRemoteControlActivity extends ActionBarActivity {
 
         initComponents();
 
+        tvCancel.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                finish();
+            }
+        });
 
         ivEsc.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -114,17 +118,20 @@ public class DeviceRemoteControlActivity extends ActionBarActivity {
             }
         });
 
+        getSupportActionBar().hide();
+
     }
 
     private void initComponents() {
-        ivEsc   = (ImageView) findViewById(R.id.iv_control_esc);
-        ivQuad  = (ImageView) findViewById(R.id.iv_control_quad);
-        ivMenu  = (ImageView) findViewById(R.id.iv_control_menu);
-        ivLeft  = (ImageView) findViewById(R.id.iv_controle_left);
-        ivRight = (ImageView) findViewById(R.id.iv_control_right);
-        ivUp    = (ImageView) findViewById(R.id.iv_control_up);
-        ivDown  = (ImageView) findViewById(R.id.iv_control_down);
-        ivOk    = (ImageView) findViewById(R.id.iv_control_ok);
+        ivEsc     = (ImageView) findViewById(R.id.iv_control_esc);
+        ivQuad    = (ImageView) findViewById(R.id.iv_control_quad);
+        ivMenu    = (ImageView) findViewById(R.id.iv_control_menu);
+        ivLeft    = (ImageView) findViewById(R.id.iv_controle_left);
+        ivRight   = (ImageView) findViewById(R.id.iv_control_right);
+        ivUp      = (ImageView) findViewById(R.id.iv_control_up);
+        ivDown    = (ImageView) findViewById(R.id.iv_control_down);
+        ivOk      = (ImageView) findViewById(R.id.iv_control_ok);
+        tvCancel  = (TextView) findViewById(R.id.text_view_cancel);
 
         mManager = DeviceManager.getInstance();
 //        mDevice = (Device) getIntent().getExtras().getSerializable("device");
