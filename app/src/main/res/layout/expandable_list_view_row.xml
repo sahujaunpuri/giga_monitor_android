@@ -37,6 +37,15 @@
                     android:layout_width="30dp"
                     android:layout_height="30dp"
                     android:layout_marginLeft="6dp"
+                    android:layout_gravity="left|center_vertical"
+                    android:src="@drawable/refresh_btn_style"
+                    android:visibility="gone"
+                    android:id="@+id/iv_refresh" />
+
+                <ImageView
+                    android:layout_width="30dp"
+                    android:layout_height="30dp"
+                    android:layout_marginLeft="6dp"
                     android:visibility="gone"
                     android:src="@drawable/add_btn_style"
                     android:id="@+id/iv_add_fav"
@@ -57,14 +66,6 @@
                     android:visibility="gone"
                     android:src="@drawable/config_btn_style"
                     android:id="@+id/iv_device_more" />
-
-                <ImageView
-                    android:layout_width="30dp"
-                    android:layout_height="30dp"
-                    android:layout_marginLeft="6dp"
-                    android:src="@drawable/refresh_btn_style"
-                    android:visibility="gone"
-                    android:id="@+id/iv_refresh" />
 
             </TableRow>
 

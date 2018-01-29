@@ -237,11 +237,7 @@ public class DeviceEditListActivity extends ActionBarActivity implements View.On
                 startInitialActivity();
                 break;
             case R.id.image_view_done:
-                if(!deleted && !moved)
-                    finish();
-                else {
-                    exitAndSave();
-                }
+                exitAndSave();
                 break;
             default:
                 break;

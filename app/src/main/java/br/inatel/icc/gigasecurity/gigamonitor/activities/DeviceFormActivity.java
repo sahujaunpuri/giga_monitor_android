@@ -229,34 +229,27 @@ public class DeviceFormActivity extends ActionBarActivity {
             case R.id.action_save:
                 if(save()) {
                     int id = mDevice.getId();
-//                    mDevice.setDeviceId(setId());
                     if(editPosition > -1){
                         deviceManager.logoutDevice(mDevice);
                         checkEdit();
                         mDevice.isLogged = false;
                         mDevice.setChannelNumber(0);
-//                        mDevice.checkConnectionMethod();
                         deviceManager.logoutDevice(mDevice);
                         deviceManager.addDevice(mDevice, editPosition);
                         deviceManager.updateSurfaceViewManager(editPosition);
                         deviceManager.collapse = editPosition;
-//                    } else if (deviceManager.findDeviceById(mDevice.getDeviceId()) != null) {
                     } else if (deviceManager.findDeviceById(id) != null) {
                         Toast.makeText(this, "Dispositivo já adicionado.", Toast.LENGTH_SHORT).show();
-//                        deviceManager.logoutDevice(deviceManager.findDeviceById(mDevice.getId()));
-//                        startDeviceListActivity();
                     } else {
                         checkIfConnectionIsWifi();
                         deviceManager.addDevice(mDevice);
                         deviceManager.addSurfaceViewManager(mDevice);
                     }
                     startDeviceListActivity();
-
                     return true;
                 } else {
                     Toast.makeText(this, R.string.invalid_device_save, Toast.LENGTH_SHORT).show();
                 }
-
                 break;
         }
 
@@ -266,7 +259,6 @@ public class DeviceFormActivity extends ActionBarActivity {
     public  void saveDevice () {
         if(save()) {
             int id = mDevice.getId();
-//            mDevice.setDeviceId(setId());
             if(editPosition > -1){
                 deviceManager.logoutDevice(mDevice);
                 checkEdit();
@@ -276,7 +268,6 @@ public class DeviceFormActivity extends ActionBarActivity {
                 deviceManager.addDevice(mDevice, editPosition);
                 deviceManager.updateSurfaceViewManager(editPosition);
                 deviceManager.collapse = editPosition;
-//            } else if (deviceManager.findDeviceById(mDevice.getDeviceId()) != null) {
             } else if (deviceManager.findDeviceById(id) != null) {
                 Toast.makeText(this, "Dispositivo já adicionado.", Toast.LENGTH_SHORT).show();
             } else {

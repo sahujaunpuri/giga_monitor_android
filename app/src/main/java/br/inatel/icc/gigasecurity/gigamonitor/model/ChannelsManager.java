@@ -526,14 +526,18 @@ public abstract class ChannelsManager implements IFunSDKResult {
             }
             break;
             case EUIMSG.PAUSE_PLAY: {
-                Log.i(TAG, "EUIMSG.PAUSE_PLAY");
-                SurfaceViewComponent svc = findSurfaceByHandler(msgContent.sender);
-                if (msg.arg1 == 1) {
-                    svc.isPlaying = true;
-                    Log.i(TAG, "PLAY/PAUSE: playing");
-                } else if(msg.arg1 == 2) {
-                    svc.isPlaying = false;
-                    Log.i(TAG, "PLAY/PAUSE: paused");
+                try {
+                    Log.i(TAG, "EUIMSG.PAUSE_PLAY");
+                    SurfaceViewComponent svc = findSurfaceByHandler(msgContent.sender);
+                    if (msg.arg1 == 1) {
+                        svc.isPlaying = true;
+                        Log.i(TAG, "PLAY/PAUSE: playing");
+                    } else if(msg.arg1 == 2) {
+                        svc.isPlaying = false;
+                        Log.i(TAG, "PLAY/PAUSE: paused");
+                    }
+                } catch (Exception error) {
+                    error.printStackTrace();
                 }
             }
             break;
