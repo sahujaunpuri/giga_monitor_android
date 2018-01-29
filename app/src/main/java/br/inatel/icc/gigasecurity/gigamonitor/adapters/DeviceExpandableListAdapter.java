@@ -20,6 +20,8 @@ import android.widget.ExpandableListView;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.crashlytics.android.Crashlytics;
+
 import java.util.ArrayList;
 
 import br.inatel.icc.gigasecurity.gigamonitor.R;
@@ -117,7 +119,7 @@ public class DeviceExpandableListAdapter extends BaseExpandableListAdapter {
         GroupViewHolder groupViewHolder = new GroupViewHolder();
 
         groupViewHolder.convertView  = convertView;
-        groupViewHolder.blank        = mInflater.inflate(R.layout.blank_layout, parent, false);
+        groupViewHolder.blank        = getBlankView(mInflater,parent);
         groupViewHolder.ivQuad       = (ImageView) convertView.findViewById(R.id.iv_grid_list_device);
         groupViewHolder.ivMore       = (ImageView) convertView.findViewById(R.id.iv_device_more);
         groupViewHolder.ivIndicator  = (ImageView) convertView.findViewById(R.id.iv_indicator);
@@ -137,6 +139,9 @@ public class DeviceExpandableListAdapter extends BaseExpandableListAdapter {
         return groupViewHolder;
     }
 
+    public static View getBlankView(LayoutInflater mInflater,ViewGroup parent){
+        return mInflater.inflate(R.layout.blank_layout, parent, false);
+    }
 
     private ChildViewHolder initChildViewHolder(ViewGroup parent, int groupPosition){
         try {
@@ -280,30 +285,38 @@ public class DeviceExpandableListAdapter extends BaseExpandableListAdapter {
 
     @Override
     public View getGroupView(final int groupPosition, final boolean isExpanded, View convertView, ViewGroup parent) {
+        GroupViewHolder gvh = null;
         try {
             if (convertView == null || groupViewHolder.size() <= groupPosition) {
                 convertView = mInflater.inflate(R.layout.expandable_list_view_row, parent, false);
-                GroupViewHolder groupViewHolder = initGroupViewHolder(groupPosition, convertView, parent);
-                groupViewHolder.blank.setTag(groupViewHolder);
-                convertView.setTag(groupViewHolder);
+                gvh = initGroupViewHolder(groupPosition, convertView, parent);
+                gvh.blank.setTag(gvh);
+                convertView.setTag(gvh);
                 childViewHolder.add(new ChildViewHolder());
+                Crashlytics.setString("GroupViewHolder", "firstInit");
+                throw new RuntimeException("This is a crash");
+            }
+            else{
+                gvh = (GroupViewHolder) convertView.getTag();
+                Crashlytics.setString("GroupViewHolder", "secondInit");
             }
         } catch (Exception e) {
             e.printStackTrace();
         }
 
-        GroupViewHolder groupViewHolder = (GroupViewHolder) convertView.getTag();
         try {
-            if (groupViewHolder.position != groupPosition) {
-                groupViewHolder = this.groupViewHolder.get(groupPosition);
+            if (gvh.position != groupPosition) {
+                gvh = this.groupViewHolder.get(groupPosition);
             }
         } catch (NullPointerException e){
             e.printStackTrace();
+            Crashlytics.setString("GroupViewHolder", "NullPointerException");
+            return getBlankView(mInflater,parent);
         }
         if((mContext.getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE && DeviceListActivity.previousGroup != -1)) {
-            return groupViewHolder.blank;
+            return getBlankView(mInflater,parent);
         } else {
-            return groupViewHolder.convertView;
+            return gvh.convertView;
         }
     }
 
