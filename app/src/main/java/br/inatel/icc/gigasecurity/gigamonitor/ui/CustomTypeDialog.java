@@ -57,6 +57,7 @@ public class CustomTypeDialog extends Dialog {
                 mImageButtonCloud3.setVisibility(View.GONE);
                 mTextViewCancel.setVisibility(View.GONE);
                 mDeviceManager.rebootAllDevices();
+                listener.onDialogImageRunClick();
 
                 Handler mHandler = new Handler();
                 mHandler.postDelayed(new Runnable() {
@@ -78,8 +79,6 @@ public class CustomTypeDialog extends Dialog {
                 SharedPreferences.Editor editor = prefs.edit();
                 editor.putBoolean("firstTime", false);
                 editor.commit();
-
-                listener.onDialogImageRunClick();
 
                 dismiss();
             }

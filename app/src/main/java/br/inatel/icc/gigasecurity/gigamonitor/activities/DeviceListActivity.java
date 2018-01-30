@@ -23,7 +23,6 @@ import com.crashlytics.android.Crashlytics;
 
 import java.util.ArrayList;
 
-import br.inatel.icc.gigasecurity.gigamonitor.BuildConfig;
 import br.inatel.icc.gigasecurity.gigamonitor.R;
 import br.inatel.icc.gigasecurity.gigamonitor.adapters.DeviceExpandableListAdapter;
 import br.inatel.icc.gigasecurity.gigamonitor.core.DeviceManager;
@@ -52,9 +51,9 @@ public class DeviceListActivity extends ActionBarActivity implements View.OnClic
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_device_list);
-        if (!BuildConfig.DEBUG) {
+//        if (!BuildConfig.DEBUG) {
             Fabric.with(this, new Crashlytics());
-        }
+//        }
 
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
         getWindow().setFlags(
@@ -119,7 +118,7 @@ public class DeviceListActivity extends ActionBarActivity implements View.OnClic
         if(getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE) {
             getWindow().clearFlags(WindowManager.LayoutParams.FLAG_FORCE_NOT_FULLSCREEN);
             getWindow().addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
-//            getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
+            mImageViewCloud3Btn.setVisibility(View.GONE);
             getSupportActionBar().hide();
             if(previousGroup != -1) {
                 mExpandableListView.scrollTo(previousGroup, 0);
@@ -127,7 +126,7 @@ public class DeviceListActivity extends ActionBarActivity implements View.OnClic
         } else{
             getSupportActionBar().show();
             getWindow().clearFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
-//            getWindow().addFlags(WindowManager.LayoutParams.FLAG_FORCE_NOT_FULLSCREEN);
+            getSupportActionBar().hide();
         }
 
         if(previousGroup != -1)
