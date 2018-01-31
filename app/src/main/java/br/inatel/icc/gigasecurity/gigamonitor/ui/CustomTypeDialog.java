@@ -30,7 +30,7 @@ public class CustomTypeDialog extends Dialog {
         getWindow().setBackgroundDrawable(new ColorDrawable(android.graphics.Color.TRANSPARENT));
         this.listener = listener;
         final DeviceManager mDeviceManager;
-
+        setCancelable(false);
 
         getWindow().getAttributes().windowAnimations = R.style.CustomDialogAnimation;
 
@@ -58,6 +58,10 @@ public class CustomTypeDialog extends Dialog {
                 mTextViewCancel.setVisibility(View.GONE);
                 mDeviceManager.rebootAllDevices();
                 listener.onDialogImageRunClick();
+                SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
+                SharedPreferences.Editor editor = prefs.edit();
+                editor.putBoolean("firstTime", false);
+                editor.commit();
 
                 Handler mHandler = new Handler();
                 mHandler.postDelayed(new Runnable() {
@@ -67,20 +71,8 @@ public class CustomTypeDialog extends Dialog {
                         mLinearLayoutButtonCloud3.setVisibility(View.GONE);
                         mLinearLayoutCloud3.setVisibility(View.GONE);
                     }
-                }, 4000);
+                }, 9000);
 
-            }
-        });
-
-        mImageViewUpdate.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
-                SharedPreferences.Editor editor = prefs.edit();
-                editor.putBoolean("firstTime", false);
-                editor.commit();
-
-                dismiss();
             }
         });
 

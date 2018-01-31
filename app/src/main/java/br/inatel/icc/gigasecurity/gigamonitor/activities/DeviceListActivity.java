@@ -16,6 +16,7 @@ import android.view.WindowManager;
 import android.widget.ExpandableListView;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -46,6 +47,7 @@ public class DeviceListActivity extends ActionBarActivity implements View.OnClic
     private TextView mTextViewEdit;
     private ImageView mImageViewAdd, mImageViewGallery;
     private ImageButton mImageViewCloud3Btn;
+    private LinearLayout mLinearLayoutHeader;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -76,7 +78,6 @@ public class DeviceListActivity extends ActionBarActivity implements View.OnClic
             SharedPreferences.Editor editor = prefs.edit();
             editor.putBoolean("newUser", true);
             editor.commit();
-//            finish();
         }
 
         mExpandableListView.setOnGroupClickListener(new ExpandableListView.OnGroupClickListener() {
@@ -106,7 +107,6 @@ public class DeviceListActivity extends ActionBarActivity implements View.OnClic
         });
 
         mDeviceManager.setSharedPreferences(mContext.getSharedPreferences("state", MODE_PRIVATE));
-
         getSupportActionBar().hide();
 
     }
@@ -120,13 +120,22 @@ public class DeviceListActivity extends ActionBarActivity implements View.OnClic
             getWindow().addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
             mImageViewCloud3Btn.setVisibility(View.GONE);
             getSupportActionBar().hide();
+            mLinearLayoutHeader.setVisibility(View.GONE);
             if(previousGroup != -1) {
                 mExpandableListView.scrollTo(previousGroup, 0);
             }
         } else{
-            getSupportActionBar().show();
             getWindow().clearFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
             getSupportActionBar().hide();
+
+            try {
+                SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(mContext);
+                if (prefs.getBoolean("firstTime", true)) {
+                    mImageViewCloud3Btn.setVisibility(View.VISIBLE);
+                }
+            } catch (Exception error) {
+                error.printStackTrace();
+            }
         }
 
         if(previousGroup != -1)
@@ -238,6 +247,7 @@ public class DeviceListActivity extends ActionBarActivity implements View.OnClic
         mTextViewEdit     = (TextView) findViewById(R.id.text_view_edit);
         mImageViewAdd     = (ImageView) findViewById(R.id.image_view_add);
         mImageViewCloud3Btn = (ImageButton) findViewById(R.id.image_button_cloud3);
+        mLinearLayoutHeader = (LinearLayout) findViewById(R.id.layout_header);
     }
 
     private void setListeners() {
@@ -331,7 +341,7 @@ public class DeviceListActivity extends ActionBarActivity implements View.OnClic
     }
 
     private void showCustomDialog () {
-        CustomTypeDialog customTypeDialog = new CustomTypeDialog(mContext, new CustomTypeDialog.OnDialogClickListener() {
+        new CustomTypeDialog(mContext, new CustomTypeDialog.OnDialogClickListener() {
             @Override
             public void onDialogImageRunClick() {
                 mImageViewCloud3Btn.setVisibility(View.GONE);
