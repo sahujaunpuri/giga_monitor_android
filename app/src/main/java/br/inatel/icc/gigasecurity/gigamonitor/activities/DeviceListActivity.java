@@ -186,7 +186,7 @@ public class DeviceListActivity extends ActionBarActivity {
         } catch (Exception error) {
             error.printStackTrace();
         }
-        
+
     }
 
     private void initComponents() {

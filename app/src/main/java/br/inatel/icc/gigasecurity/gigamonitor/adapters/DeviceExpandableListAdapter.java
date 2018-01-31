@@ -21,6 +21,8 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.crashlytics.android.Crashlytics;
+import com.crashlytics.android.answers.Answers;
+import com.crashlytics.android.answers.CustomEvent;
 
 import java.util.ArrayList;
 
@@ -293,12 +295,15 @@ public class DeviceExpandableListAdapter extends BaseExpandableListAdapter {
                 gvh.blank.setTag(gvh);
                 convertView.setTag(gvh);
                 childViewHolder.add(new ChildViewHolder());
-                Crashlytics.setString("GroupViewHolder", "firstInit");
-                throw new RuntimeException("This is a crash");
+
+                Answers.getInstance().logCustom(new CustomEvent("GroupViewHolder")
+                        .putCustomAttribute("convertView", "firstInit"));
             }
             else{
                 gvh = (GroupViewHolder) convertView.getTag();
-                Crashlytics.setString("GroupViewHolder", "secondInit");
+
+                Answers.getInstance().logCustom(new CustomEvent("GroupViewHolder")
+                        .putCustomAttribute("convertView", "secondInit"));
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -310,10 +315,16 @@ public class DeviceExpandableListAdapter extends BaseExpandableListAdapter {
             }
         } catch (NullPointerException e){
             e.printStackTrace();
-            Crashlytics.setString("GroupViewHolder", "NullPointerException");
+
+            Answers.getInstance().logCustom(new CustomEvent("GroupViewHolder")
+                    .putCustomAttribute("convertView", "firstNull"));
+
             return getBlankView(mInflater,parent);
         }
         if((mContext.getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE && DeviceListActivity.previousGroup != -1)) {
+            Answers.getInstance().logCustom(new CustomEvent("GroupViewHolder")
+                    .putCustomAttribute("convertView", "secondNull"));
+
             return getBlankView(mInflater,parent);
         } else {
             return gvh.convertView;
