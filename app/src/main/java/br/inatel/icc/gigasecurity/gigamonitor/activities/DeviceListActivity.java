@@ -173,29 +173,20 @@ public class DeviceListActivity extends ActionBarActivity {
 
         statePreferences = new StatePreferences();
         statePreferences.previousGroup = previousGroup;
-        if(previousGroup > -1) {
-            ChannelsManager channelsManager = mDeviceManager.getDeviceChannelsManagers().get(previousGroup);
-            statePreferences.previousChannel = channelsManager.lastFirstVisibleItem;
-            statePreferences.previousGrid = channelsManager.numQuad;
-            statePreferences.previousLastGrid = channelsManager.lastNumQuad;
-            statePreferences.previousLastVisibleChannel = channelsManager.lastFirstItemBeforeSelectChannel;
-        }
-        mDeviceManager.saveState(statePreferences);
 
-//        SharedPreferences.Editor editor = mPreferences.edit();
-//        editor.putInt("previousGroup", previousGroup);
-//        if(previousGroup != -1) {
-//            ChannelsManager channelsManager = mDeviceManager.getDeviceChannelsManagers().get(previousGroup);
-//            previousChannel = channelsManager.lastFirstVisibleItem;
-//            previousGrid = channelsManager.numQuad;
-//            previousLastGrid = channelsManager.lastNumQuad;
-//            editor.putInt("previousChannel", previousChannel);
-//            editor.putInt("previousGrid", previousGrid);
-//            editor.putInt("previousLastGrid", previousLastGrid);
-//            editor.putInt("previousHD", channelsManager.hdChannel);
-//            editor.putInt("previousLastVisibleChannel", channelsManager.lastFirstItemBeforeSelectChannel);
-//        }
-//        editor.apply();
+        try {
+            if(previousGroup > -1) {
+                ChannelsManager channelsManager = mDeviceManager.getDeviceChannelsManagers().get(previousGroup);
+                statePreferences.previousChannel = channelsManager.lastFirstVisibleItem;
+                statePreferences.previousGrid = channelsManager.numQuad;
+                statePreferences.previousLastGrid = channelsManager.lastNumQuad;
+                statePreferences.previousLastVisibleChannel = channelsManager.lastFirstItemBeforeSelectChannel;
+            }
+            mDeviceManager.saveState(statePreferences);
+        } catch (Exception error) {
+            error.printStackTrace();
+        }
+
     }
 
     private void initComponents() {
