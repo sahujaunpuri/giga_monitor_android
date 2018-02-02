@@ -20,7 +20,7 @@
 
         <TextView
             style="@style/ActionBarTitle"
-            android:text="@string/new_device"/>
+            android:text="Ethernet"/>
 
         <TextView
             style="@style/ActionBarTextView"
