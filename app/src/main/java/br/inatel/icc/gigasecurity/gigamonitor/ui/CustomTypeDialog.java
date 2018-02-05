@@ -60,7 +60,7 @@ public class CustomTypeDialog extends Dialog {
                 listener.onDialogImageRunClick();
                 SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
                 SharedPreferences.Editor editor = prefs.edit();
-                editor.putBoolean("firstTime", false);
+                editor.putBoolean("cloud2", false);
                 editor.commit();
 
                 Handler mHandler = new Handler();

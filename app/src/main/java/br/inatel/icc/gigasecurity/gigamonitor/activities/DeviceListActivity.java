@@ -24,6 +24,7 @@ import com.crashlytics.android.Crashlytics;
 
 import java.util.ArrayList;
 
+import br.inatel.icc.gigasecurity.gigamonitor.BuildConfig;
 import br.inatel.icc.gigasecurity.gigamonitor.R;
 import br.inatel.icc.gigasecurity.gigamonitor.adapters.DeviceExpandableListAdapter;
 import br.inatel.icc.gigasecurity.gigamonitor.core.DeviceManager;
@@ -53,9 +54,9 @@ public class DeviceListActivity extends ActionBarActivity implements View.OnClic
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_device_list);
-//        if (!BuildConfig.DEBUG) {
+        if (!BuildConfig.DEBUG) {
             Fabric.with(this, new Crashlytics());
-//        }
+        }
 
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
         getWindow().setFlags(
@@ -70,14 +71,19 @@ public class DeviceListActivity extends ActionBarActivity implements View.OnClic
         initComponents();
         setListeners();
 
-
         //if don't have any device registered, start InitialActivity.
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(mContext);
+        SharedPreferences.Editor editor = prefs.edit();
         if(mDevices.size() == 1) {
             startInitialActivity();
-            SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(mContext);
-            SharedPreferences.Editor editor = prefs.edit();
             editor.putBoolean("newUser", true);
+            editor.putBoolean("cloud2", false);
             editor.commit();
+        } else {
+            if (prefs.getBoolean("cloud2", true)) {
+                editor.putBoolean("newUser", false);
+                editor.commit();
+            }
         }
 
         mExpandableListView.setOnGroupClickListener(new ExpandableListView.OnGroupClickListener() {
@@ -127,14 +133,13 @@ public class DeviceListActivity extends ActionBarActivity implements View.OnClic
         } else{
             getWindow().clearFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
             getSupportActionBar().hide();
+            mLinearLayoutHeader.setVisibility(View.VISIBLE);
 
-            try {
-                SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(mContext);
-                if (prefs.getBoolean("firstTime", true)) {
-                    mImageViewCloud3Btn.setVisibility(View.VISIBLE);
-                }
-            } catch (Exception error) {
-                error.printStackTrace();
+            SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(mContext);
+            boolean cloud2 = prefs.getBoolean("cloud2", true);
+            boolean newUser = prefs.getBoolean("newUser", true);
+            if (cloud2 && !newUser) {
+                mImageViewCloud3Btn.setVisibility(View.VISIBLE);
             }
         }
 
@@ -168,7 +173,6 @@ public class DeviceListActivity extends ActionBarActivity implements View.OnClic
         if(mDeviceManager.collapse >=0 && previousGroup == mDeviceManager.collapse) {
             if(mExpandableListView.isGroupExpanded(mDeviceManager.collapse))
                 mExpandableListView.collapseGroup(mDeviceManager.collapse);
-//            mAdapter.childViewHolder.get(mDeviceManager.collapse).recyclerViewChannels = null;
             mDeviceManager.collapse = -1;
             previousGroup = -1;
             mAdapter.notifyDataSetChanged();
@@ -188,16 +192,13 @@ public class DeviceListActivity extends ActionBarActivity implements View.OnClic
         }
 
         mDeviceManager.loginAllDevices();
-
         getSupportActionBar().hide();
-
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
 
-        if (mDeviceManager.getDevices().size() > 1) {
-            if (prefs.getBoolean("firstTime", true)) {
-                mImageViewCloud3Btn.setVisibility(View.VISIBLE);
-            }
+        if (prefs.getBoolean("cloud2", true) && !prefs.getBoolean("newUser", true)) {
+            mImageViewCloud3Btn.setVisibility(View.VISIBLE);
         }
+
     }
 
     @Override
@@ -214,21 +215,6 @@ public class DeviceListActivity extends ActionBarActivity implements View.OnClic
             statePreferences.previousLastVisibleChannel = channelsManager.lastFirstItemBeforeSelectChannel;
         }
         mDeviceManager.saveState(statePreferences);
-
-//        SharedPreferences.Editor editor = mPreferences.edit();
-//        editor.putInt("previousGroup", previousGroup);
-//        if(previousGroup != -1) {
-//            ChannelsManager channelsManager = mDeviceManager.getDeviceChannelsManagers().get(previousGroup);
-//            previousChannel = channelsManager.lastFirstVisibleItem;
-//            previousGrid = channelsManager.numQuad;
-//            previousLastGrid = channelsManager.lastNumQuad;
-//            editor.putInt("previousChannel", previousChannel);
-//            editor.putInt("previousGrid", previousGrid);
-//            editor.putInt("previousLastGrid", previousLastGrid);
-//            editor.putInt("previousHD", channelsManager.hdChannel);
-//            editor.putInt("previousLastVisibleChannel", channelsManager.lastFirstItemBeforeSelectChannel);
-//        }
-//        editor.apply();
     }
 
     private void initComponents() {
@@ -286,7 +272,6 @@ public class DeviceListActivity extends ActionBarActivity implements View.OnClic
 
                 return true;
             case (R.id.action_media):
-//                collapseAll();
                 startMediaActivity();
                 return true;
             default:
@@ -316,10 +301,7 @@ public class DeviceListActivity extends ActionBarActivity implements View.OnClic
     }
 
     private void startEditActivity() {
-        /*Bundle extras = new Bundle();
-        extras.putSerializable("devices", mDevices);*/
         Intent intent = new Intent(mContext, DeviceEditListActivity.class);
-//        intent.putExtras(extras);
         startActivity(intent);
     }
 
