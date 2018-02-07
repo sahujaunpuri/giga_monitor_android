@@ -1783,13 +1783,17 @@ public class DeviceManager implements IFunSDKResult {
 
     public void stopAllChannels() {
         Log.e("DeviceManager", "StopAllChannels");
-        for (int device = 0; device < deviceChannelsManagers.size(); device++) {
-            ChannelsManager deviceChannelsManager = deviceChannelsManagers.get(device);
-            for (int channel = 0; channel < deviceChannelsManager.channelNumber; channel++) {
-                if (deviceChannelsManager.surfaceViewComponents.size() > 0) {
-                    deviceChannelsManager.onStop(deviceChannelsManager.surfaceViewComponents.get(channel));
+        try {
+            for (int device = 0; device < deviceChannelsManagers.size(); device++) {
+                ChannelsManager deviceChannelsManager = deviceChannelsManagers.get(device);
+                for (int channel = 0; channel < deviceChannelsManager.channelNumber; channel++) {
+                    if (deviceChannelsManager.surfaceViewComponents.size() > 0) {
+                        deviceChannelsManager.onStop(deviceChannelsManager.surfaceViewComponents.get(channel));
+                    }
                 }
             }
+        } catch (Exception error) {
+            error.printStackTrace();
         }
     }
 

@@ -112,7 +112,6 @@ public class DeviceListActivity extends ActionBarActivity {
         } else{
             getSupportActionBar().show();
             getWindow().clearFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
-//            getWindow().addFlags(WindowManager.LayoutParams.FLAG_FORCE_NOT_FULLSCREEN);
         }
 
         if(previousGroup != -1)
