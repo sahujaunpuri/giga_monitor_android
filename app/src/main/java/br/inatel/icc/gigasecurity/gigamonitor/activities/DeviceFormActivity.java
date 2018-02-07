@@ -68,13 +68,7 @@ public class DeviceFormActivity extends ActionBarActivity {
 
         arrayList = deviceManager.getDevices();
 
-//        etDomain.setOnFocusChangeListener(new View.OnFocusChangeListener() {
-//            @Override
-//            public void onFocusChange(View view, boolean b) {
-//                if (!b) {
-//                }
-//            }
-//        });
+
 
 
     }
