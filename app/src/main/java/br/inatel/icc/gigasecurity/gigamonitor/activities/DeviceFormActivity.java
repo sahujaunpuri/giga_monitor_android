@@ -130,14 +130,17 @@ public class DeviceFormActivity extends ActionBarActivity {
         boolean isUsernameFilled = !TextUtils.isEmpty(etUsername.getText().toString());
 
         if(isHostnameFilled && ((isPortFilled && (isIPFilled || isDNSFilled)) || isSerialNumberFilled)) {
+
             if(isIPFilled && !Utils.isValidIP(etIpAddress.getText().toString())) {
                 Toast.makeText(this, "Endereço de IP inválido", Toast.LENGTH_SHORT).show();
                 return false;
             }
+
             if(!somePriorityConnectionIsMarked()) {
                 Toast.makeText(this, getResources().getString(R.string.priority_connection_message), Toast.LENGTH_SHORT).show();
                 return false;
             }
+
             mDevice.deviceName = etName.getText().toString();
             mDevice.setDomain(etDomain.getText().toString());
             mDevice.setDomainPriorityConnection(cbDomain.isChecked());
@@ -145,7 +148,11 @@ public class DeviceFormActivity extends ActionBarActivity {
             mDevice.setIpPriorityConnection(cbIpAddress.isChecked());
             mDevice.setSerialNumber(etSerial.getText().toString());
             mDevice.setCloudPriorityConnection(cbSerial.isChecked());
-            mDevice.setTCPPort(Integer.parseInt(etDevicePort.getText().toString()));
+
+            if (!etDevicePort.getText().toString().equals("") && !etDevicePort.getText().toString().equals(null)) {
+                mDevice.setTCPPort(Integer.parseInt(etDevicePort.getText().toString()));
+            }
+
             mDevice.setExternalPort(Integer.parseInt(etDevicePort.getText().toString()));
             mDevice.setLoginByIp(byIp);
             mDevice.setLoginByDomain(byDomain);
@@ -221,18 +228,15 @@ public class DeviceFormActivity extends ActionBarActivity {
             case R.id.action_save:
                 if(save()) {
                     int id = mDevice.getId();
-//                    mDevice.setDeviceId(setId());
                     if(editPosition > -1){
                         deviceManager.logoutDevice(mDevice);
                         checkEdit();
                         mDevice.isLogged = false;
                         mDevice.setChannelNumber(0);
-//                        mDevice.checkConnectionMethod();
                         deviceManager.logoutDevice(mDevice);
                         deviceManager.addDevice(mDevice, editPosition);
                         deviceManager.updateSurfaceViewManager(editPosition);
                         deviceManager.collapse = editPosition;
-//                    } else if (deviceManager.findDeviceById(mDevice.getDeviceId()) != null) {
                     } else if (deviceManager.findDeviceById(id) != null) {
                         Toast.makeText(this, "Dispositivo já adicionado.", Toast.LENGTH_SHORT).show();
 //                        deviceManager.logoutDevice(deviceManager.findDeviceById(mDevice.getId()));
