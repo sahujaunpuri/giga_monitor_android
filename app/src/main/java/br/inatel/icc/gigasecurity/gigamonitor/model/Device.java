@@ -96,6 +96,7 @@ public class Device implements Serializable {
     @Expose public int talkOutChannel;
     @Expose public String connectionString;
     @Expose private String connectionNetworkName = null;
+    public boolean dss = false;
 
     //State
     public boolean isLogged = false;

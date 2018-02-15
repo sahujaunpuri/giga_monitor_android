@@ -20,7 +20,7 @@ public class AboutActivity extends ActionBarActivity {
     /**
      * Texts
      */
-    private TextView mSerialNumberTxt, mSoftwareTxt, mHardwareTxt, mVideoChannelTxt, mMacAddressTxt, mVideoModeTxt, mTextBuildTime;
+    private TextView mSerialNumberTxt, mSoftwareTxt, mHardwareTxt, mVideoChannelTxt, mMacAddressTxt, mVideoModeTxt, mTextBuildTime, mDSS;
 
     private Device mDevice;
     private DeviceManager mManager;
@@ -71,6 +71,7 @@ public class AboutActivity extends ActionBarActivity {
         mVideoModeTxt      = (TextView) findViewById(R.id.video_mode_txt);
         mTextViewBack      = (TextView) findViewById(R.id.text_view_back);
         mTextBuildTime     = (TextView) findViewById(R.id.txt_build_time);
+        mDSS                = (TextView) findViewById(R.id.dss_txt);
     }
 
     @Override
@@ -84,5 +85,6 @@ public class AboutActivity extends ActionBarActivity {
         mMacAddressTxt.setHint(mDevice.getMacAddress());
         mVideoModeTxt.setHint(mDevice.getConnectionMethodString());
         mTextBuildTime.setHint(mDevice.getBuildTime());
+        mDSS.setHint(mDevice.dss ? "Sim" : "Não");
     }
 }

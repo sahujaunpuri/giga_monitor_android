@@ -70,10 +70,10 @@ import static br.inatel.icc.gigasecurity.gigamonitor.activities.DeviceListActivi
  */
 public class DeviceManager implements IFunSDKResult {
 
-    private static final String APP_UUID = "e29c9d4ac9fa41fab19413885818ca54";
-    private static final String APP_KEY = "d55b6614829f4d1c84d3ab2a9193234b";
-    private static final String APP_SECRET = "7a58fdbc242b4f6ba95652b7a3502b91";
-    private static final int APP_MOVECARD = 8;
+    private static final String APP_UUID = "GIGA";
+    private static final String APP_KEY = "743a9ea517924b2dbfa2cfc007c0a147";
+    private static final String APP_SECRET = "62d3c9a2a51245b4a42e2d952b8dcbbc";
+    private static final int APP_MOVECARD = 4;
     private static final String SERVER_IP_OLD = "cloudgiga.com.br";
     private static final String SERVER_IP_NEW = "200.219.196.58";
     private static String SERVER_IP = SERVER_IP_NEW;
@@ -151,7 +151,8 @@ public class DeviceManager implements IFunSDKResult {
 
 //        FunSDK.InitEx(0, G.ObjToBytes(initparam), "GIGA_", "", 0);
         FunSDK.InitExV2(0, G.ObjToBytes(initparam), 4, "GIGA_", SERVER_IP, 8765);
-        FunSDK.SysSetServerIPPort("MI_SERVER", SERVER_IP, 80);
+        FunSDK.SetFunIntAttr(EFUN_ATTR.DSS_STREAM_ENC_SYN_DEV, 1);
+//        FunSDK.SysSetServerIPPort("MI_SERVER", SERVER_IP, 80);
 
 //        FunSDK.Init(0, G.ObjToBytes(initparam));
 
@@ -159,15 +160,15 @@ public class DeviceManager implements IFunSDKResult {
         String defaultPath = getMediaPath(context) + File.separator + context.getPackageName() + File.separator;
         FunSDK.SetFunStrAttr(EFUN_ATTR.APP_PATH, defaultPath);
 
-        FunSDK.SysInitAsAPModle("ConfigPath/ap.txt");
+//        FunSDK.SysInitAsAPModle("ConfigPath/ap.txt");
 
-        FunSDK.SysInitNet(SERVER_IP, SERVER_PORT);
-
-        FunSDK.SysInitLocal(defaultPath + "DBFile.db");
+        FunSDK.SysInitNet("223.4.33.127;54.84.132.236;112.124.0.188", 15010);
 
         FunSDK.XMCloundPlatformInit(APP_UUID, APP_KEY, APP_SECRET, APP_MOVECARD);
         mFunUserHandler = FunSDK.RegUser(this);
         FunSDK.SetFunIntAttr(EFUN_ATTR.FUN_MSG_HANDLE, mFunUserHandler);
+
+        FunSDK.SysInitLocal(defaultPath + "DBFile.db");
 
         loadSavedData(context);
         getScreenSize();
@@ -1505,6 +1506,7 @@ public class DeviceManager implements IFunSDKResult {
                     device.setConnectionMethod(-1);
 
                     favoriteManager.refreshFromDevice(device.getId());
+                    FunSDK.SysGetDevState(getHandler(), device.connectionString, device.getId());
                     FunSDK.DevGetConfigByJson(getHandler(), device.connectionString, "SystemInfo", 4096, -1, 10000, device.getId());
                 } else if(msg.arg1 == -11301){ //wrong password or login
                     if(device != null) {
@@ -1536,7 +1538,11 @@ public class DeviceManager implements IFunSDKResult {
                 }
             }
             break;
-
+            case EUIMSG.SYS_GET_DEV_STATE:{
+                if(msg.arg1 == 40 || msg.arg1 == 8)
+                    findDeviceById(msgContent.seq).dss = true;
+                }
+            break;
             case EUIMSG.DEV_GET_JSON:
             {
                 if(msg.arg1 >= 0 && msgContent.pData != null){
