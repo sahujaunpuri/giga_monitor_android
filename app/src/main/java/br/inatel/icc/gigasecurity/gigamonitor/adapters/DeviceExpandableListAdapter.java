@@ -287,47 +287,29 @@ public class DeviceExpandableListAdapter extends BaseExpandableListAdapter {
 
     @Override
     public View getGroupView(final int groupPosition, final boolean isExpanded, View convertView, ViewGroup parent) {
-        GroupViewHolder gvh = null;
         try {
             if (convertView == null || groupViewHolder.size() <= groupPosition) {
                 convertView = mInflater.inflate(R.layout.expandable_list_view_row, parent, false);
-                gvh = initGroupViewHolder(groupPosition, convertView, parent);
-                gvh.blank.setTag(gvh);
-                convertView.setTag(gvh);
+                GroupViewHolder groupViewHolder = initGroupViewHolder(groupPosition, convertView, parent);
+                groupViewHolder.blank.setTag(groupViewHolder);
+                convertView.setTag(groupViewHolder);
                 childViewHolder.add(new ChildViewHolder());
-
-                Answers.getInstance().logCustom(new CustomEvent("GroupViewHolder")
-                        .putCustomAttribute("convertView", "firstInit"));
-            }
-            else{
-                gvh = (GroupViewHolder) convertView.getTag();
-
-                Answers.getInstance().logCustom(new CustomEvent("GroupViewHolder")
-                        .putCustomAttribute("convertView", "secondInit"));
             }
         } catch (Exception e) {
             e.printStackTrace();
         }
-
+        GroupViewHolder groupViewHolder = (GroupViewHolder) convertView.getTag();
         try {
-            if (gvh.position != groupPosition) {
-                gvh = this.groupViewHolder.get(groupPosition);
+            if (groupViewHolder.position != groupPosition) {
+                groupViewHolder = this.groupViewHolder.get(groupPosition);
             }
         } catch (NullPointerException e){
             e.printStackTrace();
-
-            Answers.getInstance().logCustom(new CustomEvent("GroupViewHolder")
-                    .putCustomAttribute("convertView", "firstNull"));
-
-            return getBlankView(mInflater,parent);
         }
         if((mContext.getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE && DeviceListActivity.previousGroup != -1)) {
-            Answers.getInstance().logCustom(new CustomEvent("GroupViewHolder")
-                    .putCustomAttribute("convertView", "secondNull"));
-
-            return getBlankView(mInflater,parent);
+            return groupViewHolder.blank;
         } else {
-            return gvh.convertView;
+            return groupViewHolder.convertView;
         }
     }
 
