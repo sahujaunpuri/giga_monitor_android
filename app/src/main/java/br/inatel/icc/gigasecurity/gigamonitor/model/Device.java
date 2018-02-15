@@ -85,6 +85,7 @@ public class Device implements Serializable {
     private String secondaryCompressionMask;
 
     //DeviceInfo
+    public boolean dss = false;
     private String gigaCode;
     private String softwareVersion;
     private String hardwareVersion;
