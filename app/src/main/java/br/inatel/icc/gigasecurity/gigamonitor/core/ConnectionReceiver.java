@@ -33,8 +33,12 @@ public class ConnectionReceiver extends BroadcastReceiver{
 //                Log.d(TAG, "There's no network connectivity");
 //            }
             } else {
-                mDeviceManager.networkType = -1;
-                mDeviceManager.setDevicesLogout();
+                try {
+                    mDeviceManager.networkType = -1;
+                    mDeviceManager.setDevicesLogout();
+                } catch(Exception error) {
+                    error.printStackTrace();
+                }
             }
         }
     }

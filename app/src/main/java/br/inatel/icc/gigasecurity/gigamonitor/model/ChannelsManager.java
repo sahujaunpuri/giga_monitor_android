@@ -217,6 +217,7 @@ public abstract class ChannelsManager implements IFunSDKResult {
 //    }
 
     public void onStartVideo(final SurfaceViewComponent svc) {
+        Log.d("Rodrigo","onStartVideo");
         svc.mPlayerHandler = FunSDK.MediaRealPlay(mUserID, mDevice.connectionString, svc.mySurfaceViewChannelId, svc.streamType, svc.mySurfaceView, svc.mySurfaceViewOrderId);
     }
 
@@ -227,6 +228,7 @@ public abstract class ChannelsManager implements IFunSDKResult {
     }
 
     public void setPlayView(final SurfaceViewComponent svc){
+        Log.d("Rodrigo","setPlayView");
         FunSDK.MediaSetPlayView(svc.mPlayerHandler, mySurfaceViews.get(svc.mySurfaceViewChannelId), mUserID);
     }
 
@@ -237,6 +239,7 @@ public abstract class ChannelsManager implements IFunSDKResult {
     }
 
     public void onResume(SurfaceViewComponent svc){
+        Log.d("Rodrigo","onResume");
         FunSDK.MediaPause(svc.mPlayerHandler, 0, svc.mySurfaceViewOrderId);
     }
 
@@ -480,6 +483,7 @@ public abstract class ChannelsManager implements IFunSDKResult {
             }
 //        }
         switch (msg.what) {
+
             case EUIMSG.START_PLAY: {
                 Log.i(TAG, "EUIMSG.START_PLAY");
                 SurfaceViewComponent svc = findSurfaceByHandler(msgContent.sender);
@@ -542,6 +546,7 @@ public abstract class ChannelsManager implements IFunSDKResult {
             }
             break;
             case EUIMSG.ON_PLAY_BUFFER_BEGIN: {
+                Log.d("Rodrigo", "ON_PLAY_BUFFER_BEGIN");
                 Log.i(TAG, "EUIMSG.ON_PLAY_BUFFER_BEGIN");
                 if (msg.arg1 == 0) {
                     Log.i(TAG, "PLAY BUFFER BEGIN");
@@ -549,6 +554,7 @@ public abstract class ChannelsManager implements IFunSDKResult {
             }
             break;
             case EUIMSG.ON_PLAY_BUFFER_END: {
+                Log.d("Rodrigo", "ON_PLAY_BUFFER_END");
                 Log.i(TAG, "EUIMSG.ON_PLAY_BUFFER_END");
                 if (msg.arg1 == 0) {
                     SurfaceViewComponent svc = findSurfaceByHandler(msgContent.sender);

@@ -117,7 +117,7 @@ public class DeviceExpandableListAdapter extends BaseExpandableListAdapter {
         GroupViewHolder groupViewHolder = new GroupViewHolder();
 
         groupViewHolder.convertView  = convertView;
-        groupViewHolder.blank        = mInflater.inflate(R.layout.blank_layout, parent, false);
+        groupViewHolder.blank        = getBlankView(mInflater,parent);
         groupViewHolder.ivQuad       = (ImageView) convertView.findViewById(R.id.iv_grid_list_device);
         groupViewHolder.ivMore       = (ImageView) convertView.findViewById(R.id.iv_device_more);
         groupViewHolder.ivAddMore    = (ImageView) convertView.findViewById(R.id.iv_add_fav);
@@ -136,6 +136,9 @@ public class DeviceExpandableListAdapter extends BaseExpandableListAdapter {
         return groupViewHolder;
     }
 
+    public static View getBlankView(LayoutInflater mInflater,ViewGroup parent){
+        return mInflater.inflate(R.layout.blank_layout, parent, false);
+    }
 
     private ChildViewHolder initChildViewHolder(ViewGroup parent, int groupPosition){
         try {
@@ -290,7 +293,6 @@ public class DeviceExpandableListAdapter extends BaseExpandableListAdapter {
         } catch (Exception e) {
             e.printStackTrace();
         }
-
         GroupViewHolder groupViewHolder = (GroupViewHolder) convertView.getTag();
         try {
             if (groupViewHolder.position != groupPosition) {

@@ -76,7 +76,6 @@ public class DeviceManager implements IFunSDKResult {
     private static final int APP_MOVECARD = 8;
     private static final String SERVER_IP_OLD = "cloudgiga.com.br";
     private static final String SERVER_IP_NEW = "200.219.196.58";
-//    private static final String SERVER_IP_NEW_1 = "200.169.104.100";
     private static String SERVER_IP = SERVER_IP_NEW;
     private static final int SERVER_PORT = 8000;
     private static final String MEDIA_DISK_NAME = "MEDIA_DISK";
@@ -842,18 +841,22 @@ public class DeviceManager implements IFunSDKResult {
 
     public void setDevicesLogout() {
         Toast.makeText(currentContext, "Sem conexão com a internet", Toast.LENGTH_SHORT).show();
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                int position = 0;
-                DeviceListActivity.previousGroup = -1;
-                for (Device device : mDevices) {
-                    position++;
-                    expandableListAdapter.collapseGroup(position);
-                    device.isLogged = false;
+        try {
+            new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    int position = 0;
+                    DeviceListActivity.previousGroup = -1;
+                    for (Device device : mDevices) {
+                        position++;
+                        expandableListAdapter.collapseGroup(position);
+                        device.isLogged = false;
+                    }
                 }
-            }
-        }).start();
+            }).start();
+        } catch(Exception error) {
+            error.printStackTrace();
+        }
     }
 
     public void loginDevice(final Device device, final LoginDeviceListener loginDeviceListener) {
@@ -1800,13 +1803,17 @@ public class DeviceManager implements IFunSDKResult {
 
     public void stopAllChannels() {
         Log.e("DeviceManager", "StopAllChannels");
-        for (int device = 0; device < deviceChannelsManagers.size(); device++) {
-            ChannelsManager deviceChannelsManager = deviceChannelsManagers.get(device);
-            for (int channel = 0; channel < deviceChannelsManager.channelNumber; channel++) {
-                if (deviceChannelsManager.surfaceViewComponents.size() > 0) {
-                    deviceChannelsManager.onStop(deviceChannelsManager.surfaceViewComponents.get(channel));
+        try {
+            for (int device = 0; device < deviceChannelsManagers.size(); device++) {
+                ChannelsManager deviceChannelsManager = deviceChannelsManagers.get(device);
+                for (int channel = 0; channel < deviceChannelsManager.channelNumber; channel++) {
+                    if (deviceChannelsManager.surfaceViewComponents.size() > 0) {
+                        deviceChannelsManager.onStop(deviceChannelsManager.surfaceViewComponents.get(channel));
+                    }
                 }
             }
+        } catch (Exception error) {
+            error.printStackTrace();
         }
     }
 

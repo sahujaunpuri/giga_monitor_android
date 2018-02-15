@@ -72,8 +72,6 @@ public class DeviceFormActivity extends ActionBarActivity {
         }
 
         arrayList = deviceManager.getDevices();
-
-
         getSupportActionBar().hide();
 }
 
@@ -138,10 +136,12 @@ public class DeviceFormActivity extends ActionBarActivity {
         boolean isUsernameFilled = !TextUtils.isEmpty(etUsername.getText().toString());
 
         if(isHostnameFilled && ((isPortFilled && (isIPFilled || isDNSFilled)) || isSerialNumberFilled)) {
+
             if(isIPFilled && !Utils.isValidIP(etIpAddress.getText().toString())) {
                 Toast.makeText(this, "Endereço de IP inválido", Toast.LENGTH_SHORT).show();
                 return false;
             }
+
             if(!somePriorityConnectionIsMarked()) {
                 Toast.makeText(this, getResources().getString(R.string.priority_connection_message), Toast.LENGTH_SHORT).show();
                 return false;
@@ -157,7 +157,9 @@ public class DeviceFormActivity extends ActionBarActivity {
             mDevice.setIpPriorityConnection(cbIpAddress.isChecked());
             mDevice.setSerialNumber(etSerial.getText().toString());
             mDevice.setCloudPriorityConnection(cbSerial.isChecked());
-            mDevice.setTCPPort(Integer.parseInt(etDevicePort.getText().toString()));
+            if (!TextUtils.isEmpty(etDevicePort.getText().toString())) {
+                mDevice.setTCPPort(Integer.parseInt(etDevicePort.getText().toString()));
+            }
             mDevice.setExternalPort(Integer.parseInt(etDevicePort.getText().toString()));
             mDevice.setLoginByIp(byIp);
             mDevice.setLoginByDomain(byDomain);
