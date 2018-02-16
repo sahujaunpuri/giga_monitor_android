@@ -35,7 +35,7 @@ public class ConnectionReceiver extends BroadcastReceiver{
             } else {
                 try {
                     mDeviceManager.networkType = -1;
-                    mDeviceManager.setDevicesLogout();
+//                    mDeviceManager.setDevicesLogout();
                 } catch(Exception error) {
                     error.printStackTrace();
                 }
