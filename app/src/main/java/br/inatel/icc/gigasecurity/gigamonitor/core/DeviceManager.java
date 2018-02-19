@@ -810,7 +810,13 @@ public class DeviceManager implements IFunSDKResult {
     }
 
     public void setDevicesLogout() {
-        Toast.makeText(currentContext, "Sem conexão com a internet", Toast.LENGTH_SHORT).show();
+        try {
+            Toast.makeText(currentContext, "Sem conexão com a internet", Toast.LENGTH_SHORT).show();
+        } catch (Exception error) {
+            error.printStackTrace();
+        }
+
+
         try {
             new Thread(new Runnable() {
                 @Override
