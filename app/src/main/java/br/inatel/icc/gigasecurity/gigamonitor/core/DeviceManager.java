@@ -798,29 +798,15 @@ public class DeviceManager implements IFunSDKResult {
     }
 
     public void loginAllDevices() {
-        try {
-            new Thread(new Runnable() {
-                @Override
-                public void run() {
-                    for (Device device : mDevices) {
-                        if (!device.isLogged) {
-                            loginDevice(device, null);
-                        } else {
-                            for (int deviceIndex = 0; deviceIndex < deviceChannelsManagers.size(); deviceIndex++) {
-                                ChannelsManager deviceChannelsManager = deviceChannelsManagers.get(deviceIndex);
-                                if (deviceChannelsManager.surfaceViewComponents.size() > 0) {
-                                    for (int channel = 0; channel < deviceChannelsManager.channelNumber; channel++) {
-                                        deviceChannelsManager.onStartVideo(deviceChannelsManager.surfaceViewComponents.get(channel));
-                                    }
-                                }
-                            }
-                        }
-                    }
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                for (Device device : mDevices) {
+                    if (!device.isLogged)
+                        loginDevice(device, null);
                 }
-            }).start();
-        } catch (Exception error) {
-            error.printStackTrace();
-        }
+            }
+        }).start();
     }
 
     public void setDevicesLogout() {
