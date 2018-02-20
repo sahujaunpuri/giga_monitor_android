@@ -146,10 +146,14 @@ public class DeviceFormActivity extends ActionBarActivity {
                 Toast.makeText(this, getResources().getString(R.string.priority_connection_message), Toast.LENGTH_SHORT).show();
                 return false;
             }
-            if (etSerial.getText().toString().length() < 15 ||  etSerial.getText().toString().length() > 16) {
-                Toast.makeText(this, "Serial inválido", Toast.LENGTH_SHORT).show();
-                return false;
+
+            if (cbSerial.isChecked()) {
+                if (etSerial.getText().toString().length() < 15 ||  etSerial.getText().toString().length() > 16) {
+                    Toast.makeText(this, "Serial inválido", Toast.LENGTH_SHORT).show();
+                    return false;
+                }
             }
+
             mDevice.deviceName = etName.getText().toString();
             mDevice.setDomain(etDomain.getText().toString());
             mDevice.setDomainPriorityConnection(cbDomain.isChecked());
