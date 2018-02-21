@@ -844,83 +844,68 @@ public class DeviceManager implements IFunSDKResult {
 
     private void loginAttemptByIp(final Device device) throws NullPointerException {
         if (device.isIpPriorityConnection()) {
-            new Thread(new Runnable() {
-                @Override
-                public void run() {
-                    if (device == null)
-                        return;
-                    if (device.ipAttempts > 3) {
-                        expandableListAdapter.setMessage(mDevices.indexOf(device), "Falha na conexão via IP");
-                        device.ipAttemptsFail = true;
-                        if (device.ipAttemptsFail && device.isDomainPriorityConnection() && !device.domainAttemptsFail) {
-                            loginAttemptByDomain(device);
-                        } else if (device.ipAttemptsFail && device.isCloudPriorityConnection() && !device.cloudAttemptsFail) {
-                            loginAttemptByCloud(device);
-                        }
-                    }
-
-                    device.setConnectionString(0);
-
-                    Log.d(TAG, "deviceName: " + device.deviceName + " ipAttempts: " + device.ipAttempts + " connectionString: " + device.connectionString);
-                    device.ipAttempts++;
-                    if (expandableListAdapter != null && !device.ipAttemptsFail)
-                        expandableListAdapter.setMessage(mDevices.indexOf(device), device.message);
-                    FunSDK.DevLogin(getHandler(), device.connectionString, device.getUsername(), device.getPassword(), device.getId());
+            if (device == null)
+                return;
+            if (device.ipAttempts > 3) {
+                expandableListAdapter.setMessage(mDevices.indexOf(device), "Falha na conexão via IP");
+                device.ipAttemptsFail = true;
+                if (device.ipAttemptsFail && device.isDomainPriorityConnection() && !device.domainAttemptsFail) {
+                    loginAttemptByDomain(device);
+                } else if (device.ipAttemptsFail && device.isCloudPriorityConnection() && !device.cloudAttemptsFail) {
+                    loginAttemptByCloud(device);
                 }
-            }).start();
+            }
+
+            device.setConnectionString(0);
+
+            Log.d(TAG, "deviceName: " + device.deviceName + " ipAttempts: " + device.ipAttempts + " connectionString: " + device.connectionString);
+            device.ipAttempts++;
+            if (expandableListAdapter != null && !device.ipAttemptsFail)
+                expandableListAdapter.setMessage(mDevices.indexOf(device), device.message);
+            FunSDK.DevLogin(getHandler(), device.connectionString, device.getUsername(), device.getPassword(), device.getId());
         }
     }
 
     private void loginAttemptByDomain(final Device device) throws NullPointerException {
         if (device.isDomainPriorityConnection()) {
-            new Thread( new Runnable() {
-                @Override
-                public void run() {
-                    if (device == null)
-                        return;
-                    if (device.domainAttempts > 3) {
-                        expandableListAdapter.setMessage(mDevices.indexOf(device), "Falha na conexão via IP externo");
-                        device.domainAttemptsFail = true;
-                        if (device.domainAttemptsFail && device.isCloudPriorityConnection() && !device.cloudAttemptsFail) {
-                            loginAttemptByCloud(device);
-                        } else if (device.domainAttemptsFail && device.isDomainPriorityConnection() && !device.ipAttemptsFail) {
-                            loginAttemptByIp(device);
-                        }
-                    }
-
-                    device.setConnectionString(1);
-
-                    Log.d(TAG, "deviceName: " + device.deviceName + " domainAttempts: " + device.domainAttempts + " connectionString: " + device.connectionString);
-                    device.domainAttempts++;
-                    if (expandableListAdapter != null && !device.domainAttemptsFail)
-                        expandableListAdapter.setMessage(mDevices.indexOf(device), device.message);
-                    FunSDK.DevLogin(getHandler(), device.connectionString, device.getUsername(), device.getPassword(), device.getId());
+            if (device == null)
+                return;
+            if (device.domainAttempts > 3) {
+                expandableListAdapter.setMessage(mDevices.indexOf(device), "Falha na conexão via IP externo");
+                device.domainAttemptsFail = true;
+                if (device.domainAttemptsFail && device.isCloudPriorityConnection() && !device.cloudAttemptsFail) {
+                    loginAttemptByCloud(device);
+                } else if (device.domainAttemptsFail && device.isDomainPriorityConnection() && !device.ipAttemptsFail) {
+                    loginAttemptByIp(device);
                 }
-            }).start();
+            }
+
+            device.setConnectionString(1);
+
+            Log.d(TAG, "deviceName: " + device.deviceName + " domainAttempts: " + device.domainAttempts + " connectionString: " + device.connectionString);
+            device.domainAttempts++;
+            if (expandableListAdapter != null && !device.domainAttemptsFail)
+                expandableListAdapter.setMessage(mDevices.indexOf(device), device.message);
+            FunSDK.DevLogin(getHandler(), device.connectionString, device.getUsername(), device.getPassword(), device.getId());
         }
     }
 
     private void loginAttemptByCloud(final Device device) throws NullPointerException {
         if (device.isCloudPriorityConnection()) {
-            new Thread(new Runnable() {
-                @Override
-                public void run() {
-                    if (device == null)
-                        return;
-                    if (device.cloudAttempts > 3) {
-                        expandableListAdapter.setMessage(mDevices.indexOf(device), "Falha na conexão via Cloud");
-                        device.cloudAttemptsFail = true;
-                    }
+            if (device == null)
+                return;
+            if (device.cloudAttempts > 3) {
+                expandableListAdapter.setMessage(mDevices.indexOf(device), "Falha na conexão via Cloud");
+                device.cloudAttemptsFail = true;
+            }
 
-                    device.setConnectionString(2);
+            device.setConnectionString(2);
 
-                    Log.d(TAG, "deviceName: " + device.deviceName + " cloudAttempts: " + device.cloudAttempts + " connectionString: " + device.connectionString);
-                    device.cloudAttempts++;
-                    if (expandableListAdapter != null && !device.cloudAttemptsFail)
-                        expandableListAdapter.setMessage(mDevices.indexOf(device), device.message);
-                    FunSDK.DevLogin(getHandler(), device.connectionString, device.getUsername(), device.getPassword(), device.getId());
-                }
-            }).start();
+            Log.d(TAG, "deviceName: " + device.deviceName + " cloudAttempts: " + device.cloudAttempts + " connectionString: " + device.connectionString);
+            device.cloudAttempts++;
+            if (expandableListAdapter != null && !device.cloudAttemptsFail)
+                expandableListAdapter.setMessage(mDevices.indexOf(device), device.message);
+            FunSDK.DevLogin(getHandler(), device.connectionString, device.getUsername(), device.getPassword(), device.getId());
         }
     }
 
