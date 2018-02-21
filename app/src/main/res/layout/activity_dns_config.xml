@@ -47,7 +47,7 @@
         android:layout_height="wrap_content"
         android:layout_below="@+id/tv_dns_primary_address"
         android:hint="0.0.0.0"
-        android:inputType="number"
+        android:inputType="numberDecimal"
         android:digits="0123456789."
         android:singleLine="true"
          />
@@ -69,7 +69,7 @@
         android:layout_height="wrap_content"
         android:layout_below="@+id/textview_dns_secondary_address"
         android:hint="0.0.0.0"
-        android:inputType="number"
+        android:inputType="numberDecimal"
         android:digits="0123456789."
         android:singleLine="true"
         />
