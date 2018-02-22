@@ -753,7 +753,7 @@ public class DeviceExpandableListAdapter extends BaseExpandableListAdapter {
             public void onClick(View v) {
                 if (groupViewHolder.mDevice.allAttempstFail){
                     groupViewHolder.mDevice.resetAttempts();
-                    mDeviceManager.tryToConnect(groupViewHolder.mDevice);
+                    mDeviceManager.loginAttempt(groupViewHolder.mDevice);
                 }
             }
         };

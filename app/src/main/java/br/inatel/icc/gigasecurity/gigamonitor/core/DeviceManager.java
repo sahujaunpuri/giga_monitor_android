@@ -124,6 +124,7 @@ public class DeviceManager implements IFunSDKResult {
     private ArrayList<Boolean> savedMediaVideosPositionOk = new ArrayList<>();
 
     public boolean mediaViewDidSelectMovies = false;
+    public boolean loggedByConnectionReceiver = false;
 
     private DeviceManager() {
     }
@@ -206,7 +207,7 @@ public class DeviceManager implements IFunSDKResult {
 //        for(Device device : mDevices)
 //            device.checkConnectionMethod();
         getDeviceChannelsManagers();
-        loginAllDevices();
+//        loginAllDevices();
     }
 
     public void createFavoriteDevice() {
@@ -809,24 +810,32 @@ public class DeviceManager implements IFunSDKResult {
         }).start();
     }
 
-    public void setDevicesLogout() {
-        try {
-            Toast.makeText(currentContext, "Sem conexão com a internet", Toast.LENGTH_SHORT).show();
-        } catch (Exception error) {
-            error.printStackTrace();
+    public void setDevicesLogout(final boolean networkFail) {
+        if (networkFail) {
+            Log.e("DeviceManager", "setDevicesLogout");
+            try {
+                Toast.makeText(currentContext, "Sem conexão com a internet", Toast.LENGTH_SHORT).show();
+            } catch (Exception error) {
+                error.printStackTrace();
+            }
         }
-
 
         try {
             new Thread(new Runnable() {
                 @Override
                 public void run() {
-                    int position = 0;
-                    DeviceListActivity.previousGroup = -1;
+                    int devicePosition = 0;
                     for (Device device : mDevices) {
-                        position++;
-                        expandableListAdapter.collapseGroup(position);
                         device.isLogged = false;
+                        DeviceListActivity.previousGroup = -1;
+                        expandableListAdapter.collapseGroup(devicePosition);
+                        ChannelsManager deviceChannelsManager = deviceChannelsManagers.get(devicePosition);
+                        for (SurfaceViewComponent channel : deviceChannelsManager.surfaceViewComponents){
+                            if (deviceChannelsManager.surfaceViewComponents.size() > 0) {
+                                deviceChannelsManager.mediaStop(channel);
+                            }
+                        }
+                        devicePosition++;
                     }
                 }
             }).start();
@@ -837,7 +846,7 @@ public class DeviceManager implements IFunSDKResult {
 
     public void loginDevice(final Device device, final LoginDeviceListener loginDeviceListener) {
         if (!loginList.containsKey(device.getId())) {
-            tryToConnect(device);
+            loginAttempt(device);
         }
         loginList.put(device.getId(), loginDeviceListener);
     }
@@ -857,7 +866,6 @@ public class DeviceManager implements IFunSDKResult {
             }
 
             device.setConnectionString(0);
-
             Log.d(TAG, "deviceName: " + device.deviceName + " ipAttempts: " + device.ipAttempts + " connectionString: " + device.connectionString);
             device.ipAttempts++;
             if (expandableListAdapter != null && !device.ipAttemptsFail)
@@ -1488,7 +1496,7 @@ public class DeviceManager implements IFunSDKResult {
                         loginList.remove(device.getId());
                     } else {
                         try {
-                            tryToConnect(device);
+                            loginAttempt(device);
                             loginList.get(device.getId()).onLoginError(msg.arg1, device);
                         } catch (Exception error) {
                             error.printStackTrace();
@@ -1762,21 +1770,49 @@ public class DeviceManager implements IFunSDKResult {
         }
     }
 
-    public void stopAllChannels() {
-        Log.e("DeviceManager", "StopAllChannels");
-        try {
-            for (int device = 0; device < deviceChannelsManagers.size(); device++) {
-                ChannelsManager deviceChannelsManager = deviceChannelsManagers.get(device);
-                for (int channel = 0; channel < deviceChannelsManager.channelNumber; channel++) {
-                    if (deviceChannelsManager.surfaceViewComponents.size() > 0) {
-                        deviceChannelsManager.onStop(deviceChannelsManager.surfaceViewComponents.get(channel));
+    public void loginAttempt(final Device device) throws NullPointerException {
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                if (device == null)
+                    return;
+                if (device.loginAttempt > 9) {
+                    device.loginAttempt = 0;
+                    expandableListAdapter.setMessage(mDevices.indexOf(device), "Falha na conexão");
+                    return;
+                }
+                int nextConnectionType = -1;
+                boolean tryIpConnection = true;
+                if (device.getConnectionNetworkName() != null) {
+                    tryIpConnection = device.getConnectionNetworkName().equals(networkName);
+                }
+                if (device.getConnectionMethod() == -1 || device.getConnectionMethod() == 2) {
+                    if (networkType == 1 && tryIpConnection && device.isIpPriorityConnection()) {   //wifi connection
+                        nextConnectionType = 0;
+                    } else if (device.isDomainPriorityConnection()) {
+                        nextConnectionType = 1;
+                    } else if (device.isCloudPriorityConnection()) {
+                        nextConnectionType = 2;
                     }
+                } else if (device.getConnectionMethod() == 0 && device.isDomainPriorityConnection()) {
+                    nextConnectionType = 1;
+                } else if (device.getConnectionMethod() == 1 && device.isCloudPriorityConnection()) {
+                    nextConnectionType = 2;
+                }
+                if (device.setConnectionString(nextConnectionType) < 0) {
+                    loginAttempt(device);
+                } else {
+                    Log.d(TAG, "loginAttempt: " + device.loginAttempt + " " + device.connectionString);
+                    device.loginAttempt++;
+                    if (expandableListAdapter != null)
+                        expandableListAdapter.setMessage(mDevices.indexOf(device), device.message);
+                    FunSDK.DevLogin(getHandler(), device.connectionString, device.getUsername(), device.getPassword(), device.getId());
                 }
             }
-        } catch (Exception error) {
-            error.printStackTrace();
-        }
+        }).start();
+
     }
+
 
     public static String getAppUuid() {
         return APP_UUID;

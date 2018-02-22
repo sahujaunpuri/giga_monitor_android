@@ -259,13 +259,13 @@ public abstract class ChannelsManager implements IFunSDKResult {
         svc.isPlaying = false;
     }
 
-//    public void stopPlayback(SurfaceViewComponent svc) {
-//        if (svc.isConnected()) {
-//            FunSDK.MediaStop(svc.mPlayerHandler);
-//            svc.setConnected(false);
-//        }
-//        svc.isPlaying = false;
-//    }
+    public void mediaStop(SurfaceViewComponent svc) {
+        if (svc.isConnected()) {
+            FunSDK.MediaStop(svc.mPlayerHandler);
+            svc.setConnected(false);
+        }
+        svc.isPlaying = false;
+    }
 
     public void restartVideo(SurfaceViewComponent svc){
         svc.isLoading(true);
