@@ -255,7 +255,7 @@ public class DeviceListActivity extends ActionBarActivity implements View.OnClic
 
     private void verifyIfSomeChannelIsSoundingOrRecording() {
         mDeviceManager.getExpandableListAdapter().stopActions();
-        mDeviceManager.stopAllChannels();
+        mDeviceManager.setDevicesLogout(false);
 //        mDeviceManager.getExpandableListAdapter().verifyOverlayMenuVisibility();
     }
 

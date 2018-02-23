@@ -28,7 +28,9 @@ import java.util.GregorianCalendar;
 import java.util.Locale;
 
 import br.inatel.icc.gigasecurity.gigamonitor.R;
+import br.inatel.icc.gigasecurity.gigamonitor.activities.DeviceListActivity;
 import br.inatel.icc.gigasecurity.gigamonitor.adapters.ChannelRecyclerViewAdapter;
+import br.inatel.icc.gigasecurity.gigamonitor.adapters.DeviceExpandableListAdapter;
 import br.inatel.icc.gigasecurity.gigamonitor.core.DeviceManager;
 import br.inatel.icc.gigasecurity.gigamonitor.listeners.PlaybackListener;
 import br.inatel.icc.gigasecurity.gigamonitor.task.AudioRecordThread;
@@ -70,6 +72,8 @@ public abstract class ChannelsManager implements IFunSDKResult {
     public int[][] inverseMatrix;
     private int startTry;
     public int hdChannel = -1;
+
+    private int countTimesToCheckMemory = 0;
 
     public ChannelsManager(Device mDevice) {
         if (mUserID == -1) {
@@ -259,13 +263,13 @@ public abstract class ChannelsManager implements IFunSDKResult {
         svc.isPlaying = false;
     }
 
-//    public void stopPlayback(SurfaceViewComponent svc) {
-//        if (svc.isConnected()) {
-//            FunSDK.MediaStop(svc.mPlayerHandler);
-//            svc.setConnected(false);
-//        }
-//        svc.isPlaying = false;
-//    }
+    public void mediaStop(SurfaceViewComponent svc) {
+        if (svc.isConnected()) {
+            FunSDK.MediaStop(svc.mPlayerHandler);
+            svc.setConnected(false);
+        }
+        svc.isPlaying = false;
+    }
 
     public void restartVideo(SurfaceViewComponent svc){
         svc.isLoading(true);
@@ -482,8 +486,26 @@ public abstract class ChannelsManager implements IFunSDKResult {
                 Log.d(TAG, "msgContent.pData : " + msgContent.pData);
             }
 //        }
-        switch (msg.what) {
 
+        if (countTimesToCheckMemory == 0){
+            double freeMemoryAvailable = mDeviceManager.checkMemory(mContext);
+            Log.d("executed","" + Utils.currentDateTime());
+            if (freeMemoryAvailable < 70){
+                DeviceExpandableListAdapter mDeviceManagerExpandableListAdapter = mDeviceManager.getExpandableListAdapter();
+                mDeviceManagerExpandableListAdapter.changeQuad(DeviceListActivity.previousGroup);
+                Toast.makeText(mContext, "Feche outros apps para liberar memória!", Toast.LENGTH_SHORT).show();
+            }
+        }
+        countTimesToCheckMemory++;
+
+
+        if (countTimesToCheckMemory == 10){
+            countTimesToCheckMemory = 0;
+        }
+
+
+
+        switch (msg.what) {
             case EUIMSG.START_PLAY: {
                 Log.i(TAG, "EUIMSG.START_PLAY");
                 SurfaceViewComponent svc = findSurfaceByHandler(msgContent.sender);
