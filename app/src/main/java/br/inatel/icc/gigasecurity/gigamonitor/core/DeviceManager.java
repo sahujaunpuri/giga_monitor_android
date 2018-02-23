@@ -1,5 +1,6 @@
 package br.inatel.icc.gigasecurity.gigamonitor.core;
 
+import android.app.ActivityManager;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.res.Resources;
@@ -62,6 +63,7 @@ import br.inatel.icc.gigasecurity.gigamonitor.ui.SurfaceViewComponent;
 import br.inatel.icc.gigasecurity.gigamonitor.util.ComplexPreferences;
 import br.inatel.icc.gigasecurity.gigamonitor.util.Utils;
 
+import static android.content.Context.ACTIVITY_SERVICE;
 import static android.content.Context.MODE_PRIVATE;
 import static br.inatel.icc.gigasecurity.gigamonitor.activities.DeviceListActivity.mContext;
 
@@ -1415,6 +1417,8 @@ public class DeviceManager implements IFunSDKResult {
             Log.d(TAG, "msgContent.arg3 : " + msgContent.arg3);
             Log.d(TAG, "msgContent.pData : " + msgContent.pData);
         }
+
+        checkMemory(mContext);
         switch (msg.what) {
             case EUIMSG.DEV_SEARCH_DEVICES:
             {
@@ -1746,5 +1750,26 @@ public class DeviceManager implements IFunSDKResult {
 
     public static String getServerIpNew() {
         return SERVER_IP_NEW;
+    }
+
+    public double checkMemory(Context context) {
+
+        ActivityManager.MemoryInfo mi = new ActivityManager.MemoryInfo();
+        ActivityManager activityManager = (ActivityManager) context.getSystemService(ACTIVITY_SERVICE);
+        activityManager.getMemoryInfo(mi);
+        double availableMegs = mi.availMem / 0x100000L;
+
+        // Total memory
+        double totalMem = mi.totalMem / 0x100000L;
+
+        //Percentage can be calculated for API 16+
+        double percentAvail = mi.availMem / (double)mi.totalMem * 100.0;
+
+        Log.d("totalMem", String.valueOf(totalMem));
+        Log.d("availableMegs", String.valueOf(availableMegs));
+        Log.d("percentAvail", String.valueOf(percentAvail));
+
+        return availableMegs;
+
     }
 }
