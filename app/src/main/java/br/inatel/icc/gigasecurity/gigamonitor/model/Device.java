@@ -85,6 +85,7 @@ public class Device implements Serializable {
     private String secondaryCompressionMask;
 
     //DeviceInfo
+    public boolean dss = false;
     private String gigaCode;
     private String softwareVersion;
     private String hardwareVersion;
@@ -112,12 +113,6 @@ public class Device implements Serializable {
     @Expose private boolean loginByDomain = true;
     @Expose private boolean loginByCloud = true;
     @Expose private int nextConnectionType = 0;
-    public int ipAttempts = 1;
-    public int domainAttempts = 1;
-    public int cloudAttempts = 1;
-    public boolean ipAttemptsFail = false;
-    public boolean domainAttemptsFail = false;
-    public boolean cloudAttemptsFail = false;
     public boolean allAttempstFail = false;
 
 
@@ -216,7 +211,7 @@ public class Device implements Serializable {
                 if(ipAddress != null && !ipAddress.isEmpty()) {
                     loginAttempt++;
                     connectionString = ipAddress + ":" + tcpPort;
-                    message = "Conectando via IP" + "\nTentativa: " + ipAttempts;
+                    message = "Conectando via IP" + "\nTentativa: " + loginAttempt;
                 } else {
                     return -1;
                 }
@@ -229,7 +224,7 @@ public class Device implements Serializable {
                     } else {
                         connectionString = domain + ":" + tcpPort;
                     }
-                    message = "Conectando via domínio/IP externo" + "\nTentativa: " + domainAttempts;
+                    message = "Conectando via domínio/IP externo" + "\nTentativa: " + loginAttempt;
                 } else {
                     return -1;
                 }
@@ -238,7 +233,7 @@ public class Device implements Serializable {
             case 2: {     //cloud
                 if(!serialNumber.isEmpty()) {
                     connectionString = serialNumber;
-                    message = "Conectando via cloud" + "\nTentativa: " + cloudAttempts;
+                    message = "Conectando via cloud" + "\nTentativa: " + loginAttempt;
                 } else {
                     return -1;
                 }
@@ -839,12 +834,6 @@ public class Device implements Serializable {
     }
 
     public void resetAttempts() {
-        this.ipAttempts = 1;
-        this.domainAttempts = 1;
-        this.cloudAttempts = 1;
-        this.ipAttemptsFail = false;
-        this.domainAttemptsFail = false;
-        this.cloudAttemptsFail = false;
         this.allAttempstFail = false;
     }
 }
