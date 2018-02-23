@@ -29,13 +29,14 @@ public class ConnectionReceiver extends BroadcastReceiver{
                 mDeviceManager.loginAllDevices();
                 mDeviceManager.networkType = info.getType() == ConnectivityManager.TYPE_WIFI ? 1 : 0;
                 Log.i(TAG, "Network " + info.getTypeName() + " connected");
+                mDeviceManager.loggedByConnectionReceiver = true;
 //            } else if (intent.getBooleanExtra(ConnectivityManager.EXTRA_NO_CONNECTIVITY, Boolean.FALSE)) {
 //                Log.d(TAG, "There's no network connectivity");
 //            }
             } else {
                 try {
                     mDeviceManager.networkType = -1;
-                    mDeviceManager.setDevicesLogout();
+                    mDeviceManager.setDevicesLogout(true);
                 } catch(Exception error) {
                     error.printStackTrace();
                 }

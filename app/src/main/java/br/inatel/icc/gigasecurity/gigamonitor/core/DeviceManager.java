@@ -1,5 +1,6 @@
 package br.inatel.icc.gigasecurity.gigamonitor.core;
 
+import android.app.ActivityManager;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.res.Resources;
@@ -62,6 +63,7 @@ import br.inatel.icc.gigasecurity.gigamonitor.ui.SurfaceViewComponent;
 import br.inatel.icc.gigasecurity.gigamonitor.util.ComplexPreferences;
 import br.inatel.icc.gigasecurity.gigamonitor.util.Utils;
 
+import static android.content.Context.ACTIVITY_SERVICE;
 import static android.content.Context.MODE_PRIVATE;
 import static br.inatel.icc.gigasecurity.gigamonitor.activities.DeviceListActivity.mContext;
 
@@ -124,6 +126,7 @@ public class DeviceManager implements IFunSDKResult {
     private ArrayList<Boolean> savedMediaVideosPositionOk = new ArrayList<>();
 
     public boolean mediaViewDidSelectMovies = false;
+    public boolean loggedByConnectionReceiver = false;
 
     private DeviceManager() {
     }
@@ -206,7 +209,7 @@ public class DeviceManager implements IFunSDKResult {
 //        for(Device device : mDevices)
 //            device.checkConnectionMethod();
         getDeviceChannelsManagers();
-        loginAllDevices();
+//        loginAllDevices();
     }
 
     public void createFavoriteDevice() {
@@ -809,24 +812,32 @@ public class DeviceManager implements IFunSDKResult {
         }).start();
     }
 
-    public void setDevicesLogout() {
-        try {
-            Toast.makeText(currentContext, "Sem conexão com a internet", Toast.LENGTH_SHORT).show();
-        } catch (Exception error) {
-            error.printStackTrace();
+    public void setDevicesLogout(final boolean networkFail) {
+        if (networkFail) {
+            Log.e("DeviceManager", "setDevicesLogout");
+            try {
+                Toast.makeText(currentContext, "Sem conexão com a internet", Toast.LENGTH_SHORT).show();
+            } catch (Exception error) {
+                error.printStackTrace();
+            }
         }
-
 
         try {
             new Thread(new Runnable() {
                 @Override
                 public void run() {
-                    int position = 0;
-                    DeviceListActivity.previousGroup = -1;
+                    int devicePosition = 0;
                     for (Device device : mDevices) {
-                        position++;
-                        expandableListAdapter.collapseGroup(position);
                         device.isLogged = false;
+                        DeviceListActivity.previousGroup = -1;
+                        expandableListAdapter.collapseGroup(devicePosition);
+                        ChannelsManager deviceChannelsManager = deviceChannelsManagers.get(devicePosition);
+                        for (SurfaceViewComponent channel : deviceChannelsManager.surfaceViewComponents){
+                            if (deviceChannelsManager.surfaceViewComponents.size() > 0) {
+                                deviceChannelsManager.mediaStop(channel);
+                            }
+                        }
+                        devicePosition++;
                     }
                 }
             }).start();
@@ -837,91 +848,53 @@ public class DeviceManager implements IFunSDKResult {
 
     public void loginDevice(final Device device, final LoginDeviceListener loginDeviceListener) {
         if (!loginList.containsKey(device.getId())) {
-            tryToConnect(device);
+            loginAttempt(device);
         }
         loginList.put(device.getId(), loginDeviceListener);
     }
 
-    private void loginAttemptByIp(final Device device) throws NullPointerException {
-        if (device.isIpPriorityConnection()) {
-            new Thread(new Runnable() {
-                @Override
-                public void run() {
-                    if (device == null)
-                        return;
-                    if (device.ipAttempts > 3) {
-                        expandableListAdapter.setMessage(mDevices.indexOf(device), "Falha na conexão via IP");
-                        device.ipAttemptsFail = true;
-                        if (device.ipAttemptsFail && device.isDomainPriorityConnection() && !device.domainAttemptsFail) {
-                            loginAttemptByDomain(device);
-                        } else if (device.ipAttemptsFail && device.isCloudPriorityConnection() && !device.cloudAttemptsFail) {
-                            loginAttemptByCloud(device);
-                        }
+    public void loginAttempt(final Device device) throws NullPointerException {
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                if (device == null)
+                    return;
+                if (device.loginAttempt > 3) {
+                    device.loginAttempt = 0;
+                    device.allAttempstFail = true;
+                    expandableListAdapter.setMessage(mDevices.indexOf(device), "Falha na conexão");
+                    return;
+                }
+                int nextConnectionType = -1;
+                boolean tryIpConnection = true;
+                if (device.getConnectionNetworkName() != null) {
+                    tryIpConnection = device.getConnectionNetworkName().equals(networkName);
+                }
+                if (device.getConnectionMethod() == -1 || device.getConnectionMethod() == 2) {
+                    if (networkType == 1 && tryIpConnection && device.isIpPriorityConnection()) {   //wifi connection
+                        nextConnectionType = 0;
+                    } else if (device.isDomainPriorityConnection()) {
+                        nextConnectionType = 1;
+                    } else if (device.isCloudPriorityConnection()) {
+                        nextConnectionType = 2;
                     }
-
-                    device.setConnectionString(0);
-
-                    Log.d(TAG, "deviceName: " + device.deviceName + " ipAttempts: " + device.ipAttempts + " connectionString: " + device.connectionString);
-                    device.ipAttempts++;
-                    if (expandableListAdapter != null && !device.ipAttemptsFail)
+                } else if (device.getConnectionMethod() == 0 && device.isDomainPriorityConnection()) {
+                    nextConnectionType = 1;
+                } else if (device.getConnectionMethod() == 1 && device.isCloudPriorityConnection()) {
+                    nextConnectionType = 2;
+                }
+                if (device.setConnectionString(nextConnectionType) < 0) {
+                    loginAttempt(device);
+                } else {
+                    Log.d(TAG, "loginAttempt: " + device.loginAttempt + " " + device.connectionString);
+                    device.loginAttempt++;
+                    if (expandableListAdapter != null)
                         expandableListAdapter.setMessage(mDevices.indexOf(device), device.message);
                     FunSDK.DevLogin(getHandler(), device.connectionString, device.getUsername(), device.getPassword(), device.getId());
                 }
-            }).start();
-        }
-    }
+            }
+        }).start();
 
-    private void loginAttemptByDomain(final Device device) throws NullPointerException {
-        if (device.isDomainPriorityConnection()) {
-            new Thread( new Runnable() {
-                @Override
-                public void run() {
-                    if (device == null)
-                        return;
-                    if (device.domainAttempts > 3) {
-                        expandableListAdapter.setMessage(mDevices.indexOf(device), "Falha na conexão via IP externo");
-                        device.domainAttemptsFail = true;
-                        if (device.domainAttemptsFail && device.isCloudPriorityConnection() && !device.cloudAttemptsFail) {
-                            loginAttemptByCloud(device);
-                        } else if (device.domainAttemptsFail && device.isDomainPriorityConnection() && !device.ipAttemptsFail) {
-                            loginAttemptByIp(device);
-                        }
-                    }
-
-                    device.setConnectionString(1);
-
-                    Log.d(TAG, "deviceName: " + device.deviceName + " domainAttempts: " + device.domainAttempts + " connectionString: " + device.connectionString);
-                    device.domainAttempts++;
-                    if (expandableListAdapter != null && !device.domainAttemptsFail)
-                        expandableListAdapter.setMessage(mDevices.indexOf(device), device.message);
-                    FunSDK.DevLogin(getHandler(), device.connectionString, device.getUsername(), device.getPassword(), device.getId());
-                }
-            }).start();
-        }
-    }
-
-    private void loginAttemptByCloud(final Device device) throws NullPointerException {
-        if (device.isCloudPriorityConnection()) {
-            new Thread(new Runnable() {
-                @Override
-                public void run() {
-                    if (device == null)
-                        return;
-                    if (device.cloudAttempts > 3) {
-                        expandableListAdapter.setMessage(mDevices.indexOf(device), "Falha na conexão via Cloud");
-                        device.cloudAttemptsFail = true;
-                    }
-
-                    device.setConnectionString(2);
-
-                    Log.d(TAG, "deviceName: " + device.deviceName + " cloudAttempts: " + device.cloudAttempts + " connectionString: " + device.connectionString);
-                    device.cloudAttempts++;
-                    if (expandableListAdapter != null && !device.cloudAttemptsFail)
-                        expandableListAdapter.setMessage(mDevices.indexOf(device), device.message);
-                    FunSDK.DevLogin(getHandler(), device.connectionString, device.getUsername(), device.getPassword(), device.getId());
-                }
-            }).start();
-        }
     }
 
     public void removeLoginListener(int id) {
@@ -1444,6 +1417,8 @@ public class DeviceManager implements IFunSDKResult {
             Log.d(TAG, "msgContent.arg3 : " + msgContent.arg3);
             Log.d(TAG, "msgContent.pData : " + msgContent.pData);
         }
+
+        checkMemory(mContext);
         switch (msg.what) {
             case EUIMSG.DEV_SEARCH_DEVICES:
             {
@@ -1503,7 +1478,7 @@ public class DeviceManager implements IFunSDKResult {
                         loginList.remove(device.getId());
                     } else {
                         try {
-                            tryToConnect(device);
+                            loginAttempt(device);
                             loginList.get(device.getId()).onLoginError(msg.arg1, device);
                         } catch (Exception error) {
                             error.printStackTrace();
@@ -1757,42 +1732,6 @@ public class DeviceManager implements IFunSDKResult {
         return connectionString;
     }
 
-    public void tryToConnect(Device device) {
-        try {
-            if (device == null) {
-                return;
-            } else {
-                if (!device.ipAttemptsFail && device.isIpPriorityConnection() && !device.getIpAddress().equals("")) {
-                    loginAttemptByIp(device);
-                } else if (!device.domainAttemptsFail && device.isDomainPriorityConnection() && !device.getDomain().equals("")) {
-                    loginAttemptByDomain(device);
-                } else if (!device.cloudAttemptsFail && device.isCloudPriorityConnection() && !device.getSerialNumber().equals("")) {
-                    loginAttemptByCloud(device);
-                } else {
-                    device.allAttempstFail = true;
-                }
-            }
-        } catch (Exception error) {
-            error.printStackTrace();
-        }
-    }
-
-    public void stopAllChannels() {
-        Log.e("DeviceManager", "StopAllChannels");
-        try {
-            for (int device = 0; device < deviceChannelsManagers.size(); device++) {
-                ChannelsManager deviceChannelsManager = deviceChannelsManagers.get(device);
-                for (int channel = 0; channel < deviceChannelsManager.channelNumber; channel++) {
-                    if (deviceChannelsManager.surfaceViewComponents.size() > 0) {
-                        deviceChannelsManager.onStop(deviceChannelsManager.surfaceViewComponents.get(channel));
-                    }
-                }
-            }
-        } catch (Exception error) {
-            error.printStackTrace();
-        }
-    }
-
     public static String getAppUuid() {
         return APP_UUID;
     }
@@ -1811,5 +1750,26 @@ public class DeviceManager implements IFunSDKResult {
 
     public static String getServerIpNew() {
         return SERVER_IP_NEW;
+    }
+
+    public double checkMemory(Context context) {
+
+        ActivityManager.MemoryInfo mi = new ActivityManager.MemoryInfo();
+        ActivityManager activityManager = (ActivityManager) context.getSystemService(ACTIVITY_SERVICE);
+        activityManager.getMemoryInfo(mi);
+        double availableMegs = mi.availMem / 0x100000L;
+
+        // Total memory
+        double totalMem = mi.totalMem / 0x100000L;
+
+        //Percentage can be calculated for API 16+
+        double percentAvail = mi.availMem / (double)mi.totalMem * 100.0;
+
+        Log.d("totalMem", String.valueOf(totalMem));
+        Log.d("availableMegs", String.valueOf(availableMegs));
+        Log.d("percentAvail", String.valueOf(percentAvail));
+
+        return availableMegs;
+
     }
 }

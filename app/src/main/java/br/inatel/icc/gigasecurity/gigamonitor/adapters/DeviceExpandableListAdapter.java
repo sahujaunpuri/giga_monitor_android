@@ -19,6 +19,7 @@ import android.widget.BaseExpandableListAdapter;
 import android.widget.ExpandableListView;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.util.ArrayList;
 
@@ -194,30 +195,33 @@ public class DeviceExpandableListAdapter extends BaseExpandableListAdapter {
         return new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                ((Activity)mContext).runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        ChannelsManager deviceChannelsManager = mDeviceManager.getDeviceChannelsManagers().get(groupPosition);
-                        deviceChannelsManager.numQuad = nextNumQuad(deviceChannelsManager.numQuad, groupViewHolder.get(groupPosition).mDevice.getChannelNumber());
-                        deviceChannelsManager.lastNumQuad = deviceChannelsManager.numQuad;
-                        deviceChannelsManager.stopChannels(0);
-                        mDeviceManager.clearStart();
-
-                        childViewHolder.get(groupPosition).gridLayoutManager.setSpanCount(mDeviceManager.getDeviceChannelsManagers().get(groupPosition).numQuad);
-//                        deviceChannelsManager.currentPage = deviceChannelsManager.pageNumber(deviceChannelsManager.lastFirstVisibleItem);
-//                        childViewHolder.get(groupPosition).gridLayoutManager.scrollToPositionWithOffset(deviceChannelsManager.firstItemOfPage(deviceChannelsManager.currentPage), 0);
-//                        Log.d(TAG, "run: " + deviceChannelsManager.currentPage + " " + deviceChannelsManager.lastFirstVisibleItem + " " + deviceChannelsManager.firstItemOfPage(deviceChannelsManager.currentPage));
-                        childViewHolder.get(groupPosition).mRecyclerAdapter.notifyDataSetChanged();
-                        deviceChannelsManager.changeSurfaceViewSize();
-
-                        deviceChannelsManager.resetScale();
-                        deviceChannelsManager.reOrderSurfaceViewComponents();
-                    }
-                });
+                changeQuad(groupPosition);
             }
         };
     }
 
+    public void changeQuad(final int groupPosition){
+        ((Activity)mContext).runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                ChannelsManager deviceChannelsManager = mDeviceManager.getDeviceChannelsManagers().get(groupPosition);
+                deviceChannelsManager.numQuad = nextNumQuad(deviceChannelsManager.numQuad, groupViewHolder.get(groupPosition).mDevice.getChannelNumber());
+                deviceChannelsManager.lastNumQuad = deviceChannelsManager.numQuad;
+                deviceChannelsManager.stopChannels(0);
+                mDeviceManager.clearStart();
+
+                childViewHolder.get(groupPosition).gridLayoutManager.setSpanCount(mDeviceManager.getDeviceChannelsManagers().get(groupPosition).numQuad);
+//                        deviceChannelsManager.currentPage = deviceChannelsManager.pageNumber(deviceChannelsManager.lastFirstVisibleItem);
+//                        childViewHolder.get(groupPosition).gridLayoutManager.scrollToPositionWithOffset(deviceChannelsManager.firstItemOfPage(deviceChannelsManager.currentPage), 0);
+//                        Log.d(TAG, "run: " + deviceChannelsManager.currentPage + " " + deviceChannelsManager.lastFirstVisibleItem + " " + deviceChannelsManager.firstItemOfPage(deviceChannelsManager.currentPage));
+                childViewHolder.get(groupPosition).mRecyclerAdapter.notifyDataSetChanged();
+                deviceChannelsManager.changeSurfaceViewSize();
+
+                deviceChannelsManager.resetScale();
+                deviceChannelsManager.reOrderSurfaceViewComponents();
+            }
+        });
+    }
     private View.OnClickListener openFavoritesList(){
         return new View.OnClickListener() {
             @Override
@@ -647,16 +651,25 @@ public class DeviceExpandableListAdapter extends BaseExpandableListAdapter {
     public int nextNumQuad(int numQuad,int totalChannels) {
         int nextNumQuad = 1;
 
+        boolean thereIsMemoryAvailable = true;
+
         if (numQuad == 1) {
             nextNumQuad = 2;
         } else if (numQuad == 2) {
-            if(totalChannels > 4) {
+
+            double totalFreeMemory = mDeviceManager.checkMemory(mContext);
+            thereIsMemoryAvailable = totalFreeMemory > 190;
+
+            if (thereIsMemoryAvailable && totalChannels > 4) {
                 nextNumQuad = 3;
             } else {
+
                 nextNumQuad = 1;
             }
         } else if (numQuad == 3) {
-            if(totalChannels > 9) {
+            double totalFreeMemory = mDeviceManager.checkMemory(mContext);
+            thereIsMemoryAvailable = totalFreeMemory > 210;
+            if(thereIsMemoryAvailable && totalChannels > 9) {
                 nextNumQuad = 4;
             } else {
                 nextNumQuad = 1;
@@ -664,6 +677,13 @@ public class DeviceExpandableListAdapter extends BaseExpandableListAdapter {
         } else if (numQuad == 4) {
             nextNumQuad = 1;
         }
+
+        Log.d("nextNumQuad:","" + nextNumQuad);
+
+        if (!thereIsMemoryAvailable){
+            Toast.makeText(mContext, "Faltou memória para abrir mais câmeras!", Toast.LENGTH_LONG).show();
+        }
+
         return nextNumQuad;
     }
 
@@ -753,7 +773,7 @@ public class DeviceExpandableListAdapter extends BaseExpandableListAdapter {
             public void onClick(View v) {
                 if (groupViewHolder.mDevice.allAttempstFail){
                     groupViewHolder.mDevice.resetAttempts();
-                    mDeviceManager.tryToConnect(groupViewHolder.mDevice);
+                    mDeviceManager.loginAttempt(groupViewHolder.mDevice);
                 }
             }
         };
