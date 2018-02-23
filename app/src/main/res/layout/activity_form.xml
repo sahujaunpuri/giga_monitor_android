@@ -55,7 +55,7 @@
                     android:id="@+id/serial_checkbox"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:checked="false"
+                    android:checked="true"
                     android:gravity="center_horizontal" />
 
             </LinearLayout>
@@ -89,7 +89,7 @@
                     android:id="@+id/ip_checkbox"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:checked="false"
+                    android:checked="true"
                     android:padding="0dp"
                     android:gravity="center_horizontal"/>
 
@@ -125,7 +125,7 @@
                     android:id="@+id/domain_checkbox"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:checked="false"
+                    android:checked="true"
                     android:gravity="center_horizontal"/>
 
             </LinearLayout>
