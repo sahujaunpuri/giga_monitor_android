@@ -493,7 +493,7 @@ public abstract class ChannelsManager implements IFunSDKResult {
             if (freeMemoryAvailable < 70){
                 DeviceExpandableListAdapter mDeviceManagerExpandableListAdapter = mDeviceManager.getExpandableListAdapter();
                 mDeviceManagerExpandableListAdapter.changeQuad(DeviceListActivity.previousGroup);
-                Toast.makeText(mContext, "Faltou memória disponível para a quantidade de quadros visíveis.", Toast.LENGTH_SHORT).show();
+                Toast.makeText(mContext, "Feche outros apps para liberar memória!", Toast.LENGTH_SHORT).show();
             }
         }
         countTimesToCheckMemory++;

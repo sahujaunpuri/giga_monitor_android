@@ -681,7 +681,7 @@ public class DeviceExpandableListAdapter extends BaseExpandableListAdapter {
         Log.d("nextNumQuad:","" + nextNumQuad);
 
         if (!thereIsMemoryAvailable){
-            Toast.makeText(mContext, "Faltou memória para aumentar a quantidade de quadros visíveis", Toast.LENGTH_LONG).show();
+            Toast.makeText(mContext, "Faltou memória para abrir mais câmeras!", Toast.LENGTH_LONG).show();
         }
 
         return nextNumQuad;
