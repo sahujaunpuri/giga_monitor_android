@@ -18,8 +18,7 @@
 
         <TextView
             style="@style/ActionBarTitle"
-            android:text="CONFIGURAÇÕES"
-            android:layout_marginTop="30dp"/>
+            android:text="CONFIGURAÇÕES" />
 
         <TextView
             android:text="ATUALIZAR"

@@ -16,8 +16,7 @@
 
         <TextView
             style="@style/ActionBarTitle"
-            android:text="REDE"
-            android:layout_marginTop="30dp"/>
+            android:text="REDE" />
 
         <TextView
             android:text="ATUALIZAR"

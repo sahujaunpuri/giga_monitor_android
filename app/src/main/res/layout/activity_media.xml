@@ -15,8 +15,7 @@
         <TextView
             android:text="voltar"
             android:id="@+id/back_action"
-            style="@style/ActionBarTextView"
-            android:layout_marginLeft="90dp"/>
+            style="@style/ActionBarTextView" />
 
         <TextView
             android:text="cancelar"

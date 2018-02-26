@@ -22,12 +22,12 @@
 
         <TextView
             style="@style/ActionBarTitle"
-            android:layout_width="110dp"
+            android:layout_width="100dp"
             android:text="PlayBack"/>
 
         <TextView
             style="@style/ActionBarTextView"
-            android:layout_width="70dp"
+            android:layout_width="90dp"
             android:id="@+id/text_view_search"
             android:text="procurar" />
 
