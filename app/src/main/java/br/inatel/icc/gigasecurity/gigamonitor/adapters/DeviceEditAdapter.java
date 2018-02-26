@@ -67,9 +67,7 @@ public class DeviceEditAdapter extends BaseAdapter {
             holder = (ViewHolder) convertView.getTag();
         }
 
-        if (mDevices.get(position).getChannelNumber() > 1) {
-            holder.deviceIcon.setImageDrawable(mContex.getResources().getDrawable(R.drawable.dvr_icon));
-        }
+        holder.deviceIcon.setImageDrawable(mContex.getResources().getDrawable(R.drawable.dvr_icon));
 
         if(mDevices.get(position).getDeviceName().equals("Favoritos")) {
             holder.delete.setVisibility(View.INVISIBLE);
