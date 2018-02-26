@@ -313,13 +313,13 @@
 
     <!--Expandable List View Row-->
     <style name="ExpandableListViewRowTextViewDeviceName">
-        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_width">170dp</item>
         <item name="android:layout_height">wrap_content</item>
         <item name="android:textColor">@color/default_color</item>
         <item name="android:text">Device Name</item>
         <item name="android:textSize">18dp</item>
         <item name="android:layout_marginLeft">16dp</item>
-        <item name="android:layout_marginRight">85dp</item>
+        <item name="android:layout_marginRight">30dp</item>
         <item name="android:layout_gravity">left|center_vertical</item>
         <item name="android:fontFamily">@font/lato_regular</item>
     </style>
