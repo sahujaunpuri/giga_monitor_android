@@ -67,7 +67,7 @@ public class CustomTypeDialog extends Dialog {
                 mHandler.postDelayed(new Runnable() {
                     @Override
                     public void run() {
-                        mLinearLayoutCloud3BtnReboot.setVisibility(View.VISIBLE);
+                        dismiss();
                         mLinearLayoutButtonCloud3.setVisibility(View.GONE);
                         mLinearLayoutCloud3.setVisibility(View.GONE);
                     }

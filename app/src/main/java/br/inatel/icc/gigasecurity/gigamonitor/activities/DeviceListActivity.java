@@ -83,6 +83,10 @@ public class DeviceListActivity extends ActionBarActivity implements View.OnClic
             if (prefs.getBoolean("cloud2", true)) {
                 editor.putBoolean("newUser", false);
                 editor.commit();
+                for (Device device : mDevices) {
+                    if (!device.alreadyOptimized)
+                        device.optimize = true;
+                }
             }
         }
 

@@ -374,8 +374,8 @@ public class DeviceExpandableListAdapter extends BaseExpandableListAdapter {
                     groupViewHolder.ivMore.setVisibility(View.VISIBLE);
                     if(groupViewHolder.mDevice.getChannelNumber() > 1 ) {
                         groupViewHolder.ivQuad.setVisibility(View.VISIBLE);
-                        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(mContext);
-                        if (prefs.getBoolean("cloud2", true)) {
+                        if (groupViewHolder.mDevice.optimize) {
+                            groupViewHolder.mDevice.optimize = false;
                             groupViewHolder.ivOtimizar.setVisibility(View.VISIBLE);
                         }
                     }
@@ -789,7 +789,9 @@ public class DeviceExpandableListAdapter extends BaseExpandableListAdapter {
         return new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                //mDeviceManager.rebootDevice(groupViewHolder.mDevice);
+                mDeviceManager.rebootDevice(groupViewHolder.mDevice);
+                groupViewHolder.ivOtimizar.setVisibility(View.INVISIBLE);
+                groupViewHolder.mDevice.alreadyOptimized = true;
             }
         };
     }
