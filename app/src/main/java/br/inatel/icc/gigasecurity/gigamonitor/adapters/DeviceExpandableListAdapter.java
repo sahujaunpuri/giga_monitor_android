@@ -310,6 +310,7 @@ public class DeviceExpandableListAdapter extends BaseExpandableListAdapter {
             e.printStackTrace();
         }
         if((mContext.getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE && DeviceListActivity.previousGroup != -1)) {
+            Log.d("getGroupView", "groupViewHolder.blank");
             return groupViewHolder.blank;
         } else {
             return groupViewHolder.convertView;
@@ -736,21 +737,9 @@ public class DeviceExpandableListAdapter extends BaseExpandableListAdapter {
                     public void run() {
                         childViewHolder.get(position).tvMessage.setText(message);
                         childViewHolder.get(position).tvMessage.invalidate();
+                        Log.d("setMessage()", message);
                     }
                 });
-        } catch (ArrayIndexOutOfBoundsException e) {
-            e.printStackTrace();
-        }
-        try {
-            if (childViewHolder.size() > position && childViewHolder.get(position).tvMessage != null) {
-                ((Activity) mContext).runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        childViewHolder.get(position).tvMessage.setText(message);
-                        childViewHolder.get(position).tvMessage.invalidate();
-                    }
-                });
-            }
         } catch (ArrayIndexOutOfBoundsException e) {
             e.printStackTrace();
         }
