@@ -18,8 +18,7 @@
 
         <TextView
             style="@style/ActionBarTitle"
-            android:text="Encontrados"
-            android:layout_marginTop="30dp"/>
+            android:text="Encontrados" />
 
         <TextView
             android:text="ATUALIZAR"

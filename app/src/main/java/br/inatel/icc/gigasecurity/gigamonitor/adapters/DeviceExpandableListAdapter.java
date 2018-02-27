@@ -5,9 +5,11 @@ import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.DisplayMetrics;
@@ -123,6 +125,7 @@ public class DeviceExpandableListAdapter extends BaseExpandableListAdapter {
         groupViewHolder.ivMore       = (ImageView) convertView.findViewById(R.id.iv_device_more);
         groupViewHolder.ivAddMore    = (ImageView) convertView.findViewById(R.id.iv_add_fav);
         groupViewHolder.ivRefresh    = (ImageView) convertView.findViewById(R.id.iv_refresh);
+        groupViewHolder.ivOtimizar   = (ImageView) convertView.findViewById(R.id.iv_otimizar);
         groupViewHolder.tvDeviceName = (TextView) convertView.findViewById(R.id.tv_hostname_list_device);
         groupViewHolder.mDevice      = mDevices.get(groupPosition);
         groupViewHolder.position    = groupPosition;
@@ -131,6 +134,7 @@ public class DeviceExpandableListAdapter extends BaseExpandableListAdapter {
         groupViewHolder.ivQuad.setOnClickListener(createQuadListener(groupPosition));
         groupViewHolder.ivAddMore.setOnClickListener(openFavoritesList());
         groupViewHolder.ivRefresh.setOnClickListener(refreshDeviceConnection(groupViewHolder));
+        groupViewHolder.ivOtimizar.setOnClickListener(otimizarDevice(groupViewHolder));
 
         this.groupViewHolder.add(groupViewHolder);
 
@@ -342,7 +346,7 @@ public class DeviceExpandableListAdapter extends BaseExpandableListAdapter {
         return convertView;
     }
 
-    private void showExpanded(int groupPosition, final GroupViewHolder groupViewHolder, final ChildViewHolder childViewHolder) {
+    private void showExpanded(final int groupPosition, final GroupViewHolder groupViewHolder, final ChildViewHolder childViewHolder) {
         ((DeviceListActivity) mContext).runOnUiThread(new Runnable() {
             @Override
             public void run() {
@@ -368,8 +372,13 @@ public class DeviceExpandableListAdapter extends BaseExpandableListAdapter {
                     }
                     childViewHolder.recyclerViewChannels.setVisibility(View.VISIBLE);
                     groupViewHolder.ivMore.setVisibility(View.VISIBLE);
-                    if(groupViewHolder.mDevice.getChannelNumber() > 1 )
+                    if(groupViewHolder.mDevice.getChannelNumber() > 1 ) {
                         groupViewHolder.ivQuad.setVisibility(View.VISIBLE);
+                        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(mContext);
+                        if (prefs.getBoolean("cloud2", true)) {
+                            groupViewHolder.ivOtimizar.setVisibility(View.VISIBLE);
+                        }
+                    }
                 }
             }
         });
@@ -776,6 +785,15 @@ public class DeviceExpandableListAdapter extends BaseExpandableListAdapter {
         };
     }
 
+    private View.OnClickListener otimizarDevice(final GroupViewHolder groupViewHolder){
+        return new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                //mDeviceManager.rebootDevice(groupViewHolder.mDevice);
+            }
+        };
+    }
+
     public class GroupViewHolder {
         public TextView tvDeviceName;
         public Device mDevice;
@@ -783,6 +801,7 @@ public class DeviceExpandableListAdapter extends BaseExpandableListAdapter {
         public ImageView ivQuad;
         public ImageView ivAddMore;
         public ImageView ivRefresh;
+        public ImageView ivOtimizar;
         public View convertView;
         public View blank;
         public int position;
