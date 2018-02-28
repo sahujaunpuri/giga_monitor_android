@@ -47,7 +47,6 @@ import java.util.HashMap;
 import java.util.LinkedList;
 
 import br.inatel.icc.gigasecurity.gigamonitor.R;
-import br.inatel.icc.gigasecurity.gigamonitor.activities.DeviceListActivity;
 import br.inatel.icc.gigasecurity.gigamonitor.activities.DevicePlaybackActivity;
 import br.inatel.icc.gigasecurity.gigamonitor.adapters.DeviceExpandableListAdapter;
 import br.inatel.icc.gigasecurity.gigamonitor.listeners.ConfigListener;
@@ -807,9 +806,17 @@ public class DeviceManager implements IFunSDKResult {
         new Thread(new Runnable() {
             @Override
             public void run() {
+                int i =0;
                 for (Device device : mDevices) {
                     if (!device.isLogged)
                         loginDevice(device, null);
+
+                    i++;
+
+                    if (i == 30){
+                        Answers.getInstance().logCustom(new CustomEvent("Infinit Loop")
+                                .putCustomAttribute("I", i));
+                    }
                 }
             }
         }).start();
