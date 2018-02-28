@@ -490,7 +490,7 @@ public abstract class ChannelsManager implements IFunSDKResult {
         if (countTimesToCheckMemory == 0){
             double freeMemoryAvailable = mDeviceManager.checkMemory(mContext);
             Log.d("executed","" + Utils.currentDateTime());
-            if (freeMemoryAvailable < 70){
+            if (freeMemoryAvailable < 130) {
                 DeviceExpandableListAdapter mDeviceManagerExpandableListAdapter = mDeviceManager.getExpandableListAdapter();
                 mDeviceManagerExpandableListAdapter.changeQuad(DeviceListActivity.previousGroup);
                 Toast.makeText(mContext, "Feche outros apps para liberar memória!", Toast.LENGTH_SHORT).show();
@@ -498,12 +498,9 @@ public abstract class ChannelsManager implements IFunSDKResult {
         }
         countTimesToCheckMemory++;
 
-
         if (countTimesToCheckMemory == 10){
             countTimesToCheckMemory = 0;
         }
-
-
 
         switch (msg.what) {
             case EUIMSG.START_PLAY: {

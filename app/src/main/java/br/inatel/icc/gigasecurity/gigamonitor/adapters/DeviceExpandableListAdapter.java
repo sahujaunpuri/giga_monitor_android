@@ -5,11 +5,9 @@ import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.DisplayMetrics;
@@ -22,6 +20,9 @@ import android.widget.ExpandableListView;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import com.crashlytics.android.answers.Answers;
+import com.crashlytics.android.answers.CustomEvent;
 
 import java.util.ArrayList;
 
@@ -297,6 +298,10 @@ public class DeviceExpandableListAdapter extends BaseExpandableListAdapter {
                 groupViewHolder.blank.setTag(groupViewHolder);
                 convertView.setTag(groupViewHolder);
                 childViewHolder.add(new ChildViewHolder());
+                Log.d("getGroupView", groupViewHolder.mDevice.deviceName + " - groupViewHolder.blank.setTag(groupViewHolder);");
+
+                Answers.getInstance().logCustom(new CustomEvent("GroupViewHolder")
+                        .putCustomAttribute("convertView", "firstInit"));
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -654,7 +659,6 @@ public class DeviceExpandableListAdapter extends BaseExpandableListAdapter {
         return -1;
     }
 
-
     public int nextNumQuad(int numQuad,int totalChannels) {
         int nextNumQuad = 1;
 
@@ -665,6 +669,7 @@ public class DeviceExpandableListAdapter extends BaseExpandableListAdapter {
         } else if (numQuad == 2) {
 
             double totalFreeMemory = mDeviceManager.checkMemory(mContext);
+
             thereIsMemoryAvailable = totalFreeMemory > 190;
 
             if (thereIsMemoryAvailable && totalChannels > 4) {
@@ -737,7 +742,7 @@ public class DeviceExpandableListAdapter extends BaseExpandableListAdapter {
                     public void run() {
                         childViewHolder.get(position).tvMessage.setText(message);
                         childViewHolder.get(position).tvMessage.invalidate();
-                        Log.d("setMessage()", message);
+                        Log.d("setMessage()", position + " - " + message);
                     }
                 });
         } catch (ArrayIndexOutOfBoundsException e) {
