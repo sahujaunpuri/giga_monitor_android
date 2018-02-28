@@ -20,6 +20,8 @@ import android.widget.ExpandableListView;
 import android.widget.Toast;
 
 import com.basic.G;
+import com.crashlytics.android.answers.Answers;
+import com.crashlytics.android.answers.CustomEvent;
 import com.google.gson.annotations.Expose;
 import com.lib.EFUN_ATTR;
 import com.lib.EUIMSG;
@@ -66,6 +68,7 @@ import br.inatel.icc.gigasecurity.gigamonitor.util.Utils;
 import static android.content.Context.ACTIVITY_SERVICE;
 import static android.content.Context.MODE_PRIVATE;
 import static br.inatel.icc.gigasecurity.gigamonitor.activities.DeviceListActivity.mContext;
+import static br.inatel.icc.gigasecurity.gigamonitor.activities.DeviceListActivity.previousGroup;
 
 /**
  * Created by rinaldo.bueno on 29/08/2014.
@@ -829,7 +832,7 @@ public class DeviceManager implements IFunSDKResult {
                     int devicePosition = 0;
                     for (Device device : mDevices) {
                         device.isLogged = false;
-                        DeviceListActivity.previousGroup = -1;
+                        previousGroup = -1;
                         expandableListAdapter.collapseGroup(devicePosition);
                         ChannelsManager deviceChannelsManager = deviceChannelsManagers.get(devicePosition);
                         for (SurfaceViewComponent channel : deviceChannelsManager.surfaceViewComponents){
@@ -1770,6 +1773,80 @@ public class DeviceManager implements IFunSDKResult {
         Log.d("percentAvail", String.valueOf(percentAvail));
 
         return availableMegs;
+    }
 
+    public int appMemoryAnalytics() {
+        int memoryAvailable = (int) checkMemory(mContext);
+
+        if (memoryAvailable <= 50) {
+            setMemoryEventName(1);
+            return 1;
+        } else if(memoryAvailable <= 100) {
+            setMemoryEventName(2);
+            return 2;
+        } else if (memoryAvailable <= 150) {
+            setMemoryEventName(3);
+            return 3;
+        } else if (memoryAvailable <= 200) {
+            setMemoryEventName(4);
+            return 4;
+        } else if (memoryAvailable <= 250) {
+            setMemoryEventName(5);
+            return 5;
+        } else {
+            setMemoryEventName(0);
+            return 0;
+        }
+    }
+
+    public void setMemoryEventName(int freeMemory) {
+        switch (freeMemory){
+            case 1:
+                sendMemoryEvent("Memory Free 50");
+                break;
+
+            case 2:
+                sendMemoryEvent("Memory Free 100");
+                break;
+
+            case 3:
+                sendMemoryEvent("Memory Free 150");
+                break;
+
+            case 4:
+                sendMemoryEvent("Memory Free 200");
+                break;
+
+            case 5:
+                sendMemoryEvent("Memory Free 250");
+                break;
+
+            case 0:
+                sendMemoryEvent("Memory Free +250");
+                break;
+        }
+    }
+
+    public void sendMemoryEvent (String eventName) {
+        try {
+            ActivityManager.MemoryInfo mi = new ActivityManager.MemoryInfo();
+            ActivityManager activityManager = (ActivityManager) mContext.getSystemService(ACTIVITY_SERVICE);
+            activityManager.getMemoryInfo(mi);
+
+            // Total memory
+            double totalMem = mi.totalMem / 0x100000L;
+
+            ChannelsManager mChannelsManager = deviceChannelsManagers.get(previousGroup);
+
+            Answers.getInstance().logCustom(new CustomEvent(eventName)
+                    .putCustomAttribute("Total Memory", totalMem)
+                    .putCustomAttribute("MemoryFree", checkMemory(mContext))
+                    .putCustomAttribute("NumQuad", mChannelsManager.numQuad)
+                    .putCustomAttribute("DVRS", mDevices.size()));
+
+            Log.d("Memory Analytics", "Event send.");
+        } catch (Exception error) {
+            error.printStackTrace();
+        }
     }
 }
