@@ -229,9 +229,7 @@ public class DeviceFormActivity extends ActionBarActivity {
                     if(editPosition > -1){
                         deviceManager.logoutDevice(mDevice);
                         checkEdit();
-                        mDevice.isLogged = false;
                         mDevice.setChannelNumber(0);
-                        deviceManager.logoutDevice(mDevice);
                         deviceManager.addDevice(mDevice, editPosition);
                         deviceManager.updateSurfaceViewManager(editPosition);
                         deviceManager.collapse = editPosition;

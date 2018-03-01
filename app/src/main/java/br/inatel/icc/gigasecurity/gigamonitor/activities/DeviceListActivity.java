@@ -17,9 +17,6 @@ import android.widget.Toast;
 import com.crashlytics.android.Crashlytics;
 
 import java.util.ArrayList;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.TimeUnit;
 
 import br.inatel.icc.gigasecurity.gigamonitor.BuildConfig;
 import br.inatel.icc.gigasecurity.gigamonitor.R;
@@ -169,13 +166,6 @@ public class DeviceListActivity extends ActionBarActivity {
             Log.d(TAG, "onResume: group: " + previousGroup + ", channel: " + statePreferences.previousChannel + ", grid: " + statePreferences.previousGrid + ", HD: " + statePreferences.previousHD);
             mDeviceManager.loadedState = true;
         }
-
-        ScheduledExecutorService scheduleTaskExecutor = Executors.newScheduledThreadPool(5);
-        scheduleTaskExecutor.scheduleAtFixedRate(new Runnable() {
-            public void run() {
-                mDeviceManager.appMemoryAnalytics();
-            }
-        }, 0, 15, TimeUnit.SECONDS);
 
         mDeviceManager.loginAllDevices();
     }

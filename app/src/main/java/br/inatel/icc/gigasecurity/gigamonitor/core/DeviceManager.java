@@ -803,23 +803,25 @@ public class DeviceManager implements IFunSDKResult {
     }
 
     public void loginAllDevices() {
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                int i =0;
-                for (Device device : mDevices) {
-                    if (!device.isLogged)
-                        loginDevice(device, null);
+        final ArrayList<Device> devicesToLogin = new ArrayList<Device>();
 
-                    i++;
+        for (final Device device : mDevices) {
+            if (!device.isLogged) {
+                devicesToLogin.add(device);
+            }
+        }
 
-                    if (i == 30){
-                        Answers.getInstance().logCustom(new CustomEvent("Infinit Loop")
-                                .putCustomAttribute("I", i));
+        if (devicesToLogin.size() > 0) {
+            new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    for (Device deviceToLogin : devicesToLogin) {
+                        loginDevice(deviceToLogin, null);
                     }
                 }
-            }
-        }).start();
+            }).start();
+        }
+
     }
 
     public void setDevicesLogout(final boolean networkFail) {
@@ -838,7 +840,6 @@ public class DeviceManager implements IFunSDKResult {
                 public void run() {
                     int devicePosition = 0;
                     for (Device device : mDevices) {
-                        device.isLogged = false;
                         previousGroup = -1;
                         expandableListAdapter.collapseGroup(devicePosition);
                         ChannelsManager deviceChannelsManager = deviceChannelsManagers.get(devicePosition);
@@ -869,7 +870,7 @@ public class DeviceManager implements IFunSDKResult {
             public void run() {
                 if (device == null)
                     return;
-                if (device.loginAttempt > 3) {
+                if (device.loginAttempt > 4) {
                     device.loginAttempt = 0;
                     device.allAttempstFail = true;
                     expandableListAdapter.setMessage(mDevices.indexOf(device), "Falha na conexão");
@@ -1775,8 +1776,9 @@ public class DeviceManager implements IFunSDKResult {
         //Percentage can be calculated for API 16+
         double percentAvail = mi.availMem / (double)mi.totalMem * 100.0;
 
+        Log.d("Check Memory", "********************* MEMORY *********************");
         Log.d("totalMem", String.valueOf(totalMem));
-        Log.d("availableMegs", String.valueOf(availableMegs));
+        Log.d("availableMem", String.valueOf(availableMegs));
         Log.d("percentAvail", String.valueOf(percentAvail));
 
         return availableMegs;

@@ -8,8 +8,8 @@ android {
         applicationId "br.inatel.icc.gigasecurity.gigamonitor"
         minSdkVersion 16
         targetSdkVersion 21
-        versionCode 40
-        versionName "2.3.5"
+        versionCode 42
+        versionName "2.3.6"
         testInstrumentationRunner 'android.support.test.runner.AndroidJUnitRunner'
     }
 
