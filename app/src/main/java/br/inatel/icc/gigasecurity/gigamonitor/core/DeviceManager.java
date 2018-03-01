@@ -1872,7 +1872,7 @@ public class DeviceManager implements IFunSDKResult {
                     .putCustomAttribute("Total Memory", totalMem)
                     .putCustomAttribute("MemoryFree", checkMemory(mContext))
                     .putCustomAttribute("NumQuad", mChannelsManager.numQuad)
-                    .putCustomAttribute("DVRS", mDevices.size()));
+                        .putCustomAttribute("DVRS", mDevices.size()));
 
             Log.d("Memory Analytics", "Event send.");
         } catch (Exception error) {
