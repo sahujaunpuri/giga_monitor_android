@@ -55,7 +55,7 @@ public class EthernetConfigActivity extends ActionBarActivity implements OnCheck
                 mDevice = temp;
                 mManager.logoutDevice(mDevice);
                 mManager.getDevices().remove(position);
-                mDevice.isLogged = false;
+                mManager.logoutDevice(mDevice);
                 //            mDevice.setChannelNumber(0);
                 //            temp.isLogged = false;
                 //            temp.setChannelNumber(0);
