@@ -20,8 +20,6 @@ import android.widget.ExpandableListView;
 import android.widget.Toast;
 
 import com.basic.G;
-import com.crashlytics.android.answers.Answers;
-import com.crashlytics.android.answers.CustomEvent;
 import com.google.gson.annotations.Expose;
 import com.lib.EFUN_ATTR;
 import com.lib.EUIMSG;
