@@ -45,7 +45,6 @@ import java.util.HashMap;
 import java.util.LinkedList;
 
 import br.inatel.icc.gigasecurity.gigamonitor.R;
-import br.inatel.icc.gigasecurity.gigamonitor.activities.DeviceListActivity;
 import br.inatel.icc.gigasecurity.gigamonitor.activities.DevicePlaybackActivity;
 import br.inatel.icc.gigasecurity.gigamonitor.adapters.DeviceExpandableListAdapter;
 import br.inatel.icc.gigasecurity.gigamonitor.listeners.ConfigListener;
@@ -66,6 +65,7 @@ import br.inatel.icc.gigasecurity.gigamonitor.util.Utils;
 import static android.content.Context.ACTIVITY_SERVICE;
 import static android.content.Context.MODE_PRIVATE;
 import static br.inatel.icc.gigasecurity.gigamonitor.activities.DeviceListActivity.mContext;
+import static br.inatel.icc.gigasecurity.gigamonitor.activities.DeviceListActivity.previousGroup;
 
 /**
  * Created by rinaldo.bueno on 29/08/2014.
@@ -801,18 +801,30 @@ public class DeviceManager implements IFunSDKResult {
     }
 
     public void loginAllDevices() {
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                for (Device device : mDevices) {
-                    if (!device.isLogged)
-                        loginDevice(device, null);
-                }
+        final ArrayList<Device> devicesToLogin = new ArrayList<Device>();
+
+        for (final Device device : mDevices) {
+            if (!device.isLogged) {
+                devicesToLogin.add(device);
             }
-        }).start();
+        }
+
+        if (devicesToLogin.size() > 0) {
+            new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    for (Device deviceToLogin : devicesToLogin) {
+                        loginDevice(deviceToLogin, null);
+                    }
+                }
+            }).start();
+        }
+
     }
 
     public void setDevicesLogout(final boolean networkFail) {
+        final ArrayList<Device> devicesToLogout = new ArrayList<Device>();
+
         if (networkFail) {
             Log.e("DeviceManager", "setDevicesLogout");
             try {
@@ -822,25 +834,34 @@ public class DeviceManager implements IFunSDKResult {
             }
         }
 
-        try {
+        for (final Device device : mDevices) {
+            if (device.isLogged) {
+                devicesToLogout.add(device);
+            }
+        }
+
+        if (devicesToLogout.size() > 0) {
             new Thread(new Runnable() {
                 @Override
                 public void run() {
-                    int devicePosition = 0;
-                    for (Device device : mDevices) {
-                        device.isLogged = false;
-                        DeviceListActivity.previousGroup = -1;
-                        expandableListAdapter.collapseGroup(devicePosition);
-                        ChannelsManager deviceChannelsManager = deviceChannelsManagers.get(devicePosition);
-                        for (SurfaceViewComponent channel : deviceChannelsManager.surfaceViewComponents){
-                            if (deviceChannelsManager.surfaceViewComponents.size() > 0) {
-                                deviceChannelsManager.mediaStop(channel);
-                            }
-                        }
-                        devicePosition++;
+                    for (Device deviceToLogout : devicesToLogout) {
+                        logoutDevice(deviceToLogout);
                     }
                 }
             }).start();
+        }
+
+        try {
+            for (int index = 0; index < mDevices.size(); index ++) {
+                previousGroup = -1;
+                expandableListAdapter.collapseGroup(index);
+                ChannelsManager deviceChannelsManager = deviceChannelsManagers.get(index);
+                for (SurfaceViewComponent channel : deviceChannelsManager.surfaceViewComponents){
+                    if (deviceChannelsManager.surfaceViewComponents.size() > 0) {
+                        deviceChannelsManager.mediaStop(channel);
+                    }
+                }
+            }
         } catch(Exception error) {
             error.printStackTrace();
         }
@@ -859,7 +880,7 @@ public class DeviceManager implements IFunSDKResult {
             public void run() {
                 if (device == null)
                     return;
-                if (device.loginAttempt > 3) {
+                if (device.loginAttempt > 4) {
                     device.loginAttempt = 0;
                     device.allAttempstFail = true;
                     expandableListAdapter.setMessage(mDevices.indexOf(device), "Falha na conexão");
@@ -1765,11 +1786,11 @@ public class DeviceManager implements IFunSDKResult {
         //Percentage can be calculated for API 16+
         double percentAvail = mi.availMem / (double)mi.totalMem * 100.0;
 
+        Log.d("Check Memory", "********************* MEMORY *********************");
         Log.d("totalMem", String.valueOf(totalMem));
-        Log.d("availableMegs", String.valueOf(availableMegs));
+        Log.d("availableMem", String.valueOf(availableMegs));
         Log.d("percentAvail", String.valueOf(percentAvail));
 
         return availableMegs;
-
     }
 }

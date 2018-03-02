@@ -475,15 +475,15 @@ public abstract class ChannelsManager implements IFunSDKResult {
     @Override
     public int OnFunSDKResult(Message msg, MsgContent msgContent) {
 //        if(!(msg.what == EUIMSG.ON_PLAY_INFO && playType == 0)) {
-            Log.d(TAG, "msg.what : " + msg.what);
-            Log.d(TAG, "msg.arg1 : " + msg.arg1);
-            Log.d(TAG, "msg.arg2 : " + msg.arg2);
+//            Log.d(TAG, "msg.what : " + msg.what);
+//            Log.d(TAG, "msg.arg1 : " + msg.arg1);
+//            Log.d(TAG, "msg.arg2 : " + msg.arg2);
             if (null != msgContent) {
-                Log.d(TAG, "msgContent.sender : " + msgContent.sender);
-                Log.d(TAG, "msgContent.seq : " + msgContent.seq);
-                Log.d(TAG, "msgContent.str : " + msgContent.str);
-                Log.d(TAG, "msgContent.arg3 : " + msgContent.arg3);
-                Log.d(TAG, "msgContent.pData : " + msgContent.pData);
+//                Log.d(TAG, "msgContent.sender : " + msgContent.sender);
+//                Log.d(TAG, "msgContent.seq : " + msgContent.seq);
+//                Log.d(TAG, "msgContent.str : " + msgContent.str);
+//                Log.d(TAG, "msgContent.arg3 : " + msgContent.arg3);
+//                Log.d(TAG, "msgContent.pData : " + msgContent.pData);
             }
 //        }
 
