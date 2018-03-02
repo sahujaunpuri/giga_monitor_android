@@ -823,6 +823,8 @@ public class DeviceManager implements IFunSDKResult {
     }
 
     public void setDevicesLogout(final boolean networkFail) {
+        final ArrayList<Device> devicesToLogout = new ArrayList<Device>();
+
         if (networkFail) {
             Log.e("DeviceManager", "setDevicesLogout");
             try {
@@ -832,24 +834,34 @@ public class DeviceManager implements IFunSDKResult {
             }
         }
 
-        try {
+        for (final Device device : mDevices) {
+            if (device.isLogged) {
+                devicesToLogout.add(device);
+            }
+        }
+
+        if (devicesToLogout.size() > 0) {
             new Thread(new Runnable() {
                 @Override
                 public void run() {
-                    int devicePosition = 0;
-                    for (Device device : mDevices) {
-                        previousGroup = -1;
-                        expandableListAdapter.collapseGroup(devicePosition);
-                        ChannelsManager deviceChannelsManager = deviceChannelsManagers.get(devicePosition);
-                        for (SurfaceViewComponent channel : deviceChannelsManager.surfaceViewComponents){
-                            if (deviceChannelsManager.surfaceViewComponents.size() > 0) {
-                                deviceChannelsManager.mediaStop(channel);
-                            }
-                        }
-                        devicePosition++;
+                    for (Device deviceToLogout : devicesToLogout) {
+                        logoutDevice(deviceToLogout);
                     }
                 }
             }).start();
+        }
+
+        try {
+            for (int index = 0; index < mDevices.size(); index ++) {
+                previousGroup = -1;
+                expandableListAdapter.collapseGroup(index);
+                ChannelsManager deviceChannelsManager = deviceChannelsManagers.get(index);
+                for (SurfaceViewComponent channel : deviceChannelsManager.surfaceViewComponents){
+                    if (deviceChannelsManager.surfaceViewComponents.size() > 0) {
+                        deviceChannelsManager.mediaStop(channel);
+                    }
+                }
+            }
         } catch(Exception error) {
             error.printStackTrace();
         }

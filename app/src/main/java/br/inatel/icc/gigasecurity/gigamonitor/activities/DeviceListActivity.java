@@ -131,8 +131,6 @@ public class DeviceListActivity extends ActionBarActivity {
     @Override
     protected void onStop() {
         super.onStop();
-        Log.e("DeviceList", "StopActions");
-        Log.e("DeviceList", "StopAllChannels");
         verifyIfSomeChannelIsSoundingOrRecording();
     }
 
@@ -210,7 +208,6 @@ public class DeviceListActivity extends ActionBarActivity {
     private void verifyIfSomeChannelIsSoundingOrRecording() {
         mDeviceManager.getExpandableListAdapter().stopActions();
         mDeviceManager.setDevicesLogout(false);
-//        mDeviceManager.getExpandableListAdapter().verifyOverlayMenuVisibility();
     }
 
     @Override
