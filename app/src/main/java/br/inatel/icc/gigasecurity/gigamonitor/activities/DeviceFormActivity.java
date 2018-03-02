@@ -148,13 +148,23 @@ public class DeviceFormActivity extends ActionBarActivity {
             mDevice.setIpPriorityConnection(cbIpAddress.isChecked());
             mDevice.setSerialNumber(etSerial.getText().toString());
             mDevice.setCloudPriorityConnection(cbSerial.isChecked());
-            if (!TextUtils.isEmpty(etDevicePort.getText().toString())) {
-                mDevice.setTCPPort(Integer.parseInt(etDevicePort.getText().toString()));
-            }
-            mDevice.setExternalPort(Integer.parseInt(etDevicePort.getText().toString()));
             mDevice.setLoginByIp(byIp);
             mDevice.setLoginByDomain(byDomain);
             mDevice.setLoginByCloud(byCloud);
+
+            if (TextUtils.isEmpty(etDevicePort.getText().toString())) {
+                etDevicePort.setError("Inválido!");
+                return false;
+            } else {
+                mDevice.setTCPPort(Integer.parseInt(etDevicePort.getText().toString()));
+            }
+
+            if (TextUtils.isEmpty(etDevicePort.getText().toString())) {
+                etDevicePort.setError("Inválido!");
+                return false;
+            } else {
+                mDevice.setExternalPort(Integer.parseInt(etDevicePort.getText().toString()));
+            }
 
             if(isUsernameFilled)
                 mDevice.setUsername(etUsername.getText().toString());
