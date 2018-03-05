@@ -154,7 +154,6 @@ public class DeviceExpandableListAdapter extends BaseExpandableListAdapter {
             currentChildViewHolder.tvMessage = (TextView) currentChildViewHolder.convertView.findViewById(R.id.tv_message_connecting);
             currentChildViewHolder.overlayMenu = (OverlayMenu) currentChildViewHolder.convertView.findViewById(R.id.overlay_menu);
             currentChildViewHolder.overlayPTZ = (OverlayPTZ) currentChildViewHolder.convertView.findViewById(R.id.ptz_overlay_menu);
-            currentChildViewHolder.tvMessage = (TextView) currentChildViewHolder.convertView.findViewById(R.id.tv_message_connecting);
             currentChildViewHolder.position = groupPosition;
             currentChildViewHolder.overlayMenu.setDeviceChannelsManager(mDeviceManager.getDeviceChannelsManagers().get(groupPosition));
             currentChildViewHolder.overlayMenu.setLayoutParams(currentChildViewHolder.recyclerViewChannels.getLayoutParams());
@@ -356,7 +355,9 @@ public class DeviceExpandableListAdapter extends BaseExpandableListAdapter {
         ((DeviceListActivity) mContext).runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                childViewHolder.tvMessage.setVisibility(View.GONE);
+                if (groupViewHolder.mDevice.isOnline) {
+                    childViewHolder.tvMessage.setVisibility(View.GONE);
+                }
                 groupViewHolder.ivQuad.setVisibility(View.GONE);
                 Log.d("Device Name:", groupViewHolder.mDevice.deviceName);
                 groupViewHolder.ivRefresh.setVisibility(View.VISIBLE);
@@ -528,7 +529,6 @@ public class DeviceExpandableListAdapter extends BaseExpandableListAdapter {
                             groupViewHolder.ivQuad.setVisibility(View.GONE);
                             groupViewHolder.ivMore.setVisibility(View.GONE);
                             childViewHolder.recyclerViewChannels.setVisibility(View.GONE);
-                            childViewHolder.tvMessage.setVisibility(View.GONE);
                             groupViewHolder.ivRefresh.setVisibility(View.GONE);
                             String errorMsg;
                             if(error == -11301)
