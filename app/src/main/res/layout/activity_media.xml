@@ -21,7 +21,6 @@
             android:text="cancelar"
             android:id="@+id/cancel_action"
             style="@style/ActionBarTextView"
-            android:layout_marginLeft="90dp"
             android:visibility="gone"/>
 
         <LinearLayout
