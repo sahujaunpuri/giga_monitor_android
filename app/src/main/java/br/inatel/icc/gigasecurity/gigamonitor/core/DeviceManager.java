@@ -390,6 +390,11 @@ public class DeviceManager implements IFunSDKResult {
         FunSDK.DevGetConfigByJson(getHandler(), device.connectionString, configString, 4096, -1, 10000, device.getId());
     }
 
+    public void setJsonConfig(Device device, String configString, JSONObject jsonObject, ConfigListener configListener) {
+        currentConfigListener = configListener;
+        FunSDK.DevSetConfigByJson(getHandler(), device.connectionString, configString, jsonObject.toString(), -1, 15000, device.getId());
+    }
+
     private void handleEthernetConfig(JSONObject jsonObject, Device device) {
         int position = mDevices.indexOf(device);
         try {
@@ -667,20 +672,6 @@ public class DeviceManager implements IFunSDKResult {
         FunSDK.DevCmdGeneral(getHandler(), device.connectionString, 1450, "OPMachine", 2048, 10000, reboot.toString().getBytes(), -1, device.getId());
     }
 
-    public void rebootAllDevices(){
-        Device mDevice;
-        try {
-            for (int device = 0; device < mDevices.size(); device++) {
-                mDevice = mDevices.get(device);
-                if (!mDevice.getSerialNumber().equals("Favoritos")) {
-                    rebootDevice(mDevice);
-                }
-            }
-        } catch (Exception error) {
-            error.printStackTrace();
-        }
-    }
-
     public void generalCommand(JSONObject json, Device device, int commandId) throws JSONException {
         FunSDK.DevCmdGeneral(getHandler(), device.connectionString,
                 commandId, json.getString("Name"), 0, 10000,
@@ -851,6 +842,21 @@ public class DeviceManager implements IFunSDKResult {
             }
         }
 
+        try {
+            for (int index = 0; index < mDevices.size(); index ++) {
+                previousGroup = -1;
+                expandableListAdapter.collapseGroup(index);
+                ChannelsManager deviceChannelsManager = deviceChannelsManagers.get(index);
+                for (SurfaceViewComponent channel : deviceChannelsManager.surfaceViewComponents){
+                    if (deviceChannelsManager.surfaceViewComponents.size() > 0) {
+                        deviceChannelsManager.mediaStop(channel);
+                    }
+                }
+            }
+        } catch(Exception error) {
+            error.printStackTrace();
+        }
+
         for (final Device device : mDevices) {
             if (device.isLogged) {
                 devicesToLogout.add(device);
@@ -866,21 +872,6 @@ public class DeviceManager implements IFunSDKResult {
                     }
                 }
             }).start();
-        }
-
-        try {
-            for (int index = 0; index < mDevices.size(); index ++) {
-                previousGroup = -1;
-                expandableListAdapter.collapseGroup(index);
-                ChannelsManager deviceChannelsManager = deviceChannelsManagers.get(index);
-                for (SurfaceViewComponent channel : deviceChannelsManager.surfaceViewComponents){
-                    if (deviceChannelsManager.surfaceViewComponents.size() > 0) {
-                        deviceChannelsManager.mediaStop(channel);
-                    }
-                }
-            }
-        } catch(Exception error) {
-            error.printStackTrace();
         }
     }
 
@@ -1575,7 +1566,8 @@ public class DeviceManager implements IFunSDKResult {
                         }
                         break;
                         case "Simplify.Encode":{
-                            handleEncodeConfig(json, device);
+//                            handleEncodeConfig(json, device);
+                            handleStreamConfig(json, device);
                         }
                         break;
                         case "EncodeCapability":{
@@ -1814,4 +1806,66 @@ public class DeviceManager implements IFunSDKResult {
 
         return availableMegs;
     }
+
+    private void handleStreamConfig(JSONObject jsonObject, Device device) {
+        device.initEncodeArrays();
+        device.setSimplifyEncodeJson(jsonObject);
+        try {
+            JSONArray json = jsonObject.getJSONArray("Simplify.Encode");
+            for(int i=0; i<device.getChannelNumber(); i++){
+                JSONObject streamJson = json.getJSONObject(i);
+                device.parsePrimaryConfigs(i, streamJson.getJSONObject("MainFormat"));
+                device.parseSecondaryConfigs(i, streamJson.getJSONObject("ExtraFormat"));
+            }
+            loadEconderSettings(device);
+        } catch (Exception e){
+            e.printStackTrace();
+        }
+    }
+
+    public void loadEconderSettings(Device device) {
+        int[] secondaryQualities = device.getSecondaryQualities();
+        String[] secondaryResolutions = device.getSecondaryResolution();
+        int[] secondaryFrameRates = device.getSecondaryFrameRate();
+
+        for (int secondaryQuality = 0; secondaryQuality < secondaryQualities.length; secondaryQuality++) {
+            secondaryQualities [secondaryQuality] = 3;
+        }
+
+        for (int secondatyResolution = 0; secondatyResolution < secondaryResolutions.length; secondatyResolution++){
+            secondaryResolutions [secondatyResolution] = "CIF";
+        }
+
+        for (int secondaryFrameRate = 0; secondaryFrameRate < secondaryFrameRates.length; secondaryFrameRate++) {
+            secondaryFrameRates [secondaryFrameRate] = 3;
+        }
+
+        device.setSecondaryQualities(secondaryQualities);
+        device.setSecondaryResolution(secondaryResolutions);
+        device.setSecondaryFrameRate(secondaryFrameRates);
+
+        setStreamingConfig(device);
+    }
+
+    public JSONArray setStreamingConfig(Device device) {
+        JSONArray jsonObjectToSend = null;
+        JSONObject jsonAux;
+
+        try {
+            for(int channel = 0; channel < device.getChannelNumber(); channel++) {
+                JSONArray simplifyEncodeJsonArray = device.getSimplifyEncodeJson().getJSONArray("Simplify.Encode");
+                JSONObject streamJson = simplifyEncodeJsonArray.getJSONObject(channel);
+                jsonAux = device.setSecondarySecondaryJsonConfig(channel, streamJson.getJSONObject("ExtraFormat"));
+
+
+                streamJson.put("ExtraFormat", jsonAux);
+                simplifyEncodeJsonArray.put(channel, jsonAux);
+                jsonObjectToSend = simplifyEncodeJsonArray;
+            }
+        } catch (Exception error) {
+            error.printStackTrace();
+        }
+        return jsonObjectToSend;
+    }
+
 }

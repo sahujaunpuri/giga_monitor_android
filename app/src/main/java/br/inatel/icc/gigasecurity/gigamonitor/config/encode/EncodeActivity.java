@@ -39,7 +39,7 @@ public class EncodeActivity extends ActionBarActivity implements AdapterView.OnI
     private int[] primaryQualities;
     private Boolean[] primaryAudio;
     private String[] secondaryResolution;
-    private String[] secondaryFrameRate;
+    private int[] secondaryFrameRate;
     private int[] secondaryQualities;
     private Boolean[] secondaryAudio;
     private ArrayList<String> primaryResolutionsData, primaryFPSData, secondaryResolutionsData, secondaryFPSData;
@@ -141,7 +141,7 @@ public class EncodeActivity extends ActionBarActivity implements AdapterView.OnI
         this.primaryQualities = new int[mDevice.getChannelNumber()];
         this.primaryAudio = new Boolean[mDevice.getChannelNumber()];
         this.secondaryResolution = new String[mDevice.getChannelNumber()];
-        this.secondaryFrameRate = new String[mDevice.getChannelNumber()];
+        this.secondaryFrameRate = new int[mDevice.getChannelNumber()];
         this.secondaryQualities = new int[mDevice.getChannelNumber()];
         this.secondaryAudio = new Boolean[mDevice.getChannelNumber()];
 

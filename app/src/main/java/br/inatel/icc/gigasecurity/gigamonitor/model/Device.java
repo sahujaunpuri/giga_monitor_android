@@ -72,7 +72,7 @@ public class Device implements Serializable {
     private String[] secondaryCompression;
     private int[] secondaryGOP;
     private String[] secondaryResolution;
-    private String[] secondaryFrameRate;
+    private int[] secondaryFrameRate;
     private int[] secondaryQualities;
     private Boolean[] secondaryAudio;
     private String[] exImageSizePerChannel;
@@ -99,6 +99,7 @@ public class Device implements Serializable {
     @Expose private String connectionNetworkName = null;
     @Expose public boolean optimize = false;
     @Expose public boolean alreadyOptimized = false;
+    @Expose private JSONObject simplifyEncodeJson;
 
     //State
     public boolean isLogged = false;
@@ -640,7 +641,7 @@ public class Device implements Serializable {
         return secondaryResolution;
     }
 
-    public String[] getSecondaryFrameRate() {
+    public int[] getSecondaryFrameRate() {
         return secondaryFrameRate;
     }
 
@@ -794,7 +795,7 @@ public class Device implements Serializable {
         this.primaryQualities = new int[channelNumber];
         this.primaryAudio = new Boolean[channelNumber];
         this.secondaryResolution = new String[channelNumber];
-        this.secondaryFrameRate = new String[channelNumber];
+        this.secondaryFrameRate = new int[channelNumber];
         this.secondaryQualities = new int[channelNumber];
         this.secondaryAudio = new Boolean[channelNumber];
         this.primaryBitRate  = new int[channelNumber];
@@ -835,7 +836,7 @@ public class Device implements Serializable {
             secondaryCompression[channel] = videoConfig.getString("Compression");
             secondaryGOP[channel] = videoConfig.getInt("GOP");
             secondaryResolution[channel] = videoConfig.getString("Resolution");
-            secondaryFrameRate[channel] = videoConfig.getString("FPS");
+            secondaryFrameRate[channel] = videoConfig.getInt("FPS");
             secondaryQualities[channel] = videoConfig.getInt("Quality");
             secondaryAudio[channel] = streamConfig.getBoolean("AudioEnable");
         } catch (JSONException e){
@@ -843,7 +844,42 @@ public class Device implements Serializable {
         }
     }
 
+    public JSONObject setSecondarySecondaryJsonConfig(int channel, JSONObject streamConfig){
+        JSONObject configJson = null;
+        try {
+            configJson = streamConfig;
+            JSONObject videoConfig = configJson.getJSONObject("Video");
+            videoConfig.put("Resolution", secondaryResolution[channel]);
+            videoConfig.put("FPS", secondaryFrameRate[channel]);
+            videoConfig.put("Quality",secondaryQualities[channel]);
+        } catch (JSONException e){
+            e.printStackTrace();
+        }
+
+        return configJson;
+    }
+
     public void resetAttempts() {
         this.allAttempstFail = false;
+    }
+
+    public void setSecondaryResolution(String[] secondaryResolution) {
+        this.secondaryResolution = secondaryResolution;
+    }
+
+    public void setSecondaryFrameRate(int[] secondaryFrameRate) {
+        this.secondaryFrameRate = secondaryFrameRate;
+    }
+
+    public void setSecondaryQualities(int[] secondaryQualities) {
+        this.secondaryQualities = secondaryQualities;
+    }
+
+    public JSONObject getSimplifyEncodeJson() {
+        return simplifyEncodeJson;
+    }
+
+    public void setSimplifyEncodeJson(JSONObject simplifyEncodeJson) {
+        this.simplifyEncodeJson = simplifyEncodeJson;
     }
 }

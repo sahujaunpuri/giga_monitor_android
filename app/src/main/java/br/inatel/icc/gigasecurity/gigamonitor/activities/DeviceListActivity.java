@@ -200,9 +200,9 @@ public class DeviceListActivity extends ActionBarActivity implements View.OnClic
         getSupportActionBar().hide();
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
 
-        if (prefs.getBoolean("cloud2", true) && !prefs.getBoolean("newUser", true)) {
+//        if (prefs.getBoolean("cloud2", true) && !prefs.getBoolean("newUser", true)) {
             mImageViewCloud3Btn.setVisibility(View.VISIBLE);
-        }
+//        }
 
     }
 
