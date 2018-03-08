@@ -89,6 +89,8 @@ public class Device implements Serializable {
     private String softwareVersion;
     private String hardwareVersion;
     private String buildTime;
+    private String natCode;
+    private String natStatus;
     @Expose private int channelNumber = 0;
     @Expose private int numberOfAlarmsIn;
     @Expose private int numberOfAlarmsOut;
@@ -779,6 +781,22 @@ public class Device implements Serializable {
 
     public void setNextConnectionType(int nextConnectionType) {
         this.nextConnectionType = nextConnectionType;
+    }
+
+    public String getNatCode() {
+        return natCode;
+    }
+
+    public void setNatCode(String natCode) {
+        this.natCode = natCode;
+    }
+
+    public String getNatStatus() {
+        return natStatus;
+    }
+
+    public void setNatStatus(String natStatus) {
+        this.natStatus = natStatus;
     }
 
     public String getBuildTime() {

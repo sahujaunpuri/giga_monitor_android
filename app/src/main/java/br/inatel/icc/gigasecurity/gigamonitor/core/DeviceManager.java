@@ -555,6 +555,16 @@ public class DeviceManager implements IFunSDKResult {
         Log.d(TAG, "handleEncodeCapability: ");
     }
 
+    public void handleNatInfo(JSONObject jsonObject, Device device){
+        try{
+            JSONObject json = jsonObject.getJSONObject("Status.NatInfo");
+            device.setNatCode(json.getString("NaInfoCode"));
+            device.setNatStatus(json.getString("NatStatus"));
+        }catch (JSONException e){
+            e.printStackTrace();
+        }
+    }
+
     public void setEthernetConfig(Device device, ConfigListener configListener) {
         currentConfigListener = configListener;
         try {
@@ -1487,6 +1497,7 @@ public class DeviceManager implements IFunSDKResult {
                     favoriteManager.refreshFromDevice(device.getId());
                     FunSDK.SysGetDevState(getHandler(), device.connectionString, device.getId());
                     FunSDK.DevGetConfigByJson(getHandler(), device.connectionString, "SystemInfo", 4096, -1, 10000, device.getId());
+                    FunSDK.DevGetConfigByJson(getHandler(), device.connectionString, "Status.NatInfo", 4096, -1, 10000, device.getId());
                 } else if(msg.arg1 == -11301){ //wrong password or login
                     if(device != null) {
                         if (loginList.get(device.getId()) != null)
@@ -1573,6 +1584,10 @@ public class DeviceManager implements IFunSDKResult {
                         case "EncodeCapability":{
                             handleEncodeCapability(json, device);
                             currentConfigListener.onReceivedConfig();
+                        }
+                        break;
+                        case "Status.NatInfo":{
+                            handleNatInfo(json, device);
                         }
                         break;
                         /*case "Uart.PTZ":{

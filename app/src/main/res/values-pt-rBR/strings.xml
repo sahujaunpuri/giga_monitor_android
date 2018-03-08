@@ -197,7 +197,7 @@
     <string name="label_connecting_cloud">Conectando via Núvem...</string>
     <string name="label_ethernet_net_card">Net Card</string>
     <string name="label_ethernet_transfer_policy">Transfer Policy</string>
-    <string name="label_search_serial_number">Número de Serial</string>
+    <string name="label_search_serial_number">Número Serial</string>
     <string name="label_search_ip_address">Endereço IP</string>
     <string name="label_search_mac_address">MAC</string>
     <string name="label_setup_new_device">CONFIGURAÇÃO MANUAL</string>
@@ -314,7 +314,7 @@
     <string name="playback_types">Tipos de playback</string>
     <string name="title_activity_fav_devices">Favoritos</string>
     <string name="about">Sobre</string>
-    <string name="label_video_channel">Canal de Video</string>
+    <string name="label_video_channel">Canal de Vídeo</string>
     <string name="label_mac_address">Endereço MAC</string>
     <string name="back">Voltar</string>
     <string name="save">Salvar</string>
@@ -324,5 +324,7 @@
     <string name="string_network">Rede</string>
     <string name="device_port">Port</string>
     <string name="title_activity_network_config_menu">ConfiguraçõesRede</string>
+    <string name="nat_code">Nat Código de Status</string>
+    <string name="nat_status">Nat Status</string>
 
 </resources>

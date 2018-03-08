@@ -67,6 +67,36 @@
             </LinearLayout>
 
             <TextView
+                android:gravity="bottom"
+                android:layout_width="fill_parent"
+                android:layout_height="1dp"
+                android:background="#ccced0" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="horizontal">
+
+                <TextView
+                    style="?attr/actionButtonStyle"
+                    android:gravity="start|center"
+                    android:id="@+id/label_build_time"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textColor="#000000"
+                    android:text="Construção" />
+
+                <TextView
+                    style="?attr/actionButtonStyle"
+                    android:gravity="right|center"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:textColor="#000000"
+                    android:id="@+id/txt_build_time"
+                    android:hint="text"/>
+            </LinearLayout>
+
+            <TextView
                 android:id="@+id/lineEthernet"
                 android:gravity="bottom"
                 android:layout_width="fill_parent"
@@ -99,44 +129,10 @@
             </LinearLayout>
 
             <TextView
-                android:id="@+id/lineDns"
-                android:gravity="bottom"
-                android:layout_width="fill_parent"
-                android:layout_height="1dp"
-                android:background="#ccced0" />
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:orientation="horizontal"
-                android:visibility="gone">
-
-                <TextView
-                    style="?attr/actionButtonStyle"
-                    android:gravity="start|center"
-                    android:id="@+id/label_hardware"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:textColor="#000000"
-                    android:text="Hardware"/>
-
-                <TextView
-                    style="?attr/actionButtonStyle"
-                    android:gravity="right|center"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:textColor="#000000"
-                    android:hint="text"
-                    android:id="@+id/hardware_txt"/>
-
-            </LinearLayout>
-
-            <TextView
                 android:id="@+id/lineDdns"
                 android:gravity="bottom"
                 android:layout_width="fill_parent"
                 android:layout_height="1dp"
-                android:visibility="gone"
                 android:background="#ccced0" />
 
             <LinearLayout
@@ -246,7 +242,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:textColor="#000000"
-                    android:text="DSS" />
+                    android:text="Flash Mobile" />
 
                 <TextView
                     style="?attr/actionButtonStyle"
@@ -273,11 +269,11 @@
                 <TextView
                     style="?attr/actionButtonStyle"
                     android:gravity="start|center"
-                    android:id="@+id/label_build_time"
+                    android:id="@+id/label_natcode"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:textColor="#000000"
-                    android:text="Construção" />
+                    android:text="@string/nat_code" />
 
                 <TextView
                     style="?attr/actionButtonStyle"
@@ -285,8 +281,40 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:textColor="#000000"
-                    android:id="@+id/txt_build_time"
+                    android:id="@+id/natcode_txt"
                     android:hint="text"/>
+
+            </LinearLayout>
+
+            <TextView
+                android:gravity="bottom"
+                android:layout_width="fill_parent"
+                android:layout_height="1dp"
+                android:background="#ccced0" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="horizontal">
+
+                <TextView
+                    style="?attr/actionButtonStyle"
+                    android:gravity="start|center"
+                    android:id="@+id/label_natstatus"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textColor="#000000"
+                    android:text="@string/nat_status" />
+
+                <TextView
+                    style="?attr/actionButtonStyle"
+                    android:gravity="right|center"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:textColor="#000000"
+                    android:id="@+id/natstatus_txt"
+                    android:hint="text"/>
+
             </LinearLayout>
 
             <TextView

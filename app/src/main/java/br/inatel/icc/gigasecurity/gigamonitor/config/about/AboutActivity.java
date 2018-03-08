@@ -15,12 +15,12 @@ public class AboutActivity extends ActionBarActivity {
     /**
      * Labels
      */
-    private TextView mSerialNumberLabel, mSoftwareLabel, mHardwareLabel, mVideoChannelLabel, mMacAddressLabel, mVideoModeLabel, mTextViewBack;
+    private TextView mSerialNumberLabel, mSoftwareLabel, mVideoChannelLabel, mMacAddressLabel, mVideoModeLabel, mTextViewBack;
 
     /**
      * Texts
      */
-    private TextView mSerialNumberTxt, mSoftwareTxt, mHardwareTxt, mVideoChannelTxt, mMacAddressTxt, mVideoModeTxt, mTextBuildTime, mDSS;
+    private TextView mSerialNumberTxt, mSoftwareTxt, mVideoChannelTxt, mMacAddressTxt, mVideoModeTxt, mTextBuildTime, mDSS, mNatCodeTxt, mNatStatusTxt;
 
     private Device mDevice;
     private DeviceManager mManager;
@@ -59,19 +59,19 @@ public class AboutActivity extends ActionBarActivity {
     private void findViews() {
         mSerialNumberLabel = (TextView) findViewById(R.id.label_serial_number);
         mSoftwareLabel     = (TextView) findViewById(R.id.label_software);
-        mHardwareLabel     = (TextView) findViewById(R.id.label_hardware);
         mVideoChannelLabel = (TextView) findViewById(R.id.label_video_channel);
         mMacAddressLabel   = (TextView) findViewById(R.id.label_mac_address);
         mVideoModeLabel    = (TextView) findViewById(R.id.label_video_mode);
         mSerialNumberTxt   = (TextView) findViewById(R.id.serial_number_txt);
         mSoftwareTxt       = (TextView) findViewById(R.id.software_txt);
-        mHardwareTxt       = (TextView) findViewById(R.id.hardware_txt);
         mVideoChannelTxt   = (TextView) findViewById(R.id.video_channel_txt);
         mMacAddressTxt     = (TextView) findViewById(R.id.mac_address_txt);
         mVideoModeTxt      = (TextView) findViewById(R.id.video_mode_txt);
         mTextViewBack      = (TextView) findViewById(R.id.text_view_back);
         mTextBuildTime     = (TextView) findViewById(R.id.txt_build_time);
-        mDSS                = (TextView) findViewById(R.id.dss_txt);
+        mDSS               = (TextView) findViewById(R.id.dss_txt);
+        mNatCodeTxt        = (TextView) findViewById(R.id.natcode_txt);
+        mNatStatusTxt      = (TextView) findViewById(R.id.natstatus_txt);
     }
 
     @Override
@@ -80,11 +80,12 @@ public class AboutActivity extends ActionBarActivity {
 
         mSerialNumberTxt.setHint(mDevice.getSerialNumber());
         mSoftwareTxt.setHint(mDevice.getSoftwareVersion());
-        mHardwareTxt.setHint(mDevice.getHardwareVersion());
         mVideoChannelTxt.setHint(String.valueOf(mDevice.getChannelNumber()));
         mMacAddressTxt.setHint(mDevice.getMacAddress());
         mVideoModeTxt.setHint(mDevice.getConnectionMethodString());
         mTextBuildTime.setHint(mDevice.getBuildTime());
         mDSS.setHint(mDevice.dss ? "Sim" : "Não");
+        mNatCodeTxt.setHint(mDevice.getNatCode());
+        mNatStatusTxt.setHint(mDevice.getNatStatus().equals("Conneted") ? "Conectado" : "Conexão");
     }
 }

@@ -324,5 +324,7 @@
     <string name="string_network">Network</string>
     <string name="title_activity_network_config_menu">NetworkConfigMenuActivity</string>
     <string name="playback_types">Playback Types</string>
+    <string name="nat_code">Nat Status Code</string>
+    <string name="nat_status">Nat Status</string>
 
 </resources>
