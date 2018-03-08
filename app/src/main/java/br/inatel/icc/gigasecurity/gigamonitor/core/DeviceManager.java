@@ -529,6 +529,7 @@ public class DeviceManager implements IFunSDKResult {
 
     private void handleEncodeConfig(JSONObject jsonObject, Device device){
         device.initEncodeArrays();
+        device.setSimplifyEncodeJson(jsonObject);
         try{
             JSONArray json = jsonObject.getJSONArray("Simplify.Encode");
             for(int i=0; i<device.getChannelNumber(); i++){
@@ -536,7 +537,7 @@ public class DeviceManager implements IFunSDKResult {
                 device.parsePrimaryConfigs(i, streamJson.getJSONObject("MainFormat"));
                 device.parseSecondaryConfigs(i, streamJson.getJSONObject("ExtraFormat"));
             }
-            FunSDK.DevGetConfigByJson(getHandler(), device.connectionString, "EncodeCapability", 4096, -1, 10000, device.getId());
+//            FunSDK.DevGetConfigByJson(getHandler(), device.connectionString, "EncodeCapability", 4096, -1, 10000, device.getId());
         }catch (Exception e){
             e.printStackTrace();
         }
@@ -1566,8 +1567,9 @@ public class DeviceManager implements IFunSDKResult {
                         }
                         break;
                         case "Simplify.Encode":{
-//                            handleEncodeConfig(json, device);
-                            handleStreamConfig(json, device);
+                            handleEncodeConfig(json, device);
+                            if(currentConfigListener != null)
+                                currentConfigListener.onReceivedConfig();
                         }
                         break;
                         case "EncodeCapability":{
@@ -1598,6 +1600,7 @@ public class DeviceManager implements IFunSDKResult {
                         Device device = findDeviceById(msgContent.seq);
                         FunSDK.DevGetConfigByJson(getHandler(), device.connectionString, msgContent.str, 4096, -1, 10000, device.getId());
                         Log.d(TAG, "OnFunSDKResult: GETCONFIGJSON ERROR");
+                        currentConfigListener.onError();
                     } catch (NullPointerException e) {
                         e.printStackTrace();
                     }
@@ -1616,7 +1619,7 @@ public class DeviceManager implements IFunSDKResult {
                     updateDevicesManagers();
                 } else{
                     Log.d(TAG, "OnFunSDKResult: CONFIG SET ERROR");
-//                    currentConfigListener.onError();
+                    currentConfigListener.onError();
                 }
             }
             break;
@@ -1807,22 +1810,6 @@ public class DeviceManager implements IFunSDKResult {
         return availableMegs;
     }
 
-    private void handleStreamConfig(JSONObject jsonObject, Device device) {
-        device.initEncodeArrays();
-        device.setSimplifyEncodeJson(jsonObject);
-        try {
-            JSONArray json = jsonObject.getJSONArray("Simplify.Encode");
-            for(int i=0; i<device.getChannelNumber(); i++){
-                JSONObject streamJson = json.getJSONObject(i);
-                device.parsePrimaryConfigs(i, streamJson.getJSONObject("MainFormat"));
-                device.parseSecondaryConfigs(i, streamJson.getJSONObject("ExtraFormat"));
-            }
-            loadEconderSettings(device);
-        } catch (Exception e){
-            e.printStackTrace();
-        }
-    }
-
     public void loadEconderSettings(Device device) {
         int[] secondaryQualities = device.getSecondaryQualities();
         String[] secondaryResolutions = device.getSecondaryResolution();
@@ -1843,12 +1830,11 @@ public class DeviceManager implements IFunSDKResult {
         device.setSecondaryQualities(secondaryQualities);
         device.setSecondaryResolution(secondaryResolutions);
         device.setSecondaryFrameRate(secondaryFrameRates);
-
-        setStreamingConfig(device);
     }
 
-    public JSONArray setStreamingConfig(Device device) {
-        JSONArray jsonObjectToSend = null;
+    public JSONObject setStreamingConfig(Device device) {
+        JSONObject jsonObjectToSend = null;
+        JSONArray jsonArray = null;
         JSONObject jsonAux;
 
         try {
@@ -1856,16 +1842,17 @@ public class DeviceManager implements IFunSDKResult {
                 JSONArray simplifyEncodeJsonArray = device.getSimplifyEncodeJson().getJSONArray("Simplify.Encode");
                 JSONObject streamJson = simplifyEncodeJsonArray.getJSONObject(channel);
                 jsonAux = device.setSecondarySecondaryJsonConfig(channel, streamJson.getJSONObject("ExtraFormat"));
-
-
                 streamJson.put("ExtraFormat", jsonAux);
-                simplifyEncodeJsonArray.put(channel, jsonAux);
-                jsonObjectToSend = simplifyEncodeJsonArray;
+                simplifyEncodeJsonArray.put(channel, streamJson);
+                jsonArray = simplifyEncodeJsonArray;
+                jsonObjectToSend = device.getSimplifyEncodeJson();
             }
+
+            jsonObjectToSend.put("Simplify.Encode", jsonArray);
         } catch (Exception error) {
+            currentConfigListener.onError();
             error.printStackTrace();
         }
         return jsonObjectToSend;
     }
-
 }

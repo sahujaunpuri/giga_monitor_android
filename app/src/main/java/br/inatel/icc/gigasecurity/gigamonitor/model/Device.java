@@ -43,7 +43,6 @@ public class Device implements Serializable {
     //CONFIG DNS
     private String primaryDNS;
     private String secondaryDNS;
-
     //CONFIG UPnP
     private boolean upnpEnable;
     private int HTTPPort;

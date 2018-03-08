@@ -13,11 +13,15 @@ import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
+
+import org.json.JSONObject;
 
 import java.util.ArrayList;
 
 import br.inatel.icc.gigasecurity.gigamonitor.R;
 import br.inatel.icc.gigasecurity.gigamonitor.core.DeviceManager;
+import br.inatel.icc.gigasecurity.gigamonitor.listeners.ConfigListener;
 import br.inatel.icc.gigasecurity.gigamonitor.model.Device;
 
 /**
@@ -28,18 +32,20 @@ public class CustomTypeDialog extends Dialog {
     private final OnDialogClickListener listener;
     DeviceManager mDeviceManager = DeviceManager.getInstance();
     ArrayList<Device> mDevices = mDeviceManager.getDevices();
+    Device mDevice;
     TextView mTextViewDialog7, mTextViewCancel;
     LinearLayout mLinearLayoutButtonCloud3, mLinearLayoutCloud3, mLinearLayoutCloud3BtnReboot;
     ImageButton mImageButtonCloud3;
     ImageView mImageViewUpdate;
     Context context;
+    JSONObject jsonObjectToSend = null;
+    ArrayList<Device> devicesWithSomeError = null;
 
     public CustomTypeDialog(final Context context, final OnDialogClickListener listener) {
         super(context);
         init();
         this.listener = listener;
         this.context = context;
-
 
         mTextViewCancel.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -56,7 +62,6 @@ public class CustomTypeDialog extends Dialog {
                 mTextViewCancel.setVisibility(View.GONE);
                 setStreamingConfig(mDevices);
                 listener.onDialogImageRunClick();
-                newCloudConfigSuccess();
                 Handler mHandler = new Handler();
                 mHandler.postDelayed(new Runnable() {
                     @Override
@@ -76,8 +81,8 @@ public class CustomTypeDialog extends Dialog {
     public void setStreamingConfig(ArrayList<Device> devices) {
         for (Device device : devices) {
             if (!device.getSerialNumber().equals("Favoritos")) {
-                mDeviceManager.getJsonConfig(device,"Simplify.Encode", null);
-                //                mDeviceManager.rebootDevice(device);
+                this.mDevice = device;
+                mDeviceManager.getJsonConfig(device,"Simplify.Encode", configListener);
             }
         }
     }
@@ -87,7 +92,47 @@ public class CustomTypeDialog extends Dialog {
         SharedPreferences.Editor editor = prefs.edit();
         editor.putBoolean("cloud2", false);
         editor.commit();
-        Log.d("CustomTypeDialog", "NEW CLOUD CONFIG SUCCESS");
+    }
+
+    public interface OnDialogClickListener {
+        void onDialogImageRunClick();
+    }
+
+    private ConfigListener configListener = new ConfigListener() {
+        @Override
+        public void onReceivedConfig() {
+            Log.d("CustomTypeDialog", "RECEIVED CONFIG");
+            mDeviceManager.loadEconderSettings(mDevice);
+            jsonObjectToSend = mDeviceManager.setStreamingConfig(mDevice);
+            mDeviceManager.setJsonConfig(mDevice, "Simplify.Encode", jsonObjectToSend, configListener);
+        }
+
+        @Override
+        public void onSetConfig() {
+            Log.d("CustomTypeDialog", "NEW CLOUD CONFIG SUCCESS");
+            mDeviceManager.rebootDevice(mDevice);
+            newCloudConfigSuccess();
+        }
+
+        @Override
+        public void onError() {
+            Log.d("CustomTypeDialog", "CONFIG ERROR");
+            devicesWithSomeError.add(mDevice);
+        }
+    };
+
+    @Override
+    public void dismiss() {
+        super.dismiss();
+
+        String message = "Não foi possível configurar os seguintes dispositivos: ";
+
+        if (devicesWithSomeError != null) {
+            for (Device device : devicesWithSomeError) {
+                message += device.getDeviceName() + " ";
+            }
+            Toast.makeText(context, message, Toast.LENGTH_LONG);
+        }
     }
 
     public void init () {
@@ -105,9 +150,4 @@ public class CustomTypeDialog extends Dialog {
         mLinearLayoutCloud3 = (LinearLayout) findViewById(R.id.linear_layout_cloud_3);
         mLinearLayoutCloud3BtnReboot = (LinearLayout) findViewById(R.id.linear_layout_cloud_3_reboot_btn);
     }
-
-    public interface OnDialogClickListener {
-        void onDialogImageRunClick();
-    }
-
 }

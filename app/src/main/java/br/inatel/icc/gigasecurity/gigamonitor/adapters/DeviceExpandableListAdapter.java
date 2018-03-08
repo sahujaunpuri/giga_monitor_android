@@ -24,6 +24,8 @@ import android.widget.Toast;
 import com.crashlytics.android.answers.Answers;
 import com.crashlytics.android.answers.CustomEvent;
 
+import org.json.JSONObject;
+
 import java.util.ArrayList;
 
 import br.inatel.icc.gigasecurity.gigamonitor.R;
@@ -33,6 +35,7 @@ import br.inatel.icc.gigasecurity.gigamonitor.activities.DeviceRemoteControlActi
 import br.inatel.icc.gigasecurity.gigamonitor.activities.FavoritesDevicesListActivity;
 import br.inatel.icc.gigasecurity.gigamonitor.config.ConfigMenuActivity;
 import br.inatel.icc.gigasecurity.gigamonitor.core.DeviceManager;
+import br.inatel.icc.gigasecurity.gigamonitor.listeners.ConfigListener;
 import br.inatel.icc.gigasecurity.gigamonitor.listeners.LoginDeviceListener;
 import br.inatel.icc.gigasecurity.gigamonitor.managers.CustomGridLayoutManager;
 import br.inatel.icc.gigasecurity.gigamonitor.model.ChannelsManager;
@@ -50,10 +53,13 @@ public class DeviceExpandableListAdapter extends BaseExpandableListAdapter {
     public ArrayList<Device> mDevices;
     public Context mContext;
     private DeviceManager mDeviceManager;
+    private Device mDevice;
     public ArrayList<GroupViewHolder> groupViewHolder;
     public ArrayList<ChildViewHolder> childViewHolder;
     private ExpandableListView mExpandableListView;
     private int scroll;
+    JSONObject jsonObjectToSend = null;
+    private boolean showToast = true;
 
     public DeviceExpandableListAdapter(Context mContext, ArrayList<Device> mDevices, ExpandableListView mExpandableListView) {
         this.mContext            = mContext;
@@ -369,11 +375,13 @@ public class DeviceExpandableListAdapter extends BaseExpandableListAdapter {
                         childViewHolder.tvMessage.setText("Nenhum favorito adicionado.");
                     else
                         childViewHolder.tvMessage.setText("Nenhum canal encontrado.");
+                    groupViewHolder.ivRefresh.setVisibility(View.VISIBLE);
                     childViewHolder.tvMessage.setVisibility(View.VISIBLE);
                     childViewHolder.recyclerViewChannels.setVisibility(View.GONE);
                     groupViewHolder.ivMore.setVisibility(View.GONE);
                 }
                 else if (groupViewHolder.mDevice.getChannelNumber() > 0 && groupViewHolder.mDevice.isLogged) {
+
                     if (groupViewHolder.mDevice.getSerialNumber().equals("Favoritos")) {
                         groupViewHolder.ivAddMore.setVisibility(View.VISIBLE);
                     }
@@ -529,7 +537,6 @@ public class DeviceExpandableListAdapter extends BaseExpandableListAdapter {
                             groupViewHolder.ivQuad.setVisibility(View.GONE);
                             groupViewHolder.ivMore.setVisibility(View.GONE);
                             childViewHolder.recyclerViewChannels.setVisibility(View.GONE);
-                            groupViewHolder.ivRefresh.setVisibility(View.GONE);
                             String errorMsg;
                             if(error == -11301)
                                 errorMsg = "Login ou senha incorretos.";
@@ -783,12 +790,37 @@ public class DeviceExpandableListAdapter extends BaseExpandableListAdapter {
         return new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                mDeviceManager.rebootDevice(groupViewHolder.mDevice);
-                groupViewHolder.ivOtimizar.setVisibility(View.INVISIBLE);
-                groupViewHolder.mDevice.alreadyOptimized = true;
+                mDeviceManager.getJsonConfig(groupViewHolder.mDevice,"Simplify.Encode", configListener);
+                mDevice = groupViewHolder.mDevice;
+//                groupViewHolder.ivOtimizar.setVisibility(View.INVISIBLE);
+//                groupViewHolder.mDevice.alreadyOptimized = true;
             }
         };
     }
+
+    private ConfigListener configListener = new ConfigListener() {
+        @Override
+        public void onReceivedConfig() {
+            mDeviceManager.loadEconderSettings(mDevice);
+            jsonObjectToSend = mDeviceManager.setStreamingConfig(mDevice);
+            mDeviceManager.setJsonConfig(mDevice, "Simplify.Encode", jsonObjectToSend, configListener);
+        }
+
+        @Override
+        public void onSetConfig() {
+            Log.d("CustomTypeDialog", "CONFIG SUCCESS");
+//            mDeviceManager.rebootDevice(mDevice);
+        }
+
+        @Override
+        public void onError() {
+            if (showToast) {
+                String message = "Não foi possível configurar o dispositivo: " + mDevice.getDeviceName() + "\nVerifique sua conexão com a internet e se seu usuário e administrador";
+                Toast.makeText(mContext, message, Toast.LENGTH_LONG);
+                showToast = false;
+            }
+        }
+    };
 
     public class GroupViewHolder {
         public TextView tvDeviceName;
@@ -813,7 +845,4 @@ public class DeviceExpandableListAdapter extends BaseExpandableListAdapter {
         public CustomGridLayoutManager gridLayoutManager;
         public int position;
     }
-
-
-
 }
