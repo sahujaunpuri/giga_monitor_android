@@ -91,6 +91,7 @@ public class Device implements Serializable {
     private String buildTime;
     private String natCode;
     private String natStatus;
+    private String timeString; //format: yyyy-MM-dd HH-mm-ss
     @Expose private int channelNumber = 0;
     @Expose private int numberOfAlarmsIn;
     @Expose private int numberOfAlarmsOut;
@@ -797,6 +798,14 @@ public class Device implements Serializable {
 
     public void setNatStatus(String natStatus) {
         this.natStatus = natStatus;
+    }
+
+    public String getTimeString() {
+        return timeString;
+    }
+
+    public void setTimeString(String timeString) {
+        this.timeString = timeString;
     }
 
     public String getBuildTime() {

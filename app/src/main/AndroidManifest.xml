@@ -164,6 +164,9 @@
             android:name=".config.about.AboutActivity"
             android:label="@string/about" />
         <activity
+            android:name=".config.time.TimeConfigActivity"
+            android:label="@string/clock" />
+        <activity
             android:name=".config.ConfigMenuNetworkActivity"
             android:label="@string/title_activity_network_config_menu"></activity>
     </application>

@@ -15,6 +15,7 @@ import br.inatel.icc.gigasecurity.gigamonitor.R;
 import br.inatel.icc.gigasecurity.gigamonitor.config.about.AboutActivity;
 import br.inatel.icc.gigasecurity.gigamonitor.activities.DeviceListActivity;
 import br.inatel.icc.gigasecurity.gigamonitor.config.password.PasswordConfigActivity;
+import br.inatel.icc.gigasecurity.gigamonitor.config.time.TimeConfigActivity;
 import br.inatel.icc.gigasecurity.gigamonitor.core.DeviceManager;
 import br.inatel.icc.gigasecurity.gigamonitor.model.Device;
 
@@ -28,7 +29,7 @@ public class ConfigMenuActivity extends ActionBarActivity implements OnClickList
     private Device mDevice;
     private int deviceId;
     private DeviceManager mDeviceManager;
-    private LinearLayout mNetworkLinearLayout, mPasswordLinearLayout, mRebootDeviceLinearLayout, mAboutLinearLayout;
+    private LinearLayout mNetworkLinearLayout, mPasswordLinearLayout, mRebootDeviceLinearLayout, mAboutLinearLayout, mTimeLinearLayout;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -64,6 +65,7 @@ public class ConfigMenuActivity extends ActionBarActivity implements OnClickList
         mPasswordLinearLayout     = (LinearLayout) findViewById(R.id.linear_layout_password);
         mRebootDeviceLinearLayout = (LinearLayout) findViewById(R.id.linear_layout_reboot);
         mAboutLinearLayout        = (LinearLayout) findViewById(R.id.linear_layout_about);
+        mTimeLinearLayout         = (LinearLayout) findViewById(R.id.linear_layout_time);
     }
 
     private void setListeners() {
@@ -72,6 +74,7 @@ public class ConfigMenuActivity extends ActionBarActivity implements OnClickList
         mPasswordLinearLayout.setOnClickListener(this);
         mRebootDeviceLinearLayout.setOnClickListener(this);
         mAboutLinearLayout.setOnClickListener(this);
+        mTimeLinearLayout.setOnClickListener(this);
     }
 
     @Override
@@ -97,6 +100,9 @@ public class ConfigMenuActivity extends ActionBarActivity implements OnClickList
         switch (v.getId()) {
             case R.id.linear_layout_password:
                 intent = new Intent(this, PasswordConfigActivity.class);
+                break;
+            case R.id.linear_layout_time:
+                intent = new Intent(this, TimeConfigActivity.class);
                 break;
             case R.id.linear_layout_reboot:
                 showRebootDialog();

@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context="br.inatel.icc.gigasecurity.gigamonitor.config.time.TimeConfigActivity">
+
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center">
+
+        <TextView
+            style="@style/ActionBarTextView"
+            android:text="@string/back"
+            android:id="@+id/text_view_back"/>
+
+        <TextView
+            style="@style/ActionBarTitle"
+            android:text="@string/clock"/>
+
+        <TextView
+            style="@style/ActionBarTextView"
+            android:id="@+id/text_view_save"
+            android:text="@string/save" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        style="@style/LinearLayoutHorizontalStyle"
+        android:layout_height="wrap_content">
+
+        <TextView
+            android:text="@string/date_settings"
+            style="@style/TextViewStyle"
+            android:textSize="14dp"/>
+
+        <TextView
+            style="@style/EditTextStyle"
+            android:id="@+id/text_view_date"
+            android:text="--/--/----" />
+
+
+    </LinearLayout>
+
+    <LinearLayout
+        style="@style/LinearLayoutHorizontalStyle"
+        android:layout_height="wrap_content">
+
+        <TextView
+            android:text="@string/time_settings"
+            style="@style/TextViewStyle"
+            android:textSize="14dp"/>
+
+        <TextView
+            style="@style/EditTextStyle"
+            android:id="@+id/text_view_time"
+            android:text="--:--:--"/>
+
+
+    </LinearLayout>
+
+
+
+</LinearLayout>

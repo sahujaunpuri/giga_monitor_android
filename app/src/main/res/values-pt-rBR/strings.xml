@@ -326,5 +326,8 @@
     <string name="title_activity_network_config_menu">ConfiguraçõesRede</string>
     <string name="nat_code">Nat Código de Status</string>
     <string name="nat_status">Nat Status</string>
+    <string name="clock">Relógio</string>
+    <string name="date_settings">Data</string>
+    <string name="time_settings">Horário</string>
 
 </resources>

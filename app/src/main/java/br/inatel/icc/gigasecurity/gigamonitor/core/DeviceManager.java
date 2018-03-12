@@ -395,6 +395,11 @@ public class DeviceManager implements IFunSDKResult {
         FunSDK.DevSetConfigByJson(getHandler(), device.connectionString, configString, jsonObject.toString(), -1, 15000, device.getId());
     }
 
+    public void getTimeConfig(Device device, ConfigListener configListener){
+        currentConfigListener = configListener;
+        FunSDK.DevCmdGeneral(getHandler(), device.connectionString, 1452, "OPTimeQuery", 4096, 10000, null, -1, device.getId());
+    }
+
     private void handleEthernetConfig(JSONObject jsonObject, Device device) {
         int position = mDevices.indexOf(device);
         try {
@@ -565,6 +570,14 @@ public class DeviceManager implements IFunSDKResult {
         }
     }
 
+    public void handleTimeConfig(JSONObject jsonObject, Device device){
+        try{
+            device.setTimeString(jsonObject.getString("OPTimeQuery"));
+        }catch(JSONException e){
+            e.printStackTrace();
+        }
+    }
+
     public void setEthernetConfig(Device device, ConfigListener configListener) {
         currentConfigListener = configListener;
         try {
@@ -663,6 +676,11 @@ public class DeviceManager implements IFunSDKResult {
         Log.d(TAG, "setCurrentConfig: " + currentConfig.toString());
         FunSDK.DevSetConfigByJson(getHandler(), device.connectionString, "NetWork.Upnp", currentConfig.toString(), -1, 15000, device.getId());
         currentConfig = null;
+    }
+
+    public void setTimeConfig(Device device){
+        String config = "{\"Name\":\"OPTimeSetting\",\"SessionID\":\"0x00001234\",\"OPTimeSetting\":\"" + device.getTimeString() +"\"}";
+        FunSDK.DevSetConfigByJson(getHandler(), device.connectionString, "OPTimeSetting", config, 0, 20000, device.getId());
     }
 
     public void rebootDevice(Device device) {
@@ -1706,13 +1724,24 @@ public class DeviceManager implements IFunSDKResult {
             break;
             case EUIMSG.DEV_CMD_EN:
             {
-                if(msgContent != null){
+                if(msg.arg1 >= 0 && msgContent != null){
                     try {
+                        JSONObject json = null;
                         String data = G.ToString(msgContent.pData);
                         Log.d(TAG, "--> DATA: " + data);
+                        Device device = findDeviceById(msgContent.seq);
+                        if(msgContent.str.equals("OPTimeQuery")){
+                            json = new JSONObject(data);
+                            handleTimeConfig(json, device);
+                            if(currentConfigListener != null)
+                                currentConfigListener.onReceivedConfig();
+                        }
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
+                } else if(msg.arg1 < 0){
+                    if(msgContent.str.equals("OPTimeQuery") && currentConfigListener != null)
+                        currentConfigListener.onReceivedConfig();
                 }
             }
             break;

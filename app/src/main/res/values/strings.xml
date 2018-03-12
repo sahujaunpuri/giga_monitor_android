@@ -326,5 +326,8 @@
     <string name="playback_types">Playback Types</string>
     <string name="nat_code">Nat Status Code</string>
     <string name="nat_status">Nat Status</string>
+    <string name="clock">Clock</string>
+    <string name="date_settings">Data</string>
+    <string name="time_settings">Time</string>
 
 </resources>
