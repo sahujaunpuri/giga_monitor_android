@@ -56,6 +56,7 @@ public class DeviceExpandableListAdapter extends BaseExpandableListAdapter {
     private Device mDevice;
     public ArrayList<GroupViewHolder> groupViewHolder;
     public ArrayList<ChildViewHolder> childViewHolder;
+    public GroupViewHolder currentGroupViewHolder;
     private ExpandableListView mExpandableListView;
     private int scroll;
     JSONObject jsonObjectToSend = null;
@@ -367,11 +368,11 @@ public class DeviceExpandableListAdapter extends BaseExpandableListAdapter {
                 groupViewHolder.ivQuad.setVisibility(View.GONE);
                 Log.d("Device Name:", groupViewHolder.mDevice.deviceName);
                 groupViewHolder.ivRefresh.setVisibility(View.VISIBLE);
-                if (groupViewHolder.mDevice.getSerialNumber().equals("Favoritos") || groupViewHolder.mDevice.isLogged) {
+                if (groupViewHolder.mDevice.isFavorite || groupViewHolder.mDevice.isLogged) {
                     groupViewHolder.ivRefresh.setVisibility(View.GONE);
                 }
                 if (groupViewHolder.mDevice.getChannelNumber() == 0) {
-                    if(groupViewHolder.mDevice.getSerialNumber().equals("Favoritos"))
+                    if(groupViewHolder.mDevice.isFavorite)
                         childViewHolder.tvMessage.setText("Nenhum favorito adicionado.");
                     else
                         childViewHolder.tvMessage.setText("Nenhum canal encontrado.");
@@ -381,8 +382,8 @@ public class DeviceExpandableListAdapter extends BaseExpandableListAdapter {
                     groupViewHolder.ivMore.setVisibility(View.GONE);
                 }
                 else if (groupViewHolder.mDevice.getChannelNumber() > 0 && groupViewHolder.mDevice.isLogged) {
-
-                    if (groupViewHolder.mDevice.getSerialNumber().equals("Favoritos")) {
+                    childViewHolder.tvMessage.setVisibility(View.GONE);
+                    if (groupViewHolder.mDevice.isFavorite) {
                         groupViewHolder.ivAddMore.setVisibility(View.VISIBLE);
                     }
                     childViewHolder.recyclerViewChannels.setVisibility(View.VISIBLE);
@@ -791,9 +792,8 @@ public class DeviceExpandableListAdapter extends BaseExpandableListAdapter {
             @Override
             public void onClick(View v) {
                 mDeviceManager.getJsonConfig(groupViewHolder.mDevice,"Simplify.Encode", configListener);
+                currentGroupViewHolder = groupViewHolder;
                 mDevice = groupViewHolder.mDevice;
-//                groupViewHolder.ivOtimizar.setVisibility(View.INVISIBLE);
-//                groupViewHolder.mDevice.alreadyOptimized = true;
             }
         };
     }
@@ -809,7 +809,9 @@ public class DeviceExpandableListAdapter extends BaseExpandableListAdapter {
         @Override
         public void onSetConfig() {
             Log.d("CustomTypeDialog", "CONFIG SUCCESS");
-//            mDeviceManager.rebootDevice(mDevice);
+            currentGroupViewHolder.mDevice.alreadyOptimized = true;
+            currentGroupViewHolder.ivOtimizar.setVisibility(View.INVISIBLE);
+            mDeviceManager.rebootDevice(mDevice);
         }
 
         @Override

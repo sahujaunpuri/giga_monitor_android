@@ -65,6 +65,7 @@ import br.inatel.icc.gigasecurity.gigamonitor.util.Utils;
 import static android.content.Context.ACTIVITY_SERVICE;
 import static android.content.Context.MODE_PRIVATE;
 import static br.inatel.icc.gigasecurity.gigamonitor.activities.DeviceListActivity.mContext;
+import static br.inatel.icc.gigasecurity.gigamonitor.activities.DeviceListActivity.mDeviceManager;
 import static br.inatel.icc.gigasecurity.gigamonitor.activities.DeviceListActivity.previousGroup;
 
 /**
@@ -88,6 +89,7 @@ public class DeviceManager implements IFunSDKResult {
 
     public ArrayList<FavoritePair> favoritesList;
     private ArrayList<Device> mDevices = new ArrayList<Device>();
+    public ArrayList<Device> devicesWithJsonError = new ArrayList<Device>();
     private ArrayList<Device> mLanDevices = new ArrayList<Device>();
     public ArrayList<Device> mFavoriteDevices = new ArrayList<Device>();
     public LinkedList<SurfaceViewComponent> startList = new LinkedList<SurfaceViewComponent>();
@@ -219,6 +221,7 @@ public class DeviceManager implements IFunSDKResult {
             favoriteDevice = new Device("Favoritos");
             favoriteDevice.setSerialNumber("Favoritos");
             favoriteDevice.setChannelNumber(favoriteChannels);
+            favoriteDevice.isFavorite = true;
 //            favoriteDevice.checkConnectionMethod();
             mDevices.add(0, favoriteDevice);
             saveData();
@@ -1811,25 +1814,34 @@ public class DeviceManager implements IFunSDKResult {
     }
 
     public void loadEconderSettings(Device device) {
-        int[] secondaryQualities = device.getSecondaryQualities();
-        String[] secondaryResolutions = device.getSecondaryResolution();
-        int[] secondaryFrameRates = device.getSecondaryFrameRate();
+        if (mDeviceManager.devicesWithJsonError.size() > 0) {
+            for (Device mDevice : mDeviceManager.devicesWithJsonError) {
+                if (mDevice.equals(device)) {
+                    mDeviceManager.devicesWithJsonError.remove(mDevice);
+                    Log.d("DeviceManager", "Device with json error:" + mDevice.deviceName);
+                } else {
+                    int[] secondaryQualities = device.getSecondaryQualities();
+                    String[] secondaryResolutions = device.getSecondaryResolution();
+                    int[] secondaryFrameRates = device.getSecondaryFrameRate();
 
-        for (int secondaryQuality = 0; secondaryQuality < secondaryQualities.length; secondaryQuality++) {
-            secondaryQualities [secondaryQuality] = 3;
+                    for (int secondaryQuality = 0; secondaryQuality < secondaryQualities.length; secondaryQuality++) {
+                        secondaryQualities [secondaryQuality] = 3;
+                    }
+
+                    for (int secondatyResolution = 0; secondatyResolution < secondaryResolutions.length; secondatyResolution++){
+                        secondaryResolutions [secondatyResolution] = "CIF";
+                    }
+
+                    for (int secondaryFrameRate = 0; secondaryFrameRate < secondaryFrameRates.length; secondaryFrameRate++) {
+                        secondaryFrameRates [secondaryFrameRate] = 3;
+                    }
+
+                    device.setSecondaryQualities(secondaryQualities);
+                    device.setSecondaryResolution(secondaryResolutions);
+                    device.setSecondaryFrameRate(secondaryFrameRates);
+                }
+            }
         }
-
-        for (int secondatyResolution = 0; secondatyResolution < secondaryResolutions.length; secondatyResolution++){
-            secondaryResolutions [secondatyResolution] = "CIF";
-        }
-
-        for (int secondaryFrameRate = 0; secondaryFrameRate < secondaryFrameRates.length; secondaryFrameRate++) {
-            secondaryFrameRates [secondaryFrameRate] = 3;
-        }
-
-        device.setSecondaryQualities(secondaryQualities);
-        device.setSecondaryResolution(secondaryResolutions);
-        device.setSecondaryFrameRate(secondaryFrameRates);
     }
 
     public JSONObject setStreamingConfig(Device device) {

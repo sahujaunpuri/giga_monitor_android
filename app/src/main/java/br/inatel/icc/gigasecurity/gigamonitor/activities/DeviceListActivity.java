@@ -146,9 +146,9 @@ public class DeviceListActivity extends ActionBarActivity implements View.OnClic
             SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(mContext);
             boolean cloud2 = prefs.getBoolean("cloud2", true);
             boolean newUser = prefs.getBoolean("newUser", true);
-            if (cloud2 && !newUser) {
+//            if (cloud2 && !newUser) {
                 mImageViewCloud3Btn.setVisibility(View.VISIBLE);
-            }
+//            }
         }
 
         if(previousGroup != -1)
@@ -336,7 +336,7 @@ public class DeviceListActivity extends ActionBarActivity implements View.OnClic
         new CustomTypeDialog(mContext, new CustomTypeDialog.OnDialogClickListener() {
             @Override
             public void onDialogImageRunClick() {
-                mImageViewCloud3Btn.setVisibility(View.GONE);
+//                mImageViewCloud3Btn.setVisibility(View.GONE);
             }
         });
     }

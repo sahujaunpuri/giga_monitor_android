@@ -99,12 +99,13 @@ public class Device implements Serializable {
     @Expose public boolean optimize = false;
     @Expose public boolean alreadyOptimized = false;
     @Expose private JSONObject simplifyEncodeJson;
+    @Expose public boolean isFavorite = false;
 
     //State
     public boolean isLogged = false;
     public boolean isOnline = false;
     private int connectionMethod = -1; //0 - IP:port, 1 - DDNS:port, 2 - SerialNumber
-    public int loginAttempt = 0;
+    public int loginAttempt = 1;
     public ChannelsManager channelsManager;
     public String message = "Conectando via IP";
     @Expose private boolean ipPriorityConnection;

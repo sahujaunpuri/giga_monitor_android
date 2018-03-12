@@ -13,7 +13,6 @@ import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import org.json.JSONObject;
 
@@ -39,7 +38,6 @@ public class CustomTypeDialog extends Dialog {
     ImageView mImageViewUpdate;
     Context context;
     JSONObject jsonObjectToSend = null;
-    ArrayList<Device> devicesWithSomeError = null;
 
     public CustomTypeDialog(final Context context, final OnDialogClickListener listener) {
         super(context);
@@ -66,9 +64,14 @@ public class CustomTypeDialog extends Dialog {
                 mHandler.postDelayed(new Runnable() {
                     @Override
                     public void run() {
-                        dismiss();
-                        mLinearLayoutButtonCloud3.setVisibility(View.GONE);
-                        mLinearLayoutCloud3.setVisibility(View.GONE);
+                        String message = "Não foi possível configurar os seguintes dispositivos: ";
+                        if (mDeviceManager.devicesWithJsonError != null) {
+                            for (Device device : mDeviceManager.devicesWithJsonError) {
+                                message += device.getDeviceName() + " ";
+                            }
+                            mTextViewDialog7.setText(message);
+                        }
+                        setCancelable(true);
                     }
                 }, 9000);
 
@@ -104,7 +107,9 @@ public class CustomTypeDialog extends Dialog {
             Log.d("CustomTypeDialog", "RECEIVED CONFIG");
             mDeviceManager.loadEconderSettings(mDevice);
             jsonObjectToSend = mDeviceManager.setStreamingConfig(mDevice);
-            mDeviceManager.setJsonConfig(mDevice, "Simplify.Encode", jsonObjectToSend, configListener);
+            if (jsonObjectToSend != null) {
+                mDeviceManager.setJsonConfig(mDevice, "Simplify.Encode", jsonObjectToSend, configListener);
+            }
         }
 
         @Override
@@ -117,23 +122,12 @@ public class CustomTypeDialog extends Dialog {
         @Override
         public void onError() {
             Log.d("CustomTypeDialog", "CONFIG ERROR");
-            devicesWithSomeError.add(mDevice);
+            if (!mDeviceManager.devicesWithJsonError.contains(mDevice)) {
+                mDeviceManager.devicesWithJsonError.add(mDevice);
+            }
+
         }
     };
-
-    @Override
-    public void dismiss() {
-        super.dismiss();
-
-        String message = "Não foi possível configurar os seguintes dispositivos: ";
-
-        if (devicesWithSomeError != null) {
-            for (Device device : devicesWithSomeError) {
-                message += device.getDeviceName() + " ";
-            }
-            Toast.makeText(context, message, Toast.LENGTH_LONG);
-        }
-    }
 
     public void init () {
         requestWindowFeature(Window.FEATURE_NO_TITLE);
