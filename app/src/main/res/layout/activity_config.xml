@@ -56,7 +56,24 @@
 
             </LinearLayout>
 
+            <LinearLayout
+                style="@style/LinearLayoutConfigMenuItem"
+                android:id="@+id/linear_layout_time">
 
+                <ImageView
+                    style="@style/ImageViewMenuIconFeature"
+                    android:src="@drawable/network_btn_style" />
+
+                <TextView
+                    style="@style/TextViewFeature"
+                    android:text="@string/clock"
+                    android:id="@+id/text_view_time"/>
+
+                <ImageView
+                    style="@style/ImageViewMenuIconCallToAction"
+                    android:background="@drawable/play_btn_style" />
+
+            </LinearLayout>
 
             <LinearLayout
                 style="@style/LinearLayoutConfigMenuItem"

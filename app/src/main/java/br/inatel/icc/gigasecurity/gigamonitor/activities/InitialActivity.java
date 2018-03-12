@@ -90,7 +90,7 @@ public class InitialActivity extends ActionBarActivity implements View.OnClickLi
     }
 
     private void startSearchActivity() {
-        if(mDevices != null) {
+        if(mDevices != null && mDevices.size() > 0) {
             Intent i = new Intent(this, DeviceSearchListActivity.class);
 
             Bundle extras = new Bundle();
@@ -159,9 +159,9 @@ public class InitialActivity extends ActionBarActivity implements View.OnClickLi
                 public void run() {
                     try {
                         if(Locale.getDefault().toString().equals("pt_BR")) {
-                            tvDevicesFound.setText(mDevices.size() + " dispositivos encontrados.");
+                            tvDevicesFound.setText(mDevices.size() + " dispositivos encontrados");
                         } else {
-                            tvDevicesFound.setText("Found " + mDevices.size() + " devices.");
+                            tvDevicesFound.setText("Found " + mDevices.size() + " devices");
                         }
                         atualizeButton.setVisible(true);
                         tvSearchingDevices.setVisibility(View.GONE);

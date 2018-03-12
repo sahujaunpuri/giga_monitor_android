@@ -69,6 +69,7 @@ public class DeviceFormActivity extends ActionBarActivity {
             setForm(mDevice);
         } else {
             mDevice = new Device();
+            cbSerial.setChecked(true);
         }
 
         arrayList = deviceManager.getDevices();

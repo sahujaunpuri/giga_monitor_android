@@ -98,6 +98,8 @@
 
                 <ImageButton
                     style="@style/ImageButtonRefreshInitialActivity"
+                    android:scaleX="0.7"
+                    android:scaleY="0.7"
                     android:id="@+id/image_btn_refresh" />
 
             </LinearLayout>
