@@ -573,7 +573,7 @@ public class DeviceExpandableListAdapter extends BaseExpandableListAdapter {
                 @Override
                 public void run() {
                     builder.setTitle("")
-                            .setItems(new CharSequence[]{"Configurações", "Controle Remoto", "Playback"},
+                            .setItems(new CharSequence[]{"Configurações", "Controle Remoto", "Playback", "Otimizar"},
                                     new DialogInterface.OnClickListener() {
                                         @Override
                                         public void onClick(DialogInterface dialog, int which) {
@@ -588,6 +588,11 @@ public class DeviceExpandableListAdapter extends BaseExpandableListAdapter {
                                                     mExpandableListView.collapseGroup(groupPosition);
                                                     mDeviceManager.collapse = groupPosition;
                                                     startPlaybackActivity(groupViewHolder.mDevice);
+                                                    break;
+                                                case 3:
+                                                    mDeviceManager.getJsonConfig(groupViewHolder.mDevice,"Simplify.Encode", configListener);
+                                                    currentGroupViewHolder = groupViewHolder;
+                                                    mDevice = groupViewHolder.mDevice;
                                                     break;
                                             }
                                         }
