@@ -536,9 +536,9 @@ public class DeviceManager implements IFunSDKResult {
     }
 
     private void handleEncodeConfig(JSONObject jsonObject, Device device){
-        device.initEncodeArrays();
-        device.setSimplifyEncodeJson(jsonObject);
         try{
+            device.initEncodeArrays();
+            device.setSimplifyEncodeJson(jsonObject);
             JSONArray json = jsonObject.getJSONArray("Simplify.Encode");
             for(int i=0; i<device.getChannelNumber(); i++){
                 JSONObject streamJson = json.getJSONObject(i);

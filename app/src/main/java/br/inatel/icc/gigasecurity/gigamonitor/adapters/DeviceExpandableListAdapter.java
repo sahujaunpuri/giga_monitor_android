@@ -808,7 +808,8 @@ public class DeviceExpandableListAdapter extends BaseExpandableListAdapter {
         public void onReceivedConfig() {
             mDeviceManager.loadEconderSettings(mDevice);
             jsonObjectToSend = mDeviceManager.setStreamingConfig(mDevice);
-            mDeviceManager.setJsonConfig(mDevice, "Simplify.Encode", jsonObjectToSend, configListener);
+            if (jsonObjectToSend != null)
+                mDeviceManager.setJsonConfig(mDevice, "Simplify.Encode", jsonObjectToSend, configListener);
         }
 
         @Override
