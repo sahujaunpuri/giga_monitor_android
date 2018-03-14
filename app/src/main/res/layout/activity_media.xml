@@ -10,7 +10,8 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        android:gravity="center">
+        android:gravity="center"
+        android:layout_marginBottom="45dp">
 
         <TextView
             android:text="voltar"
@@ -92,7 +93,7 @@
         android:id="@+id/grid_view_media"
         android:numColumns="3"
         android:gravity="center"
-        android:columnWidth="270dp"
+        android:columnWidth="330dp"
         android:paddingRight="20dp"
         android:paddingLeft="20dp"
         android:clipToPadding="true"

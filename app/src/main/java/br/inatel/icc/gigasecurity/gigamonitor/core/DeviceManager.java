@@ -1472,7 +1472,7 @@ public class DeviceManager implements IFunSDKResult {
         Log.d(TAG, "msg.arg1 : " + msg.arg1);
         Log.d(TAG, "msg.arg2 : " + msg.arg2);
         if (null != msgContent) {
-            Log.d(TAG, "msgContent.sender : " + msgContent.sender);
+            Log.d(TAG, " .sender : " + msgContent.sender);
             Log.d(TAG, "msgContent.seq : " + msgContent.seq);
             Log.d(TAG, "msgContent.str : " + msgContent.str);
             Log.d(TAG, "msgContent.arg3 : " + msgContent.arg3);
@@ -1571,9 +1571,11 @@ public class DeviceManager implements IFunSDKResult {
 
                     switch(msgContent.str){
                         case "SystemInfo":{
-                            setDeviceInfo(json, device);
-                            device.setConnectionMethodString(connectionMethod(msg.arg2));
-                            FunSDK.DevGetChnName(getHandler(), device.connectionString, device.getUsername(), device.getPassword(), device.getId());
+                            if (json != null && device != null) {
+                                setDeviceInfo(json, device);
+                                device.setConnectionMethodString(connectionMethod(msg.arg2));
+                                FunSDK.DevGetChnName(getHandler(), device.connectionString, device.getUsername(), device.getPassword(), device.getId());
+                            }
                         }
                         break;
                         case "NetWork.NetCommon":{
