@@ -5,7 +5,6 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
 import android.text.TextUtils;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -249,23 +248,27 @@ public class DeviceFormActivity extends ActionBarActivity {
                 return true;
             case R.id.action_save:
                 if(save()) {
-                    int id = mDevice.getId();
-                    if(editPosition > -1){
-                        deviceManager.logoutDevice(mDevice);
-                        checkEdit();
-                        mDevice.setChannelNumber(0);
-                        deviceManager.addDevice(mDevice, editPosition);
-                        deviceManager.updateSurfaceViewManager(editPosition);
-                        deviceManager.collapse = editPosition;
-                    } else if (deviceManager.findDeviceById(id) != null) {
-                        Toast.makeText(this, "Dispositivo já adicionado.", Toast.LENGTH_SHORT).show();
+                    if (mDevice != null) {
+                        int id = mDevice.getId();
+                        if(editPosition > -1){
+                            deviceManager.logoutDevice(mDevice);
+                            checkEdit();
+                            mDevice.setChannelNumber(0);
+                            deviceManager.addDevice(mDevice, editPosition);
+                            deviceManager.updateSurfaceViewManager(editPosition);
+                            deviceManager.collapse = editPosition;
+                        } else if (deviceManager.findDeviceById(id) != null) {
+                            Toast.makeText(this, "Dispositivo já adicionado.", Toast.LENGTH_SHORT).show();
+                        } else {
+                            checkIfConnectionIsWifi();
+                            deviceManager.addDevice(mDevice);
+                            deviceManager.addSurfaceViewManager(mDevice);
+                        }
+                        startDeviceListActivity();
+                        return true;
                     } else {
-                        checkIfConnectionIsWifi();
-                        deviceManager.addDevice(mDevice);
-                        deviceManager.addSurfaceViewManager(mDevice);
+                        Toast.makeText(this, R.string.invalid_device_save, Toast.LENGTH_SHORT).show();
                     }
-                    startDeviceListActivity();
-                    return true;
                 } else {
                     Toast.makeText(this, R.string.invalid_device_save, Toast.LENGTH_SHORT).show();
                 }
@@ -304,7 +307,6 @@ public class DeviceFormActivity extends ActionBarActivity {
         return new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Log.d("DeviceFormActivity", "backAction");
                 finish();
             }
         };
@@ -314,7 +316,6 @@ public class DeviceFormActivity extends ActionBarActivity {
         return new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Log.d("DeviceFormActivity", "saveAction");
                 saveDevice();
             }
         };

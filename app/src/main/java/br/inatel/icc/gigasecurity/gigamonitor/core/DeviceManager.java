@@ -1507,10 +1507,11 @@ public class DeviceManager implements IFunSDKResult {
                     device = findDeviceById(msgContent.seq);
                 }
                 if(msg.arg1 == 0 && device != null) {
+                    Log.d(TAG, "***************** LOGIN *****************");
                     Log.d(TAG, "OnFunSDKResult: Login SUCCESS " + device.deviceName);
-//                    FunSDK.DevGetConfigByJson(getHandler(), device.connectionString, "NetWork", 4096, -1, 10000, device.getId());
-
-                    Log.d(device.deviceName, device.connectionString);
+                    Log.d(TAG, "Device: " + device.deviceName);
+                    Log.d(TAG, "Connection String: " + device.connectionString);
+                    Log.d(TAG, "*****************************************");
 
                     device.isLogged = true;
                     device.loginAttempt = 0;
@@ -1851,41 +1852,39 @@ public class DeviceManager implements IFunSDKResult {
         //Percentage can be calculated for API 16+
         double percentAvail = mi.availMem / (double)mi.totalMem * 100.0;
 
-        Log.d("Check Memory", "********************* MEMORY *********************");
-        Log.d("totalMem", String.valueOf(totalMem));
-        Log.d("availableMem", String.valueOf(availableMegs));
-        Log.d("percentAvail", String.valueOf(percentAvail));
+//        Log.d("Check Memory", "********************* MEMORY *********************");
+//        Log.d("totalMem", String.valueOf(totalMem));
+//        Log.d("availableMem", String.valueOf(availableMegs));
+//        Log.d("percentAvail", String.valueOf(percentAvail));
 
         return availableMegs;
     }
 
     public void loadEconderSettings(Device device) {
-        if (mDeviceManager.devicesWithJsonError.size() > 0) {
-            for (Device mDevice : mDeviceManager.devicesWithJsonError) {
-                if (mDevice.equals(device)) {
-                    mDeviceManager.devicesWithJsonError.remove(mDevice);
-                    Log.d("DeviceManager", "Device with json error:" + mDevice.deviceName);
-                } else {
-                    int[] secondaryQualities = device.getSecondaryQualities();
-                    String[] secondaryResolutions = device.getSecondaryResolution();
-                    int[] secondaryFrameRates = device.getSecondaryFrameRate();
+        for (Device mDevice : mDeviceManager.devicesWithJsonError) {
+            if (mDevice.equals(device)) {
+                mDeviceManager.devicesWithJsonError.remove(mDevice);
+                Log.d("DeviceManager", "Device with json error:" + mDevice.deviceName);
+            } else {
+                int[] secondaryQualities = device.getSecondaryQualities();
+                String[] secondaryResolutions = device.getSecondaryResolution();
+                int[] secondaryFrameRates = device.getSecondaryFrameRate();
 
-                    for (int secondaryQuality = 0; secondaryQuality < secondaryQualities.length; secondaryQuality++) {
-                        secondaryQualities [secondaryQuality] = 3;
-                    }
-
-                    for (int secondatyResolution = 0; secondatyResolution < secondaryResolutions.length; secondatyResolution++){
-                        secondaryResolutions [secondatyResolution] = "CIF";
-                    }
-
-                    for (int secondaryFrameRate = 0; secondaryFrameRate < secondaryFrameRates.length; secondaryFrameRate++) {
-                        secondaryFrameRates [secondaryFrameRate] = 3;
-                    }
-
-                    device.setSecondaryQualities(secondaryQualities);
-                    device.setSecondaryResolution(secondaryResolutions);
-                    device.setSecondaryFrameRate(secondaryFrameRates);
+                for (int secondaryQuality = 0; secondaryQuality < secondaryQualities.length; secondaryQuality++) {
+                    secondaryQualities [secondaryQuality] = 3;
                 }
+
+                for (int secondaryResolution = 0; secondaryResolution < secondaryResolutions.length; secondaryResolution++){
+                    secondaryResolutions [secondaryResolution] = "CIF";
+                }
+
+                for (int secondaryFrameRate = 0; secondaryFrameRate < secondaryFrameRates.length; secondaryFrameRate++) {
+                    secondaryFrameRates [secondaryFrameRate] = 3;
+                }
+
+                device.setSecondaryQualities(secondaryQualities);
+                device.setSecondaryResolution(secondaryResolutions);
+                device.setSecondaryFrameRate(secondaryFrameRates);
             }
         }
     }
