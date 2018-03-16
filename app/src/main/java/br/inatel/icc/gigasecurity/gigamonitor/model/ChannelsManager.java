@@ -221,7 +221,6 @@ public abstract class ChannelsManager implements IFunSDKResult {
 //    }
 
     public void onStartVideo(final SurfaceViewComponent svc) {
-        Log.d("Rodrigo","onStartVideo");
         svc.mPlayerHandler = FunSDK.MediaRealPlay(mUserID, mDevice.connectionString, svc.mySurfaceViewChannelId, svc.streamType, svc.mySurfaceView, svc.mySurfaceViewOrderId);
     }
 
@@ -232,7 +231,6 @@ public abstract class ChannelsManager implements IFunSDKResult {
     }
 
     public void setPlayView(final SurfaceViewComponent svc){
-        Log.d("Rodrigo","setPlayView");
         FunSDK.MediaSetPlayView(svc.mPlayerHandler, mySurfaceViews.get(svc.mySurfaceViewChannelId), mUserID);
     }
 
@@ -243,7 +241,6 @@ public abstract class ChannelsManager implements IFunSDKResult {
     }
 
     public void onResume(SurfaceViewComponent svc){
-        Log.d("Rodrigo","onResume");
         FunSDK.MediaPause(svc.mPlayerHandler, 0, svc.mySurfaceViewOrderId);
     }
 

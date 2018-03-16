@@ -13,6 +13,7 @@ import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import org.json.JSONObject;
 
@@ -128,6 +129,19 @@ public class CustomTypeDialog extends Dialog {
 
         }
     };
+
+    @Override
+    public void dismiss() {
+        super.dismiss();
+
+        String message = "Não foi possível configurar os seguintes dispositivos: ";
+        if (mDeviceManager.devicesWithJsonError != null) {
+            for (Device device : mDeviceManager.devicesWithJsonError) {
+                message += device.getDeviceName() + " ";
+            }
+            Toast.makeText(context, message, Toast.LENGTH_LONG).show();
+        }
+    }
 
     public void init () {
         requestWindowFeature(Window.FEATURE_NO_TITLE);

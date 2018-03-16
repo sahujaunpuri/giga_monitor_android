@@ -240,9 +240,7 @@ public class DeviceFormActivity extends ActionBarActivity {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-
         switch (item.getItemId()) {
-
             case android.R.id.home:
                 finish();
                 return true;
@@ -250,7 +248,7 @@ public class DeviceFormActivity extends ActionBarActivity {
                 if(save()) {
                     if (mDevice != null) {
                         int id = mDevice.getId();
-                        if(editPosition > -1){
+                        if(editPosition > -1) {
                             deviceManager.logoutDevice(mDevice);
                             checkEdit();
                             mDevice.setChannelNumber(0);
@@ -274,7 +272,6 @@ public class DeviceFormActivity extends ActionBarActivity {
                 }
                 break;
         }
-
         return super.onOptionsItemSelected(item);
     }
 

@@ -366,17 +366,18 @@ public class DeviceExpandableListAdapter extends BaseExpandableListAdapter {
                     childViewHolder.tvMessage.setVisibility(View.GONE);
                 }
                 groupViewHolder.ivQuad.setVisibility(View.GONE);
-                Log.d("Device Name:", groupViewHolder.mDevice.deviceName);
+                groupViewHolder.ivOtimizar.setVisibility(View.INVISIBLE);
                 groupViewHolder.ivRefresh.setVisibility(View.VISIBLE);
                 if (groupViewHolder.mDevice.isFavorite || groupViewHolder.mDevice.isLogged) {
                     groupViewHolder.ivRefresh.setVisibility(View.GONE);
                 }
                 if (groupViewHolder.mDevice.getChannelNumber() == 0) {
-                    if(groupViewHolder.mDevice.isFavorite)
+                    if(groupViewHolder.mDevice.isFavorite) {
                         childViewHolder.tvMessage.setText("Nenhum favorito adicionado.");
+                        groupViewHolder.ivRefresh.setVisibility(View.GONE);
+                    }
                     else
                         childViewHolder.tvMessage.setText("Nenhum canal encontrado.");
-                    groupViewHolder.ivRefresh.setVisibility(View.VISIBLE);
                     childViewHolder.tvMessage.setVisibility(View.VISIBLE);
                     childViewHolder.recyclerViewChannels.setVisibility(View.GONE);
                     groupViewHolder.ivMore.setVisibility(View.GONE);
@@ -390,6 +391,7 @@ public class DeviceExpandableListAdapter extends BaseExpandableListAdapter {
                     groupViewHolder.ivMore.setVisibility(View.VISIBLE);
                     if(groupViewHolder.mDevice.getChannelNumber() > 1 ) {
                         groupViewHolder.ivQuad.setVisibility(View.VISIBLE);
+                        groupViewHolder.ivOtimizar.setVisibility(View.VISIBLE);
                         if (groupViewHolder.mDevice.optimize) {
                             groupViewHolder.mDevice.optimize = false;
                             groupViewHolder.ivOtimizar.setVisibility(View.VISIBLE);
@@ -401,26 +403,26 @@ public class DeviceExpandableListAdapter extends BaseExpandableListAdapter {
     }
 
 
-    @Override
-    public void onGroupExpanded(int groupPosition) {
-        super.onGroupExpanded(groupPosition);
-        try {
-            super.onGroupCollapsed(groupPosition);
-            final GroupViewHolder currentGroupViewHolder = groupViewHolder.get(groupPosition);
-            ((DeviceListActivity) mContext).runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    currentGroupViewHolder.ivRefresh.setVisibility(View.VISIBLE);
-                    if (currentGroupViewHolder.mDevice.getSerialNumber().equals("Favoritos") || currentGroupViewHolder.mDevice.isLogged) {
-                        currentGroupViewHolder.ivRefresh.setVisibility(View.GONE);
-                    }
-
-                }
-            });
-        } catch (IndexOutOfBoundsException |  NullPointerException e) {
-            e.printStackTrace();
-        }
-    }
+//    @Override
+//    public void onGroupExpanded(int groupPosition) {
+//        super.onGroupExpanded(groupPosition);
+//        try {
+//            super.onGroupCollapsed(groupPosition);
+//            final GroupViewHolder currentGroupViewHolder = groupViewHolder.get(groupPosition);
+//            ((DeviceListActivity) mContext).runOnUiThread(new Runnable() {
+//                @Override
+//                public void run() {
+//                    currentGroupViewHolder.ivRefresh.setVisibility(View.VISIBLE);
+//                    if (currentGroupViewHolder.mDevice.getSerialNumber().equals("Favoritos") || currentGroupViewHolder.mDevice.isLogged) {
+//                        currentGroupViewHolder.ivRefresh.setVisibility(View.GONE);
+//                    }
+//
+//                }
+//            });
+//        } catch (IndexOutOfBoundsException |  NullPointerException e) {
+//            e.printStackTrace();
+//        }
+//    }
 
     @Override
     public void onGroupCollapsed(int groupPosition){
@@ -436,6 +438,7 @@ public class DeviceExpandableListAdapter extends BaseExpandableListAdapter {
                     currentGroupViewHolder.ivMore.setVisibility(View.GONE);
                     currentGroupViewHolder.ivQuad.setVisibility(View.GONE);
                     currentGroupViewHolder.ivRefresh.setVisibility(View.GONE);
+                    currentGroupViewHolder.ivOtimizar.setVisibility(View.INVISIBLE);
                     currentChildViewHolder.recyclerViewChannels.setVisibility(View.GONE);
                     currentChildViewHolder.overlayMenu.setVisibility(View.GONE);
                     currentChildViewHolder.recyclerViewChannels.removeAllViewsInLayout();
@@ -537,6 +540,8 @@ public class DeviceExpandableListAdapter extends BaseExpandableListAdapter {
                             mDevice.isLogged = false;
                             groupViewHolder.ivQuad.setVisibility(View.GONE);
                             groupViewHolder.ivMore.setVisibility(View.GONE);
+                            groupViewHolder.ivOtimizar.setVisibility(View.INVISIBLE);
+                            groupViewHolder.ivRefresh.setVisibility(View.VISIBLE);
                             childViewHolder.recyclerViewChannels.setVisibility(View.GONE);
                             String errorMsg;
                             if(error == -11301)
@@ -674,21 +679,16 @@ public class DeviceExpandableListAdapter extends BaseExpandableListAdapter {
 
     public int nextNumQuad(int numQuad,int totalChannels) {
         int nextNumQuad = 1;
-
         boolean thereIsMemoryAvailable = true;
 
         if (numQuad == 1) {
             nextNumQuad = 2;
         } else if (numQuad == 2) {
-
             double totalFreeMemory = mDeviceManager.checkMemory(mContext);
-
             thereIsMemoryAvailable = totalFreeMemory > 190;
-
             if (thereIsMemoryAvailable && totalChannels > 4) {
                 nextNumQuad = 3;
             } else {
-
                 nextNumQuad = 1;
             }
         } else if (numQuad == 3) {
@@ -824,7 +824,7 @@ public class DeviceExpandableListAdapter extends BaseExpandableListAdapter {
         public void onError() {
             if (showToast) {
                 String message = "Não foi possível configurar o dispositivo: " + mDevice.getDeviceName() + "\nVerifique sua conexão com a internet e se seu usuário e administrador";
-                Toast.makeText(mContext, message, Toast.LENGTH_LONG);
+                Toast.makeText(mContext, message, Toast.LENGTH_LONG).show();
                 showToast = false;
             }
         }
