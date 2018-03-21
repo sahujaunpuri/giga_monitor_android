@@ -65,7 +65,6 @@ import br.inatel.icc.gigasecurity.gigamonitor.util.Utils;
 import static android.content.Context.ACTIVITY_SERVICE;
 import static android.content.Context.MODE_PRIVATE;
 import static br.inatel.icc.gigasecurity.gigamonitor.activities.DeviceListActivity.mContext;
-import static br.inatel.icc.gigasecurity.gigamonitor.activities.DeviceListActivity.mDeviceManager;
 import static br.inatel.icc.gigasecurity.gigamonitor.activities.DeviceListActivity.previousGroup;
 
 /**
@@ -545,10 +544,31 @@ public class DeviceManager implements IFunSDKResult {
                 device.parsePrimaryConfigs(i, streamJson.getJSONObject("MainFormat"));
                 device.parseSecondaryConfigs(i, streamJson.getJSONObject("ExtraFormat"));
             }
-//            FunSDK.DevGetConfigByJson(getHandler(), device.connectionString, "EncodeCapability", 4096, -1, 10000, device.getId());
-        }catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    private JSONObject setStreamEncode(JSONObject jsonObject, Device device) {
+        JSONObject jsonObjectReturn = null;
+
+        try {
+            JSONArray json = jsonObject.getJSONArray("Simplify.Encode");
+            for (int channel = 0; channel < json.length(); channel++) {
+                JSONObject streamJson = json.getJSONObject(channel);
+                JSONObject extracFormatJsonObject = streamJson.getJSONObject("ExtraFormat");
+                extracFormatJsonObject.put("Resolution", 3);
+                extracFormatJsonObject.put("FPS", "CIF");
+                extracFormatJsonObject.put("Quality", 3);
+            }
+           jsonObjectReturn = jsonObject.put("Simplify.Encode", json);
+        } catch (Exception error) {
+            error.printStackTrace();
+        }
+
+        device.setSimplifyEncodeJson(jsonObjectReturn);
+
+        return jsonObjectReturn;
     }
 
     public void handleEncodeCapability(JSONObject jsonObject, Device device){
@@ -1602,7 +1622,7 @@ public class DeviceManager implements IFunSDKResult {
                         }
                         break;
                         case "Simplify.Encode":{
-                            handleEncodeConfig(json, device);
+                            setStreamEncode(json, device);
                             if(currentConfigListener != null)
                                 currentConfigListener.onReceivedConfig();
                         }
@@ -1858,58 +1878,5 @@ public class DeviceManager implements IFunSDKResult {
 //        Log.d("percentAvail", String.valueOf(percentAvail));
 
         return availableMegs;
-    }
-
-    public void loadEconderSettings(Device device) {
-        for (Device mDevice : mDeviceManager.devicesWithJsonError) {
-            if (mDevice.equals(device)) {
-                mDeviceManager.devicesWithJsonError.remove(mDevice);
-                Log.d("DeviceManager", "Device with json error:" + mDevice.deviceName);
-            } else {
-                int[] secondaryQualities = device.getSecondaryQualities();
-                String[] secondaryResolutions = device.getSecondaryResolution();
-                int[] secondaryFrameRates = device.getSecondaryFrameRate();
-
-                for (int secondaryQuality = 0; secondaryQuality < secondaryQualities.length; secondaryQuality++) {
-                    secondaryQualities [secondaryQuality] = 3;
-                }
-
-                for (int secondaryResolution = 0; secondaryResolution < secondaryResolutions.length; secondaryResolution++){
-                    secondaryResolutions [secondaryResolution] = "CIF";
-                }
-
-                for (int secondaryFrameRate = 0; secondaryFrameRate < secondaryFrameRates.length; secondaryFrameRate++) {
-                    secondaryFrameRates [secondaryFrameRate] = 3;
-                }
-
-                device.setSecondaryQualities(secondaryQualities);
-                device.setSecondaryResolution(secondaryResolutions);
-                device.setSecondaryFrameRate(secondaryFrameRates);
-            }
-        }
-    }
-
-    public JSONObject setStreamingConfig(Device device) {
-        JSONObject jsonObjectToSend = null;
-        JSONArray jsonArray = null;
-        JSONObject jsonAux;
-
-        try {
-            for(int channel = 0; channel < device.getChannelNumber(); channel++) {
-                JSONArray simplifyEncodeJsonArray = device.getSimplifyEncodeJson().getJSONArray("Simplify.Encode");
-                JSONObject streamJson = simplifyEncodeJsonArray.getJSONObject(channel);
-                jsonAux = device.setSecondarySecondaryJsonConfig(channel, streamJson.getJSONObject("ExtraFormat"));
-                streamJson.put("ExtraFormat", jsonAux);
-                simplifyEncodeJsonArray.put(channel, streamJson);
-                jsonArray = simplifyEncodeJsonArray;
-                jsonObjectToSend = device.getSimplifyEncodeJson();
-            }
-
-            jsonObjectToSend.put("Simplify.Encode", jsonArray);
-        } catch (Exception error) {
-            currentConfigListener.onError();
-            error.printStackTrace();
-        }
-        return jsonObjectToSend;
     }
 }

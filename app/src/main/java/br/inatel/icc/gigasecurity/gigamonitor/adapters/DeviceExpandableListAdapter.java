@@ -806,15 +806,11 @@ public class DeviceExpandableListAdapter extends BaseExpandableListAdapter {
     private ConfigListener configListener = new ConfigListener() {
         @Override
         public void onReceivedConfig() {
-            mDeviceManager.loadEconderSettings(mDevice);
-            jsonObjectToSend = mDeviceManager.setStreamingConfig(mDevice);
-            if (jsonObjectToSend != null)
-                mDeviceManager.setJsonConfig(mDevice, "Simplify.Encode", jsonObjectToSend, configListener);
+            mDeviceManager.setJsonConfig(mDevice, "Simplify.Encode", mDevice.getSimplifyEncodeJson(), configListener);
         }
 
         @Override
         public void onSetConfig() {
-            Log.d("CustomTypeDialog", "CONFIG SUCCESS");
             currentGroupViewHolder.mDevice.alreadyOptimized = true;
             currentGroupViewHolder.ivOtimizar.setVisibility(View.INVISIBLE);
             mDeviceManager.rebootDevice(mDevice);

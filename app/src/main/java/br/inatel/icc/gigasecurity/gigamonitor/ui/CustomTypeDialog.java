@@ -6,7 +6,6 @@ import android.content.SharedPreferences;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Handler;
 import android.preference.PreferenceManager;
-import android.util.Log;
 import android.view.View;
 import android.view.Window;
 import android.widget.ImageButton;
@@ -105,24 +104,17 @@ public class CustomTypeDialog extends Dialog {
     private ConfigListener configListener = new ConfigListener() {
         @Override
         public void onReceivedConfig() {
-            Log.d("CustomTypeDialog", "RECEIVED CONFIG");
-            mDeviceManager.loadEconderSettings(mDevice);
-            jsonObjectToSend = mDeviceManager.setStreamingConfig(mDevice);
-            if (jsonObjectToSend != null) {
-                mDeviceManager.setJsonConfig(mDevice, "Simplify.Encode", jsonObjectToSend, configListener);
-            }
+            mDeviceManager.setJsonConfig(mDevice, "Simplify.Encode", mDevice.getSimplifyEncodeJson(), configListener);
         }
 
         @Override
         public void onSetConfig() {
-            Log.d("CustomTypeDialog", "NEW CLOUD CONFIG SUCCESS");
             mDeviceManager.rebootDevice(mDevice);
             newCloudConfigSuccess();
         }
 
         @Override
         public void onError() {
-            Log.d("CustomTypeDialog", "CONFIG ERROR");
             if (!mDeviceManager.devicesWithJsonError.contains(mDevice)) {
                 mDeviceManager.devicesWithJsonError.add(mDevice);
             }
@@ -133,9 +125,8 @@ public class CustomTypeDialog extends Dialog {
     @Override
     public void dismiss() {
         super.dismiss();
-
-        String message = "Não foi possível configurar os seguintes dispositivos: ";
         if (mDeviceManager.devicesWithJsonError != null) {
+            String message = "Não foi possível configurar os seguintes dispositivos: ";
             for (Device device : mDeviceManager.devicesWithJsonError) {
                 message += device.getDeviceName() + " ";
             }
