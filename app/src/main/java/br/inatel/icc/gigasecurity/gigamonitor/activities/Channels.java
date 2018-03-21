@@ -20,4 +20,8 @@ public class Channels {
     public String getChannelName(){
         return mChannelName;
     }
+
+    public void setPosition(int position){
+        mPosition = position;
+    }
 }
