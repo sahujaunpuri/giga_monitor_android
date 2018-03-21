@@ -2,6 +2,7 @@ package br.inatel.icc.gigasecurity.gigamonitor.activities;
 
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
+import android.view.View;
 import android.widget.ListView;
 import android.widget.TextView;
 
@@ -15,7 +16,7 @@ import br.inatel.icc.gigasecurity.gigamonitor.model.Device;
  * Created by zappts on 20/03/18. - Alexandre
  */
 
-public class DeviceChannelOrderActivity extends ActionBarActivity{
+public class DeviceChannelOrderActivity extends ActionBarActivity implements View.OnClickListener{
 
     public DeviceManager mManager;
     public Device mDevice;
@@ -34,12 +35,12 @@ public class DeviceChannelOrderActivity extends ActionBarActivity{
 
         ListView channelListView = (ListView) findViewById(R.id.list);
 
-        ArrayList<ChannelsOrder> arrayOfChannels = new ArrayList<>();
+        ArrayList<Channels> arrayOfChannels = new ArrayList<>();
 
         ChannelsAdapter adapter = new ChannelsAdapter(this, arrayOfChannels);
 
         for (int i = 0; i < numberOfChannels; i++){
-            adapter.add(new ChannelsOrder(i, "Channel " + i));
+            adapter.add(new Channels(i, "Channel " + i));
         }
 
         channelListView.setAdapter(adapter);
@@ -50,5 +51,9 @@ public class DeviceChannelOrderActivity extends ActionBarActivity{
 
     }
 
+    @Override
+    public void onClick(View view) {
+
+    }
 }
 

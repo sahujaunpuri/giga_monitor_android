@@ -15,9 +15,9 @@ import br.inatel.icc.gigasecurity.gigamonitor.R;
  * Created by zappts on 21/03/18.
  */
 
-public class ChannelsAdapter extends ArrayAdapter<ChannelsOrder> {
+public class ChannelsAdapter extends ArrayAdapter<Channels> {
 
-    public ChannelsAdapter(Context context, List<ChannelsOrder> order) {
+    public ChannelsAdapter(Context context, List<Channels> order) {
         super(context, 0, order);
     }
 
@@ -30,7 +30,7 @@ public class ChannelsAdapter extends ArrayAdapter<ChannelsOrder> {
                     R.layout.channel_list_item, parent, false);
         }
 
-        ChannelsOrder currentChannel = getItem(position);
+        Channels currentChannel = getItem(position);
 
         TextView positionView = (TextView) listItemView.findViewById(R.id.channel_position);
         positionView.setText(Integer.toString(currentChannel.getPosition()));
