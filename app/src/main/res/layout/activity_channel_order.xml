@@ -37,12 +37,40 @@
 
     </LinearLayout>
 
-    <ListView
+    <com.mobeta.android.dslv.DragSortListView
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:dslv="http://schemas.android.com/apk/res-auto"
         android:id="@+id/list"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="match_parent"
+        android:paddingTop="0dp"
+        android:paddingBottom="0dp"
+        android:paddingLeft="10dp"
+        android:paddingRight="10dp"
+        android:fastScrollEnabled="true"
+        dslv:drag_enabled="true"
+        dslv:float_background_color="@color/default_color"
+        dslv:collapsed_height="2dp"
+        dslv:drag_scroll_start="3.30"
+        dslv:max_drag_scroll_speed="2.30"
+        dslv:float_alpha="0.6"
+        dslv:slide_shuffle_speed="0.3"
+        dslv:track_drag_sort="false"
+        dslv:use_default_controller="true"
+        dslv:sort_enabled="true"
+        dslv:remove_enabled="true"
+        dslv:drag_start_mode="onDown"
+        dslv:remove_mode="flingRemove"
+        android:divider="@null"
+        android:dividerHeight="0dp"/>
 
-    </ListView>
+
+    <!--<ListView-->
+        <!--android:id="@+id/list"-->
+        <!--android:layout_width="match_parent"-->
+        <!--android:layout_height="wrap_content">-->
+
+    <!--</ListView>-->
 
 
 </LinearLayout>

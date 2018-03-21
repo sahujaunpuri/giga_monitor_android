@@ -3,8 +3,9 @@ package br.inatel.icc.gigasecurity.gigamonitor.activities;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
 import android.view.View;
-import android.widget.ListView;
 import android.widget.TextView;
+
+import com.mobeta.android.dslv.DragSortListView;
 
 import java.util.ArrayList;
 
@@ -20,6 +21,10 @@ public class DeviceChannelOrderActivity extends ActionBarActivity implements Vie
 
     public DeviceManager mManager;
     public Device mDevice;
+    DragSortListView channelListView;
+    ChannelsAdapter adapter;
+    ArrayList<Channels> arrayOfChannels;
+    private boolean moved;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -33,11 +38,11 @@ public class DeviceChannelOrderActivity extends ActionBarActivity implements Vie
 
         int numberOfChannels = mDevice.getChannelNumber();
 
-        ListView channelListView = (ListView) findViewById(R.id.list);
+        channelListView = (DragSortListView) findViewById(R.id.list);
 
-        ArrayList<Channels> arrayOfChannels = new ArrayList<>();
+        arrayOfChannels = new ArrayList<>();
 
-        ChannelsAdapter adapter = new ChannelsAdapter(this, arrayOfChannels);
+        adapter = new ChannelsAdapter(this, arrayOfChannels);
 
         for (int i = 0; i < numberOfChannels; i++){
             adapter.add(new Channels(i, "Channel " + i));
@@ -49,7 +54,29 @@ public class DeviceChannelOrderActivity extends ActionBarActivity implements Vie
 
         channelNumberTextView.setText("Number of Channels: " + numberOfChannels);
 
+        channelListView.setDropListener(onDrop);
+
     }
+
+
+    //onDrop change position of the list item.
+    private DragSortListView.DropListener onDrop =
+            new DragSortListView.DropListener() {
+                @Override
+                public void drop(int from, int to) {
+                    Channels item = (Channels) adapter.getItem(from);
+
+                    adapter.notifyDataSetChanged();
+                    arrayOfChannels.remove(from);
+                    arrayOfChannels.add(to, item);
+
+                    adapter = new ChannelsAdapter(DeviceChannelOrderActivity.this, arrayOfChannels);
+                    channelListView.setAdapter(adapter);
+//                    mAdapter.notifyDataSetChanged();
+
+                    moved = true;
+                }
+            };
 
     @Override
     public void onClick(View view) {
