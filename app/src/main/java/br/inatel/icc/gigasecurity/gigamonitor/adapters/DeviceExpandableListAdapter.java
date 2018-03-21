@@ -29,6 +29,7 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 
 import br.inatel.icc.gigasecurity.gigamonitor.R;
+import br.inatel.icc.gigasecurity.gigamonitor.activities.DeviceChannelOrderActivity;
 import br.inatel.icc.gigasecurity.gigamonitor.activities.DeviceListActivity;
 import br.inatel.icc.gigasecurity.gigamonitor.activities.DevicePlaybackActivity;
 import br.inatel.icc.gigasecurity.gigamonitor.activities.DeviceRemoteControlActivity;
@@ -578,7 +579,7 @@ public class DeviceExpandableListAdapter extends BaseExpandableListAdapter {
                 @Override
                 public void run() {
                     builder.setTitle("")
-                            .setItems(new CharSequence[]{"Configurações", "Controle Remoto", "Playback", "Otimizar"},
+                            .setItems(new CharSequence[]{"Configurações", "Controle Remoto", "Playback", "Otimizar", "Ordem dos Canais"},
                                     new DialogInterface.OnClickListener() {
                                         @Override
                                         public void onClick(DialogInterface dialog, int which) {
@@ -598,6 +599,9 @@ public class DeviceExpandableListAdapter extends BaseExpandableListAdapter {
                                                     mDeviceManager.getJsonConfig(groupViewHolder.mDevice,"Simplify.Encode", configListener);
                                                     currentGroupViewHolder = groupViewHolder;
                                                     mDevice = groupViewHolder.mDevice;
+                                                    break;
+                                                case 4:
+                                                    startDeviceChannelOrderActivity(groupViewHolder.mDevice);
                                                     break;
                                             }
                                         }
@@ -660,6 +664,23 @@ public class DeviceExpandableListAdapter extends BaseExpandableListAdapter {
             extras.putSerializable("device", mDevices.indexOf(mDevice));
 
             Intent intent = new Intent(mContext, DeviceRemoteControlActivity.class);
+            intent.putExtras(extras);
+
+            mContext.startActivity(intent);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void startDeviceChannelOrderActivity(Device mDevice) {
+        try {
+            Log.d("DeviceExpandableListAdapter", "Device index: " + mDevices.indexOf(mDevice));
+            Log.d("DeviceExpandableListAdapter", "Device index: " + indexOfDeviceByName(mDevice.deviceName));
+
+            Bundle extras = new Bundle();
+            extras.putSerializable("device", mDevices.indexOf(mDevice));
+
+            Intent intent = new Intent(mContext, DeviceChannelOrderActivity.class);
             intent.putExtras(extras);
 
             mContext.startActivity(intent);
