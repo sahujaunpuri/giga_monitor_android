@@ -1584,7 +1584,6 @@ public class DeviceManager implements IFunSDKResult {
                     Device device = findDeviceById(msgContent.seq);
                     try {
                         String jsonText = G.ToStringJson(msgContent.pData);
-                        Log.d(TAG, "EUIMSG.DEV_GET_JSON --> json: " + device.connectionString + " " + jsonText);
                         json = new JSONObject(jsonText);
                     } catch (JSONException e) {
                         e.printStackTrace();

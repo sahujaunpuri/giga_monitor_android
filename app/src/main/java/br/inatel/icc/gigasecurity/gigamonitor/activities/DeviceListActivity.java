@@ -336,7 +336,7 @@ public class DeviceListActivity extends ActionBarActivity implements View.OnClic
         new CustomTypeDialog(mContext, new CustomTypeDialog.OnDialogClickListener() {
             @Override
             public void onDialogImageRunClick() {
-//                mImageViewCloud3Btn.setVisibility(View.GONE);
+
             }
         });
     }

@@ -40,6 +40,7 @@ import br.inatel.icc.gigasecurity.gigamonitor.listeners.LoginDeviceListener;
 import br.inatel.icc.gigasecurity.gigamonitor.managers.CustomGridLayoutManager;
 import br.inatel.icc.gigasecurity.gigamonitor.model.ChannelsManager;
 import br.inatel.icc.gigasecurity.gigamonitor.model.Device;
+import br.inatel.icc.gigasecurity.gigamonitor.ui.CustomTypeDialog;
 import br.inatel.icc.gigasecurity.gigamonitor.ui.OverlayMenu;
 import br.inatel.icc.gigasecurity.gigamonitor.ui.OverlayPTZ;
 import br.inatel.icc.gigasecurity.gigamonitor.ui.SurfaceViewComponent;
@@ -796,12 +797,20 @@ public class DeviceExpandableListAdapter extends BaseExpandableListAdapter {
         return new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                mDeviceManager.getJsonConfig(groupViewHolder.mDevice,"Simplify.Encode", configListener);
-                currentGroupViewHolder = groupViewHolder;
-                mDevice = groupViewHolder.mDevice;
+                showCustomDialog();
             }
         };
     }
+
+    private void showCustomDialog () {
+        new CustomTypeDialog(mContext, new CustomTypeDialog.OnDialogClickListener() {
+            @Override
+            public void onDialogImageRunClick() {
+
+            }
+        });
+    }
+
 
     private ConfigListener configListener = new ConfigListener() {
         @Override

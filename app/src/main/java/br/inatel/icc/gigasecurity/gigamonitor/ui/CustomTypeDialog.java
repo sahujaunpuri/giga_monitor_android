@@ -65,7 +65,7 @@ public class CustomTypeDialog extends Dialog {
                     @Override
                     public void run() {
                         String message = "Não foi possível configurar os seguintes dispositivos: ";
-                        if (mDeviceManager.devicesWithJsonError != null) {
+                        if (mDeviceManager.devicesWithJsonError.size() > 0) {
                             for (Device device : mDeviceManager.devicesWithJsonError) {
                                 message += device.getDeviceName() + " ";
                             }
@@ -125,7 +125,7 @@ public class CustomTypeDialog extends Dialog {
     @Override
     public void dismiss() {
         super.dismiss();
-        if (mDeviceManager.devicesWithJsonError != null) {
+        if (mDeviceManager.devicesWithJsonError.size() > 0) {
             String message = "Não foi possível configurar os seguintes dispositivos: ";
             for (Device device : mDeviceManager.devicesWithJsonError) {
                 message += device.getDeviceName() + " ";
