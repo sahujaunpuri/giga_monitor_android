@@ -16,19 +16,23 @@ import br.inatel.icc.gigasecurity.gigamonitor.model.Device;
 
 public class DeviceChannelOrderActivity extends ActionBarActivity implements View.OnClickListener {
 
+    // Variáveis do DVR
     public DeviceManager mManager;
     public Device mDevice;
+    int numberOfChannels;
+
+    // Variáveis de exibição e controle
     DragSortListView channelListView;
     ChannelsAdapter adapter;
     ArrayList<Channels> arrayOfChannels;
     private boolean moved;
-    int numberOfChannels;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_channel_order);
+        getSupportActionBar().hide();
 
         mManager = DeviceManager.getInstance();
         int devicePosition = (int) getIntent().getExtras().getSerializable("device");
@@ -50,7 +54,7 @@ public class DeviceChannelOrderActivity extends ActionBarActivity implements Vie
 
         TextView channelNumberTextView = (TextView) findViewById(R.id.number_of_channels);
 
-        channelNumberTextView.setText("Number of Channels: " + numberOfChannels);
+        channelNumberTextView.setText("Número de Canais: " + numberOfChannels);
 
         channelListView.setDropListener(onDrop);
 
@@ -63,16 +67,18 @@ public class DeviceChannelOrderActivity extends ActionBarActivity implements Vie
                 public void drop(int from, int to) {
                     Channels item = adapter.getItem(from);
 
-                    adapter.notifyDataSetChanged();
+
                     arrayOfChannels.remove(from);
                     arrayOfChannels.add(to, item);
 
-                    adapter = new ChannelsAdapter(DeviceChannelOrderActivity.this, arrayOfChannels);
-                    channelListView.setAdapter(adapter);
+                    adapter.notifyDataSetChanged();
+
+                    //adapter = new ChannelsAdapter(DeviceChannelOrderActivity.this, arrayOfChannels);
+                    //channelListView.setAdapter(adapter);
 
                     moved = true;
 
-                    // Keep channel number while changing channel name
+                    // Keep channel number while change channel name order
                     for (int i = 0; i < numberOfChannels; i++) {
                         adapter.getItem(i).setPosition(i);
                     }
