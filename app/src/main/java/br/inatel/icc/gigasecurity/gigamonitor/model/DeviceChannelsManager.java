@@ -10,7 +10,6 @@ import java.util.Comparator;
 
 import br.inatel.icc.gigasecurity.gigamonitor.ui.SurfaceViewComponent;
 
-
 public class DeviceChannelsManager extends ChannelsManager implements IFunSDKResult {
     String TAG = "DeviceChannelsManager";
 
@@ -59,7 +58,8 @@ public class DeviceChannelsManager extends ChannelsManager implements IFunSDKRes
             svc.mySurfaceViewOrderId = inverseMatrix[numQuad - 1][svc.mySurfaceViewChannelId];
         }
 
-        Collections.sort(surfaceViewComponents, new Comparator<SurfaceViewComponent>() {
+        Collections.sort(surfaceViewComponents,
+                new Comparator<SurfaceViewComponent>() {
             public int compare(SurfaceViewComponent svc1, SurfaceViewComponent svc2) {
                 return svc1.mySurfaceViewOrderId - svc2.mySurfaceViewOrderId;
             }

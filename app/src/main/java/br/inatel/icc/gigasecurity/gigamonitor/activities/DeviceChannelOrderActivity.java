@@ -2,13 +2,19 @@ package br.inatel.icc.gigasecurity.gigamonitor.activities;
 
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
+import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
+
 import com.mobeta.android.dslv.DragSortListView;
+
 import java.util.ArrayList;
+
 import br.inatel.icc.gigasecurity.gigamonitor.R;
 import br.inatel.icc.gigasecurity.gigamonitor.core.DeviceManager;
+import br.inatel.icc.gigasecurity.gigamonitor.model.ChannelsManager;
 import br.inatel.icc.gigasecurity.gigamonitor.model.Device;
+import br.inatel.icc.gigasecurity.gigamonitor.ui.SurfaceViewComponent;
 
 /**
  * Created by zappts on 20/03/18. - Alexandre
@@ -20,6 +26,8 @@ public class DeviceChannelOrderActivity extends ActionBarActivity implements Vie
     public DeviceManager mManager;
     public Device mDevice;
     int numberOfChannels;
+    ChannelsManager channelsManager;
+    SurfaceViewComponent currentSurfaceView;
 
     // Variáveis de exibição e controle
     DragSortListView channelListView;
@@ -38,6 +46,18 @@ public class DeviceChannelOrderActivity extends ActionBarActivity implements Vie
         int devicePosition = (int) getIntent().getExtras().getSerializable("device");
         mDevice = mManager.getDevices().get(devicePosition);
 
+        channelsManager = mManager.findChannelManagerByDevice(mDevice);
+
+        currentSurfaceView = channelsManager.surfaceViewComponents.get(3);
+
+        Log.e("Antes: ", ""+currentSurfaceView.mySurfaceViewOrderId);
+
+        currentSurfaceView.mySurfaceViewChannelId = 0;
+
+        Log.e("Depois: ", ""+currentSurfaceView.mySurfaceViewOrderId);
+
+        channelsManager.reOrderSurfaceViewComponents();
+
         numberOfChannels = mDevice.getChannelNumber();
 
         channelListView = (DragSortListView) findViewById(R.id.list);
@@ -47,7 +67,7 @@ public class DeviceChannelOrderActivity extends ActionBarActivity implements Vie
         adapter = new ChannelsAdapter(this, arrayOfChannels);
 
         for (int i = 0; i < numberOfChannels; i++) {
-            adapter.add(new Channels(i, "Channel " + i));
+            adapter.add(new Channels(i, "Canal " + i));
         }
 
         channelListView.setAdapter(adapter);
@@ -67,7 +87,6 @@ public class DeviceChannelOrderActivity extends ActionBarActivity implements Vie
                 public void drop(int from, int to) {
                     Channels item = adapter.getItem(from);
 
-
                     arrayOfChannels.remove(from);
                     arrayOfChannels.add(to, item);
 
@@ -78,7 +97,7 @@ public class DeviceChannelOrderActivity extends ActionBarActivity implements Vie
 
                     moved = true;
 
-                    // Keep channel number while change channel name order
+                    // Keep channel number while change channel order
                     for (int i = 0; i < numberOfChannels; i++) {
                         adapter.getItem(i).setPosition(i);
                     }

@@ -137,7 +137,7 @@ public class DeviceExpandableListAdapter extends BaseExpandableListAdapter {
         groupViewHolder.ivOtimizar   = (ImageView) convertView.findViewById(R.id.iv_otimizar);
         groupViewHolder.tvDeviceName = (TextView) convertView.findViewById(R.id.tv_hostname_list_device);
         groupViewHolder.mDevice      = mDevices.get(groupPosition);
-        groupViewHolder.position    = groupPosition;
+        groupViewHolder.position     = groupPosition;
         groupViewHolder.tvDeviceName.setText(groupViewHolder.mDevice.deviceName);
         groupViewHolder.ivMore.setOnClickListener(createMoreListener(groupPosition));
         groupViewHolder.ivQuad.setOnClickListener(createQuadListener(groupPosition));

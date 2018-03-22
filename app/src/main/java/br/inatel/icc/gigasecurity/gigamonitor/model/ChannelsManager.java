@@ -118,6 +118,10 @@ public abstract class ChannelsManager implements IFunSDKResult {
             };
     }
 
+    public void setInverseMatrix (int [][] newMatrix) {
+        inverseMatrix = newMatrix;
+    }
+
     public abstract void createComponents();
 
     public void clearSurfaceViewComponents() {
