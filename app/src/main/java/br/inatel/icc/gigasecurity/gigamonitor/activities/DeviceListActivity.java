@@ -333,7 +333,7 @@ public class DeviceListActivity extends ActionBarActivity implements View.OnClic
     }
 
     private void showCustomDialog () {
-        new CustomTypeDialog(mContext, new CustomTypeDialog.OnDialogClickListener() {
+        new CustomTypeDialog(mContext, null, new CustomTypeDialog.OnDialogClickListener() {
             @Override
             public void onDialogImageRunClick() {
 

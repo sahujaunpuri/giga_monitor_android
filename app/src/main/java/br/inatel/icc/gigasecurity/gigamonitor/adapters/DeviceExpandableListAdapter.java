@@ -35,7 +35,6 @@ import br.inatel.icc.gigasecurity.gigamonitor.activities.DeviceRemoteControlActi
 import br.inatel.icc.gigasecurity.gigamonitor.activities.FavoritesDevicesListActivity;
 import br.inatel.icc.gigasecurity.gigamonitor.config.ConfigMenuActivity;
 import br.inatel.icc.gigasecurity.gigamonitor.core.DeviceManager;
-import br.inatel.icc.gigasecurity.gigamonitor.listeners.ConfigListener;
 import br.inatel.icc.gigasecurity.gigamonitor.listeners.LoginDeviceListener;
 import br.inatel.icc.gigasecurity.gigamonitor.managers.CustomGridLayoutManager;
 import br.inatel.icc.gigasecurity.gigamonitor.model.ChannelsManager;
@@ -49,7 +48,6 @@ import br.inatel.icc.gigasecurity.gigamonitor.ui.SurfaceViewComponent;
  * Created by filipecampos on 30/05/2016.
  */
 public class DeviceExpandableListAdapter extends BaseExpandableListAdapter {
-    private final String TAG = "ExpListAdapter";
     private LayoutInflater mInflater;
     public ArrayList<Device> mDevices;
     public Context mContext;
@@ -62,6 +60,7 @@ public class DeviceExpandableListAdapter extends BaseExpandableListAdapter {
     private int scroll;
     JSONObject jsonObjectToSend = null;
     private boolean showToast = true;
+    String TAG = "DeviceExpandableListAdapter";
 
     public DeviceExpandableListAdapter(Context mContext, ArrayList<Device> mDevices, ExpandableListView mExpandableListView) {
         this.mContext            = mContext;
@@ -504,7 +503,7 @@ public class DeviceExpandableListAdapter extends BaseExpandableListAdapter {
     }
 
     public void updateGrid(int position, ChannelsManager channelsManager){
-        Log.d("DeviceExpandableListAdapter", "Update device: " + channelsManager.mDevice.deviceName);
+        Log.d(TAG, "Update device: " + channelsManager.mDevice.deviceName);
         if(channelsManager.mDevice.getChannelNumber() > 0)
             channelsManager.createComponents();
         if(childViewHolder.get(position).gridLayoutManager != null) {
@@ -596,9 +595,7 @@ public class DeviceExpandableListAdapter extends BaseExpandableListAdapter {
                                                     startPlaybackActivity(groupViewHolder.mDevice);
                                                     break;
                                                 case 3:
-                                                    mDeviceManager.getJsonConfig(groupViewHolder.mDevice,"Simplify.Encode", configListener);
-                                                    currentGroupViewHolder = groupViewHolder;
-                                                    mDevice = groupViewHolder.mDevice;
+                                                    showCustomDialog(groupViewHolder);
                                                     break;
                                             }
                                         }
@@ -654,8 +651,8 @@ public class DeviceExpandableListAdapter extends BaseExpandableListAdapter {
 
     private void startDeviceRemoteControlActivity(Device mDevice) {
         try {
-            Log.d("DeviceExpandableListAdapter", "Device index: " + mDevices.indexOf(mDevice));
-            Log.d("DeviceExpandableListAdapter", "Device index: " + indexOfDeviceByName(mDevice.deviceName));
+            Log.d(TAG, "Device index: " + mDevices.indexOf(mDevice));
+            Log.d(TAG, "Device index: " + indexOfDeviceByName(mDevice.deviceName));
 
             Bundle extras = new Bundle();
             extras.putSerializable("device", mDevices.indexOf(mDevice));
@@ -797,13 +794,13 @@ public class DeviceExpandableListAdapter extends BaseExpandableListAdapter {
         return new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                showCustomDialog();
+                showCustomDialog(groupViewHolder);
             }
         };
     }
 
-    private void showCustomDialog () {
-        new CustomTypeDialog(mContext, new CustomTypeDialog.OnDialogClickListener() {
+    private void showCustomDialog (final GroupViewHolder groupViewHolder) {
+        new CustomTypeDialog(mContext, groupViewHolder.mDevice, new CustomTypeDialog.OnDialogClickListener() {
             @Override
             public void onDialogImageRunClick() {
 
@@ -811,29 +808,6 @@ public class DeviceExpandableListAdapter extends BaseExpandableListAdapter {
         });
     }
 
-
-    private ConfigListener configListener = new ConfigListener() {
-        @Override
-        public void onReceivedConfig() {
-            mDeviceManager.setJsonConfig(mDevice, "Simplify.Encode", mDevice.getSimplifyEncodeJson(), configListener);
-        }
-
-        @Override
-        public void onSetConfig() {
-            currentGroupViewHolder.mDevice.alreadyOptimized = true;
-            currentGroupViewHolder.ivOtimizar.setVisibility(View.INVISIBLE);
-            mDeviceManager.rebootDevice(mDevice);
-        }
-
-        @Override
-        public void onError() {
-            if (showToast) {
-                String message = "Não foi possível configurar o dispositivo: " + mDevice.getDeviceName() + "\nVerifique sua conexão com a internet e se seu usuário e administrador";
-                Toast.makeText(mContext, message, Toast.LENGTH_LONG).show();
-                showToast = false;
-            }
-        }
-    };
 
     public class GroupViewHolder {
         public TextView tvDeviceName;

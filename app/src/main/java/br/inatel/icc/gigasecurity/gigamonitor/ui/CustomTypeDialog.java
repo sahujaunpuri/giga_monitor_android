@@ -2,10 +2,8 @@ package br.inatel.icc.gigasecurity.gigamonitor.ui;
 
 import android.app.Dialog;
 import android.content.Context;
-import android.content.SharedPreferences;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Handler;
-import android.preference.PreferenceManager;
 import android.view.View;
 import android.view.Window;
 import android.widget.ImageButton;
@@ -17,6 +15,7 @@ import android.widget.Toast;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import br.inatel.icc.gigasecurity.gigamonitor.R;
 import br.inatel.icc.gigasecurity.gigamonitor.core.DeviceManager;
@@ -30,7 +29,7 @@ import br.inatel.icc.gigasecurity.gigamonitor.model.Device;
 public class CustomTypeDialog extends Dialog {
     private final OnDialogClickListener listener;
     DeviceManager mDeviceManager = DeviceManager.getInstance();
-    ArrayList<Device> mDevices = mDeviceManager.getDevices();
+    List <Device> mDevices = new ArrayList<>();
     Device mDevice;
     TextView mTextViewDialog7, mTextViewCancel;
     LinearLayout mLinearLayoutButtonCloud3, mLinearLayoutCloud3, mLinearLayoutCloud3BtnReboot;
@@ -39,11 +38,17 @@ public class CustomTypeDialog extends Dialog {
     Context context;
     JSONObject jsonObjectToSend = null;
 
-    public CustomTypeDialog(final Context context, final OnDialogClickListener listener) {
+    public CustomTypeDialog(final Context context, Device device, final OnDialogClickListener listener) {
         super(context);
         init();
         this.listener = listener;
         this.context = context;
+
+        if (device != null) {
+            mDevices.add(device);
+        } else {
+            mDevices = mDeviceManager.getDevices();
+        }
 
         mTextViewCancel.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -70,6 +75,8 @@ public class CustomTypeDialog extends Dialog {
                                 message += device.getDeviceName() + " ";
                             }
                             mTextViewDialog7.setText(message);
+                        } else {
+                            mTextViewDialog7.setText("Dispositivo otimizado com sucesso!");
                         }
                         setCancelable(true);
                     }
@@ -81,20 +88,13 @@ public class CustomTypeDialog extends Dialog {
         show();
     }
 
-    public void setStreamingConfig(ArrayList<Device> devices) {
+    public void setStreamingConfig(List <Device> devices) {
         for (Device device : devices) {
             if (!device.getSerialNumber().equals("Favoritos")) {
                 this.mDevice = device;
                 mDeviceManager.getJsonConfig(device,"Simplify.Encode", configListener);
             }
         }
-    }
-
-    public void newCloudConfigSuccess () {
-        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this.context);
-        SharedPreferences.Editor editor = prefs.edit();
-        editor.putBoolean("cloud2", false);
-        editor.commit();
     }
 
     public interface OnDialogClickListener {
@@ -110,7 +110,6 @@ public class CustomTypeDialog extends Dialog {
         @Override
         public void onSetConfig() {
             mDeviceManager.rebootDevice(mDevice);
-            newCloudConfigSuccess();
         }
 
         @Override

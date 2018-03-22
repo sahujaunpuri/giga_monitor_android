@@ -393,8 +393,10 @@ public class DeviceManager implements IFunSDKResult {
     }
 
     public void setJsonConfig(Device device, String configString, JSONObject jsonObject, ConfigListener configListener) {
-        currentConfigListener = configListener;
-        FunSDK.DevSetConfigByJson(getHandler(), device.connectionString, configString, jsonObject.toString(), -1, 15000, device.getId());
+        if (jsonObject != null) {
+            currentConfigListener = configListener;
+            FunSDK.DevSetConfigByJson(getHandler(), device.connectionString, configString, jsonObject.toString(), -1, 15000, device.getId());
+        }
     }
 
     public void getTimeConfig(Device device, ConfigListener configListener){
