@@ -36,10 +36,10 @@ public class DeviceChannelsManager extends ChannelsManager implements IFunSDKRes
         mySurfaceView.setLayoutParams(surfaceViewLayout);
         mySurfaceViews.add(i, mySurfaceView);
 
-
         SurfaceViewComponent surfaceViewComponent = new SurfaceViewComponent(mContext, this, i);
 
         surfaceViewComponent.mySurfaceViewChannelId = i;
+        surfaceViewComponent.mySurfaceViewNewChannelId = i;
         surfaceViewComponent.mySurfaceViewOrderId = i;
         surfaceViewComponent.deviceConnection = mDevice.connectionString;
         surfaceViewComponent.deviceId = mDevice.getId();
@@ -55,7 +55,7 @@ public class DeviceChannelsManager extends ChannelsManager implements IFunSDKRes
     public void reOrderSurfaceViewComponents() {
         initMatrix();
         for (SurfaceViewComponent svc : surfaceViewComponents) {
-            svc.mySurfaceViewOrderId = inverseMatrix[numQuad - 1][svc.mySurfaceViewChannelId];
+            svc.mySurfaceViewOrderId = inverseMatrix[numQuad - 1][svc.mySurfaceViewNewChannelId];
         }
 
         Collections.sort(surfaceViewComponents,
@@ -91,7 +91,7 @@ public class DeviceChannelsManager extends ChannelsManager implements IFunSDKRes
         if(hdChannel > -1) {
             disableHD(surfaceViewComponents.get(getChannelSelected(hdChannel)));
         }
-        hdChannel = svc.mySurfaceViewChannelId;
+        hdChannel = svc.mySurfaceViewNewChannelId;
         svc.setStreamType(0);
         restartVideo(svc);
     }

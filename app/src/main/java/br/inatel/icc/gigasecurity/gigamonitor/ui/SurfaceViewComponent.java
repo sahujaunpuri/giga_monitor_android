@@ -34,6 +34,7 @@ public class SurfaceViewComponent extends FrameLayout {
     public int deviceId;
     public String deviceConnection;
     public int mySurfaceViewChannelId; //ordem original
+    public int mySurfaceViewNewChannelId; // ordem modificada pelo usuario
     public int mySurfaceViewOrderId;  //ordem modificada para grid
     public String recordFileName;
 
@@ -59,10 +60,11 @@ public class SurfaceViewComponent extends FrameLayout {
     private boolean longPress = false;
     private boolean isLoading = false;
 
-    public SurfaceViewComponent(Context context, ChannelsManager channelsManager, int id) {
+    public SurfaceViewComponent(Context context, ChannelsManager channelsManager, int channelId) {
         super(context);
         this.mContext = context;
-        this.mySurfaceViewChannelId = id;
+        this.mySurfaceViewChannelId = channelId;
+        this.mySurfaceViewNewChannelId = channelId;
         this.mChannelsManager = channelsManager;
         init();
     }
@@ -87,7 +89,7 @@ public class SurfaceViewComponent extends FrameLayout {
 
         //SurfaceView
         if(playType == 0 && mySurfaceView == null) {
-            mySurfaceView = mChannelsManager.getMySurfaceView(mySurfaceViewChannelId);
+            mySurfaceView = mChannelsManager.getMySurfaceView(mySurfaceViewNewChannelId);
 //        mySurfaceView.setRenderMode(GLSurfaceView.RENDERMODE_CONTINUOUSLY);
 
         }
@@ -209,7 +211,7 @@ public class SurfaceViewComponent extends FrameLayout {
     }
 
     public int getMySurfaceViewChannelId() {
-        return mySurfaceViewChannelId;
+        return mySurfaceViewNewChannelId;
     }
 
 //    public void setMySurfaceViewChannelId(int mySurfaceViewChannelId) {
@@ -516,7 +518,7 @@ public class SurfaceViewComponent extends FrameLayout {
                     if(mChannelsManager.mDevice.getSerialNumber().equals("Favoritos")) {
                         mChannelsManager.mRecyclerAdapter.singleQuad(mySurfaceViewOrderId);
                     }else {
-                        mChannelsManager.mRecyclerAdapter.singleQuad(mySurfaceViewChannelId);
+                        mChannelsManager.mRecyclerAdapter.singleQuad(mySurfaceViewNewChannelId);
                     }
                 }
             });

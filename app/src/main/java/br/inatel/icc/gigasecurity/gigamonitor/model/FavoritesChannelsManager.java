@@ -51,6 +51,7 @@ public class FavoritesChannelsManager extends ChannelsManager implements IFunSDK
 
             SurfaceViewComponent surfaceViewComponent = new SurfaceViewComponent(mContext, this, position);
             surfaceViewComponent.mySurfaceViewChannelId = i;
+            surfaceViewComponent.mySurfaceViewNewChannelId = i;
             surfaceViewComponent.mySurfaceViewOrderId = position;
             if (channelsManager.mDevice == null) {
                 return;
@@ -114,7 +115,7 @@ public class FavoritesChannelsManager extends ChannelsManager implements IFunSDK
             public void run() {
                 try {
                     if (mDeviceManager.findDeviceById(svc.deviceId).isLogged)
-                        svc.mPlayerHandler = FunSDK.MediaRealPlay(mUserID, svc.deviceConnection, svc.mySurfaceViewChannelId, svc.streamType, svc.mySurfaceView, svc.mySurfaceViewOrderId);
+                        svc.mPlayerHandler = FunSDK.MediaRealPlay(mUserID, svc.deviceConnection, svc.mySurfaceViewNewChannelId, svc.streamType, svc.mySurfaceView, svc.mySurfaceViewOrderId);
                 } catch (Exception error) {
                     error.printStackTrace();
                 }

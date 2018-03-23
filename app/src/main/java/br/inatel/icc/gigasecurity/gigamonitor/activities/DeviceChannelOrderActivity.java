@@ -2,6 +2,7 @@ package br.inatel.icc.gigasecurity.gigamonitor.activities;
 
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
+import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
 
@@ -30,12 +31,12 @@ public class DeviceChannelOrderActivity extends ActionBarActivity implements Vie
     SurfaceViewComponent currentSurfaceView1;
     SurfaceViewComponent currentSurfaceView2;
     SurfaceViewComponent currentSurfaceView3;
+    int aux;
 
     // Variáveis de exibição e controle
     DragSortListView channelListView;
     ChannelsAdapter adapter;
     ArrayList<Channels> arrayOfChannels;
-    private boolean moved;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -57,16 +58,29 @@ public class DeviceChannelOrderActivity extends ActionBarActivity implements Vie
         currentSurfaceView2 = channelsManager.surfaceViewComponents.get(2);
         currentSurfaceView3 = channelsManager.surfaceViewComponents.get(3);
 
-        currentSurfaceView0.mySurfaceViewChannelId = 1;
-        //currentSurfaceView0.mySurfaceViewOrderId = 2;
-        currentSurfaceView1.mySurfaceViewChannelId = 3;
-        //currentSurfaceView1.mySurfaceViewOrderId = 3;
-        currentSurfaceView2.mySurfaceViewChannelId = 0;
-        //currentSurfaceView2.mySurfaceViewOrderId = 0;
-        currentSurfaceView3.mySurfaceViewChannelId = 0;
-        //currentSurfaceView3.mySurfaceViewOrderId = 1;
+        Log.e("New IDs antes: ", ""+currentSurfaceView0.mySurfaceViewNewChannelId+", "+currentSurfaceView1.mySurfaceViewNewChannelId+", "+currentSurfaceView2.mySurfaceViewNewChannelId+", "+currentSurfaceView3.mySurfaceViewNewChannelId+", ");
+
+        aux = currentSurfaceView3.mySurfaceViewNewChannelId;
+        currentSurfaceView3.mySurfaceViewNewChannelId = currentSurfaceView0.mySurfaceViewNewChannelId;
+        currentSurfaceView0.mySurfaceViewNewChannelId = aux;
+
+        Log.e("New IDs depois: ", ""+currentSurfaceView0.mySurfaceViewNewChannelId+", "+currentSurfaceView1.mySurfaceViewNewChannelId+", "+currentSurfaceView2.mySurfaceViewNewChannelId+", "+currentSurfaceView3.mySurfaceViewNewChannelId+", ");
+
+/*        currentSurfaceView0.mySurfaceViewNewChannelId = 1;
+        currentSurfaceView1.mySurfaceViewNewChannelId = 3;
+        currentSurfaceView2.mySurfaceViewNewChannelId = 0;
+        currentSurfaceView3.mySurfaceViewNewChannelId = 0;
 
         channelsManager.reOrderSurfaceViewComponents();
+
+        int [][] inverseMatrix = new int[][]{
+                {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15}, // 1x1
+                {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15}, // 2x2
+                {0, 3, 6, 1, 4, 7, 2, 5, 8, 9, 12, 15, 10, 13, 11, 14}, // 3x3
+                {0, 4, 8, 12, 1, 5, 9, 13, 2, 6, 10, 14, 3, 7, 11, 15} // 4x4
+        };
+
+        channelsManager.setInverseMatrix(inverseMatrix);*/
 
         //Layout e talz
         numberOfChannels = mDevice.getChannelNumber();
@@ -78,7 +92,7 @@ public class DeviceChannelOrderActivity extends ActionBarActivity implements Vie
         adapter = new ChannelsAdapter(this, arrayOfChannels);
 
         for (int i = 0; i < numberOfChannels; i++) {
-            adapter.add(new Channels(i, "Canal " + i));
+            adapter.add(new Channels(i, i, "Canal " + i));
         }
 
         channelListView.setAdapter(adapter);
@@ -103,14 +117,12 @@ public class DeviceChannelOrderActivity extends ActionBarActivity implements Vie
 
                     adapter.notifyDataSetChanged();
 
-                    //adapter = new ChannelsAdapter(DeviceChannelOrderActivity.this, arrayOfChannels);
-                    //channelListView.setAdapter(adapter);
-
-                    moved = true;
+/*                    adapter = new ChannelsAdapter(DeviceChannelOrderActivity.this, arrayOfChannels);
+                    channelListView.setAdapter(adapter);*/
 
                     // Keep channel number while change channel order
                     for (int i = 0; i < numberOfChannels; i++) {
-                        adapter.getItem(i).setChannel(i);
+                        adapter.getItem(i).setNewPosition(i);
                     }
                 }
             };
