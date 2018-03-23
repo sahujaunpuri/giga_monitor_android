@@ -33,7 +33,7 @@ public class ChannelsAdapter extends ArrayAdapter<Channels> {
         Channels currentChannel = getItem(position);
 
         TextView positionView = (TextView) listItemView.findViewById(R.id.channel_position);
-        positionView.setText(Integer.toString(currentChannel.getPosition()));
+        positionView.setText(Integer.toString(currentChannel.getChannel()));
 
         TextView nameView = (TextView) listItemView.findViewById(R.id.channel_name);
         nameView.setText(currentChannel.getChannelName());

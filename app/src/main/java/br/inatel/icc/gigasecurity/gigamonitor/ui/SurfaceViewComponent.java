@@ -548,4 +548,5 @@ public class SurfaceViewComponent extends FrameLayout {
     public void setLoading(boolean loading) {
         isLoading = loading;
     }
+
 }

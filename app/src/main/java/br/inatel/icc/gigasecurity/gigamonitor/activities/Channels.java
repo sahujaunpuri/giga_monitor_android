@@ -5,23 +5,27 @@ package br.inatel.icc.gigasecurity.gigamonitor.activities;
  */
 
 public class Channels {
-    public int mPosition;
+    public int mChannel;
     public String mChannelName;
 
-    public Channels(int position, String channelName){
-        mPosition = position;
+    public Channels(int channel, String channelName){
+        mChannel = channel;
         mChannelName = channelName;
     }
 
-    public int getPosition(){
-        return mPosition;
+    public int getChannel(){
+        return mChannel;
     }
 
     public String getChannelName(){
         return mChannelName;
     }
 
-    public void setPosition(int position){
-        mPosition = position;
+    public void setChannel(int channel){
+        mChannel = channel;
+    }
+
+    public void setChannelName(String channelName){
+        mChannelName = channelName;
     }
 }

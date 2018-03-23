@@ -2,7 +2,6 @@ package br.inatel.icc.gigasecurity.gigamonitor.activities;
 
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
-import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
 
@@ -27,7 +26,10 @@ public class DeviceChannelOrderActivity extends ActionBarActivity implements Vie
     public Device mDevice;
     int numberOfChannels;
     ChannelsManager channelsManager;
-    SurfaceViewComponent currentSurfaceView;
+    SurfaceViewComponent currentSurfaceView0;
+    SurfaceViewComponent currentSurfaceView1;
+    SurfaceViewComponent currentSurfaceView2;
+    SurfaceViewComponent currentSurfaceView3;
 
     // Variáveis de exibição e controle
     DragSortListView channelListView;
@@ -46,18 +48,27 @@ public class DeviceChannelOrderActivity extends ActionBarActivity implements Vie
         int devicePosition = (int) getIntent().getExtras().getSerializable("device");
         mDevice = mManager.getDevices().get(devicePosition);
 
+        // Alterar a ordem do grid
+
         channelsManager = mManager.findChannelManagerByDevice(mDevice);
 
-        currentSurfaceView = channelsManager.surfaceViewComponents.get(3);
+        currentSurfaceView0 = channelsManager.surfaceViewComponents.get(0);
+        currentSurfaceView1 = channelsManager.surfaceViewComponents.get(1);
+        currentSurfaceView2 = channelsManager.surfaceViewComponents.get(2);
+        currentSurfaceView3 = channelsManager.surfaceViewComponents.get(3);
 
-        Log.e("Antes: ", ""+currentSurfaceView.mySurfaceViewOrderId);
-
-        currentSurfaceView.mySurfaceViewChannelId = 0;
-
-        Log.e("Depois: ", ""+currentSurfaceView.mySurfaceViewOrderId);
+        currentSurfaceView0.mySurfaceViewChannelId = 1;
+        //currentSurfaceView0.mySurfaceViewOrderId = 2;
+        currentSurfaceView1.mySurfaceViewChannelId = 3;
+        //currentSurfaceView1.mySurfaceViewOrderId = 3;
+        currentSurfaceView2.mySurfaceViewChannelId = 0;
+        //currentSurfaceView2.mySurfaceViewOrderId = 0;
+        currentSurfaceView3.mySurfaceViewChannelId = 0;
+        //currentSurfaceView3.mySurfaceViewOrderId = 1;
 
         channelsManager.reOrderSurfaceViewComponents();
 
+        //Layout e talz
         numberOfChannels = mDevice.getChannelNumber();
 
         channelListView = (DragSortListView) findViewById(R.id.list);
@@ -99,7 +110,7 @@ public class DeviceChannelOrderActivity extends ActionBarActivity implements Vie
 
                     // Keep channel number while change channel order
                     for (int i = 0; i < numberOfChannels; i++) {
-                        adapter.getItem(i).setPosition(i);
+                        adapter.getItem(i).setChannel(i);
                     }
                 }
             };
