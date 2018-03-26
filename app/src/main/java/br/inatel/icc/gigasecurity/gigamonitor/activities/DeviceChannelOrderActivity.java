@@ -27,16 +27,14 @@ public class DeviceChannelOrderActivity extends ActionBarActivity implements Vie
     public Device mDevice;
     int numberOfChannels;
     ChannelsManager channelsManager;
-    SurfaceViewComponent currentSurfaceView0;
-    SurfaceViewComponent currentSurfaceView1;
-    SurfaceViewComponent currentSurfaceView2;
-    SurfaceViewComponent currentSurfaceView3;
-    int aux;
 
     // Variáveis de exibição e controle
     DragSortListView channelListView;
     ChannelsAdapter adapter;
     ArrayList<Channels> arrayOfChannels;
+    ArrayList<SurfaceViewComponent> arrayOfSurfaceViewComponents;
+    int [] channelOrder = new int[4];
+    TextView tvBack, tvDone;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -45,54 +43,29 @@ public class DeviceChannelOrderActivity extends ActionBarActivity implements Vie
         setContentView(R.layout.activity_channel_order);
         getSupportActionBar().hide();
 
+        tvBack = (TextView) findViewById(R.id.text_view_back);
+        tvDone = (TextView) findViewById(R.id.text_view_apply);
+
         mManager = DeviceManager.getInstance();
         int devicePosition = (int) getIntent().getExtras().getSerializable("device");
         mDevice = mManager.getDevices().get(devicePosition);
 
-        // Alterar a ordem do grid
-
         channelsManager = mManager.findChannelManagerByDevice(mDevice);
 
-        currentSurfaceView0 = channelsManager.surfaceViewComponents.get(0);
-        currentSurfaceView1 = channelsManager.surfaceViewComponents.get(1);
-        currentSurfaceView2 = channelsManager.surfaceViewComponents.get(2);
-        currentSurfaceView3 = channelsManager.surfaceViewComponents.get(3);
-
-        Log.e("New IDs antes: ", ""+currentSurfaceView0.mySurfaceViewNewChannelId+", "+currentSurfaceView1.mySurfaceViewNewChannelId+", "+currentSurfaceView2.mySurfaceViewNewChannelId+", "+currentSurfaceView3.mySurfaceViewNewChannelId+", ");
-
-        aux = currentSurfaceView3.mySurfaceViewNewChannelId;
-        currentSurfaceView3.mySurfaceViewNewChannelId = currentSurfaceView0.mySurfaceViewNewChannelId;
-        currentSurfaceView0.mySurfaceViewNewChannelId = aux;
-
-        Log.e("New IDs depois: ", ""+currentSurfaceView0.mySurfaceViewNewChannelId+", "+currentSurfaceView1.mySurfaceViewNewChannelId+", "+currentSurfaceView2.mySurfaceViewNewChannelId+", "+currentSurfaceView3.mySurfaceViewNewChannelId+", ");
-
-/*        currentSurfaceView0.mySurfaceViewNewChannelId = 1;
-        currentSurfaceView1.mySurfaceViewNewChannelId = 3;
-        currentSurfaceView2.mySurfaceViewNewChannelId = 0;
-        currentSurfaceView3.mySurfaceViewNewChannelId = 0;
-
-        channelsManager.reOrderSurfaceViewComponents();
-
-        int [][] inverseMatrix = new int[][]{
-                {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15}, // 1x1
-                {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15}, // 2x2
-                {0, 3, 6, 1, 4, 7, 2, 5, 8, 9, 12, 15, 10, 13, 11, 14}, // 3x3
-                {0, 4, 8, 12, 1, 5, 9, 13, 2, 6, 10, 14, 3, 7, 11, 15} // 4x4
-        };
-
-        channelsManager.setInverseMatrix(inverseMatrix);*/
-
-        //Layout e talz
         numberOfChannels = mDevice.getChannelNumber();
 
         channelListView = (DragSortListView) findViewById(R.id.list);
 
-        arrayOfChannels = new ArrayList<>();
+        arrayOfChannels = new ArrayList<Channels>();
+
+        arrayOfSurfaceViewComponents = new ArrayList<SurfaceViewComponent>(numberOfChannels);
 
         adapter = new ChannelsAdapter(this, arrayOfChannels);
 
         for (int i = 0; i < numberOfChannels; i++) {
-            adapter.add(new Channels(i, i, "Canal " + i));
+            arrayOfSurfaceViewComponents.add(i, channelsManager.surfaceViewComponents.get(i));
+            adapter.add(new Channels(arrayOfSurfaceViewComponents.get(i).mySurfaceViewNewChannelId+1, arrayOfSurfaceViewComponents.get(i).mySurfaceViewNewChannelId+1, "Canal " + (arrayOfSurfaceViewComponents.get(i).mySurfaceViewNewChannelId+1)));
+            Log.e("CHANNEL Id, i:", ""+arrayOfSurfaceViewComponents.get(i).mySurfaceViewNewChannelId+", "+i);
         }
 
         channelListView.setAdapter(adapter);
@@ -101,7 +74,15 @@ public class DeviceChannelOrderActivity extends ActionBarActivity implements Vie
 
         channelNumberTextView.setText("Número de Canais: " + numberOfChannels);
 
+        setListeners();
+
         channelListView.setDropListener(onDrop);
+
+        // Keep channel number while change channel order
+        for (int i = 0; i < numberOfChannels; i++) {
+            int position = channelsManager.inverseMatrix[1][i];
+            adapter.getItem(i).setNewPosition(position+1);
+        }
 
     }
 
@@ -122,14 +103,52 @@ public class DeviceChannelOrderActivity extends ActionBarActivity implements Vie
 
                     // Keep channel number while change channel order
                     for (int i = 0; i < numberOfChannels; i++) {
-                        adapter.getItem(i).setNewPosition(i);
+                        int position = channelsManager.inverseMatrix[1][i];
+                        adapter.getItem(i).setNewPosition(position+1);
                     }
                 }
             };
 
     @Override
-    public void onClick(View view) {
-
+    public void onClick(View v) {
+        switch (v.getId()) {
+            case R.id.text_view_back:
+                exitOnly();
+                break;
+            case R.id.text_view_apply:
+                exitAndSave();
+                break;
+            default:
+                break;
+        }
     }
+
+    private void exitAndSave() {
+
+        // Change surface view order as draggable list shows
+        int originalPosition, channelAntes, channelDepois;
+        for (int i = 0; i < numberOfChannels; i++) {
+            originalPosition = arrayOfChannels.get(i).getOriginalPosition()-1;
+
+            channelAntes = arrayOfSurfaceViewComponents.get(originalPosition).mySurfaceViewNewChannelId;
+            channelDepois = i;
+
+            Log.e("Channel ID antes e dps:", ""+channelAntes+", "+channelDepois);
+
+            arrayOfSurfaceViewComponents.get(originalPosition).mySurfaceViewNewChannelId = i;
+            channelOrder[i] = originalPosition;
+        }
+        finish();
+    }
+
+    private void exitOnly() {
+        finish();
+    }
+
+    private void setListeners() {
+        tvBack.setOnClickListener(this);
+        tvDone.setOnClickListener(this);
+    }
+
 }
 

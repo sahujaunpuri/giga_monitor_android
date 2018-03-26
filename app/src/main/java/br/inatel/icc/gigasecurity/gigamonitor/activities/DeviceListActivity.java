@@ -32,7 +32,6 @@ import br.inatel.icc.gigasecurity.gigamonitor.model.ChannelsManager;
 import br.inatel.icc.gigasecurity.gigamonitor.model.Device;
 import br.inatel.icc.gigasecurity.gigamonitor.model.StatePreferences;
 import br.inatel.icc.gigasecurity.gigamonitor.ui.CustomTypeDialog;
-import br.inatel.icc.gigasecurity.gigamonitor.ui.SurfaceViewComponent;
 import io.fabric.sdk.android.Fabric;
 
 public class DeviceListActivity extends ActionBarActivity implements View.OnClickListener {
@@ -54,11 +53,6 @@ public class DeviceListActivity extends ActionBarActivity implements View.OnClic
     // teste
     public DeviceManager mManager;
     public Device mDevice;
-    ChannelsManager channelsManager;
-    SurfaceViewComponent currentSurfaceView0;
-    SurfaceViewComponent currentSurfaceView1;
-    SurfaceViewComponent currentSurfaceView2;
-    SurfaceViewComponent currentSurfaceView3;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -187,25 +181,25 @@ public class DeviceListActivity extends ActionBarActivity implements View.OnClic
     protected void onResume() {
         super.onResume();
 
-        try {
-
-            //mManager = DeviceManager.getInstance();
-            //int devicePosition = (int) getIntent().getExtras().getSerializable("device");
-            mDevice = mDeviceManager.getDevices().get(3);
-            channelsManager = mDeviceManager.findChannelManagerByDevice(mDevice);
-
-            currentSurfaceView0 = channelsManager.surfaceViewComponents.get(0);
-            currentSurfaceView1 = channelsManager.surfaceViewComponents.get(1);
-            currentSurfaceView2 = channelsManager.surfaceViewComponents.get(2);
-            currentSurfaceView3 = channelsManager.surfaceViewComponents.get(3);
-
-            Log.e("Ids no Resume Antes: ", "" + currentSurfaceView0.mySurfaceViewNewChannelId + ", " + currentSurfaceView1.mySurfaceViewNewChannelId + ", " + currentSurfaceView2.mySurfaceViewNewChannelId + ", " + currentSurfaceView3.mySurfaceViewNewChannelId + ", ");
-
-        } catch (NullPointerException e) {
-
-            Log.e("onResume Bug: ", e.toString());
-
-        }
+//        try {
+//
+//            //mManager = DeviceManager.getInstance();
+//            //int devicePosition = (int) getIntent().getExtras().getSerializable("device");
+//            mDevice = mDeviceManager.getDevices().get(0);
+//            channelsManager = mDeviceManager.findChannelManagerByDevice(mDevice);
+//
+//            currentSurfaceView0 = channelsManager.surfaceViewComponents.get(0);
+//            currentSurfaceView1 = channelsManager.surfaceViewComponents.get(1);
+//            currentSurfaceView2 = channelsManager.surfaceViewComponents.get(2);
+//            currentSurfaceView3 = channelsManager.surfaceViewComponents.get(3);
+//
+//            Log.e("Ids no Resume Antes: ", "" + currentSurfaceView0.mySurfaceViewNewChannelId + ", " + currentSurfaceView1.mySurfaceViewNewChannelId + ", " + currentSurfaceView2.mySurfaceViewNewChannelId + ", " + currentSurfaceView3.mySurfaceViewNewChannelId + ", ");
+//
+//        } catch (NullPointerException e) {
+//
+//            Log.e("onResume Bug: ", e.toString());
+//
+//        }
 
         if(mDeviceManager.collapse >=0 && previousGroup == mDeviceManager.collapse) {
             if(mExpandableListView.isGroupExpanded(mDeviceManager.collapse))
@@ -234,27 +228,6 @@ public class DeviceListActivity extends ActionBarActivity implements View.OnClic
 //        if (prefs.getBoolean("cloud2", true) && !prefs.getBoolean("newUser", true)) {
             mImageViewCloud3Btn.setVisibility(View.VISIBLE);
 //        }
-
-        try {
-
-            //mManager = DeviceManager.getInstance();
-            //int devicePosition = (int) getIntent().getExtras().getSerializable("device");
-            mDevice = mDeviceManager.getDevices().get(3);
-            channelsManager = mDeviceManager.findChannelManagerByDevice(mDevice);
-
-            currentSurfaceView0 = channelsManager.surfaceViewComponents.get(0);
-            currentSurfaceView1 = channelsManager.surfaceViewComponents.get(1);
-            currentSurfaceView2 = channelsManager.surfaceViewComponents.get(2);
-            currentSurfaceView3 = channelsManager.surfaceViewComponents.get(3);
-
-            Log.e("Ids no Resume Depois: ", "" + currentSurfaceView0.mySurfaceViewNewChannelId + ", " + currentSurfaceView1.mySurfaceViewNewChannelId + ", " + currentSurfaceView2.mySurfaceViewNewChannelId + ", " + currentSurfaceView3.mySurfaceViewNewChannelId + ", ");
-
-        } catch (NullPointerException e) {
-
-            Log.e("onResume Bug: ", e.toString());
-
-        }
-
     }
 
     @Override
@@ -409,4 +382,5 @@ public class DeviceListActivity extends ActionBarActivity implements View.OnClic
                 break;
         }
     }
+
 }
