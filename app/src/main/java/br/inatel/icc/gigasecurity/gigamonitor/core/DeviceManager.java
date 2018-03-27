@@ -552,16 +552,17 @@ public class DeviceManager implements IFunSDKResult {
     }
 
     private JSONObject setStreamEncode(JSONObject jsonObject, Device device) {
-        JSONObject jsonObjectReturn = null;
+        JSONObject jsonObjectReturn = jsonObject;
 
         try {
             JSONArray json = jsonObject.getJSONArray("Simplify.Encode");
             for (int channel = 0; channel < json.length(); channel++) {
                 JSONObject streamJson = json.getJSONObject(channel);
                 JSONObject extracFormatJsonObject = streamJson.getJSONObject("ExtraFormat");
-                extracFormatJsonObject.put("Resolution", 3);
-                extracFormatJsonObject.put("FPS", "CIF");
-                extracFormatJsonObject.put("Quality", 3);
+                JSONObject video =  extracFormatJsonObject.getJSONObject("Video");
+                video.put("Resolution", "CIF");
+                video.put("FPS", 3);
+                video.put("Quality", 3);
             }
            jsonObjectReturn = jsonObject.put("Simplify.Encode", json);
         } catch (Exception error) {
@@ -569,6 +570,7 @@ public class DeviceManager implements IFunSDKResult {
         }
 
         device.setSimplifyEncodeJson(jsonObjectReturn);
+        setJsonConfig(device, "Simplify.Encode", device.getSimplifyEncodeJson(), currentConfigListener);
 
         return jsonObjectReturn;
     }
@@ -1658,9 +1660,12 @@ public class DeviceManager implements IFunSDKResult {
 //                        break;
                     try {
                         Device device = findDeviceById(msgContent.seq);
-                        FunSDK.DevGetConfigByJson(getHandler(), device.connectionString, msgContent.str, 4096, -1, 10000, device.getId());
+//                        FunSDK.DevGetConfigByJson(getHandler(), device.connectionString, msgContent.str, 4096, -1, 10000, device.getId());
                         Log.d(TAG, "OnFunSDKResult: GETCONFIGJSON ERROR");
-                        currentConfigListener.onError();
+                        if (!devicesWithJsonError.contains(device)) {
+                            devicesWithJsonError.add(device);
+                        }
+//                        currentConfigListener.onError();
                     } catch (NullPointerException e) {
                         e.printStackTrace();
                     }

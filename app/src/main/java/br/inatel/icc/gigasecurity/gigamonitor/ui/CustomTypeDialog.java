@@ -37,6 +37,7 @@ public class CustomTypeDialog extends Dialog {
     ImageView mImageViewUpdate;
     Context context;
     JSONObject jsonObjectToSend = null;
+    String TAG = "CustomTypeDialog";
 
     public CustomTypeDialog(final Context context, Device device, final OnDialogClickListener listener) {
         super(context);
@@ -104,7 +105,7 @@ public class CustomTypeDialog extends Dialog {
     private ConfigListener configListener = new ConfigListener() {
         @Override
         public void onReceivedConfig() {
-            mDeviceManager.setJsonConfig(mDevice, "Simplify.Encode", mDevice.getSimplifyEncodeJson(), configListener);
+                mDeviceManager.setJsonConfig(mDevice, "Simplify.Encode", mDevice.getSimplifyEncodeJson(), configListener);
         }
 
         @Override
@@ -117,7 +118,6 @@ public class CustomTypeDialog extends Dialog {
             if (!mDeviceManager.devicesWithJsonError.contains(mDevice)) {
                 mDeviceManager.devicesWithJsonError.add(mDevice);
             }
-
         }
     };
 
