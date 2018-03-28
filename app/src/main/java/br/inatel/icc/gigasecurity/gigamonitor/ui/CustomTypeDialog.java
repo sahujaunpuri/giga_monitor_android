@@ -117,7 +117,7 @@ public class CustomTypeDialog extends Dialog {
                 public void run() {
                     dismiss();
                 }
-            }, 4000);
+            }, 1000);
 
         }
 
