@@ -31,7 +31,7 @@ public class DeviceChannelOrderActivity extends ActionBarActivity implements Vie
     // Variáveis de exibição e controle
     DragSortListView channelListView;
     ChannelsAdapter adapter;
-    ArrayList<Channels> arrayOfChannels;
+    ArrayList<Channel> arrayOfChannels;
     ArrayList<SurfaceViewComponent> arrayOfSurfaceViewComponents;
     int [] channelOrder = new int[4];
     TextView tvBack, tvDone;
@@ -50,23 +50,36 @@ public class DeviceChannelOrderActivity extends ActionBarActivity implements Vie
         int devicePosition = (int) getIntent().getExtras().getSerializable("device");
         mDevice = mManager.getDevices().get(devicePosition);
 
+        channelOrder = mDevice.getChannelOrder();
+
+        Log.e("Device Order Act Init: ", ""+channelOrder[0]+", "+channelOrder[1]+", "+channelOrder[2]+", "+channelOrder[3]);
+
         channelsManager = mManager.findChannelManagerByDevice(mDevice);
 
         numberOfChannels = mDevice.getChannelNumber();
 
         channelListView = (DragSortListView) findViewById(R.id.list);
 
-        arrayOfChannels = new ArrayList<Channels>();
+        arrayOfChannels = new ArrayList<Channel>();
 
         arrayOfSurfaceViewComponents = new ArrayList<SurfaceViewComponent>(numberOfChannels);
 
         adapter = new ChannelsAdapter(this, arrayOfChannels);
 
+        // Ordenação de plot. Valor do array é o número do canal e posição do array é o lugar do plot (ordem do DVR).
+
+        int [] inverseMatrix = {0,2,1,3};
+        // montar lista de exibição
         for (int i = 0; i < numberOfChannels; i++) {
-            arrayOfSurfaceViewComponents.add(i, channelsManager.surfaceViewComponents.get(i));
-            adapter.add(new Channels(arrayOfSurfaceViewComponents.get(i).mySurfaceViewNewChannelId+1, arrayOfSurfaceViewComponents.get(i).mySurfaceViewNewChannelId+1, "Canal " + (arrayOfSurfaceViewComponents.get(i).mySurfaceViewNewChannelId+1)));
-            Log.e("CHANNEL Id, i:", ""+arrayOfSurfaceViewComponents.get(i).mySurfaceViewNewChannelId+", "+i);
+            arrayOfSurfaceViewComponents.add(i, channelsManager.surfaceViewComponents.get(inverseMatrix[i]));
+            adapter.add(new Channel("Canal " + (arrayOfSurfaceViewComponents.get(i).mySurfaceViewNewChannelId+1), arrayOfSurfaceViewComponents.get(i).mySurfaceViewNewChannelId, arrayOfSurfaceViewComponents.get(i).mySurfaceViewNewChannelId));
         }
+
+//        arrayOfSurfaceViewComponents.get(0).mySurfaceViewNewChannelId = 0;
+//        arrayOfSurfaceViewComponents.get(1).mySurfaceViewNewChannelId = 1;
+//        arrayOfSurfaceViewComponents.get(2).mySurfaceViewNewChannelId = 3;
+//        arrayOfSurfaceViewComponents.get(3).mySurfaceViewNewChannelId = 2;
+
 
         channelListView.setAdapter(adapter);
 
@@ -78,12 +91,9 @@ public class DeviceChannelOrderActivity extends ActionBarActivity implements Vie
 
         channelListView.setDropListener(onDrop);
 
-        // Keep channel number while change channel order
         for (int i = 0; i < numberOfChannels; i++) {
-            int position = channelsManager.inverseMatrix[1][i];
-            adapter.getItem(i).setNewPosition(position+1);
+            adapter.getItem(i).setChannelNewGrid(i);
         }
-
     }
 
     //onDrop change position of the list item.
@@ -91,20 +101,16 @@ public class DeviceChannelOrderActivity extends ActionBarActivity implements Vie
             new DragSortListView.DropListener() {
                 @Override
                 public void drop(int from, int to) {
-                    Channels item = adapter.getItem(from);
+                    Channel item = adapter.getItem(from);
 
                     arrayOfChannels.remove(from);
                     arrayOfChannels.add(to, item);
 
                     adapter.notifyDataSetChanged();
 
-/*                    adapter = new ChannelsAdapter(DeviceChannelOrderActivity.this, arrayOfChannels);
-                    channelListView.setAdapter(adapter);*/
-
                     // Keep channel number while change channel order
                     for (int i = 0; i < numberOfChannels; i++) {
-                        int position = channelsManager.inverseMatrix[1][i];
-                        adapter.getItem(i).setNewPosition(position+1);
+                        adapter.getItem(i).setChannelNewGrid(i);
                     }
                 }
             };
@@ -126,18 +132,13 @@ public class DeviceChannelOrderActivity extends ActionBarActivity implements Vie
     private void exitAndSave() {
 
         // Change surface view order as draggable list shows
-        int originalPosition, channelAntes, channelDepois;
         for (int i = 0; i < numberOfChannels; i++) {
-            originalPosition = arrayOfChannels.get(i).getOriginalPosition()-1;
-
-            channelAntes = arrayOfSurfaceViewComponents.get(originalPosition).mySurfaceViewNewChannelId;
-            channelDepois = i;
-
-            Log.e("Channel ID antes e dps:", ""+channelAntes+", "+channelDepois);
-
-            arrayOfSurfaceViewComponents.get(originalPosition).mySurfaceViewNewChannelId = i;
-            channelOrder[i] = originalPosition;
+            // Fazer a alteração do surfaceView
+            arrayOfSurfaceViewComponents.get(i).mySurfaceViewNewChannelId = arrayOfChannels.get(i).getChannelOldGrid();
+            channelOrder[i] = arrayOfChannels.get(i).getChannelOldGrid();
         }
+        //channelOrder[0] = -1;
+        mDevice.setChannelOrder(channelOrder);
         finish();
     }
 
@@ -149,6 +150,4 @@ public class DeviceChannelOrderActivity extends ActionBarActivity implements Vie
         tvBack.setOnClickListener(this);
         tvDone.setOnClickListener(this);
     }
-
 }
-

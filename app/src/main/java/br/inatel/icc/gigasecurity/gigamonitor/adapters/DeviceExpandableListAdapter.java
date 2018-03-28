@@ -29,6 +29,7 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 
 import br.inatel.icc.gigasecurity.gigamonitor.R;
+import br.inatel.icc.gigasecurity.gigamonitor.activities.Channel;
 import br.inatel.icc.gigasecurity.gigamonitor.activities.DeviceChannelOrderActivity;
 import br.inatel.icc.gigasecurity.gigamonitor.activities.DeviceListActivity;
 import br.inatel.icc.gigasecurity.gigamonitor.activities.DevicePlaybackActivity;
@@ -530,6 +531,9 @@ public class DeviceExpandableListAdapter extends BaseExpandableListAdapter {
                 updateGrid(position, mDeviceManager.getDeviceChannelsManagers().get(position));
                 showExpanded(position, groupViewHolder, childViewHolder);
                 childViewHolder.gridLayoutManager.scrollToPosition(mDeviceManager.getDeviceChannelsManagers().get(position).lastFirstVisibleItem);
+                int [] channelOrder = mDevice.getChannelOrder();
+                Log.e("DeviceExpandable", ""+channelOrder[0]+", "+channelOrder[1]+", "+channelOrder[2]+", "+channelOrder[3]);
+                setPreviousChannelOrder(mDevice, mDeviceManager);
             }
 
             @Override
@@ -566,6 +570,18 @@ public class DeviceExpandableListAdapter extends BaseExpandableListAdapter {
             }
 
         });
+    }
+    // funcao em testes pra arrumar o grid anterior!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+    public void setPreviousChannelOrder(Device device, DeviceManager deviceManager) {
+        int [] channelOrder = device.getChannelOrder();
+        int numberOfChannels = device.getChannelNumber();        // montar lista de exibição
+        int [] inverseMatrix = {0,2,1,3};
+
+        ChannelsManager channelsManager = deviceManager.findChannelManagerByDevice(device);
+
+        for (int i = 0; i < numberOfChannels; i++) {
+            channelsManager.surfaceViewComponents.get(inverseMatrix[i]).mySurfaceViewNewChannelId = channelOrder[i];
+        }
     }
 
     public void onChangeOrientation(int groupPosition){

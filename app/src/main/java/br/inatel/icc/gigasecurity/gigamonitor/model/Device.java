@@ -169,7 +169,7 @@ public class Device implements Serializable {
         this.ipPriorityConnection = true;
         this.domainPriorityConnection = true;
         this.cloudPriorityConnection = true;
-        this.channelOrder = device.channelOrder;
+        this.channelOrder[0] = -1;
     }
 
     public Device(String deviceName) {
@@ -413,8 +413,13 @@ public class Device implements Serializable {
             };
         }
 
-        this.channelOrder = inverseMatrix[Math.sqrt(channelNumber)-1][];
-
+        if (this.channelOrder[0] == -1) {
+            for (int i = 0; i < channelNumber; i++) {
+                //this.channelOrder[i] = inverseMatrix[(int) Math.sqrt(channelNumber) - 1][i];
+                this.channelOrder[i] = inverseMatrix[0][i];
+            }
+            Log.e("Device Channel Order: ", "" + (channelOrder[0] + 1) + ", " + (channelOrder[1] + 1) + ", " + (channelOrder[2] + 1) + ", " + (channelOrder[3] + 1));
+        }
     }
 
     public int[] getChannelOrder() {
