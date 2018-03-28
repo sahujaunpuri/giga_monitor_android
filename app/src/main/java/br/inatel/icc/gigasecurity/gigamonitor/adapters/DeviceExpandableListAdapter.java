@@ -392,10 +392,6 @@ public class DeviceExpandableListAdapter extends BaseExpandableListAdapter {
                     if(groupViewHolder.mDevice.getChannelNumber() > 1 ) {
                         groupViewHolder.ivQuad.setVisibility(View.VISIBLE);
                         groupViewHolder.ivOtimizar.setVisibility(View.VISIBLE);
-                        if (groupViewHolder.mDevice.optimize) {
-                            groupViewHolder.mDevice.optimize = false;
-                            groupViewHolder.ivOtimizar.setVisibility(View.VISIBLE);
-                        }
                     }
                 }
             }
@@ -525,7 +521,7 @@ public class DeviceExpandableListAdapter extends BaseExpandableListAdapter {
             public void onLoginSuccess(Device device) {
                 mDevice.isLogged = true;
                 mDeviceManager.clearStart();
-                groupViewHolder.ivRefresh.setVisibility(View.GONE);
+                groupViewHolder.ivRefresh.setVisibility(View.VISIBLE);
                 updateGrid(position, mDeviceManager.getDeviceChannelsManagers().get(position));
                 showExpanded(position, groupViewHolder, childViewHolder);
                 childViewHolder.gridLayoutManager.scrollToPosition(mDeviceManager.getDeviceChannelsManagers().get(position).lastFirstVisibleItem);

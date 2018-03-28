@@ -111,6 +111,14 @@ public class CustomTypeDialog extends Dialog {
         @Override
         public void onSetConfig() {
             mDeviceManager.rebootDevice(mDevice);
+            Handler mHandler = new Handler();
+            mHandler.postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    dismiss();
+                }
+            }, 4000);
+
         }
 
         @Override

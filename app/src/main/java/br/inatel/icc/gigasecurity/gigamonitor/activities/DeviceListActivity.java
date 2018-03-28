@@ -31,7 +31,6 @@ import br.inatel.icc.gigasecurity.gigamonitor.core.DeviceManager;
 import br.inatel.icc.gigasecurity.gigamonitor.model.ChannelsManager;
 import br.inatel.icc.gigasecurity.gigamonitor.model.Device;
 import br.inatel.icc.gigasecurity.gigamonitor.model.StatePreferences;
-import br.inatel.icc.gigasecurity.gigamonitor.ui.CustomTypeDialog;
 import io.fabric.sdk.android.Fabric;
 
 public class DeviceListActivity extends ActionBarActivity implements View.OnClickListener {
@@ -199,10 +198,7 @@ public class DeviceListActivity extends ActionBarActivity implements View.OnClic
 
         getSupportActionBar().hide();
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
-
-//        if (prefs.getBoolean("cloud2", true) && !prefs.getBoolean("newUser", true)) {
-            mImageViewCloud3Btn.setVisibility(View.VISIBLE);
-//        }
+        mImageViewCloud3Btn.setVisibility(View.VISIBLE);
 
     }
 
@@ -251,7 +247,6 @@ public class DeviceListActivity extends ActionBarActivity implements View.OnClic
         mImageViewGallery.setOnClickListener(this);
         mTextViewEdit.setOnClickListener(this);
         mImageViewAdd.setOnClickListener(this);
-        mImageViewCloud3Btn.setOnClickListener(this);
     }
 
     private void verifyIfSomeChannelIsSoundingOrRecording() {
@@ -332,15 +327,6 @@ public class DeviceListActivity extends ActionBarActivity implements View.OnClic
         startActivity(setIntent);
     }
 
-    private void showCustomDialog () {
-        new CustomTypeDialog(mContext, null, new CustomTypeDialog.OnDialogClickListener() {
-            @Override
-            public void onDialogImageRunClick() {
-
-            }
-        });
-    }
-
     @Override
     public void onClick(View v) {
         switch (v.getId()) {
@@ -352,9 +338,6 @@ public class DeviceListActivity extends ActionBarActivity implements View.OnClic
                 break;
             case R.id.image_view_gallery:
                 startMediaActivity();
-                break;
-            case (R.id.image_button_cloud3):
-                showCustomDialog();
                 break;
         }
     }
