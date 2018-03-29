@@ -62,7 +62,7 @@
 
                 <ImageView
                     style="@style/ImageViewMenuIconFeature"
-                    android:src="@drawable/network_btn_style" />
+                    android:src="@drawable/ic_time" />
 
                 <TextView
                     style="@style/TextViewFeature"

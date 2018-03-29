@@ -53,7 +53,6 @@ public class    SplashScreenActivity extends ActionBarActivity {
             public void run() {
                 Intent intent = new Intent();
                 intent.setClass(SplashScreenActivity.this, DeviceListActivity.class);
-//                intent.setClass(SplashScreenActivity.this, MyTimelineActivity.class);
                 startActivity(intent);
                 finish();
             }
