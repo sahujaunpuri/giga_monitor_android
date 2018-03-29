@@ -82,7 +82,6 @@ public class CustomTypeDialog extends Dialog {
                         setCancelable(true);
                     }
                 }, 9000);
-
             }
         });
 

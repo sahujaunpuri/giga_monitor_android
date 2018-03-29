@@ -279,7 +279,6 @@ public class DeviceManager implements IFunSDKResult {
                 if (state.previousHD > -1 && channelsManager.surfaceViewComponents.size() > state.previousHD) {
                     if(!mDevices.get(state.previousGroup).getSerialNumber().equals("Favoritos"))
                         state.previousHD = findChannelManagerByDevice(mDevices.get(state.previousGroup)).getChannelSelected(state.previousHD);
-//                    channelsManager.enableHD(channelsManager.surfaceViewComponents.get(state.previousHD));
                 }
             }
         } catch (IndexOutOfBoundsException e) {
@@ -344,32 +343,35 @@ public class DeviceManager implements IFunSDKResult {
     private void setDeviceInfo(JSONObject json, Device device) {
         try {
             JSONObject systemInfo;
-            if (json.has("SystemInfo"))
-                systemInfo = json.getJSONObject("SystemInfo");
-            else
-                return;
+            if (json != null) {
+                if (json.has("SystemInfo"))
+                    systemInfo = json.getJSONObject("SystemInfo");
+                else {
+                    return;
+                }
 
-            if (systemInfo.has("AudioInChannel"))
-                device.audioInChannel = systemInfo.getInt("AudioInChannel");
-            if (systemInfo.has("SerialNo"))
-                device.setSerialNumber(systemInfo.getString("SerialNo"));
-            if (systemInfo.has("TalkInChannel"))
-                device.talkInChannel = systemInfo.getInt("TalkInChannel");
-            if (systemInfo.has("TalkOutChannel"))
-                device.talkOutChannel = systemInfo.getInt("TalkOutChannel");
-            if (systemInfo.has("HardWare"))
-                device.setHardwareVersion(systemInfo.getString("HardWare"));
-            if (systemInfo.has("SoftWareVersion"))
-                device.setSoftwareVersion(systemInfo.getString("SoftWareVersion"));
-            if (systemInfo.has("BuildTime"))
-                device.setBuildTime(systemInfo.getString("BuildTime"));
-//            if(systemInfo.has("VideoInChannel"))
-//                device.setChannelNumber(systemInfo.getInt("VideoInChannel") + systemInfo.getInt("DigChannel") + systemInfo.getInt("VideoOutChannel"));
-            saveData();
-            if (device.getIpAddress() == null || device.getIpAddress().isEmpty())
-                getJsonConfig(device, "NetWork.NetCommon", null);
-            if (device.getDomain() == null || device.getDomain().isEmpty())
-                getJsonConfig(device, "NetWork.NetDDNS", null);
+                if (systemInfo.has("AudioInChannel"))
+                    device.audioInChannel = systemInfo.getInt("AudioInChannel");
+                if (systemInfo.has("SerialNo"))
+                    device.setSerialNumber(systemInfo.getString("SerialNo"));
+                if (systemInfo.has("TalkInChannel"))
+                    device.talkInChannel = systemInfo.getInt("TalkInChannel");
+                if (systemInfo.has("TalkOutChannel"))
+                    device.talkOutChannel = systemInfo.getInt("TalkOutChannel");
+                if (systemInfo.has("HardWare"))
+                    device.setHardwareVersion(systemInfo.getString("HardWare"));
+                if (systemInfo.has("SoftWareVersion"))
+                    device.setSoftwareVersion(systemInfo.getString("SoftWareVersion"));
+                if (systemInfo.has("BuildTime"))
+                    device.setBuildTime(systemInfo.getString("BuildTime"));
+                saveData();
+                if (device.getIpAddress() == null || device.getIpAddress().isEmpty())
+                    getJsonConfig(device, "NetWork.NetCommon", null);
+                if (device.getDomain() == null || device.getDomain().isEmpty())
+                    getJsonConfig(device, "NetWork.NetDDNS", null);
+            } else {
+                return;
+            }
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -944,7 +946,7 @@ public class DeviceManager implements IFunSDKResult {
             public void run() {
                 if (device == null)
                     return;
-                if (device.loginAttempt > 4) {
+                if (device.loginAttempt > 3) {
                     device.loginAttempt = 0;
                     device.allAttempstFail = true;
                     expandableListAdapter.setMessage(mDevices.indexOf(device), "Falha na conexão");
@@ -1538,7 +1540,7 @@ public class DeviceManager implements IFunSDKResult {
                     Log.d(TAG, "*****************************************");
 
                     device.isLogged = true;
-                    device.loginAttempt = 0;
+                    device.loginAttempt = 1;
                     device.setConnectionMethod(-1);
 
                     favoriteManager.refreshFromDevice(device.getId());
@@ -1665,7 +1667,6 @@ public class DeviceManager implements IFunSDKResult {
                         if (!devicesWithJsonError.contains(device)) {
                             devicesWithJsonError.add(device);
                         }
-//                        currentConfigListener.onError();
                     } catch (NullPointerException e) {
                         e.printStackTrace();
                     }
