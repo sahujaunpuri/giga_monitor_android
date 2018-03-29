@@ -106,8 +106,6 @@ public class ChannelRecyclerViewAdapter extends RecyclerView.Adapter<ChannelRecy
         } catch (IndexOutOfBoundsException e){
             Log.d(TAG, "onBindViewHolder: " + e.toString());
         }
-
-
     }
 
     @Override
@@ -190,7 +188,6 @@ public class ChannelRecyclerViewAdapter extends RecyclerView.Adapter<ChannelRecy
                 }
             }
         });
-
     }
 
     public void closeOverlayMenu(){
@@ -198,6 +195,4 @@ public class ChannelRecyclerViewAdapter extends RecyclerView.Adapter<ChannelRecy
         if(overlayMenu.getVisibility() == View.VISIBLE)
             overlayMenu.setVisibility(View.GONE);
     }
-
-
 }

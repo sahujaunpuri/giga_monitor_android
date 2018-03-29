@@ -230,7 +230,15 @@ public class DeviceExpandableListAdapter extends BaseExpandableListAdapter {
                 deviceChannelsManager.changeSurfaceViewSize();
 
                 deviceChannelsManager.resetScale();
-                deviceChannelsManager.reOrderSurfaceViewComponents();
+                //deviceChannelsManager.reOrderSurfaceViewComponents();
+
+                // Teste changeQuad Alexandre
+                Device device = groupViewHolder.get(groupPosition).mDevice;
+                ChannelsManager channelsManager = mDeviceManager.findChannelManagerByDevice(device);
+                int [] channelOrder = device.getChannelOrder();
+                for (int i=0; i<device.getChannelNumber(); i++) {
+                    channelsManager.surfaceViewComponents.get(channelsManager.inverseMatrix[channelsManager.numQuad - 1][i]).mySurfaceViewNewChannelId = channelOrder[i];
+                }
             }
         });
     }
@@ -575,12 +583,12 @@ public class DeviceExpandableListAdapter extends BaseExpandableListAdapter {
     public void setPreviousChannelOrder(Device device, DeviceManager deviceManager) {
         int [] channelOrder = device.getChannelOrder();
         int numberOfChannels = device.getChannelNumber();        // montar lista de exibição
-        int [] inverseMatrix = {0,2,1,3};
 
         ChannelsManager channelsManager = deviceManager.findChannelManagerByDevice(device);
+        int [][] inverseMatrix = channelsManager.inverseMatrix;
 
         for (int i = 0; i < numberOfChannels; i++) {
-            channelsManager.surfaceViewComponents.get(inverseMatrix[i]).mySurfaceViewNewChannelId = channelOrder[i];
+            channelsManager.surfaceViewComponents.get(inverseMatrix[channelsManager.numQuad-1][i]).mySurfaceViewNewChannelId = channelOrder[i];
         }
     }
 

@@ -376,5 +376,4 @@ public class DeviceListActivity extends ActionBarActivity implements View.OnClic
                 break;
         }
     }
-
 }

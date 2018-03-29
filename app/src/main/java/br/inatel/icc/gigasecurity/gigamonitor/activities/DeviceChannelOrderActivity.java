@@ -33,8 +33,8 @@ public class DeviceChannelOrderActivity extends ActionBarActivity implements Vie
     ChannelsAdapter adapter;
     ArrayList<Channel> arrayOfChannels;
     ArrayList<SurfaceViewComponent> arrayOfSurfaceViewComponents;
-    int [] channelOrder = new int[4];
-    TextView tvBack, tvDone;
+    int [] channelOrder;
+    TextView tvBack, tvDone,tvRestoreDefault;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -45,6 +45,7 @@ public class DeviceChannelOrderActivity extends ActionBarActivity implements Vie
 
         tvBack = (TextView) findViewById(R.id.text_view_back);
         tvDone = (TextView) findViewById(R.id.text_view_apply);
+        tvRestoreDefault = (TextView) findViewById(R.id.restore_defaults);
 
         mManager = DeviceManager.getInstance();
         int devicePosition = (int) getIntent().getExtras().getSerializable("device");
@@ -68,24 +69,18 @@ public class DeviceChannelOrderActivity extends ActionBarActivity implements Vie
 
         // Ordenação de plot. Valor do array é o número do canal e posição do array é o lugar do plot (ordem do DVR).
 
-        int [] inverseMatrix = {0,2,1,3};
+        int [][] inverseMatrix = channelsManager.inverseMatrix;
         // montar lista de exibição
         for (int i = 0; i < numberOfChannels; i++) {
-            arrayOfSurfaceViewComponents.add(i, channelsManager.surfaceViewComponents.get(inverseMatrix[i]));
+            arrayOfSurfaceViewComponents.add(i, channelsManager.surfaceViewComponents.get(inverseMatrix[channelsManager.numQuad-1][i]));
             adapter.add(new Channel("Canal " + (arrayOfSurfaceViewComponents.get(i).mySurfaceViewNewChannelId+1), arrayOfSurfaceViewComponents.get(i).mySurfaceViewNewChannelId, arrayOfSurfaceViewComponents.get(i).mySurfaceViewNewChannelId));
         }
-
-//        arrayOfSurfaceViewComponents.get(0).mySurfaceViewNewChannelId = 0;
-//        arrayOfSurfaceViewComponents.get(1).mySurfaceViewNewChannelId = 1;
-//        arrayOfSurfaceViewComponents.get(2).mySurfaceViewNewChannelId = 3;
-//        arrayOfSurfaceViewComponents.get(3).mySurfaceViewNewChannelId = 2;
-
 
         channelListView.setAdapter(adapter);
 
         TextView channelNumberTextView = (TextView) findViewById(R.id.number_of_channels);
 
-        channelNumberTextView.setText("Número de Canais: " + numberOfChannels);
+        channelNumberTextView.setText("Canais: " + numberOfChannels);
 
         setListeners();
 
@@ -124,6 +119,9 @@ public class DeviceChannelOrderActivity extends ActionBarActivity implements Vie
             case R.id.text_view_apply:
                 exitAndSave();
                 break;
+            case R.id.restore_defaults:
+                restoreDefaults();
+                break;
             default:
                 break;
         }
@@ -142,6 +140,17 @@ public class DeviceChannelOrderActivity extends ActionBarActivity implements Vie
         finish();
     }
 
+    private void restoreDefaults() {
+
+        // Keep channel number while change channel order
+        for (int i = 0; i < numberOfChannels; i++) {
+            adapter.getItem(i).setChannelNewGrid(i);
+            adapter.getItem(i).setChannelId("Canal "+(i+1));
+            adapter.getItem(i).setChannelOldGrid(i);
+        }
+        adapter.notifyDataSetChanged();
+    }
+
     private void exitOnly() {
         finish();
     }
@@ -149,5 +158,6 @@ public class DeviceChannelOrderActivity extends ActionBarActivity implements Vie
     private void setListeners() {
         tvBack.setOnClickListener(this);
         tvDone.setOnClickListener(this);
+        tvRestoreDefault.setOnClickListener(this);
     }
 }
