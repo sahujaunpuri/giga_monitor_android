@@ -233,7 +233,8 @@ public class DeviceManager implements IFunSDKResult {
     public void addDevice(Device device) {
 //        device.checkConnectionMethod();
         mDevices.add(device);
-        expandableListAdapter.setDevices(mDevices);
+        if (expandableListAdapter != null)
+            expandableListAdapter.setDevices(mDevices);
         saveData();
     }
 
@@ -592,9 +593,11 @@ public class DeviceManager implements IFunSDKResult {
 
     public void handleNatInfo(JSONObject jsonObject, Device device){
         try{
-            JSONObject json = jsonObject.getJSONObject("Status.NatInfo");
-            device.setNatCode(json.getString("NaInfoCode"));
-            device.setNatStatus(json.getString("NatStatus"));
+            if(jsonObject != null) {
+                JSONObject json = jsonObject.getJSONObject("Status.NatInfo");
+                device.setNatCode(json.getString("NaInfoCode"));
+                device.setNatStatus(json.getString("NatStatus"));
+            }
         }catch (JSONException e){
             e.printStackTrace();
         }
@@ -1683,9 +1686,11 @@ public class DeviceManager implements IFunSDKResult {
                     }
                     expandableListAdapter.notifyDataSetChanged();
                     updateDevicesManagers();
-                } else{
-                    Log.d(TAG, "OnFunSDKResult: CONFIG SET ERROR");
-                    currentConfigListener.onError();
+                } else {
+                    if (currentConfigListener != null) {
+                        Log.d(TAG, "OnFunSDKResult: CONFIG SET ERROR");
+                        currentConfigListener.onError();
+                    }
                 }
             }
             break;
