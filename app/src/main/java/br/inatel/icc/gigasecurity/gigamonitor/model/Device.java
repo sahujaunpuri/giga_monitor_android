@@ -103,6 +103,7 @@ public class Device implements Serializable {
     @Expose public boolean alreadyOptimized = false;
     @Expose private JSONObject simplifyEncodeJson;
     @Expose public boolean isFavorite = false;
+    @Expose private boolean isEnable = true;
 
     //State
     public boolean isLogged = false;
@@ -908,5 +909,13 @@ public class Device implements Serializable {
 
     public void setSimplifyEncodeJson(JSONObject simplifyEncodeJson) {
         this.simplifyEncodeJson = simplifyEncodeJson;
+    }
+
+    public boolean isEnable() {
+        return isEnable;
+    }
+
+    public void setEnable(boolean enable) {
+        isEnable = enable;
     }
 }

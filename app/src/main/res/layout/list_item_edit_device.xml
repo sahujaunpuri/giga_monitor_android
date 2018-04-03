@@ -7,7 +7,14 @@
 
     <ImageView
         style="@style/ImageViewDeleteIconEditDevice"
-        android:id="@+id/iv_delete_device" />
+        android:id="@+id/iv_delete_device"
+        android:layout_gravity="center_vertical" />
+
+    <Switch
+        android:id="@+id/switch_enable_device"
+        style="@style/Switch"
+        android:layout_marginTop="50dp"
+        android:theme="@style/GigaSwitch" />
 
     <ImageView
         android:id="@+id/image_view_device_icon"

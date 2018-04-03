@@ -40,12 +40,6 @@ public class DeviceEditListActivity extends ActionBarActivity implements View.On
         this.deleted = false;
         this.moved = false;
 
-        /*if(getIntent().getExtras() != null){
-            mDevices = (ArrayList<Device>) getIntent().getExtras().getSerializable("devices");
-        } else {
-            mDevices = new ArrayList<>();
-        }*/
-
         mDeviceManager = DeviceManager.getInstance();
         mDevices = (ArrayList<Device>) mDeviceManager.getDevices().clone();
 

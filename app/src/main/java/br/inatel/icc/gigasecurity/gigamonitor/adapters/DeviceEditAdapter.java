@@ -10,6 +10,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
+import android.widget.Switch;
 import android.widget.TextView;
 
 import java.util.ArrayList;
@@ -62,6 +63,7 @@ public class DeviceEditAdapter extends BaseAdapter {
             holder.delete = (ImageView) convertView.findViewById(R.id.iv_delete_device);
             holder.deviceName = (TextView) convertView.findViewById(R.id.tv_item_edit_device);
             holder.deviceIcon = (ImageView) convertView.findViewById(R.id.image_view_device_icon);
+            holder.enable = (Switch) convertView.findViewById(R.id.switch_enable_device);
             convertView.setTag(holder);
         } else {
             holder = (ViewHolder) convertView.getTag();
@@ -71,8 +73,10 @@ public class DeviceEditAdapter extends BaseAdapter {
 
         if(mDevices.get(position).getDeviceName().equals("Favoritos")) {
             holder.delete.setVisibility(View.INVISIBLE);
+            holder.enable.setVisibility(View.INVISIBLE);
         } else {
             holder.delete.setVisibility(View.VISIBLE);
+            holder.enable.setVisibility(View.VISIBLE);
         }
 
         holder.deviceName.setText(mDevices.get(position).deviceName);
@@ -90,6 +94,16 @@ public class DeviceEditAdapter extends BaseAdapter {
                     startDeviceFormActivity(position);
                 }
             });
+
+        holder.enable.setChecked(mDevices.get(position).isEnable());
+
+        holder.enable.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                mDevices.get(position).setEnable(holder.enable.isChecked());
+            }
+        });
+
         convertView.setTag(holder);
         return convertView;
     }
@@ -127,6 +141,7 @@ public class DeviceEditAdapter extends BaseAdapter {
     }
 
     private class ViewHolder {
+        private Switch enable;
         private ImageView delete;
         private TextView deviceName;
         private ImageView deviceIcon;

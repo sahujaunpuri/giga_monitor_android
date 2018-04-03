@@ -46,7 +46,7 @@ import br.inatel.icc.gigasecurity.gigamonitor.ui.SurfaceViewComponent;
  */
 public class DeviceExpandableListAdapter extends BaseExpandableListAdapter {
     private LayoutInflater mInflater;
-    public ArrayList<Device> mDevices;
+    public ArrayList<Device> mDevices = new ArrayList<>();;
     public Context mContext;
     private DeviceManager mDeviceManager;
     private Device mDevice;
@@ -61,8 +61,12 @@ public class DeviceExpandableListAdapter extends BaseExpandableListAdapter {
 
     public DeviceExpandableListAdapter(Context mContext, ArrayList<Device> mDevices, ExpandableListView mExpandableListView) {
         this.mContext            = mContext;
-        this.mDevices            = mDevices;
         this.mExpandableListView = mExpandableListView;
+        for (Device device: mDevices) {
+            if(device.isEnable() && !mDevices.contains(device)) {
+                this.mDevices.add(device);
+            }
+        }
         init();
 
     }
@@ -75,7 +79,11 @@ public class DeviceExpandableListAdapter extends BaseExpandableListAdapter {
     }
 
     public void setDevices(ArrayList<Device> devices){
-        mDevices = devices;
+        for (Device device: devices) {
+            if(device.isEnable() && !mDevices.contains(device)) {
+                mDevices.add(device);
+            }
+        }
         notifyDataSetChanged();
     }
 
