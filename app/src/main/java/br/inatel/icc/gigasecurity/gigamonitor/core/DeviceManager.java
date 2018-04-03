@@ -594,9 +594,13 @@ public class DeviceManager implements IFunSDKResult {
     public void handleNatInfo(JSONObject jsonObject, Device device){
         try{
             if(jsonObject != null) {
-                JSONObject json = jsonObject.getJSONObject("Status.NatInfo");
-                device.setNatCode(json.getString("NaInfoCode"));
-                device.setNatStatus(json.getString("NatStatus"));
+                JSONObject json = null;
+                if (jsonObject.has("Status.NatInfo"))
+                    json = jsonObject.getJSONObject("Status.NatInfo");
+                if (json.has("NaInfoCode"))
+                    device.setNatCode(json.getString("NaInfoCode"));
+                if (json.has("NatStatus"))
+                    device.setNatStatus(json.getString("NatStatus"));
             }
         }catch (JSONException e){
             e.printStackTrace();

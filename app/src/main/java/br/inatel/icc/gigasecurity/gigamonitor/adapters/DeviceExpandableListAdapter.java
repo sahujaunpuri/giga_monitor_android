@@ -21,9 +21,6 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.crashlytics.android.answers.Answers;
-import com.crashlytics.android.answers.CustomEvent;
-
 import org.json.JSONObject;
 
 import java.util.ArrayList;
@@ -304,10 +301,6 @@ public class DeviceExpandableListAdapter extends BaseExpandableListAdapter {
                 groupViewHolder.blank.setTag(groupViewHolder);
                 convertView.setTag(groupViewHolder);
                 childViewHolder.add(new ChildViewHolder());
-                Log.d("getGroupView", groupViewHolder.mDevice.deviceName + " - groupViewHolder.blank.setTag(groupViewHolder);");
-
-                Answers.getInstance().logCustom(new CustomEvent("GroupViewHolder")
-                        .putCustomAttribute("convertView", "firstInit"));
             }
         } catch (Exception e) {
             e.printStackTrace();
