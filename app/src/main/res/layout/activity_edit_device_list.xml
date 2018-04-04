@@ -1,30 +1,71 @@
 <?xml version="1.0" encoding="utf-8"?>
-<com.mobeta.android.dslv.DragSortListView
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:dslv="http://schemas.android.com/apk/res-auto"
-    android:id="@+id/lv_drag_sort_list_view"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:paddingTop="0dp"
-    android:paddingBottom="0dp"
-    android:paddingLeft="10dp"
-    android:paddingRight="10dp"
-    android:dividerHeight="1dp"
-    android:fastScrollEnabled="true"
-    android:background="#e6e6e6"
-    dslv:drag_enabled="true"
-    dslv:float_background_color="@android:color/white"
-    dslv:collapsed_height="2dp"
-    dslv:drag_scroll_start="3.30"
-    dslv:max_drag_scroll_speed="2.30"
-    dslv:float_alpha="0.6"
-    dslv:slide_shuffle_speed="0.3"
-    dslv:track_drag_sort="false"
-    dslv:use_default_controller="true"
-    dslv:sort_enabled="true"
-    dslv:remove_enabled="true"
-    dslv:drag_start_mode="onDown"
-    dslv:remove_mode="flingRemove" />
+    android:layout_height="wrap_content"
+    android:orientation="vertical">
+
+    <LinearLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center">
+
+        <TextView
+            style="@style/ActionBarTextView"
+            android:text="@string/back"
+            android:id="@+id/text_view_back"/>
+
+        <TextView
+            style="@style/ActionBarTitle"
+            android:text="Meus dispositivos"/>
+
+        <ImageView
+            android:id="@+id/image_view_add"
+            android:layout_width="25dp"
+            android:layout_height="25dp"
+            android:src="@drawable/add_btn_style"
+            android:clickable="true"
+            android:layout_margin="6dp"/>
+
+        <ImageView
+            android:id="@+id/image_view_done"
+            android:layout_width="25dp"
+            android:layout_height="25dp"
+            android:src="@drawable/done_btn_style"
+            android:clickable="true"
+            android:layout_margin="6dp"/>
+
+    </LinearLayout>
+
+    <com.mobeta.android.dslv.DragSortListView
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:dslv="http://schemas.android.com/apk/res-auto"
+        android:id="@+id/lv_drag_sort_list_view"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:paddingTop="0dp"
+        android:paddingBottom="0dp"
+        android:paddingLeft="10dp"
+        android:paddingRight="10dp"
+        android:fastScrollEnabled="true"
+        dslv:drag_enabled="true"
+        dslv:float_background_color="@color/default_color"
+        dslv:collapsed_height="2dp"
+        dslv:drag_scroll_start="3.30"
+        dslv:max_drag_scroll_speed="2.30"
+        dslv:float_alpha="0.6"
+        dslv:slide_shuffle_speed="0.3"
+        dslv:track_drag_sort="false"
+        dslv:use_default_controller="true"
+        dslv:sort_enabled="true"
+        dslv:remove_enabled="true"
+        dslv:drag_start_mode="onDown"
+        dslv:remove_mode="flingRemove"
+        android:divider="@null"
+        android:dividerHeight="0dp"/>
+</LinearLayout>
 
 
 

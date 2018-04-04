@@ -1,16 +1,47 @@
-<LinearLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#7ad10f"
+    android:background="@drawable/background_splash"
     tools:context="br.inatel.icc.gigasecurity.gigamonitor.activities.SplashScreenActivity">
 
     <ImageView
-        android:layout_width="fill_parent"
-        android:layout_height="fill_parent"
-        android:id="@+id/imageView2"
-        android:src="@drawable/splash_screen"
-        android:layout_centerHorizontal="true"/>
+        android:id="@+id/main_logo"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        android:scaleX="0.6"
+        android:scaleY="0.6"
+        android:src="@drawable/giga_logo_splash_splash" />
 
-</LinearLayout>
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:gravity="center_horizontal"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true">
+
+        <ImageView
+            android:id="@+id/small_logo"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:scaleX="0.6"
+            android:scaleY="0.6"
+            android:src="@drawable/giga_logo_small_splash"
+            />
+
+        <ImageView
+            android:id="@+id/multilaser_logo"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="-15dp"
+            android:layout_marginBottom="10dp"
+            android:scaleX="0.5"
+            android:scaleY="0.5"
+            android:src="@drawable/multilaser_splash"
+            />
+
+    </LinearLayout>
+
+</RelativeLayout>

@@ -137,12 +137,25 @@ public abstract class ChannelsManager implements IFunSDKResult {
     }
 
     public FrameLayout.LayoutParams changeSurfaceViewSize() {
+        int option = 0;
         mDeviceManager.getScreenSize();
         int surfaceViewWidth = (int) Math.ceil((mDeviceManager.screenWidth / numQuad));// + numQuad;
         int surfaceViewHeight = ((mDeviceManager.screenHeight / 3) + 10) / numQuad;
 
         if (mContext.getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE) {
             surfaceViewHeight = (mDeviceManager.screenHeight) / numQuad;
+            option = 0;
+        }
+
+        switch(option) {
+            case 1:
+                surfaceViewHeight += 75;
+                break;
+            case 2:
+                surfaceViewHeight += 125;
+                break;
+            default:
+                break;
         }
 
         surfaceViewLayout.width = surfaceViewWidth;
@@ -153,7 +166,6 @@ public abstract class ChannelsManager implements IFunSDKResult {
 
         return surfaceViewLayout;
     }
-
     public GLSurfaceView20 getMySurfaceView(int channelId) {
         return mySurfaceViews.get(channelId);
     }
@@ -221,7 +233,6 @@ public abstract class ChannelsManager implements IFunSDKResult {
 //    }
 
     public void onStartVideo(final SurfaceViewComponent svc) {
-        Log.d("Rodrigo","onStartVideo");
         svc.mPlayerHandler = FunSDK.MediaRealPlay(mUserID, mDevice.connectionString, svc.mySurfaceViewChannelId, svc.streamType, svc.mySurfaceView, svc.mySurfaceViewOrderId);
     }
 
@@ -232,7 +243,6 @@ public abstract class ChannelsManager implements IFunSDKResult {
     }
 
     public void setPlayView(final SurfaceViewComponent svc){
-        Log.d("Rodrigo","setPlayView");
         FunSDK.MediaSetPlayView(svc.mPlayerHandler, mySurfaceViews.get(svc.mySurfaceViewChannelId), mUserID);
     }
 
@@ -243,7 +253,6 @@ public abstract class ChannelsManager implements IFunSDKResult {
     }
 
     public void onResume(SurfaceViewComponent svc){
-        Log.d("Rodrigo","onResume");
         FunSDK.MediaPause(svc.mPlayerHandler, 0, svc.mySurfaceViewOrderId);
     }
 
@@ -490,7 +499,7 @@ public abstract class ChannelsManager implements IFunSDKResult {
         if (countTimesToCheckMemory == 0){
             double freeMemoryAvailable = mDeviceManager.checkMemory(mContext);
             Log.d("executed","" + Utils.currentDateTime());
-            if (freeMemoryAvailable < 70){
+            if (freeMemoryAvailable < 130) {
                 DeviceExpandableListAdapter mDeviceManagerExpandableListAdapter = mDeviceManager.getExpandableListAdapter();
                 mDeviceManagerExpandableListAdapter.changeQuad(DeviceListActivity.previousGroup);
                 Toast.makeText(mContext, "Feche outros apps para liberar memória!", Toast.LENGTH_SHORT).show();
@@ -498,12 +507,9 @@ public abstract class ChannelsManager implements IFunSDKResult {
         }
         countTimesToCheckMemory++;
 
-
         if (countTimesToCheckMemory == 10){
             countTimesToCheckMemory = 0;
         }
-
-
 
         switch (msg.what) {
             case EUIMSG.START_PLAY: {
@@ -552,14 +558,18 @@ public abstract class ChannelsManager implements IFunSDKResult {
             }
             break;
             case EUIMSG.PAUSE_PLAY: {
-                Log.i(TAG, "EUIMSG.PAUSE_PLAY");
-                SurfaceViewComponent svc = findSurfaceByHandler(msgContent.sender);
-                if (msg.arg1 == 1) {
-                    svc.isPlaying = true;
-                    Log.i(TAG, "PLAY/PAUSE: playing");
-                } else if(msg.arg1 == 2) {
-                    svc.isPlaying = false;
-                    Log.i(TAG, "PLAY/PAUSE: paused");
+                try {
+                    Log.i(TAG, "EUIMSG.PAUSE_PLAY");
+                    SurfaceViewComponent svc = findSurfaceByHandler(msgContent.sender);
+                    if (msg.arg1 == 1) {
+                        svc.isPlaying = true;
+                        Log.i(TAG, "PLAY/PAUSE: playing");
+                    } else if(msg.arg1 == 2) {
+                        svc.isPlaying = false;
+                        Log.i(TAG, "PLAY/PAUSE: paused");
+                    }
+                } catch (Exception error) {
+                    error.printStackTrace();
                 }
             }
             break;

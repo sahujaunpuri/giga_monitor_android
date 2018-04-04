@@ -1,11 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     
-    <color name="action_bar_color">#88d70c</color>
+    <color name="giga_green">#88d70c</color>
     <color name="stacked_color">#bef274</color>
-    <color name="text_color">#ffff</color>
+    <color name="text_color">#636363</color>
     <color name="title">#f6f6f6</color>
+    <color name="default_color">#bdc3c7</color>
     <color name="secondary_color">#000000</color>
+    <color name="primary_color">#bdc3c7</color>
+    <color name="btn_blue_text_color">#14397f</color>
+    <color name="btn_blue_background_color">#def3f9</color>
+    <color name="btn_green_background_color">#eff9d8</color>
 
     <color name="contents_text">#ff000000</color>
     <color name="encode_view">#ffffffff</color>
@@ -19,4 +24,7 @@
     <color name="viewfinder_laser">#ffcc0000</color> <!-- Android standard ICS color -->
     <color name="viewfinder_mask">#60000000</color>
     <color name="Giga">#88d70c</color>
+    <color name="toggle_off">#80a62b</color>
+    <color name="toggle_on">#a3d635</color>
+    <color name="dialog_background_color">#2c2c2d00</color>
 </resources>

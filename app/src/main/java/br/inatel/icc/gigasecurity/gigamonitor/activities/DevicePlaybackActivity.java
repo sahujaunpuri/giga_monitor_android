@@ -5,6 +5,7 @@ import android.app.DatePickerDialog;
 import android.app.ProgressDialog;
 import android.app.TimePickerDialog;
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
@@ -64,6 +65,7 @@ public class DevicePlaybackActivity extends ActionBarActivity
     private TextView tvDate;
     private TextView tvBeginHour;
     private TextView tvEndHour;
+    private TextView mTextViewBack, mTextViewSearch;
     private ImageView datePicker;
     private ImageView initialTimePicker;
     private ImageView endTimePicker;
@@ -90,6 +92,33 @@ public class DevicePlaybackActivity extends ActionBarActivity
         layoutListPlayback = (LinearLayout) findViewById(R.id.linear_layout_list_playback);
         layout_spinner     = (LinearLayout) findViewById(R.id.linear_layout_spinner);
         spinner            = (Spinner) findViewById(R.id.playback_filter);
+        mTextViewBack      = (TextView) findViewById(R.id.text_view_back);
+        mTextViewSearch    = (TextView) findViewById(R.id.text_view_search);
+
+        mTextViewSearch.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                findPlaybacks(SDKCONST.FileType.SDK_RECORD_ALL);
+                mTextViewSearch.setVisibility(View.INVISIBLE);
+            }
+        });
+
+        mTextViewBack.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if(layoutListPlayback.getVisibility() == View.VISIBLE) {
+                    layoutFindPlayback.setVisibility(View.VISIBLE);
+                    menuItem.setVisible(true);
+                    mTextViewSearch.setVisibility(View.VISIBLE);
+                    playbacksShowed.clear();
+                    allPlaybacks.clear();
+                    layout_spinner.setVisibility(View.GONE);
+                    layoutListPlayback.setVisibility(View.GONE);
+                } else {
+                    finish();
+                }
+            }
+        });
 
         mListView.setOnItemClickListener(this);
 
@@ -172,6 +201,8 @@ public class DevicePlaybackActivity extends ActionBarActivity
                 }
                 String stringType = String.valueOf(type);
                 arrayAdapter.getFilter().filter(stringType);
+
+                ((TextView) adapterView.getChildAt(0)).setTextColor(Color.WHITE);
             }
 
             @Override
@@ -179,6 +210,8 @@ public class DevicePlaybackActivity extends ActionBarActivity
                 Log.d("NothingSelected", "Nada Selecionado");
             }
         });
+
+        getSupportActionBar().hide();
 
     }
 
@@ -314,6 +347,7 @@ public class DevicePlaybackActivity extends ActionBarActivity
                                 layoutListPlayback.setVisibility(View.GONE);
                                 Toast.makeText(DevicePlaybackActivity.this, msg, Toast.LENGTH_SHORT).show();
                                 progressDialog.dismiss();
+                                mTextViewSearch.setVisibility(View.VISIBLE);
                             }
                         });
                     }

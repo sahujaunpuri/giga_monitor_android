@@ -6,6 +6,63 @@
     android:orientation="vertical"
     tools:context="br.inatel.icc.gigasecurity.gigamonitor.activities.MediaActivity">
 
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center"
+        android:layout_marginBottom="45dp">
+
+        <TextView
+            android:text="voltar"
+            android:id="@+id/back_action"
+            style="@style/ActionBarTextView" />
+
+        <TextView
+            android:text="cancelar"
+            android:id="@+id/cancel_action"
+            style="@style/ActionBarTextView"
+            android:visibility="gone"/>
+
+        <LinearLayout
+            style="@style/ToggleActivityMedia">
+
+            <TextView
+                style="@style/ToggleTextViewActivityMedia"
+                android:text="Fotos"
+                android:background="@color/toggle_on"
+                android:id="@+id/tv_image"/>
+
+            <TextView
+                style="@style/ToggleTextViewActivityMedia"
+                android:text="Vídeos"
+                android:background="@color/toggle_off"
+                android:id="@+id/tv_video"/>
+
+        </LinearLayout>
+
+        <TextView
+            android:text="selecionar"
+            style="@style/ActionBarTextView"
+            android:id="@+id/select_action"/>
+
+        <TextView
+            android:text="apagar"
+            style="@style/ActionBarTextView"
+            android:id="@+id/delete_action"
+            android:visibility="gone"/>
+
+    </LinearLayout>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="50dp"
+        android:id="@+id/text_view_gallery_empty"
+        android:layout_gravity="center"
+        android:fontFamily="@font/lato_regular"
+        android:text="Nenhuma midia encontrada"
+        android:visibility="gone"/>
 
     <LinearLayout
             android:orientation="horizontal"
@@ -13,7 +70,8 @@
             android:layout_height="wrap_content"
             android:gravity="center"
             android:layout_gravity="center"
-            android:layout_centerHorizontal="true">
+            android:layout_centerHorizontal="true"
+            android:visibility="gone">
 
             <ImageView
                 android:layout_width="30dp"
@@ -34,11 +92,15 @@
         android:layout_height="match_parent"
         android:id="@+id/grid_view_media"
         android:numColumns="3"
-        android:padding="10dp"
-        android:layout_gravity="center"
-        android:horizontalSpacing="5dp"
-        android:verticalSpacing="5dp"
         android:gravity="center"
+        android:columnWidth="330dp"
+        android:paddingRight="20dp"
+        android:paddingLeft="20dp"
+        android:clipToPadding="true"
+        android:fitsSystemWindows="true"
+        android:stretchMode="columnWidth"
+        android:horizontalSpacing="10dp"
+        android:verticalSpacing="10dp"
         android:layout_margin="10px"/>
 
 </LinearLayout>

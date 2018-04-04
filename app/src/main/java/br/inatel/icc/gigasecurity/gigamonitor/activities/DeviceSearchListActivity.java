@@ -13,6 +13,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
+import android.widget.TextView;
 
 import java.util.ArrayList;
 
@@ -23,7 +24,7 @@ import br.inatel.icc.gigasecurity.gigamonitor.core.Discovery;
 import br.inatel.icc.gigasecurity.gigamonitor.model.Device;
 
 
-public class DeviceSearchListActivity extends ActionBarActivity {
+public class DeviceSearchListActivity extends ActionBarActivity implements View.OnClickListener {
 
     private ListView mListView;
 
@@ -36,6 +37,8 @@ public class DeviceSearchListActivity extends ActionBarActivity {
     private AlertDialog mDialog;
 
     private Context mContext;
+
+    private TextView tvCancel, tvRefresh;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -63,6 +66,30 @@ public class DeviceSearchListActivity extends ActionBarActivity {
             }
         });
 
+        initComponents();
+
+        getSupportActionBar().hide();
+
+    }
+
+    private void initComponents() {
+        tvCancel     = (TextView) findViewById(R.id.cancel_action);
+        tvRefresh     = (TextView) findViewById(R.id.refresh_action);
+
+        tvCancel.setOnClickListener(this);
+        tvRefresh.setOnClickListener(this);
+    }
+
+    @Override
+    public void onClick(View v) {
+        switch (v.getId()) {
+            case R.id.cancel_action:
+                finish();
+                break;
+            case R.id.refresh_action:
+                searchDevices();
+                break;
+        }
     }
 
     @Override
@@ -161,9 +188,7 @@ public class DeviceSearchListActivity extends ActionBarActivity {
 
         Intent intent = new Intent(DeviceSearchListActivity.this, DeviceFormActivity.class);
         intent.putExtras(extras);
-//                startActivity(intent);
         startActivityForResult(intent, 1);
-//                finish();
     }
 
     private void stopAndRefresh() {

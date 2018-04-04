@@ -3,22 +3,19 @@
     <style name="Theme.Giga" parent="Theme.AppCompat.Light">
         <item name="android:actionBarStyle" tools:ignore="NewApi">@style/ActionBarGiga</item>
         <item name="actionBarStyle">@style/ActionBarGiga</item>
-        <item name="android:textColorPrimary">@color/title</item>
-        <item name="android:textColorSecondary">@color/secondary_color</item>
+        <item name="colorPrimaryDark">@color/primary_color</item>
         <item name="android:editTextStyle">@style/EditTextColorsGiga</item>
         <item name="android:textAppearanceButton">@color/secondary_color</item>
-
     </style>
 
     <style name="ActionBarGiga" parent="@style/Widget.AppCompat.Light.ActionBar.Solid.Inverse">
-        <item name="background">@color/action_bar_color</item>
-        <item name="android:background">@color/action_bar_color</item>
+        <item name="background">@color/giga_green</item>
+        <item name="android:background">@color/giga_green</item>
     </style>
 
     <style name="EditTextColorsGiga" parent="Widget.AppCompat.EditText">
         <item name="android:textColor">@color/secondary_color</item>
     </style>
-
 
     <style name="ResultButton" parent="@android:style/Widget.Holo.Button.Borderless.Small">
         <item name="android:layout_width">0dip</item>
@@ -38,5 +35,449 @@
         <item name="android:windowIsFloating">true</item>
         <item name="android:backgroundDimEnabled">false</item>
     </style>
+
+    <!--Activity Form-->
+    <style name="LinearLayoutHorizontalStyle">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:orientation">horizontal</item>
+        <item name="android:layout_marginBottom">9dp</item>
+        <item name="android:layout_marginLeft">4dp</item>
+        <item name="android:layout_marginTop">4dp</item>
+        <item name="android:layout_marginRight">4dp</item>
+        <item name="android:gravity">center</item>
+        <item name="android:fontFamily">@font/lato_regular</item>
+    </style>
+
+    <style name="TextViewStyle">
+        <item name="android:textSize">16dp</item>
+        <item name="android:layout_marginTop">5dp</item>
+        <item name="android:textColor">@color/giga_green</item>
+        <item name="android:layout_width">90dp</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:gravity">left</item>
+        <item name="android:fontFamily">@font/lato_regular</item>
+    </style>
+
+    <style name="EditTextStyle">
+        <item name="android:textSize">18dp</item>
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:gravity">center</item>
+        <item name="android:ems">10</item>
+        <item name="android:textColor">@color/text_color</item>
+        <item name="android:imeOptions">actionNext</item>
+        <item name="android:background">@drawable/rounded_corner</item>
+        <item name="android:fontFamily">@font/lato_regular</item>
+    </style>
+
+    <style name="Switch">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:checked">false</item>
+        <item name="android:gravity">center</item>
+    </style>
+
+    <!--Action Bar-->
+    <style name="ActionBarTextView">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">30dp</item>
+        <item name="android:textSize">14dp</item>
+        <item name="android:textColor">@color/text_color</item>
+        <item name="android:textAllCaps">true</item>
+        <item name="android:layout_marginTop">9dp</item>
+        <item name="android:layout_marginLeft">9dp</item>
+        <item name="android:layout_marginRight">9dp</item>
+        <item name="android:fontFamily">@font/lato_regular</item>
+    </style>
+
+    <style name="ActionBarTitle">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:textSize">20dp</item>
+        <item name="android:textColor">@color/giga_green</item>
+        <item name="android:textAllCaps">true</item>
+        <item name="android:layout_marginLeft">16dp</item>
+        <item name="android:layout_marginRight">16dp</item>
+        <item name="android:fontFamily">@font/lato_regular</item>
+    </style>
+
+    <!--Activity Initial-->
+    <style name="ImageViewInitial">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">240dp</item>
+        <item name="android:src">@drawable/add_device</item>
+        <item name="android:layout_gravity">center_horizontal</item>
+        <item name="android:fontFamily">@font/lato_regular</item>
+    </style>
+
+    <style name="TextViewDevicesFound">
+        <item name="android:layout_width">200dp</item>
+        <item name="android:layout_height">65dp</item>
+        <item name="android:layout_marginLeft">55dp</item>
+        <item name="android:layout_marginTop">5dp</item>
+        <item name="android:textColor">@color/btn_blue_text_color</item>
+        <item name="android:background">@drawable/rounded_corner_button_blue</item>
+        <item name="android:textAllCaps">true</item>
+        <item name="android:textSize">18dp</item>
+        <item name="android:gravity">center</item>
+        <item name="android:focusable">true</item>
+        <item name="android:clickable">true</item>
+        <item name="android:layout_gravity">center_horizontal</item>
+        <item name="android:fontFamily">@font/lato_regular</item>
+    </style>
+
+    <style name="ImageButtonInitialActivity">
+        <item name="android:layout_width">120dp</item>
+        <item name="android:layout_height">120dp</item>
+        <item name="android:layout_marginRight">20dp</item>
+        <item name="android:layout_marginLeft">20dp</item>
+        <item name="android:background">@android:color/white</item>
+        <item name="android:gravity">center</item>
+        <item name="android:layout_gravity">center_horizontal</item>
+    </style>
+
+    <style name="TextViewInitialActivity">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_gravity">center_horizontal</item>
+        <item name="android:textSize">18dp</item>
+        <item name="android:textColor">@color/giga_green</item>
+        <item name="android:fontFamily">@font/lato_regular</item>
+    </style>
+
+    <style name="ImageViewSearchingInitialActivity">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_gravity">center_horizontal</item>
+    </style>
+
+    <style name="TextViewSearchingDevicesInitialActivity">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:textColor">@color/giga_green</item>
+        <item name="android:gravity">center</item>
+        <item name="android:fontFamily">@font/lato_regular</item>
+    </style>
+
+    <style name="ImageButtonRefreshInitialActivity">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:background">@drawable/initial_refresh_btn_style</item>
+        <item name="android:visibility">gone</item>
+        <item name="android:layout_marginBottom">4dp</item>
+    </style>
+
+    <!--Activity Search-->
+    <style name="TextViewDeviceNameSearchActivityList">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:textColor">#000</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:fontFamily">@font/lato_regular</item>
+    </style>
+
+    <style name="ImageViewDeviceImageSearchActivityList">
+        <item name="android:layout_width">70dp</item>
+        <item name="android:layout_height">70dp</item>
+        <item name="android:layout_gravity">center</item>
+        <item name="android:layout_marginLeft">40dp</item>
+    </style>
+
+    <style name="TextViewSearchActivityList">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_marginLeft">40dp</item>
+        <item name="android:text">Small Text</item>
+        <item name="android:layout_gravity">left|center_vertical</item>
+        <item name="android:fontFamily">@font/lato_regular</item>
+    </style>
+
+    <!--Activity Remote Control-->
+    <style name="ImageButtonActivityRemoteControl">
+        <item name="android:layout_width">90dp</item>
+        <item name="android:layout_height">90dp</item>
+        <item name="android:layout_marginRight">15dp</item>
+        <item name="android:layout_marginLeft">15dp</item>
+        <item name="android:layout_marginTop">10dp</item>
+        <item name="android:gravity">center</item>
+        <item name="android:layout_gravity">center_horizontal</item>
+    </style>
+
+    <style name="TextViewActivityRemoteControl">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_gravity">center_horizontal</item>
+        <item name="android:layout_marginTop">5dp</item>
+        <item name="android:textSize">14dp</item>
+        <item name="android:textColor">#a5a5a5</item>
+        <item name="android:textAllCaps">true</item>
+        <item name="android:fontFamily">@font/lato_regular</item>
+    </style>
+
+    <!--Activity Media-->
+    <style name="ToggleActivityMedia">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:orientation">horizontal</item>
+        <item name="android:layout_marginLeft">10dp</item>
+    </style>
+
+    <style name="ToggleTextViewActivityMedia">
+        <item name="android:layout_width">80dp</item>
+        <item name="android:layout_height">50dp</item>
+        <item name="android:textSize">18dp</item>
+        <item name="android:gravity">center</item>
+        <item name="android:textAllCaps">true</item>
+        <item name="android:textColor">#ffffff</item>
+        <item name="android:fontFamily">@font/lato_regular</item>
+    </style>
+
+    <!--Activity Config-->
+    <style name="LinearLayoutConfigMenuItem">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:orientation">horizontal</item>
+        <item name="android:clickable">true</item>
+        <item name="android:layout_gravity">center</item>
+        <item name="android:gravity">left|center</item>
+        <item name="android:layout_margin">6dp</item>
+    </style>
+    
+    <style name="ImageViewMenuIconFeature">
+        <item name="android:layout_width">40dp</item>
+        <item name="android:layout_height">40dp</item>
+        <item name="android:layout_marginLeft">25dp</item>
+        <item name="android:focusable">false</item>
+        <item name="android:gravity">left|center</item>
+    </style>
+
+    <style name="TextViewFeature">
+        <item name="android:gravity">left|center|bottom</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_width">180dp</item>
+        <item name="android:layout_marginLeft">30dp</item>
+        <item name="android:textColor">@color/default_color</item>
+        <item name="android:textSize">18dp</item>
+        <item name="android:fontFamily">@font/lato_regular</item>
+    </style>
+
+    <style name="ImageViewMenuIconCallToAction">
+        <item name="android:layout_width">25dp</item>
+        <item name="android:layout_height">25dp</item>
+        <item name="android:layout_margin">6dp</item>
+        <item name="android:focusable">false</item>
+    </style>
+
+    <!--ListItemEditDevice-->
+    <style name="ImageViewDeleteIconEditDevice">
+        <item name="android:layout_width">30dp</item>
+        <item name="android:layout_height">30dp</item>
+        <item name="android:layout_margin">12dp</item>
+        <item name="android:layout_gravity">left|center_vertical</item>
+        <item name="android:src">@android:drawable/ic_delete</item>
+    </style>
+
+    <style name="ImageViewDeviceIconEditDevice">
+        <item name="android:layout_width">90dp</item>
+        <item name="android:layout_height">90dp</item>
+        <item name="android:layout_marginLeft">25dp</item>
+        <item name="android:layout_marginRight">25dp</item>
+        <item name="android:layout_marginTop">15dp</item>
+        <item name="android:layout_marginBottom">15dp</item>
+        <item name="android:gravity">center</item>
+        <item name="android:src">@drawable/ip_cam_icon</item>
+    </style>
+
+    <style name="TextViewDeviceNameEditDevice">
+        <item name="android:layout_width">100dp</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:textAppearance">?android:attr/textAppearanceMedium</item>
+        <item name="android:layout_gravity">left|center_vertical</item>
+        <item name="android:textSize">16dp</item>
+        <item name="android:layout_marginBottom">4dp</item>
+        <item name="android:src">@drawable/img_camera</item>
+        <item name="android:textColor">@color/giga_green</item>
+        <item name="android:fontFamily">@font/lato_regular</item>
+    </style>
+
+    <style name="SwitchEnableDeviceEditDevice">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_gravity">left|center_vertical</item>
+    </style>
+
+    <style name="ImageViewReplaceDeviceIconEditDevice">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_gravity">right|center_vertical</item>
+        <item name="android:background">@drawable/replace</item>
+    </style>
+
+    <!--Expandable List View Row-->
+    <style name="ExpandableListViewRowTextViewDeviceName">
+        <item name="android:layout_width">95dp</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:textColor">@color/default_color</item>
+        <item name="android:text">Device Name</item>
+        <item name="android:textSize">18dp</item>
+        <item name="android:layout_marginLeft">16dp</item>
+        <item name="android:layout_marginRight">15dp</item>
+        <item name="android:layout_gravity">left|center_vertical</item>
+        <item name="android:fontFamily">@font/lato_regular</item>
+    </style>
+
+    <!--Switch-->
+    <style name="GigaSwitch" parent="Theme.AppCompat.Light">
+        <!-- active thumb & track color (30% transparency) -->
+        <item name="colorControlActivated">@color/giga_green</item>
+        <!-- inactive thumb color -->
+        <item name="colorSwitchThumbNormal">#f1f1f1</item>
+        <!-- inactive track color (30% transparency) -->
+        <item name="android:colorForeground">#42221f1f</item>
+    </style>
+
+    <!--DevicePlayBlack-->
+    <style name="DevicePlayBlackTextViewBlack">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:textColor">@color/text_color</item>
+        <item name="android:textSize">16dp</item>
+        <item name="android:layout_weight">1</item>
+        <item name="android:layout_gravity">left</item>
+        <item name="android:fontFamily">@font/lato_regular</item>
+    </style>
+
+    <style name="DevicePlayBlackTextViewGreen">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:textColor">@color/giga_green</item>
+        <item name="android:textSize">16dp</item>
+        <item name="android:layout_marginRight">10dp</item>
+        <item name="android:gravity">right</item>
+        <item name="android:fontFamily">@font/lato_regular</item>
+    </style>
+
+    <style name="DevicePlayBlackIcon">
+        <item name="android:layout_width">24dp</item>
+        <item name="android:layout_height">24dp</item>
+        <item name="android:tint">@color/giga_green</item>
+        <item name="android:gravity">right</item>
+    </style>
+
+    <style name="GigaNumberPickerTheme">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="colorControlNormal">@color/giga_green</item>
+        <item name="android:scaleY">0.75</item>
+        <item name="android:scaleX">0.75</item>
+        <item name="android:gravity">right</item>
+        <item name="android:visibility">visible</item>
+    </style>
+
+    <!--Custom Dialog Cloud 3-->
+    <style name="CustomDialogCloud3TextView1">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:gravity">center_horizontal</item>
+        <item name="android:textColor">@android:color/white</item>
+        <item name="android:fontFamily">@font/lato_regular</item>
+        <item name="android:textSize">12dp</item>
+        <item name="android:textAllCaps">true</item>
+        <item name="android:layout_marginBottom">2dp</item>
+    </style>
+
+    <style name="CustomDialogCloud3TextView2">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:gravity">center_horizontal</item>
+        <item name="android:textColor">@android:color/white</item>
+        <item name="android:fontFamily">@font/lato_regular</item>
+        <item name="android:layout_marginBottom">20dp</item>
+    </style>
+
+    <style name="CustomDialogCloud3TextView3">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:textSize">16dp</item>
+        <item name="android:textAllCaps">true</item>
+        <item name="android:gravity">center_horizontal</item>
+        <item name="android:textColor">@android:color/white</item>
+        <item name="android:fontFamily">@font/lato_regular</item>
+        <item name="android:layout_marginTop">20dp</item>
+        <item name="android:textStyle">bold</item>
+    </style>
+
+    <style name="CustomDialogCloud3TextView4">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:textColor">@android:color/white</item>
+        <item name="android:fontFamily">@font/lato_regular</item>
+    </style>
+
+    <style name="CustomDialogCloud3TextView5">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:textColor">@android:color/white</item>
+        <item name="android:fontFamily">@font/lato_regular</item>
+        <item name="android:layout_marginTop">12dp</item>
+        <item name="android:layout_marginBottom">12dp</item>
+        <item name="android:gravity">center_horizontal</item>
+        <item name="android:textSize">11dp</item>
+    </style>
+
+    <style name="CustomDialogCloud3TextView6">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:textColor">@android:color/white</item>
+        <item name="android:fontFamily">@font/lato_regular</item>
+        <item name="android:layout_marginTop">12dp</item>
+        <item name="android:layout_marginBottom">12dp</item>
+        <item name="android:gravity">center_horizontal</item>
+        <item name="android:textSize">11dp</item>
+    </style>
+
+    <style name="CustomDialogCloud3TextView7">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:textColor">@android:color/white</item>
+        <item name="android:fontFamily">@font/lato_regular</item>
+        <item name="android:layout_marginTop">12dp</item>
+        <item name="android:layout_marginBottom">12dp</item>
+        <item name="android:gravity">center_horizontal</item>
+        <item name="android:textSize">11dp</item>
+    </style>
+
+    <style name="CustomDialogCloud3TextView8">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:textColor">@android:color/white</item>
+        <item name="android:fontFamily">@font/lato_regular</item>
+        <item name="android:layout_marginTop">12dp</item>
+        <item name="android:layout_marginBottom">12dp</item>
+        <item name="android:gravity">center_horizontal</item>
+        <item name="android:textAllCaps">true</item>
+    </style>
+
+    <style name="CustomDialogCloud3TextView9">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:textColor">@android:color/white</item>
+        <item name="android:fontFamily">@font/lato_regular</item>
+        <item name="android:layout_marginTop">12dp</item>
+        <item name="android:layout_marginBottom">12dp</item>
+        <item name="android:gravity">center_horizontal</item>
+        <item name="android:textSize">18dp</item>
+    </style>
+
+    <style name="CustomDialog" parent="@android:style/Theme.Dialog">
+        <item name="android:windowAnimationStyle">@style/CustomDialogAnimation</item>
+    </style>
+
+    <style name="CustomDialogAnimation">
+        <item name="android:windowEnterAnimation">@anim/translate_left_side</item>
+        <item name="android:windowExitAnimation">@anim/translate_right_side</item>
+    </style>
+
 
 </resources>

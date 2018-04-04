@@ -2,11 +2,13 @@ package br.inatel.icc.gigasecurity.gigamonitor.config.password;
 
 import android.app.Activity;
 import android.content.Context;
-import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
+import android.support.v7.app.ActionBarActivity;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.EditText;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import br.inatel.icc.gigasecurity.gigamonitor.R;
@@ -15,14 +17,12 @@ import br.inatel.icc.gigasecurity.gigamonitor.listeners.ConfigListener;
 import br.inatel.icc.gigasecurity.gigamonitor.model.Device;
 import br.inatel.icc.gigasecurity.gigamonitor.util.Utils;
 
-import static br.inatel.icc.gigasecurity.gigamonitor.activities.DeviceListActivity.mContext;
-import static br.inatel.icc.gigasecurity.gigamonitor.activities.DeviceListActivity.mDeviceManager;
-
-public class PasswordConfigActivity extends ActionBarActivity {
+public class PasswordConfigActivity extends ActionBarActivity implements View.OnClickListener {
 
     private Device mDevice;
     private DeviceManager mManager;
     private Context mContext;
+    private TextView mTextViewBack, mTextViewSave;
 
     private EditText mOldEditText, mNewEditText, mConfirmNewEditText;
 
@@ -63,12 +63,18 @@ public class PasswordConfigActivity extends ActionBarActivity {
         mContext = this;
         mManager = DeviceManager.getInstance();
         mDevice = mManager.findDeviceById((int) getIntent().getExtras().getSerializable("device"));
+
+        getSupportActionBar().hide();
     }
 
     private void findViews() {
         mOldEditText = (EditText) findViewById(R.id.edit_text_pass_actual);
         mNewEditText = (EditText) findViewById(R.id.edit_text_pass_new);
         mConfirmNewEditText = (EditText) findViewById(R.id.edit_text_pass_new_confirm);
+        mTextViewBack = (TextView) findViewById(R.id.text_view_back);
+        mTextViewSave = (TextView) findViewById(R.id.text_view_save);
+        mTextViewSave.setOnClickListener(this);
+        mTextViewBack.setOnClickListener(this);
     }
 
     private void save() {
@@ -115,6 +121,19 @@ public class PasswordConfigActivity extends ActionBarActivity {
                 return true;
             default:
                 return false;
+        }
+    }
+
+    @Override
+    public void onClick(View v) {
+        switch (v.getId()) {
+            case R.id.text_view_back:
+                finish();
+                break;
+            case R.id.text_view_save:
+                save();
+                Utils.hideKeyboard(this);
+                break;
         }
     }
 }

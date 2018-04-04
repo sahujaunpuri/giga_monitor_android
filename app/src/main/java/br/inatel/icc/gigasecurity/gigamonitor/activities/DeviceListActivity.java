@@ -2,8 +2,10 @@ package br.inatel.icc.gigasecurity.gigamonitor.activities;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
 import android.view.Menu;
@@ -12,6 +14,10 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.ExpandableListView;
+import android.widget.ImageButton;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.crashlytics.android.Crashlytics;
@@ -27,7 +33,7 @@ import br.inatel.icc.gigasecurity.gigamonitor.model.Device;
 import br.inatel.icc.gigasecurity.gigamonitor.model.StatePreferences;
 import io.fabric.sdk.android.Fabric;
 
-public class DeviceListActivity extends ActionBarActivity {
+public class DeviceListActivity extends ActionBarActivity implements View.OnClickListener {
     private final String TAG = "MainActivity";
     public static Context mContext;
     public static ExpandableListView mExpandableListView;
@@ -38,6 +44,10 @@ public class DeviceListActivity extends ActionBarActivity {
     public static int expandedGroups = 0;
     public static boolean running = false;
     private StatePreferences statePreferences;
+    private TextView mTextViewEdit;
+    private ImageView mImageViewAdd, mImageViewGallery;
+    private ImageButton mImageViewCloud3Btn;
+    private LinearLayout mLinearLayoutHeader;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -58,13 +68,25 @@ public class DeviceListActivity extends ActionBarActivity {
             mDeviceManager.init(this);
 
         initComponents();
-
-//        Thread.setDefaultUncaughtExceptionHandler(new MyExceptionHandler(this, DeviceListActivity.class));
+        setListeners();
 
         //if don't have any device registered, start InitialActivity.
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(mContext);
+        SharedPreferences.Editor editor = prefs.edit();
         if(mDevices.size() == 1) {
             startInitialActivity();
-//            finish();
+            editor.putBoolean("newUser", true);
+            editor.putBoolean("cloud2", false);
+            editor.commit();
+        } else {
+            if (prefs.getBoolean("cloud2", true)) {
+                editor.putBoolean("newUser", false);
+                editor.commit();
+                for (Device device : mDevices) {
+                    if (!device.alreadyOptimized)
+                        device.optimize = true;
+                }
+            }
         }
 
         try {
@@ -98,6 +120,7 @@ public class DeviceListActivity extends ActionBarActivity {
         }
 
         mDeviceManager.setSharedPreferences(mContext.getSharedPreferences("state", MODE_PRIVATE));
+        getSupportActionBar().hide();
 
     }
 
@@ -108,14 +131,23 @@ public class DeviceListActivity extends ActionBarActivity {
         if(getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE) {
             getWindow().clearFlags(WindowManager.LayoutParams.FLAG_FORCE_NOT_FULLSCREEN);
             getWindow().addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
-//            getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
+            mImageViewCloud3Btn.setVisibility(View.GONE);
             getSupportActionBar().hide();
+            mLinearLayoutHeader.setVisibility(View.GONE);
             if(previousGroup != -1) {
                 mExpandableListView.scrollTo(previousGroup, 0);
             }
         } else{
-            getSupportActionBar().show();
             getWindow().clearFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
+            getSupportActionBar().hide();
+            mLinearLayoutHeader.setVisibility(View.VISIBLE);
+
+            SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(mContext);
+            boolean cloud2 = prefs.getBoolean("cloud2", true);
+            boolean newUser = prefs.getBoolean("newUser", true);
+//            if (cloud2 && !newUser) {
+                mImageViewCloud3Btn.setVisibility(View.VISIBLE);
+//            }
         }
 
         if(previousGroup != -1)
@@ -146,7 +178,6 @@ public class DeviceListActivity extends ActionBarActivity {
         if(mDeviceManager.collapse >=0 && previousGroup == mDeviceManager.collapse) {
             if(mExpandableListView.isGroupExpanded(mDeviceManager.collapse))
                 mExpandableListView.collapseGroup(mDeviceManager.collapse);
-//            mAdapter.childViewHolder.get(mDeviceManager.collapse).recyclerViewChannels = null;
             mDeviceManager.collapse = -1;
             previousGroup = -1;
             mAdapter.notifyDataSetChanged();
@@ -158,14 +189,17 @@ public class DeviceListActivity extends ActionBarActivity {
             previousGroup = statePreferences.previousGroup;
             if (previousGroup > -1 && mDeviceManager.networkType > -1) {
                 mExpandableListView.expandGroup(previousGroup);
-            } else if(mDeviceManager.networkType == 1 && mDeviceManager.someDeviceIsRecording()) {
+            } else if (mDeviceManager.networkType == 1 && mDeviceManager.someDeviceIsRecording()) {
                 Toast.makeText(mContext, "Finalize a gravação", Toast.LENGTH_SHORT).show();
             }
             Log.d(TAG, "onResume: group: " + previousGroup + ", channel: " + statePreferences.previousChannel + ", grid: " + statePreferences.previousGrid + ", HD: " + statePreferences.previousHD);
             mDeviceManager.loadedState = true;
         }
 
-        mDeviceManager.loginAllDevices();
+        getSupportActionBar().hide();
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
+        mImageViewCloud3Btn.setVisibility(View.VISIBLE);
+
     }
 
     @Override
@@ -187,7 +221,7 @@ public class DeviceListActivity extends ActionBarActivity {
         } catch (Exception error) {
             error.printStackTrace();
         }
-
+        mDeviceManager.saveState(statePreferences);
     }
 
     private void initComponents() {
@@ -202,7 +236,17 @@ public class DeviceListActivity extends ActionBarActivity {
 
         mExpandableListView.setAdapter(mAdapter);
         mAdapter.notifyDataSetChanged();
+        mImageViewGallery = (ImageView) findViewById(R.id.image_view_gallery);
+        mTextViewEdit     = (TextView) findViewById(R.id.text_view_edit);
+        mImageViewAdd     = (ImageView) findViewById(R.id.image_view_add);
+        mImageViewCloud3Btn = (ImageButton) findViewById(R.id.image_button_cloud3);
+        mLinearLayoutHeader = (LinearLayout) findViewById(R.id.layout_header);
+    }
 
+    private void setListeners() {
+        mImageViewGallery.setOnClickListener(this);
+        mTextViewEdit.setOnClickListener(this);
+        mImageViewAdd.setOnClickListener(this);
     }
 
     private void verifyIfSomeChannelIsSoundingOrRecording() {
@@ -233,11 +277,8 @@ public class DeviceListActivity extends ActionBarActivity {
 
                 return true;
             case (R.id.action_media):
-//                collapseAll();
                 startMediaActivity();
-
                 return true;
-
             default:
                 return super.onOptionsItemSelected(item);
         }
@@ -265,10 +306,7 @@ public class DeviceListActivity extends ActionBarActivity {
     }
 
     private void startEditActivity() {
-        /*Bundle extras = new Bundle();
-        extras.putSerializable("devices", mDevices);*/
         Intent intent = new Intent(mContext, DeviceEditListActivity.class);
-//        intent.putExtras(extras);
         startActivity(intent);
     }
 
@@ -287,5 +325,20 @@ public class DeviceListActivity extends ActionBarActivity {
         setIntent.addCategory(Intent.CATEGORY_HOME);
         setIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         startActivity(setIntent);
+    }
+
+    @Override
+    public void onClick(View v) {
+        switch (v.getId()) {
+            case R.id.text_view_edit:
+                startEditActivity();
+                break;
+            case R.id.image_view_add:
+                startInitialActivity();
+                break;
+            case R.id.image_view_gallery:
+                startMediaActivity();
+                break;
+        }
     }
 }

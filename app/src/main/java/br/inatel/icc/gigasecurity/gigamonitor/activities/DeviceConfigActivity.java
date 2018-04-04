@@ -81,7 +81,7 @@ public class DeviceConfigActivity extends ActionBarActivity {
         builder.setMessage(text)
                 .setPositiveButton(labelYes, new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int id) {
-                        //mDeviceManager.rebootDevice(mDevice);
+                        mDeviceManager.rebootDevice(mDevice);
 
                         startDeviceListActivity();
                     }

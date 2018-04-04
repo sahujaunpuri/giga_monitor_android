@@ -8,13 +8,9 @@ import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.media.MediaMetadataRetriever;
-import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.AsyncTask;
-import android.os.Bundle;
 import android.os.Environment;
-import android.os.Handler;
-import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -22,7 +18,6 @@ import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.GridView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -34,7 +29,6 @@ import java.util.Date;
 
 import br.inatel.icc.gigasecurity.gigamonitor.R;
 import br.inatel.icc.gigasecurity.gigamonitor.activities.MediaActivity;
-import br.inatel.icc.gigasecurity.gigamonitor.activities.MediaVideoActivity;
 import br.inatel.icc.gigasecurity.gigamonitor.core.DeviceManager;
 import br.inatel.icc.gigasecurity.gigamonitor.listeners.MediaListener;
 
@@ -69,6 +63,8 @@ public class MediaGridAdapter extends BaseAdapter {
 
     public static Drawable blankDrawable;
     private MediaListener mMediaListener;
+
+    final int rowHigh = 270;
 
     public MediaGridAdapter(Context mContext, MediaListener mediaListener) {
         this.mContext = mContext;
@@ -184,10 +180,10 @@ public class MediaGridAdapter extends BaseAdapter {
             convertView = mInflater.inflate(R.layout.recycler_view_media_item, parent, false);
             if(this.pictureMode) {
                 imageView = (TextView) convertView.findViewById(R.id.media_text_view);
-                convertView.setLayoutParams(new GridView.LayoutParams(GridView.AUTO_FIT, 120));
+                convertView.setLayoutParams(new GridView.LayoutParams(GridView.AUTO_FIT, rowHigh));
             } else {
                 videoView = (TextView) convertView.findViewById(R.id.media_text_view);
-                convertView.setLayoutParams(new GridView.LayoutParams(GridView.AUTO_FIT, 120));
+                convertView.setLayoutParams(new GridView.LayoutParams(GridView.AUTO_FIT, rowHigh));
             }
         } else {
             if(this.pictureMode) {
