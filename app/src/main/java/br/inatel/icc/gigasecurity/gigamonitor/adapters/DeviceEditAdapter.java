@@ -10,6 +10,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
+import android.widget.Switch;
 import android.widget.TextView;
 
 import java.util.ArrayList;
@@ -61,16 +62,21 @@ public class DeviceEditAdapter extends BaseAdapter {
 
             holder.delete = (ImageView) convertView.findViewById(R.id.iv_delete_device);
             holder.deviceName = (TextView) convertView.findViewById(R.id.tv_item_edit_device);
+            holder.deviceIcon = (ImageView) convertView.findViewById(R.id.image_view_device_icon);
+            holder.enable = (Switch) convertView.findViewById(R.id.switch_enable_device);
             convertView.setTag(holder);
         } else {
             holder = (ViewHolder) convertView.getTag();
         }
 
-//        if(mDevices.get(position).getId() == ("Favoritos").hashCode()) {
+        holder.deviceIcon.setImageDrawable(mContex.getResources().getDrawable(R.drawable.dvr_icon));
+
         if(mDevices.get(position).getDeviceName().equals("Favoritos")) {
             holder.delete.setVisibility(View.INVISIBLE);
+            holder.enable.setVisibility(View.INVISIBLE);
         } else {
             holder.delete.setVisibility(View.VISIBLE);
+            holder.enable.setVisibility(View.VISIBLE);
         }
 
         holder.deviceName.setText(mDevices.get(position).deviceName);
@@ -80,7 +86,7 @@ public class DeviceEditAdapter extends BaseAdapter {
                 showDeleteConfirmation(position);
             }
         });
-//        if(mDevices.get(position).getId() != ("Favoritos").hashCode())
+
         if(!mDevices.get(position).getDeviceName().equals("Favoritos"))
             holder.deviceName.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -88,6 +94,16 @@ public class DeviceEditAdapter extends BaseAdapter {
                     startDeviceFormActivity(position);
                 }
             });
+
+        holder.enable.setChecked(mDevices.get(position).isEnable());
+
+        holder.enable.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                mDevices.get(position).setEnable(holder.enable.isChecked());
+            }
+        });
+
         convertView.setTag(holder);
         return convertView;
     }
@@ -95,7 +111,6 @@ public class DeviceEditAdapter extends BaseAdapter {
     private void startDeviceFormActivity(int position) {
         Bundle args = new Bundle();
 
-//        args.putSerializable("device", mDevices.get(position));
         args.putInt("index", position);
 
         Intent intent = new Intent(mContex, DeviceFormActivity.class);
@@ -105,8 +120,7 @@ public class DeviceEditAdapter extends BaseAdapter {
     }
 
     private void showDeleteConfirmation(final int deletePosition) {
-        AlertDialog.Builder alert = new AlertDialog.Builder(
-                mContex, R.style.Base_Theme_AppCompat_Light_Dialog);
+        AlertDialog.Builder alert = new AlertDialog.Builder(mContex, R.style.Base_Theme_AppCompat_Light_Dialog);
 
         alert.setTitle(R.string.action_delete);
         alert.setMessage(R.string.action_delete_confirmation);
@@ -127,7 +141,9 @@ public class DeviceEditAdapter extends BaseAdapter {
     }
 
     private class ViewHolder {
+        private Switch enable;
         private ImageView delete;
         private TextView deviceName;
+        private ImageView deviceIcon;
     }
 }

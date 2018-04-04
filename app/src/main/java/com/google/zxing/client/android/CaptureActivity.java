@@ -479,7 +479,7 @@ public final class CaptureActivity extends Activity implements SurfaceHolder.Cal
     extras.putInt("index", -2);
     Intent i = new Intent(this, DeviceFormActivity.class);
     i.putExtras(extras);
-//    startActivity(i);
+    device.setCloudPriorityConnection(true);
     startActivityForResult(i, 1);
 
 //    finish();

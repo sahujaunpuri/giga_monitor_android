@@ -3,44 +3,37 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_height="wrap_content"
     android:layout_width="match_parent"
-    android:orientation="vertical">
+    android:orientation="horizontal">
 
-    <TableLayout
-        android:layout_width="fill_parent"
+    <ImageView
+        style="@style/ImageViewDeleteIconEditDevice"
+        android:id="@+id/iv_delete_device"
+        android:layout_gravity="center_vertical" />
+
+    <Switch
+        android:id="@+id/switch_enable_device"
+        style="@style/Switch"
+        android:layout_marginTop="50dp"
+        android:theme="@style/GigaSwitch" />
+
+    <ImageView
+        android:id="@+id/image_view_device_icon"
+        style="@style/ImageViewDeviceIconEditDevice" />
+
+    <LinearLayout
         android:layout_height="wrap_content"
-        android:stretchColumns="1">
+        android:layout_width="wrap_content"
+        android:orientation="vertical"
+        android:layout_gravity="center">
 
-        <TableRow
-            android:id="@+id/tableRow1"
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="0dp"
-            android:layout_marginBottom="0dp"
-            android:gravity="center" >
+        <TextView
+            style="@style/TextViewDeviceNameEditDevice"
+            android:id="@+id/tv_item_edit_device" />
 
-            <ImageView
-                android:layout_width="30dp"
-                android:layout_height="30dp"
-                android:gravity="center_vertical"
-                android:src="@android:drawable/ic_delete"
-                android:id="@+id/iv_delete_device" />
+    </LinearLayout>
 
-            <TextView
-                android:id="@+id/tv_item_edit_device"
-                android:layout_height="50dp"
-                android:layout_width="match_parent"
-                android:textAppearance="?android:attr/textAppearanceMedium"
-                android:gravity="center_vertical"
-                android:textSize="20dp"
-                android:paddingLeft="8dp" />
-
-            <ImageView
-                android:id="@+id/iv_item_edit_device"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="right|center_vertical"
-                android:background="@drawable/ic_list" />
-        </TableRow>
-    </TableLayout>
+    <ImageView
+        android:id="@+id/iv_item_edit_device"
+        style="@style/ImageViewReplaceDeviceIconEditDevice" />
 
 </LinearLayout>

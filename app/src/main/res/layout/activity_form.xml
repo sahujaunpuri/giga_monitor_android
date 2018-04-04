@@ -1,201 +1,185 @@
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:paddingLeft="@dimen/activity_horizontal_margin"
-    android:paddingRight="@dimen/activity_horizontal_margin"
-    android:paddingBottom="@dimen/activity_vertical_margin"
-    android:paddingTop="10dp"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
     tools:context="br.inatel.icc.gigasecurity.gigamonitor.activities.DeviceFormActivity" >
 
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center">
+
+        <TextView
+            style="@style/ActionBarTextView"
+            android:text="@string/back"
+            android:id="@+id/text_view_back"/>
+
+        <TextView
+            style="@style/ActionBarTitle"
+            android:text="@string/new_device"/>
+
+        <TextView
+            style="@style/ActionBarTextView"
+            android:id="@+id/text_view_save"
+            android:text="@string/save"/>
+
+    </LinearLayout>
 
     <ScrollView
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="wrap_content"
         android:id="@+id/scrollView" >
 
         <LinearLayout
             android:orientation="vertical"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
-
-            <TextView
-                android:id="@+id/text_view_name"
-                android:layout_width="wrap_content"
-                android:layout_height="28dp"
-                android:text="@string/name" />
-
-            <EditText
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:ems="10"
-                android:id="@+id/edit_text_device_form_name"
-                android:textColor="@color/secondary_color"
-                android:hint="@string/name_hint"
-                android:textColorHint="@android:color/secondary_text_light_nodisable"
-                android:nextFocusForward="@+id/edit_text_device_form_serial"
-                android:inputType="text"
-                android:imeOptions="actionNext"/>
+            android:layout_height="wrap_content"
+            android:layout_marginTop="30dp">
 
             <LinearLayout
-                android:id="@+id/serial_linear_layout"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:orientation="horizontal">
+                style="@style/LinearLayoutHorizontalStyle">
 
                 <TextView
+                    android:id="@+id/text_view_name"
+                    android:text="@string/name"
+                    style="@style/TextViewStyle"/>
+
+                <EditText
+                    style="@style/EditTextStyle"
+                    android:id="@+id/edit_text_device_form_name"
+                    android:paddingLeft="10dp"
+                    android:paddingRight="10dp"
+                    android:nextFocusForward="@+id/edit_text_device_form_serial"
+                    android:inputType="text" />
+
+            </LinearLayout>
+
+            <LinearLayout style="@style/LinearLayoutHorizontalStyle">
+
+                <TextView
+                    style="@style/TextViewStyle"
                     android:id="@+id/text_view_serial"
-                    android:layout_width="0dp"
-                    android:layout_height="28dp"
-                    android:layout_weight="1"
                     android:hint="@string/serial"
                     android:text="@string/serial" />
 
-                <CheckBox
+                <EditText
+                    style="@style/EditTextStyle"
+                    android:ems="8"
+                    android:id="@+id/edit_text_device_form_serial"
+                    android:paddingLeft="10dp"
+                    android:paddingRight="10dp"
+                    android:digits="0123456789abcdef"
+                    android:nextFocusForward="@+id/edit_text_device_form_ip_address" />
+
+                <Switch
+                    style="@style/Switch"
                     android:id="@+id/serial_checkbox"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:checked="true"
-                    android:gravity="center_horizontal" />
+                    android:theme="@style/GigaSwitch"/>
 
             </LinearLayout>
 
-            <EditText
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:ems="10"
-                android:id="@+id/edit_text_device_form_serial"
-                android:textColor="@color/secondary_color"
-                android:hint="@string/serial_hint"
-                android:textColorHint="@android:color/secondary_text_light_nodisable"
-                android:nextFocusForward="@+id/edit_text_device_form_ip_address"
-                android:inputType="text"
-                android:imeOptions="actionNext"/>
-
-            <LinearLayout
-                android:id="@+id/ip_linear_layout"
-                android:orientation="horizontal"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent">
+            <LinearLayout style="@style/LinearLayoutHorizontalStyle">
 
                 <TextView
+                    style="@style/TextViewStyle"
                     android:id="@+id/text_view_ip_address"
-                    android:layout_width="0dp"
-                    android:layout_height="28dp"
-                    android:layout_weight="1"
                     android:text="@string/ip" />
 
-                <CheckBox
+                <EditText
+                    style="@style/EditTextStyle"
+                    android:ems="8"
+                    android:id="@+id/edit_text_device_form_ip_address"
+                    android:paddingLeft="10dp"
+                    android:paddingRight="10dp"
+                    android:digits="0123456789."
+                    android:nextFocusForward="@+id/edit_text_device_form_domain"
+                    android:inputType="numberDecimal" />
+
+                <Switch
+                    style="@style/Switch"
                     android:id="@+id/ip_checkbox"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:checked="true"
-                    android:padding="0dp"
-                    android:gravity="center_horizontal"/>
+                    android:theme="@style/GigaSwitch"/>
 
             </LinearLayout>
 
-            <EditText
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:ems="10"
-                android:id="@+id/edit_text_device_form_ip_address"
-                android:textColor="@color/secondary_color"
-                android:hint="@string/ip_address_hint"
-                android:textColorHint="@android:color/secondary_text_light_nodisable"
-                android:digits="0123456789."
-                android:nextFocusForward="@+id/edit_text_device_form_domain"
-                android:inputType="numberDecimal"
-                android:imeOptions="actionNext"/>
-
-            <LinearLayout
-                android:id="@+id/domain_linear_layout"
-                android:orientation="horizontal"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent">
+            <LinearLayout style="@style/LinearLayoutHorizontalStyle">
 
                 <TextView
+                    style="@style/TextViewStyle"
                     android:id="@+id/text_view_domain"
-                    android:layout_width="0dp"
-                    android:layout_height="28dp"
-                    android:layout_weight="1"
                     android:text="@string/domain" />
 
-                <CheckBox
+                <EditText
+                    style="@style/EditTextStyle"
+                    android:ems="8"
+                    android:paddingLeft="10dp"
+                    android:paddingRight="10dp"
+                    android:id="@+id/edit_text_device_form_domain"
+                    android:nextFocusForward="@+id/tv_external_port"
+                    android:inputType="text" />
+
+                <Switch
+                    style="@style/Switch"
                     android:id="@+id/domain_checkbox"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:checked="true"
-                    android:gravity="center_horizontal"/>
+                    android:theme="@style/GigaSwitch"/>
 
             </LinearLayout>
 
-            <EditText
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:ems="10"
-                android:id="@+id/edit_text_device_form_domain"
-                android:textColor="@color/secondary_color"
-                android:hint="@string/domain_hint"
-                android:textColorHint="@android:color/secondary_text_light_nodisable"
-                android:nextFocusForward="@+id/tv_external_port"
-                android:inputType="text"
-                android:imeOptions="actionNext"/>
+            <LinearLayout style="@style/LinearLayoutHorizontalStyle">
 
-            <TextView
-                android:id="@+id/tv_port"
-                android:layout_width="wrap_content"
-                android:layout_height="28dp"
-                android:hint="@string/device_port"
-                android:text="@string/device_port" />
+                <TextView
+                    style="@style/TextViewStyle"
+                    android:id="@+id/tv_port"
+                    android:text="@string/device_port" />
 
-            <EditText
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:ems="10"
-                android:id="@+id/edit_text_device_form_port"
-                android:textColor="@color/secondary_color"
-                android:hint="34567"
-                android:text="34567"
-                android:textColorHint="@android:color/secondary_text_light_nodisable"
-                android:digits="0123456789"
-                android:inputType="number"
-                android:imeOptions="actionNext"/>
+                <EditText
+                    style="@style/EditTextStyle"
+                    android:id="@+id/edit_text_device_form_port"
+                    android:paddingLeft="10dp"
+                    android:paddingRight="10dp"
+                    android:text="34567"
+                    android:digits="0123456789"
+                    android:inputType="number" />
 
-            <TextView
-                android:id="@+id/tvPort"
-                android:layout_width="wrap_content"
-                android:layout_height="28dp"
-                android:text="@string/user" />
+            </LinearLayout>
 
-            <EditText
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:ems="10"
-                android:id="@+id/edit_text_device_form_username"
-                android:textColor="@color/secondary_color"
-                android:hint="@string/user"
-                android:text="admin"
-                android:textColorHint="@android:color/secondary_text_light_nodisable"
-                android:inputType="text"
-                android:imeOptions="actionNext"/>
+            <LinearLayout style="@style/LinearLayoutHorizontalStyle">
 
-            <TextView
-                android:id="@+id/tvPassword"
-                android:layout_width="wrap_content"
-                android:layout_height="28dp"
-                android:text="@string/password" />
+                <TextView
+                    style="@style/TextViewStyle"
+                    android:id="@+id/tvPort"
+                    android:text="@string/user" />
 
-            <EditText
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:ems="10"
-                android:id="@+id/edit_text_device_form_password"
-                android:textColor="@color/secondary_color"
-                android:hint="@string/password_hint"
-                android:textColorHint="@android:color/secondary_text_light_nodisable"
-                android:inputType="textPassword" />
+                <EditText
+                    style="@style/EditTextStyle"
+                    android:id="@+id/edit_text_device_form_username"
+                    android:paddingLeft="10dp"
+                    android:paddingRight="10dp"
+                    android:text="admin"
+                    android:inputType="text" />
+
+            </LinearLayout>
+
+            <LinearLayout style="@style/LinearLayoutHorizontalStyle">
+
+                <TextView
+                    style="@style/TextViewStyle"
+                    android:id="@+id/tvPassword"
+                    android:text="@string/password" />
+
+                <EditText
+                    style="@style/EditTextStyle"
+                    android:paddingLeft="10dp"
+                    android:paddingRight="10dp"
+                    android:id="@+id/edit_text_device_form_password"
+                    android:inputType="textPassword" />
+
+            </LinearLayout>
+
         </LinearLayout>
+
     </ScrollView>
 
-</RelativeLayout>
+</LinearLayout>

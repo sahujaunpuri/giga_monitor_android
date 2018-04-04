@@ -1,10 +1,33 @@
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:paddingLeft="@dimen/activity_horizontal_margin"
-    android:paddingRight="@dimen/activity_horizontal_margin"
+    android:orientation="vertical"
     tools:context="br.inatel.icc.gigasecurity.gigamonitor.config.ethernet.EthernetConfigActivity">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center">
+
+        <TextView
+            style="@style/ActionBarTextView"
+            android:text="@string/back"
+            android:id="@+id/text_view_back"/>
+
+
+
+        <TextView
+            style="@style/ActionBarTitle"
+            android:text="Ethernet"/>
+
+        <TextView
+            style="@style/ActionBarTextView"
+            android:id="@+id/text_view_save"
+            android:text="@string/save"/>
+
+    </LinearLayout>
 
     <ScrollView
         android:id="@+id/scroll_view_ethernet"
@@ -15,50 +38,53 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:focusableInTouchMode="true"
-            android:orientation="vertical"
-            android:paddingBottom="@dimen/activity_horizontal_margin"
-            android:paddingTop="@dimen/activity_horizontal_margin">
+            android:orientation="vertical">
 
-            <TextView
-                android:layout_marginTop="5dp"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="@string/ip"/>
+            <LinearLayout
+                style="@style/LinearLayoutHorizontalStyle">
 
-            <EditText
-                android:id="@+id/edit_text_ethernet_host_ip"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:hint="192.168.1.3"
-                android:maxLines="1"/>
+                <TextView
+                    android:id="@+id/text_view_name"
+                    android:text="@string/ip"
+                    style="@style/TextViewStyle"/>
 
-            <TextView
-                android:layout_marginTop="5dp"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="@string/label_submask"/>
+                <EditText
+                    style="@style/EditTextStyle"
+                    android:id="@+id/edit_text_ethernet_host_ip"
+                    android:inputType="text" />
 
-            <EditText
-                android:id="@+id/edit_text_ethernet_submask"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:hint="255.255.255.0"
-                android:maxLines="1"/>
+            </LinearLayout>
 
-            <TextView
-                android:layout_marginTop="5dp"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="Gateway"/>
+            <LinearLayout
+                style="@style/LinearLayoutHorizontalStyle">
 
-            <EditText
-                android:id="@+id/edit_text_ethernet_gateway"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:hint="192.168.1.1"
-                android:maxLines="1"/>
+                <TextView
+                    android:text="@string/label_submask"
+                    style="@style/TextViewStyle"/>
+
+                <EditText
+                    style="@style/EditTextStyle"
+                    android:id="@+id/edit_text_ethernet_submask"
+                    android:inputType="text" />
+
+            </LinearLayout>
+
+            <LinearLayout
+                style="@style/LinearLayoutHorizontalStyle">
+
+                <TextView
+                    android:text="Gateway"
+                    style="@style/TextViewStyle"/>
+
+                <EditText
+                    style="@style/EditTextStyle"
+                    android:id="@+id/edit_text_ethernet_gateway"
+                    android:inputType="text" />
+
+            </LinearLayout>
 
         </LinearLayout>
+
     </ScrollView>
 
-</RelativeLayout>
+</LinearLayout>

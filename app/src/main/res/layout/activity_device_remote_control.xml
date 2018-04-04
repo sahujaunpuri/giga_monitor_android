@@ -8,45 +8,96 @@
     tools:context="br.inatel.icc.gigasecurity.gigamonitor.activities.DeviceRemoteControlActivity">
 
     <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center">
+
+        <TextView
+            style="@style/ActionBarTextView"
+            android:text="@string/button_cancel"
+            android:id="@+id/text_view_cancel"/>
+
+        <TextView
+            style="@style/ActionBarTitle"
+            android:text="Controle Remoto"/>
+
+        <TextView
+            style="@style/ActionBarTextView"
+            android:text="@string/button_cancel"
+            android:visibility="invisible"/>
+
+    </LinearLayout>
+
+    <LinearLayout
         android:orientation="horizontal"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal"
-        android:layout_margin="20dp"
+        android:layout_margin="5dp"
+        android:layout_marginTop="5dp"
+        android:layout_marginRight="5dp"
+        android:layout_marginLeft="5dp"
+        android:layout_marginBottom="5dp"
         android:gravity="center">
 
-        <ImageView
+        <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:id="@+id/iv_control_esc"
-            android:src="@drawable/ic_esc"
-            android:layout_margin="15dp"
-            android:layout_gravity="left" />
+            android:orientation="vertical">
 
-        <ImageView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:src="@drawable/ic_quad"
-            android:id="@+id/iv_control_quad"
-            android:layout_margin="15dp"
-            android:layout_gravity="center_horizontal" />
+            <ImageView
+                style="@style/ImageButtonActivityRemoteControl"
+                android:src="@drawable/ptz_esc_btn_style"
+                android:id="@+id/iv_control_esc" />
 
-        <ImageView
+            <TextView
+                style="@style/TextViewActivityRemoteControl"
+                android:text="esc" />
+
+        </LinearLayout>
+
+        <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:id="@+id/iv_control_menu"
-            android:src="@drawable/ic_menu"
-            android:layout_margin="15dp"
-            android:layout_gravity="right" />
+            android:orientation="vertical">
+
+            <ImageView
+                style="@style/ImageButtonActivityRemoteControl"
+                android:src="@drawable/ptz_screen_btn_style"
+                android:id="@+id/iv_control_quad" />
+
+            <TextView
+                style="@style/TextViewActivityRemoteControl"
+                android:text="telas" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <ImageView
+                style="@style/ImageButtonActivityRemoteControl"
+                android:src="@drawable/ptz_menu_btn_style"
+                android:id="@+id/iv_control_menu" />
+
+            <TextView
+                style="@style/TextViewActivityRemoteControl"
+                android:text="menu" />
+
+        </LinearLayout>
 
     </LinearLayout>
 
     <ImageView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="150dp"
+        android:layout_height="80dp"
+        android:layout_marginBottom="-30dp"
+        android:layout_marginTop="45dp"
         android:id="@+id/iv_control_up"
-        android:src="@drawable/ic_up"
-        android:layout_margin="15dp"
+        android:src="@drawable/ptz_up_btn_style"
         android:layout_gravity="center" />
 
     <LinearLayout
@@ -56,36 +107,35 @@
         android:gravity="center">
 
         <ImageView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="80dp"
+            android:layout_height="150dp"
             android:id="@+id/iv_controle_left"
-            android:src="@drawable/ic_left"
-            android:layout_margin="15dp"
+            android:src="@drawable/ptz_left_btn_style"
             android:layout_gravity="left|center_vertical" />
 
         <ImageView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="90dp"
+            android:layout_height="90dp"
+            android:layout_marginBottom="30dp"
             android:id="@+id/iv_control_ok"
-            android:src="@drawable/ic_ok"
-            android:layout_margin="15dp"
+            android:src="@drawable/ptz_ok_btn_style"
             android:layout_gravity="left|bottom" />
 
         <ImageView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="80dp"
+            android:layout_height="150dp"
             android:id="@+id/iv_control_right"
-            android:src="@drawable/ic_right"
-            android:layout_margin="15dp"
+            android:src="@drawable/ptz_right_btn_style"
             android:layout_gravity="right|center_vertical" />
     </LinearLayout>
 
     <ImageView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_marginTop="-30dp"
+        android:layout_width="150dp"
+        android:layout_height="80dp"
         android:id="@+id/iv_control_down"
-        android:src="@drawable/ic_down"
-        android:layout_margin="15dp"
+        android:src="@drawable/ptz_down_btn_style"
+        android:layout_marginBottom="20dp"
         android:layout_gravity="center_horizontal|bottom" />
 
 </LinearLayout>

@@ -15,9 +15,9 @@ import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.GridView;
 import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
 
-import br.inatel.icc.gigasecurity.gigamonitor.BuildConfig;
 import br.inatel.icc.gigasecurity.gigamonitor.R;
 import br.inatel.icc.gigasecurity.gigamonitor.adapters.MediaGridAdapter;
 import br.inatel.icc.gigasecurity.gigamonitor.core.DeviceManager;
@@ -29,6 +29,7 @@ public class MediaActivity extends ActionBarActivity {
     public static MediaGridAdapter mAdapter;
     private DeviceManager mDeviceManager;
     public static ImageView ivImage, ivVideo;
+    private TextView tvBack, tvCancel, tvSelect, tvImage, tvVideo, tvDelete, tvEmpty;
     public boolean ivImageSelected = true;
 
     private String SELECT_TITLE_BUTTON = "Selecionar";
@@ -38,6 +39,7 @@ public class MediaActivity extends ActionBarActivity {
     private MenuItem menuItemTrash;
     private MediaListener mMediaListener;
     private boolean checkboxMessage;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -70,6 +72,8 @@ public class MediaActivity extends ActionBarActivity {
 
         if (mDeviceManager.mediaViewDidSelectMovies) {
             didSelectMovies();
+            tvImage.setBackgroundColor(getResources().getColor(R.color.toggle_off));
+            tvVideo.setBackgroundColor(getResources().getColor(R.color.toggle_on));
         }
 
         gvMedia.setOnTouchListener(new View.OnTouchListener() {
@@ -106,6 +110,58 @@ public class MediaActivity extends ActionBarActivity {
                 didSelectMovies();
             }
         });
+
+        tvBack.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                finish();
+            }
+        });
+
+        tvImage.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                toggleToImages();
+            }
+        });
+
+        tvVideo.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                toggleToVideos();
+            }
+        });
+
+        tvSelect.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (!mAdapter.selectItems) {
+                    changeButtonsVisibility(true);
+                    gvMedia.setChoiceMode(GridView.CHOICE_MODE_MULTIPLE_MODAL);
+                } else {
+                    changeButtonsVisibility(false);
+                    gvMedia.setChoiceMode(GridView.CHOICE_MODE_SINGLE);
+                }
+            }
+        });
+
+        tvCancel.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                didCancelSelectMedia();
+                deselectAllViews();
+                mAdapter.clearToDeleteArray();
+            }
+        });
+
+        tvDelete.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                deleteMedias();
+            }
+        });
+
+        getSupportActionBar().hide();
     }
 
     private void didSelectMovies() {
@@ -126,9 +182,17 @@ public class MediaActivity extends ActionBarActivity {
     }
 
     private void initComponents() {
-        gvMedia = (GridView) findViewById(R.id.grid_view_media);
-        ivImage = (ImageView) findViewById(R.id.iv_image);
-        ivVideo = (ImageView) findViewById(R.id.iv_video);
+        gvMedia  = (GridView) findViewById(R.id.grid_view_media);
+        ivImage  = (ImageView) findViewById(R.id.iv_image);
+        ivVideo  = (ImageView) findViewById(R.id.iv_video);
+        tvBack   = (TextView) findViewById(R.id.back_action);
+        tvCancel = (TextView) findViewById(R.id.cancel_action);
+        tvSelect = (TextView) findViewById(R.id.select_action);
+        tvDelete = (TextView) findViewById(R.id.delete_action);
+        tvImage  = (TextView) findViewById(R.id.tv_image);
+        tvVideo  = (TextView) findViewById(R.id.tv_video);
+        tvEmpty  = (TextView) findViewById(R.id.text_view_gallery_empty);
+
         if(ivImageSelected){
             ivVideo.setImageDrawable(getResources().getDrawable(R.drawable.ic_video_off));
             ivImage.setImageDrawable(getResources().getDrawable(R.drawable.ic_camera_on));
@@ -140,6 +204,8 @@ public class MediaActivity extends ActionBarActivity {
             mAdapter.changeGridMode(false);
             mAdapter.notifyDataSetChanged();
         }
+
+        isEmpty();
     }
 
     private void deleteMedias() {
@@ -155,6 +221,7 @@ public class MediaActivity extends ActionBarActivity {
                                         mAdapter.deleteSelectedMedias();
                                         menuItemTrash.setVisible(false);
                                         menuItemSelect.setTitle(SELECT_TITLE_BUTTON);
+                                        didCancelSelectMedia();
                                     }/* else {
                                         deselectAllViews();
                                     }*/
@@ -164,6 +231,7 @@ public class MediaActivity extends ActionBarActivity {
         } else {
             Toast.makeText(getApplicationContext(), "Não há itens selecionados!", Toast.LENGTH_SHORT).show();
         }
+        isEmpty();
     }
 
     private void changeButtonsVisibility(boolean visible) {
@@ -171,12 +239,14 @@ public class MediaActivity extends ActionBarActivity {
             menuItemSelect.setTitle(CANCEL_TITLE_BUTTON);
             menuItemTrash.setVisible(true);
             mAdapter.selectItems = true;
+            didStartSelectMedia();
         } else {
             menuItemSelect.setTitle(SELECT_TITLE_BUTTON);
             menuItemTrash.setVisible(false);
             mAdapter.selectItems = false;
             deselectAllViews();
             mAdapter.clearToDeleteArray();
+            didCancelSelectMedia();
         }
     }
 
@@ -297,6 +367,49 @@ public class MediaActivity extends ActionBarActivity {
             } else if(resultCode == RESULT_OK) {
                 mAdapter.startVideoPosition(pos);
             }
+        }
+    }
+
+    private void toggleToImages() {
+        tvImage.setBackgroundColor(getResources().getColor(R.color.toggle_on));
+        tvVideo.setBackgroundColor(getResources().getColor(R.color.toggle_off));
+        mAdapter.changeGridMode(true);
+        mAdapter.notifyDataSetChanged();
+        ivVideo.setImageDrawable(getResources().getDrawable(R.drawable.ic_video_off));
+        ivImage.setImageDrawable(getResources().getDrawable(R.drawable.ic_camera_on));
+        ivImageSelected = true;
+        verifyButtonsVisibility();
+        mDeviceManager.mediaViewDidSelectMovies = false;
+        isEmpty();
+    }
+
+    private void toggleToVideos() {
+        tvImage.setBackgroundColor(getResources().getColor(R.color.toggle_off));
+        tvVideo.setBackgroundColor(getResources().getColor(R.color.toggle_on));
+        mDeviceManager.mediaViewDidSelectMovies = true;
+        didSelectMovies();
+        isEmpty();
+    }
+
+    private void didStartSelectMedia() {
+        tvBack.setVisibility(View.GONE);
+        tvSelect.setVisibility(View.GONE);
+        tvCancel.setVisibility(View.VISIBLE);
+        tvDelete.setVisibility(View.VISIBLE);
+    }
+
+    private void didCancelSelectMedia() {
+        tvBack.setVisibility(View.VISIBLE);
+        tvSelect.setVisibility(View.VISIBLE);
+        tvCancel.setVisibility(View.GONE);
+        tvDelete.setVisibility(View.GONE);
+    }
+
+    private void isEmpty() {
+        if (mAdapter.getCount() > 0) {
+            tvEmpty.setVisibility(View.GONE);
+        } else {
+            tvEmpty.setVisibility(View.VISIBLE);
         }
     }
 }

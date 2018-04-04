@@ -10,8 +10,6 @@ import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 
 import com.lib.SDKCONST;
-import com.lib.sdk.struct.H264_DVR_FILE_DATA;
-import com.lib.sdk.struct.SDK_SYSTEM_TIME;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -24,9 +22,7 @@ import java.security.NoSuchAlgorithmException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Arrays;
-import java.util.Calendar;
 import java.util.Date;
-import java.util.GregorianCalendar;
 import java.util.Locale;
 
 /**

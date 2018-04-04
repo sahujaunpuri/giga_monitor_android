@@ -8,6 +8,8 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ImageView;
+import android.widget.TextView;
 
 import com.mobeta.android.dslv.DragSortListView;
 
@@ -18,7 +20,9 @@ import br.inatel.icc.gigasecurity.gigamonitor.adapters.DeviceEditAdapter;
 import br.inatel.icc.gigasecurity.gigamonitor.core.DeviceManager;
 import br.inatel.icc.gigasecurity.gigamonitor.model.Device;
 
-public class DeviceEditListActivity extends ActionBarActivity {
+public class DeviceEditListActivity extends ActionBarActivity implements View.OnClickListener {
+    private TextView tvBack;
+    private ImageView ivDone, ivAdd;
     private final String TAG = "DeviceEdit";
     private DeviceEditAdapter mAdapter;
     private ArrayList<Device> mDevices;
@@ -36,24 +40,23 @@ public class DeviceEditListActivity extends ActionBarActivity {
         this.deleted = false;
         this.moved = false;
 
-        /*if(getIntent().getExtras() != null){
-            mDevices = (ArrayList<Device>) getIntent().getExtras().getSerializable("devices");
-        } else {
-            mDevices = new ArrayList<>();
-        }*/
-
         mDeviceManager = DeviceManager.getInstance();
         mDevices = (ArrayList<Device>) mDeviceManager.getDevices().clone();
 
         initComponents();
+        setListeners();
 
         mAdapter = new DeviceEditAdapter(this, mDevices);
         lv.setAdapter(mAdapter);
+
+        getSupportActionBar().hide();
     }
 
     private void initComponents() {
         lv = (DragSortListView) findViewById(R.id.lv_drag_sort_list_view) ;
-
+        tvBack = (TextView) findViewById(R.id.text_view_back);
+        ivAdd  = (ImageView) findViewById(R.id.image_view_add);
+        ivDone = (ImageView) findViewById(R.id.image_view_done);
         lv.setDropListener(onDrop);
         lv.setRemoveListener(onRemove);
         lv.setDragScrollProfile(ssProfile);
@@ -64,6 +67,12 @@ public class DeviceEditListActivity extends ActionBarActivity {
         i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP);
         startActivity(i);
         finish();
+    }
+
+    private void setListeners() {
+        tvBack.setOnClickListener(this);
+        ivAdd.setOnClickListener(this);
+        ivDone.setOnClickListener(this);
     }
 
 
@@ -206,5 +215,26 @@ public class DeviceEditListActivity extends ActionBarActivity {
             }
         });
         alert.show();
+    }
+
+    @Override
+    public void onClick(View v) {
+        switch (v.getId()) {
+            case R.id.text_view_back:
+                if (deleted || moved) {
+                    showBackConfirmation();
+                } else {
+                    finish();
+                }
+                break;
+            case R.id.image_view_add:
+                startInitialActivity();
+                break;
+            case R.id.image_view_done:
+                exitAndSave();
+                break;
+            default:
+                break;
+        }
     }
 }

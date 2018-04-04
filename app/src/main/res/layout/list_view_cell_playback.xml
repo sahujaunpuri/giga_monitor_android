@@ -3,7 +3,8 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="horizontal" android:layout_width="match_parent"
     android:layout_height="40dp"
-    android:layout_gravity="center">
+    android:layout_gravity="center"
+    android:layout_marginTop="10dp">
 
     <TextView
         android:id="@+id/text_start_time"
@@ -12,6 +13,7 @@
         android:gravity="center"
         android:layout_gravity="center"
         android:layout_weight="1"/>
+
     <TextView
         android:id="@+id/text_end_time"
         android:layout_width="match_parent"
@@ -27,12 +29,21 @@
         android:gravity="center"
         android:layout_gravity="center"
         android:layout_weight="1"/>
+
     <TextView
         android:id="@+id/text_video_quality"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:gravity="center"
         android:layout_gravity="center"
-        android:layout_weight="1"/>
+        android:layout_weight="1"
+        android:visibility="gone"/>
+
+    <ImageView
+        android:layout_width="24dp"
+        android:layout_height="24dp"
+        android:src="@drawable/play_btn_style"
+        android:gravity="center"
+        android:layout_gravity="center"/>
 
 </LinearLayout>

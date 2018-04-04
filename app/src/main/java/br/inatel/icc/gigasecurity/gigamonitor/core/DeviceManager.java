@@ -72,10 +72,10 @@ import static br.inatel.icc.gigasecurity.gigamonitor.activities.DeviceListActivi
  */
 public class DeviceManager implements IFunSDKResult {
 
-    private static final String APP_UUID = "e29c9d4ac9fa41fab19413885818ca54";
-    private static final String APP_KEY = "d55b6614829f4d1c84d3ab2a9193234b";
-    private static final String APP_SECRET = "7a58fdbc242b4f6ba95652b7a3502b91";
-    private static final int APP_MOVECARD = 8;
+    private static final String APP_UUID = "GIGA";
+    private static final String APP_KEY = "743a9ea517924b2dbfa2cfc007c0a147";
+    private static final String APP_SECRET = "62d3c9a2a51245b4a42e2d952b8dcbbc";
+    private static final int APP_MOVECARD = 4;
     private static final String SERVER_IP_OLD = "cloudgiga.com.br";
     private static final String SERVER_IP_NEW = "200.219.196.58";
     private static String SERVER_IP = SERVER_IP_NEW;
@@ -88,6 +88,7 @@ public class DeviceManager implements IFunSDKResult {
 
     public ArrayList<FavoritePair> favoritesList;
     private ArrayList<Device> mDevices = new ArrayList<Device>();
+    public ArrayList<Device> devicesWithJsonError = new ArrayList<Device>();
     private ArrayList<Device> mLanDevices = new ArrayList<Device>();
     public ArrayList<Device> mFavoriteDevices = new ArrayList<Device>();
     public LinkedList<SurfaceViewComponent> startList = new LinkedList<SurfaceViewComponent>();
@@ -154,7 +155,8 @@ public class DeviceManager implements IFunSDKResult {
 
 //        FunSDK.InitEx(0, G.ObjToBytes(initparam), "GIGA_", "", 0);
         FunSDK.InitExV2(0, G.ObjToBytes(initparam), 4, "GIGA_", SERVER_IP, 8765);
-        FunSDK.SysSetServerIPPort("MI_SERVER", SERVER_IP, 80);
+        FunSDK.SetFunIntAttr(EFUN_ATTR.DSS_STREAM_ENC_SYN_DEV, 1);
+//        FunSDK.SysSetServerIPPort("MI_SERVER", SERVER_IP, 80);
 
 //        FunSDK.Init(0, G.ObjToBytes(initparam));
 
@@ -162,15 +164,15 @@ public class DeviceManager implements IFunSDKResult {
         String defaultPath = getMediaPath(context) + File.separator + context.getPackageName() + File.separator;
         FunSDK.SetFunStrAttr(EFUN_ATTR.APP_PATH, defaultPath);
 
-        FunSDK.SysInitAsAPModle("ConfigPath/ap.txt");
+//        FunSDK.SysInitAsAPModle("ConfigPath/ap.txt");
 
-        FunSDK.SysInitNet(SERVER_IP, SERVER_PORT);
-
-        FunSDK.SysInitLocal(defaultPath + "DBFile.db");
+        FunSDK.SysInitNet("223.4.33.127;54.84.132.236;112.124.0.188", 15010);
 
         FunSDK.XMCloundPlatformInit(APP_UUID, APP_KEY, APP_SECRET, APP_MOVECARD);
         mFunUserHandler = FunSDK.RegUser(this);
         FunSDK.SetFunIntAttr(EFUN_ATTR.FUN_MSG_HANDLE, mFunUserHandler);
+
+        FunSDK.SysInitLocal(defaultPath + "DBFile.db");
 
         loadSavedData(context);
         getScreenSize();
@@ -218,6 +220,7 @@ public class DeviceManager implements IFunSDKResult {
             favoriteDevice = new Device("Favoritos");
             favoriteDevice.setSerialNumber("Favoritos");
             favoriteDevice.setChannelNumber(favoriteChannels);
+            favoriteDevice.isFavorite = true;
 //            favoriteDevice.checkConnectionMethod();
             mDevices.add(0, favoriteDevice);
             saveData();
@@ -230,7 +233,8 @@ public class DeviceManager implements IFunSDKResult {
     public void addDevice(Device device) {
 //        device.checkConnectionMethod();
         mDevices.add(device);
-        expandableListAdapter.setDevices(mDevices);
+        if (expandableListAdapter != null)
+            expandableListAdapter.setDevices(mDevices);
         saveData();
     }
 
@@ -276,7 +280,6 @@ public class DeviceManager implements IFunSDKResult {
                 if (state.previousHD > -1 && channelsManager.surfaceViewComponents.size() > state.previousHD) {
                     if(!mDevices.get(state.previousGroup).getSerialNumber().equals("Favoritos"))
                         state.previousHD = findChannelManagerByDevice(mDevices.get(state.previousGroup)).getChannelSelected(state.previousHD);
-//                    channelsManager.enableHD(channelsManager.surfaceViewComponents.get(state.previousHD));
                 }
             }
         } catch (IndexOutOfBoundsException e) {
@@ -341,30 +344,35 @@ public class DeviceManager implements IFunSDKResult {
     private void setDeviceInfo(JSONObject json, Device device) {
         try {
             JSONObject systemInfo;
-            if (json.has("SystemInfo"))
-                systemInfo = json.getJSONObject("SystemInfo");
-            else
-                return;
+            if (json != null) {
+                if (json.has("SystemInfo"))
+                    systemInfo = json.getJSONObject("SystemInfo");
+                else {
+                    return;
+                }
 
-            if (systemInfo.has("AudioInChannel"))
-                device.audioInChannel = systemInfo.getInt("AudioInChannel");
-            if (systemInfo.has("SerialNo"))
-                device.setSerialNumber(systemInfo.getString("SerialNo"));
-            if (systemInfo.has("TalkInChannel"))
-                device.talkInChannel = systemInfo.getInt("TalkInChannel");
-            if (systemInfo.has("TalkOutChannel"))
-                device.talkOutChannel = systemInfo.getInt("TalkOutChannel");
-            if (systemInfo.has("HardWare"))
-                device.setHardwareVersion(systemInfo.getString("HardWare"));
-            if (systemInfo.has("SoftWareVersion"))
-                device.setSoftwareVersion(systemInfo.getString("SoftWareVersion"));
-//            if(systemInfo.has("VideoInChannel"))
-//                device.setChannelNumber(systemInfo.getInt("VideoInChannel") + systemInfo.getInt("DigChannel") + systemInfo.getInt("VideoOutChannel"));
-            saveData();
-            if (device.getIpAddress() == null || device.getIpAddress().isEmpty())
-                getJsonConfig(device, "NetWork.NetCommon", null);
-            if (device.getDomain() == null || device.getDomain().isEmpty())
-                getJsonConfig(device, "NetWork.NetDDNS", null);
+                if (systemInfo.has("AudioInChannel"))
+                    device.audioInChannel = systemInfo.getInt("AudioInChannel");
+                if (systemInfo.has("SerialNo"))
+                    device.setSerialNumber(systemInfo.getString("SerialNo"));
+                if (systemInfo.has("TalkInChannel"))
+                    device.talkInChannel = systemInfo.getInt("TalkInChannel");
+                if (systemInfo.has("TalkOutChannel"))
+                    device.talkOutChannel = systemInfo.getInt("TalkOutChannel");
+                if (systemInfo.has("HardWare"))
+                    device.setHardwareVersion(systemInfo.getString("HardWare"));
+                if (systemInfo.has("SoftWareVersion"))
+                    device.setSoftwareVersion(systemInfo.getString("SoftWareVersion"));
+                if (systemInfo.has("BuildTime"))
+                    device.setBuildTime(systemInfo.getString("BuildTime"));
+                saveData();
+                if (device.getIpAddress() == null || device.getIpAddress().isEmpty())
+                    getJsonConfig(device, "NetWork.NetCommon", null);
+                if (device.getDomain() == null || device.getDomain().isEmpty())
+                    getJsonConfig(device, "NetWork.NetDDNS", null);
+            } else {
+                return;
+            }
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -385,6 +393,18 @@ public class DeviceManager implements IFunSDKResult {
     public void getJsonConfig(Device device, String configString, ConfigListener configListener) {
         currentConfigListener = configListener;
         FunSDK.DevGetConfigByJson(getHandler(), device.connectionString, configString, 4096, -1, 10000, device.getId());
+    }
+
+    public void setJsonConfig(Device device, String configString, JSONObject jsonObject, ConfigListener configListener) {
+        if (jsonObject != null) {
+            currentConfigListener = configListener;
+            FunSDK.DevSetConfigByJson(getHandler(), device.connectionString, configString, jsonObject.toString(), -1, 15000, device.getId());
+        }
+    }
+
+    public void getTimeConfig(Device device, ConfigListener configListener){
+        currentConfigListener = configListener;
+        FunSDK.DevCmdGeneral(getHandler(), device.connectionString, 1452, "OPTimeQuery", 4096, 10000, null, -1, device.getId());
     }
 
     private void handleEthernetConfig(JSONObject jsonObject, Device device) {
@@ -520,18 +540,42 @@ public class DeviceManager implements IFunSDKResult {
     }
 
     private void handleEncodeConfig(JSONObject jsonObject, Device device){
-        device.initEncodeArrays();
         try{
+            device.initEncodeArrays();
+            device.setSimplifyEncodeJson(jsonObject);
             JSONArray json = jsonObject.getJSONArray("Simplify.Encode");
             for(int i=0; i<device.getChannelNumber(); i++){
                 JSONObject streamJson = json.getJSONObject(i);
                 device.parsePrimaryConfigs(i, streamJson.getJSONObject("MainFormat"));
                 device.parseSecondaryConfigs(i, streamJson.getJSONObject("ExtraFormat"));
             }
-            FunSDK.DevGetConfigByJson(getHandler(), device.connectionString, "EncodeCapability", 4096, -1, 10000, device.getId());
-        }catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    private JSONObject setStreamEncode(JSONObject jsonObject, Device device) {
+        JSONObject jsonObjectReturn = jsonObject;
+
+        try {
+            JSONArray json = jsonObject.getJSONArray("Simplify.Encode");
+            for (int channel = 0; channel < json.length(); channel++) {
+                JSONObject streamJson = json.getJSONObject(channel);
+                JSONObject extracFormatJsonObject = streamJson.getJSONObject("ExtraFormat");
+                JSONObject video =  extracFormatJsonObject.getJSONObject("Video");
+                video.put("Resolution", "CIF");
+                video.put("FPS", 3);
+                video.put("Quality", 3);
+            }
+           jsonObjectReturn = jsonObject.put("Simplify.Encode", json);
+        } catch (Exception error) {
+            error.printStackTrace();
+        }
+
+        device.setSimplifyEncodeJson(jsonObjectReturn);
+        setJsonConfig(device, "Simplify.Encode", device.getSimplifyEncodeJson(), currentConfigListener);
+
+        return jsonObjectReturn;
     }
 
     public void handleEncodeCapability(JSONObject jsonObject, Device device){
@@ -545,6 +589,30 @@ public class DeviceManager implements IFunSDKResult {
             e.printStackTrace();
         }
         Log.d(TAG, "handleEncodeCapability: ");
+    }
+
+    public void handleNatInfo(JSONObject jsonObject, Device device){
+        try{
+            if(jsonObject != null) {
+                JSONObject json = null;
+                if (jsonObject.has("Status.NatInfo"))
+                    json = jsonObject.getJSONObject("Status.NatInfo");
+                if (json.has("NaInfoCode"))
+                    device.setNatCode(json.getString("NaInfoCode"));
+                if (json.has("NatStatus"))
+                    device.setNatStatus(json.getString("NatStatus"));
+            }
+        }catch (JSONException e){
+            e.printStackTrace();
+        }
+    }
+
+    public void handleTimeConfig(JSONObject jsonObject, Device device){
+        try{
+            device.setTimeString(jsonObject.getString("OPTimeQuery"));
+        }catch(JSONException e){
+            e.printStackTrace();
+        }
     }
 
     public void setEthernetConfig(Device device, ConfigListener configListener) {
@@ -645,6 +713,11 @@ public class DeviceManager implements IFunSDKResult {
         Log.d(TAG, "setCurrentConfig: " + currentConfig.toString());
         FunSDK.DevSetConfigByJson(getHandler(), device.connectionString, "NetWork.Upnp", currentConfig.toString(), -1, 15000, device.getId());
         currentConfig = null;
+    }
+
+    public void setTimeConfig(Device device){
+        String config = "{\"Name\":\"OPTimeSetting\",\"SessionID\":\"0x00001234\",\"OPTimeSetting\":\"" + device.getTimeString() +"\"}";
+        FunSDK.DevSetConfigByJson(getHandler(), device.connectionString, "OPTimeSetting", config, 0, 20000, device.getId());
     }
 
     public void rebootDevice(Device device) {
@@ -834,6 +907,21 @@ public class DeviceManager implements IFunSDKResult {
             }
         }
 
+        try {
+            for (int index = 0; index < mDevices.size(); index ++) {
+                previousGroup = -1;
+                expandableListAdapter.collapseGroup(index);
+                ChannelsManager deviceChannelsManager = deviceChannelsManagers.get(index);
+                for (SurfaceViewComponent channel : deviceChannelsManager.surfaceViewComponents){
+                    if (deviceChannelsManager.surfaceViewComponents.size() > 0) {
+                        deviceChannelsManager.mediaStop(channel);
+                    }
+                }
+            }
+        } catch(Exception error) {
+            error.printStackTrace();
+        }
+
         for (final Device device : mDevices) {
             if (device.isLogged) {
                 devicesToLogout.add(device);
@@ -850,21 +938,6 @@ public class DeviceManager implements IFunSDKResult {
                 }
             }).start();
         }
-
-        try {
-            for (int index = 0; index < mDevices.size(); index ++) {
-                previousGroup = -1;
-                expandableListAdapter.collapseGroup(index);
-                ChannelsManager deviceChannelsManager = deviceChannelsManagers.get(index);
-                for (SurfaceViewComponent channel : deviceChannelsManager.surfaceViewComponents){
-                    if (deviceChannelsManager.surfaceViewComponents.size() > 0) {
-                        deviceChannelsManager.mediaStop(channel);
-                    }
-                }
-            }
-        } catch(Exception error) {
-            error.printStackTrace();
-        }
     }
 
     public void loginDevice(final Device device, final LoginDeviceListener loginDeviceListener) {
@@ -880,7 +953,7 @@ public class DeviceManager implements IFunSDKResult {
             public void run() {
                 if (device == null)
                     return;
-                if (device.loginAttempt > 4) {
+                if (device.loginAttempt > 3) {
                     device.loginAttempt = 0;
                     device.allAttempstFail = true;
                     expandableListAdapter.setMessage(mDevices.indexOf(device), "Falha na conexão");
@@ -1432,7 +1505,7 @@ public class DeviceManager implements IFunSDKResult {
         Log.d(TAG, "msg.arg1 : " + msg.arg1);
         Log.d(TAG, "msg.arg2 : " + msg.arg2);
         if (null != msgContent) {
-            Log.d(TAG, "msgContent.sender : " + msgContent.sender);
+            Log.d(TAG, " .sender : " + msgContent.sender);
             Log.d(TAG, "msgContent.seq : " + msgContent.seq);
             Log.d(TAG, "msgContent.str : " + msgContent.str);
             Log.d(TAG, "msgContent.arg3 : " + msgContent.arg3);
@@ -1467,17 +1540,20 @@ public class DeviceManager implements IFunSDKResult {
                     device = findDeviceById(msgContent.seq);
                 }
                 if(msg.arg1 == 0 && device != null) {
+                    Log.d(TAG, "***************** LOGIN *****************");
                     Log.d(TAG, "OnFunSDKResult: Login SUCCESS " + device.deviceName);
-//                    FunSDK.DevGetConfigByJson(getHandler(), device.connectionString, "NetWork", 4096, -1, 10000, device.getId());
-
-                    Log.d(device.deviceName, device.connectionString);
+                    Log.d(TAG, "Device: " + device.deviceName);
+                    Log.d(TAG, "Connection String: " + device.connectionString);
+                    Log.d(TAG, "*****************************************");
 
                     device.isLogged = true;
-                    device.loginAttempt = 0;
+                    device.loginAttempt = 1;
                     device.setConnectionMethod(-1);
 
                     favoriteManager.refreshFromDevice(device.getId());
+                    FunSDK.SysGetDevState(getHandler(), device.connectionString, device.getId());
                     FunSDK.DevGetConfigByJson(getHandler(), device.connectionString, "SystemInfo", 4096, -1, 10000, device.getId());
+                    FunSDK.DevGetConfigByJson(getHandler(), device.connectionString, "Status.NatInfo", 4096, -1, 10000, device.getId());
                 } else if(msg.arg1 == -11301){ //wrong password or login
                     if(device != null) {
                         if (loginList.get(device.getId()) != null)
@@ -1508,7 +1584,11 @@ public class DeviceManager implements IFunSDKResult {
                 }
             }
             break;
-
+            case EUIMSG.SYS_GET_DEV_STATE:{
+                if(msg.arg1 == 40 || msg.arg1 == 8)
+                    findDeviceById(msgContent.seq).dss = true;
+                }
+            break;
             case EUIMSG.DEV_GET_JSON:
             {
                 if(msg.arg1 >= 0 && msgContent.pData != null){
@@ -1517,7 +1597,6 @@ public class DeviceManager implements IFunSDKResult {
                     Device device = findDeviceById(msgContent.seq);
                     try {
                         String jsonText = G.ToStringJson(msgContent.pData);
-                        Log.d(TAG, "EUIMSG.DEV_GET_JSON --> json: " + device.connectionString + " " + jsonText);
                         json = new JSONObject(jsonText);
                     } catch (JSONException e) {
                         e.printStackTrace();
@@ -1525,9 +1604,11 @@ public class DeviceManager implements IFunSDKResult {
 
                     switch(msgContent.str){
                         case "SystemInfo":{
-                            setDeviceInfo(json, device);
-                            device.setConnectionMethodString(connectionMethod(msg.arg2));
-                            FunSDK.DevGetChnName(getHandler(), device.connectionString, device.getUsername(), device.getPassword(), device.getId());
+                            if (json != null && device != null) {
+                                setDeviceInfo(json, device);
+                                device.setConnectionMethodString(connectionMethod(msg.arg2));
+                                FunSDK.DevGetChnName(getHandler(), device.connectionString, device.getUsername(), device.getPassword(), device.getId());
+                            }
                         }
                         break;
                         case "NetWork.NetCommon":{
@@ -1553,12 +1634,18 @@ public class DeviceManager implements IFunSDKResult {
                         }
                         break;
                         case "Simplify.Encode":{
-                            handleEncodeConfig(json, device);
+                            setStreamEncode(json, device);
+                            if(currentConfigListener != null)
+                                currentConfigListener.onReceivedConfig();
                         }
                         break;
                         case "EncodeCapability":{
                             handleEncodeCapability(json, device);
                             currentConfigListener.onReceivedConfig();
+                        }
+                        break;
+                        case "Status.NatInfo":{
+                            handleNatInfo(json, device);
                         }
                         break;
                         /*case "Uart.PTZ":{
@@ -1582,8 +1669,11 @@ public class DeviceManager implements IFunSDKResult {
 //                        break;
                     try {
                         Device device = findDeviceById(msgContent.seq);
-                        FunSDK.DevGetConfigByJson(getHandler(), device.connectionString, msgContent.str, 4096, -1, 10000, device.getId());
+//                        FunSDK.DevGetConfigByJson(getHandler(), device.connectionString, msgContent.str, 4096, -1, 10000, device.getId());
                         Log.d(TAG, "OnFunSDKResult: GETCONFIGJSON ERROR");
+                        if (!devicesWithJsonError.contains(device)) {
+                            devicesWithJsonError.add(device);
+                        }
                     } catch (NullPointerException e) {
                         e.printStackTrace();
                     }
@@ -1600,9 +1690,11 @@ public class DeviceManager implements IFunSDKResult {
                     }
                     expandableListAdapter.notifyDataSetChanged();
                     updateDevicesManagers();
-                } else{
-                    Log.d(TAG, "OnFunSDKResult: CONFIG SET ERROR");
-//                    currentConfigListener.onError();
+                } else {
+                    if (currentConfigListener != null) {
+                        Log.d(TAG, "OnFunSDKResult: CONFIG SET ERROR");
+                        currentConfigListener.onError();
+                    }
                 }
             }
             break;
@@ -1677,13 +1769,24 @@ public class DeviceManager implements IFunSDKResult {
             break;
             case EUIMSG.DEV_CMD_EN:
             {
-                if(msgContent != null){
+                if(msg.arg1 >= 0 && msgContent != null){
                     try {
+                        JSONObject json = null;
                         String data = G.ToString(msgContent.pData);
                         Log.d(TAG, "--> DATA: " + data);
+                        Device device = findDeviceById(msgContent.seq);
+                        if(msgContent.str.equals("OPTimeQuery")){
+                            json = new JSONObject(data);
+                            handleTimeConfig(json, device);
+                            if(currentConfigListener != null)
+                                currentConfigListener.onReceivedConfig();
+                        }
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
+                } else if(msg.arg1 < 0){
+                    if(msgContent.str.equals("OPTimeQuery") && currentConfigListener != null)
+                        currentConfigListener.onReceivedConfig();
                 }
             }
             break;
@@ -1774,7 +1877,6 @@ public class DeviceManager implements IFunSDKResult {
     }
 
     public double checkMemory(Context context) {
-
         ActivityManager.MemoryInfo mi = new ActivityManager.MemoryInfo();
         ActivityManager activityManager = (ActivityManager) context.getSystemService(ACTIVITY_SERVICE);
         activityManager.getMemoryInfo(mi);
@@ -1786,10 +1888,10 @@ public class DeviceManager implements IFunSDKResult {
         //Percentage can be calculated for API 16+
         double percentAvail = mi.availMem / (double)mi.totalMem * 100.0;
 
-        Log.d("Check Memory", "********************* MEMORY *********************");
-        Log.d("totalMem", String.valueOf(totalMem));
-        Log.d("availableMem", String.valueOf(availableMegs));
-        Log.d("percentAvail", String.valueOf(percentAvail));
+//        Log.d("Check Memory", "********************* MEMORY *********************");
+//        Log.d("totalMem", String.valueOf(totalMem));
+//        Log.d("availableMem", String.valueOf(availableMegs));
+//        Log.d("percentAvail", String.valueOf(percentAvail));
 
         return availableMegs;
     }

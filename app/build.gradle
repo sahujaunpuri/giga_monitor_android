@@ -2,14 +2,14 @@ apply plugin: 'com.android.application'
 
 android {
     compileSdkVersion 21
-    buildToolsVersion '26.0.2'
+    buildToolsVersion '27.0.3'
 
     defaultConfig {
         applicationId "br.inatel.icc.gigasecurity.gigamonitor"
         minSdkVersion 16
         targetSdkVersion 21
-        versionCode 43
-        versionName "2.3.6"
+        versionName "3.0.3"
+        versionCode 112
         testInstrumentationRunner 'android.support.test.runner.AndroidJUnitRunner'
     }
 

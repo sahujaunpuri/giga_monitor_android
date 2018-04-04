@@ -22,7 +22,6 @@ public class Device implements Serializable {
     //Expose as need by GSON to exclude fields which should not be saved in Device List and void circular reference
     @Expose public String deviceName;
     @Expose public String hostname;
-    @Expose private int deviceId;
 
     //CONFIG_IPAddress
     @Expose private String ipAddress;
@@ -44,7 +43,6 @@ public class Device implements Serializable {
     //CONFIG DNS
     private String primaryDNS;
     private String secondaryDNS;
-
     //CONFIG UPnP
     private boolean upnpEnable;
     private int HTTPPort;
@@ -73,7 +71,7 @@ public class Device implements Serializable {
     private String[] secondaryCompression;
     private int[] secondaryGOP;
     private String[] secondaryResolution;
-    private String[] secondaryFrameRate;
+    private int[] secondaryFrameRate;
     private int[] secondaryQualities;
     private Boolean[] secondaryAudio;
     private String[] exImageSizePerChannel;
@@ -89,6 +87,10 @@ public class Device implements Serializable {
     private String gigaCode;
     private String softwareVersion;
     private String hardwareVersion;
+    private String buildTime;
+    private String natCode;
+    private String natStatus;
+    private String timeString; //format: yyyy-MM-dd HH-mm-ss
     @Expose private int channelNumber = 0;
     @Expose private int numberOfAlarmsIn;
     @Expose private int numberOfAlarmsOut;
@@ -97,12 +99,17 @@ public class Device implements Serializable {
     @Expose public int talkOutChannel;
     @Expose public String connectionString;
     @Expose private String connectionNetworkName = null;
+    @Expose public boolean optimize = false;
+    @Expose public boolean alreadyOptimized = false;
+    @Expose private JSONObject simplifyEncodeJson;
+    @Expose public boolean isFavorite = false;
+    @Expose private boolean isEnable = true;
 
     //State
     public boolean isLogged = false;
     public boolean isOnline = false;
     private int connectionMethod = -1; //0 - IP:port, 1 - DDNS:port, 2 - SerialNumber
-    public int loginAttempt = 0;
+    public int loginAttempt = 1;
     public ChannelsManager channelsManager;
     public String message = "Conectando via IP";
     @Expose private boolean ipPriorityConnection;
@@ -638,7 +645,7 @@ public class Device implements Serializable {
         return secondaryResolution;
     }
 
-    public String[] getSecondaryFrameRate() {
+    public int[] getSecondaryFrameRate() {
         return secondaryFrameRate;
     }
 
@@ -778,13 +785,45 @@ public class Device implements Serializable {
         this.nextConnectionType = nextConnectionType;
     }
 
+    public String getNatCode() {
+        return natCode;
+    }
+
+    public void setNatCode(String natCode) {
+        this.natCode = natCode;
+    }
+
+    public String getNatStatus() {
+        return natStatus;
+    }
+
+    public void setNatStatus(String natStatus) {
+        this.natStatus = natStatus;
+    }
+
+    public String getTimeString() {
+        return timeString;
+    }
+
+    public void setTimeString(String timeString) {
+        this.timeString = timeString;
+    }
+
+    public String getBuildTime() {
+        return buildTime;
+    }
+
+    public void setBuildTime(String buildTime) {
+        this.buildTime = buildTime;
+    }
+
     public void initEncodeArrays(){
         this.primaryResolution = new String[channelNumber];
         this.primaryFrameRate = new String[channelNumber];
         this.primaryQualities = new int[channelNumber];
         this.primaryAudio = new Boolean[channelNumber];
         this.secondaryResolution = new String[channelNumber];
-        this.secondaryFrameRate = new String[channelNumber];
+        this.secondaryFrameRate = new int[channelNumber];
         this.secondaryQualities = new int[channelNumber];
         this.secondaryAudio = new Boolean[channelNumber];
         this.primaryBitRate  = new int[channelNumber];
@@ -825,7 +864,7 @@ public class Device implements Serializable {
             secondaryCompression[channel] = videoConfig.getString("Compression");
             secondaryGOP[channel] = videoConfig.getInt("GOP");
             secondaryResolution[channel] = videoConfig.getString("Resolution");
-            secondaryFrameRate[channel] = videoConfig.getString("FPS");
+            secondaryFrameRate[channel] = videoConfig.getInt("FPS");
             secondaryQualities[channel] = videoConfig.getInt("Quality");
             secondaryAudio[channel] = streamConfig.getBoolean("AudioEnable");
         } catch (JSONException e){
@@ -833,7 +872,50 @@ public class Device implements Serializable {
         }
     }
 
+    public JSONObject setSecondarySecondaryJsonConfig(int channel, JSONObject streamConfig){
+        JSONObject configJson = null;
+        try {
+            configJson = streamConfig;
+            JSONObject videoConfig = configJson.getJSONObject("Video");
+            videoConfig.put("Resolution", secondaryResolution[channel]);
+            videoConfig.put("FPS", secondaryFrameRate[channel]);
+            videoConfig.put("Quality",secondaryQualities[channel]);
+        } catch (JSONException e){
+            e.printStackTrace();
+        }
+
+        return configJson;
+    }
+
     public void resetAttempts() {
         this.allAttempstFail = false;
+    }
+
+    public void setSecondaryResolution(String[] secondaryResolution) {
+        this.secondaryResolution = secondaryResolution;
+    }
+
+    public void setSecondaryFrameRate(int[] secondaryFrameRate) {
+        this.secondaryFrameRate = secondaryFrameRate;
+    }
+
+    public void setSecondaryQualities(int[] secondaryQualities) {
+        this.secondaryQualities = secondaryQualities;
+    }
+
+    public JSONObject getSimplifyEncodeJson() {
+        return simplifyEncodeJson;
+    }
+
+    public void setSimplifyEncodeJson(JSONObject simplifyEncodeJson) {
+        this.simplifyEncodeJson = simplifyEncodeJson;
+    }
+
+    public boolean isEnable() {
+        return isEnable;
+    }
+
+    public void setEnable(boolean enable) {
+        isEnable = enable;
     }
 }
