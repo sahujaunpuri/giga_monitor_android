@@ -137,12 +137,25 @@ public abstract class ChannelsManager implements IFunSDKResult {
     }
 
     public FrameLayout.LayoutParams changeSurfaceViewSize() {
+        int option = 0;
         mDeviceManager.getScreenSize();
         int surfaceViewWidth = (int) Math.ceil((mDeviceManager.screenWidth / numQuad));// + numQuad;
         int surfaceViewHeight = ((mDeviceManager.screenHeight / 3) + 10) / numQuad;
 
         if (mContext.getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE) {
             surfaceViewHeight = (mDeviceManager.screenHeight) / numQuad;
+            option = 0;
+        }
+
+        switch(option) {
+            case 1:
+                surfaceViewHeight += 75;
+                break;
+            case 2:
+                surfaceViewHeight += 125;
+                break;
+            default:
+                break;
         }
 
         surfaceViewLayout.width = surfaceViewWidth;
@@ -153,7 +166,6 @@ public abstract class ChannelsManager implements IFunSDKResult {
 
         return surfaceViewLayout;
     }
-
     public GLSurfaceView20 getMySurfaceView(int channelId) {
         return mySurfaceViews.get(channelId);
     }

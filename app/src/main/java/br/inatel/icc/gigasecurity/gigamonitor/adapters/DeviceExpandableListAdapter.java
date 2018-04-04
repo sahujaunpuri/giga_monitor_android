@@ -456,6 +456,7 @@ public class DeviceExpandableListAdapter extends BaseExpandableListAdapter {
     }
 
     private void setLayoutSize(final int groupPosition, final ChildViewHolder childViewHolder) {
+        int option = 0;
         DisplayMetrics displayMetrics = Resources.getSystem().getDisplayMetrics();
         int viewWidth = displayMetrics.widthPixels;
         int viewHeight;
@@ -463,14 +464,30 @@ public class DeviceExpandableListAdapter extends BaseExpandableListAdapter {
         if(displayMetrics.widthPixels%2 != 0)
             viewWidth -= 1;
 
+
         if(mContext.getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE) {
             viewHeight = displayMetrics.heightPixels;
+            option = 0;
         } else{
             viewHeight = ((displayMetrics.heightPixels / 3)+10);
         }
 
+        switch(option) {
+            case 1:
+                viewHeight += 150;
+                break;
+            case 2:
+                viewHeight += 250;
+                break;
+            default:
+                break;
+        }
+
         final int width = viewWidth;
         final int height = viewHeight;
+
+
+
 
         ((Activity)mContext).runOnUiThread(new Runnable() {
             @Override
@@ -481,6 +498,7 @@ public class DeviceExpandableListAdapter extends BaseExpandableListAdapter {
             }
         });
     }
+
 
     @Override
     public boolean isChildSelectable(int groupPosition, int childPosition) {
