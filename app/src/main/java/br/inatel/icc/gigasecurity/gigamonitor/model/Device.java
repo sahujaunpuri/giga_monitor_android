@@ -103,7 +103,7 @@ public class Device implements Serializable {
     @Expose public boolean alreadyOptimized = false;
     @Expose private JSONObject simplifyEncodeJson;
     @Expose public boolean isFavorite = false;
-    @Expose private int[] channelOrder = new int[32];
+    @Expose private int[] channelOrder = new int[36];
 
     //State
     public boolean isLogged = false;

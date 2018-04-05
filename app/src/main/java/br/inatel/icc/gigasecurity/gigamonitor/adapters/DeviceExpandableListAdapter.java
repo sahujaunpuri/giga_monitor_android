@@ -586,29 +586,38 @@ public class DeviceExpandableListAdapter extends BaseExpandableListAdapter {
 
         channelsManager.initMatrix();
 
-        // Caso 3x3 com 16 canais
-        if (device.getChannelNumber() == 16 && channelsManager.numQuad == 3) {
-            device.setChannelNumber(18);
+        int obsoleteChannels = 0;
+
+        // Caso 3x3
+        if (channelsManager.numQuad == 3) {
+
+            if (device.getChannelNumber() == 8){
+                device.setChannelNumber(9);
+                obsoleteChannels = 1;
+            }
+            if (device.getChannelNumber() == 16) {
+                device.setChannelNumber(18);
+                obsoleteChannels = 2;
+            }
+
+            if (device.getChannelNumber() == 32) {
+                device.setChannelNumber(36);
+                obsoleteChannels = 4;
+            }
+
             channelsManager.clearSurfaceViewComponents();
             channelsManager.createComponents();
 
-            // Remover as views sem utilização
-            ImageView blankView1 = new ImageView(mContext);
-            ImageView blankView2 = new ImageView(mContext);
+            for (int i = 1; i <= obsoleteChannels; i++) {
+                ImageView blankView = new ImageView(mContext);
+                blankView.setBackgroundColor(Color.BLACK);
+                blankView.setImageResource(R.drawable.ic_videocam_off_black_12dp);
+                blankView.setScaleType(ImageView.ScaleType.CENTER);
 
-            blankView1.setBackgroundColor(Color.BLACK);
-            blankView1.setImageResource(R.drawable.ic_videocam_off_black_12dp);
-            blankView1.setScaleType(ImageView.ScaleType.CENTER);
+                channelsManager.surfaceViewComponents.get(channelsManager.inverseMatrix[channelsManager.numQuad - 1][device.getChannelNumber() - i]).removeAllViews();
+                channelsManager.surfaceViewComponents.get(channelsManager.inverseMatrix[channelsManager.numQuad - 1][device.getChannelNumber() - i]).addView(blankView);
+            }
 
-            blankView2.setBackgroundColor(Color.BLACK);
-            blankView2.setImageResource(R.drawable.ic_videocam_off_black_12dp);
-            blankView2.setScaleType(ImageView.ScaleType.CENTER);
-
-            channelsManager.surfaceViewComponents.get(channelsManager.inverseMatrix[channelsManager.numQuad - 1][16]).removeAllViews();
-            channelsManager.surfaceViewComponents.get(channelsManager.inverseMatrix[channelsManager.numQuad - 1][16]).addView(blankView1);
-
-            channelsManager.surfaceViewComponents.get(channelsManager.inverseMatrix[channelsManager.numQuad - 1][17]).removeAllViews();
-            channelsManager.surfaceViewComponents.get(channelsManager.inverseMatrix[channelsManager.numQuad - 1][17]).addView(blankView2);
         } else {
             // Outros casos
             if (device.getChannelNumber() == 18 && channelsManager.numQuad != 3) {
@@ -616,11 +625,28 @@ public class DeviceExpandableListAdapter extends BaseExpandableListAdapter {
                 channelsManager.clearSurfaceViewComponents();
                 channelsManager.createComponents();
             }
+
+            if (device.getChannelNumber() == 9 && channelsManager.numQuad != 3) {
+                device.setChannelNumber(8);
+                channelsManager.clearSurfaceViewComponents();
+                channelsManager.createComponents();
+            }
+
+            if (device.getChannelNumber() == 36 && channelsManager.numQuad != 3) {
+                device.setChannelNumber(32);
+                channelsManager.clearSurfaceViewComponents();
+                channelsManager.createComponents();
+            }
         }
 
-        int [] channelOrder = device.getChannelOrder();
+        int[] channelOrder = device.getChannelOrder();
 
-        for (int i = 0; i < device.getChannelNumber(); i++) {
+        int camNumber;
+        if (channelOrder.length > device.getChannelNumber())
+            camNumber = device.getChannelNumber();
+        else camNumber = channelOrder.length;
+
+        for (int i = 0; i < camNumber; i++) {
             //Log.e("i, sfcm, chOrder, matrix",""+i+" "+channelsManager.surfaceViewComponents.size()+" "+channelOrder.length+" "+channelsManager.inverseMatrix[2].length);
             channelsManager.surfaceViewComponents.get(channelsManager.inverseMatrix[channelsManager.numQuad - 1][i]).mySurfaceViewNewChannelId = channelOrder[i];
         }

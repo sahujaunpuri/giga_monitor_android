@@ -33,7 +33,7 @@ public class DeviceChannelOrderActivity extends ActionBarActivity implements Vie
     ChannelsAdapter adapter;
     ArrayList<Channel> arrayOfChannels;
     ArrayList<SurfaceViewComponent> arrayOfSurfaceViewComponents;
-    int [] channelOrder;
+    int [] channelOrder = new int[36];
     TextView tvBack, tvDone,tvRestoreDefault;
 
     @Override
@@ -70,10 +70,19 @@ public class DeviceChannelOrderActivity extends ActionBarActivity implements Vie
         // Ordenação de plot. Valor do array é o número do canal e posição do array é o lugar do plot (ordem do DVR).
 
         int [][] inverseMatrix = channelsManager.inverseMatrix;
-        // montar lista de exibição
+
+        if (numberOfChannels == 9) {
+            numberOfChannels = 8;
+        }
         if (numberOfChannels == 18) {
             numberOfChannels = 16;
         }
+
+        if (numberOfChannels == 36) {
+            numberOfChannels = 32;
+        }
+
+        // montar lista de exibição
         for (int i = 0; i < numberOfChannels; i++) {
             arrayOfSurfaceViewComponents.add(i, channelsManager.surfaceViewComponents.get(inverseMatrix[channelsManager.numQuad-1][i]));
             adapter.add(new Channel("Canal " + (arrayOfSurfaceViewComponents.get(i).mySurfaceViewNewChannelId+1), arrayOfSurfaceViewComponents.get(i).mySurfaceViewNewChannelId, arrayOfSurfaceViewComponents.get(i).mySurfaceViewNewChannelId));
