@@ -7,6 +7,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.res.Configuration;
 import android.content.res.Resources;
+import android.opengl.Visibility;
 import android.os.Bundle;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -233,6 +234,7 @@ public class DeviceExpandableListAdapter extends BaseExpandableListAdapter {
                 channelsManager.resetScale();
                 //deviceChannelsManager.reOrderSurfaceViewComponents();
 
+                //Orderação dos canais de acordo com a preferência do cliente
                 setChannelOrder(device, mDeviceManager);
             }
         });
@@ -577,22 +579,27 @@ public class DeviceExpandableListAdapter extends BaseExpandableListAdapter {
 
     // funcao em testes pra arrumar o grid !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
     public void setChannelOrder(Device device, DeviceManager deviceManager) {
+
         ChannelsManager channelsManager = deviceManager.findChannelManagerByDevice(device);
 
+        channelsManager.initMatrix();
+
+        // Caso 3x3 com 16 canais
         if (device.getChannelNumber() == 16 && channelsManager.numQuad == 3) {
             device.setChannelNumber(18);
             channelsManager.clearSurfaceViewComponents();
             channelsManager.createComponents();
-
+            // Remover as views sen utilização
+            channelsManager.surfaceViewComponents.get(channelsManager.inverseMatrix[channelsManager.numQuad - 1][16]).removeAllViews();
+            channelsManager.surfaceViewComponents.get(channelsManager.inverseMatrix[channelsManager.numQuad - 1][17]).removeAllViews();
         } else {
+            // Outros casos
             if (device.getChannelNumber() == 18 && channelsManager.numQuad != 3) {
                 device.setChannelNumber(16);
                 channelsManager.clearSurfaceViewComponents();
                 channelsManager.createComponents();
             }
         }
-
-        channelsManager.initMatrix();
 
         int [] channelOrder = device.getChannelOrder();
 
