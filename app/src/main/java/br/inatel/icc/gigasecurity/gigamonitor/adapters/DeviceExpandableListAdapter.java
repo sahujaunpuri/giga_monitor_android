@@ -7,6 +7,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.res.Configuration;
 import android.content.res.Resources;
+import android.graphics.Color;
 import android.opengl.Visibility;
 import android.os.Bundle;
 import android.support.v7.widget.GridLayoutManager;
@@ -18,6 +19,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseExpandableListAdapter;
 import android.widget.ExpandableListView;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -589,9 +591,24 @@ public class DeviceExpandableListAdapter extends BaseExpandableListAdapter {
             device.setChannelNumber(18);
             channelsManager.clearSurfaceViewComponents();
             channelsManager.createComponents();
-            // Remover as views sen utilização
+
+            // Remover as views sem utilização
+            ImageView blankView1 = new ImageView(mContext);
+            ImageView blankView2 = new ImageView(mContext);
+
+            blankView1.setBackgroundColor(Color.BLACK);
+            blankView1.setImageResource(R.drawable.ic_videocam_off_black_12dp);
+            blankView1.setScaleType(ImageView.ScaleType.CENTER);
+
+            blankView2.setBackgroundColor(Color.BLACK);
+            blankView2.setImageResource(R.drawable.ic_videocam_off_black_12dp);
+            blankView2.setScaleType(ImageView.ScaleType.CENTER);
+
             channelsManager.surfaceViewComponents.get(channelsManager.inverseMatrix[channelsManager.numQuad - 1][16]).removeAllViews();
+            channelsManager.surfaceViewComponents.get(channelsManager.inverseMatrix[channelsManager.numQuad - 1][16]).addView(blankView1);
+
             channelsManager.surfaceViewComponents.get(channelsManager.inverseMatrix[channelsManager.numQuad - 1][17]).removeAllViews();
+            channelsManager.surfaceViewComponents.get(channelsManager.inverseMatrix[channelsManager.numQuad - 1][17]).addView(blankView2);
         } else {
             // Outros casos
             if (device.getChannelNumber() == 18 && channelsManager.numQuad != 3) {
