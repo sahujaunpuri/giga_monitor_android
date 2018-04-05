@@ -384,6 +384,7 @@ public class Device implements Serializable {
     }
 
     public int getChannelNumber() {
+
         return channelNumber;
     }
 
@@ -397,27 +398,29 @@ public class Device implements Serializable {
             this.channelsManager.numQuad = 1;
             this.channelsManager.lastNumQuad = 1;
         }
-        if (channelNumber <= 16) {
-            inverseMatrix = new int[][]{
-                    {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15}, // 1x1
-                    {0, 2, 1, 3, 4, 6, 5, 7, 8, 10, 9, 11, 12, 14, 13, 15}, // 2x2
-                    {0, 3, 6, 1, 4, 7, 2, 5, 8, 9, 12, 15, 10, 13, 11, 14}, // 3x3
-                    {0, 4, 8, 12, 1, 5, 9, 13, 2, 6, 10, 14, 3, 7, 11, 15} // 4x4
-            };
-        } else {
-            inverseMatrix = new int[][]{
-                    {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31},
-                    {0, 2, 1, 3, 4, 6, 5, 7, 8, 10, 9, 11, 12, 14, 13, 15, 16, 18, 17, 19, 20, 22, 21, 23, 24, 26, 25, 27, 28, 30, 29, 31},
-                    {0, 3, 6, 1, 4, 7, 2, 5, 8, 9, 12, 15, 10, 13, 16, 11, 14, 17, 18, 21, 24, 19, 22, 25, 20, 23, 26, 27, 30, 28, 31, 29},
-                    {0, 4, 8, 12, 1, 5, 9, 13, 2, 6, 10, 14, 3, 7, 11, 15, 16, 20, 24, 28, 17, 21, 25, 29, 18, 22, 26, 30, 19, 23, 27, 31}
-            };
-        }
-
-        if (this.channelOrder[0] == -1) {
-            for (int i = 0; i < channelNumber; i++) {
-                this.channelOrder[i] = inverseMatrix[channelsManager.numQuad-1][i];
-            }
-        }
+//        if (channelNumber <= 16 && this.channelsManager.numQuad != 3 && channelsManager != null) {
+//            inverseMatrix = new int[][]{
+//                    {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15}, // 1x1
+//                    {0, 2, 1, 3, 4, 6, 5, 7, 8, 10, 9, 11, 12, 14, 13, 15}, // 2x2
+//                    {0, 3, 6, 1, 4, 7, 2, 5, 8, 9, 12, 15, 10, 13, 11, 14}, // 3x3
+//                    {0, 4, 8, 12, 1, 5, 9, 13, 2, 6, 10, 14, 3, 7, 11, 15} // 4x4
+//            };
+//        } else {
+//            // Caso numQuad = 3;
+//            Log.e("NumQuad = 3", "inverseMatrix device.java");
+//            inverseMatrix = new int[][]{
+//                    {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17}, // 1x1
+//                    {0, 2, 1, 3, 4, 6, 5, 7, 8, 10, 9, 11, 12, 14, 13, 15, 17, 16}, // 2x2
+//                    {0, 3, 6, 1, 4, 7, 2, 5, 8, 9, 12, 15, 10, 13, 16, 11, 14, 17}, // 3x3
+//                    {0, 4, 8, 12, 1, 5, 9, 13, 2, 6, 10, 14, 3, 7, 11, 15, 16, 17} // 4x4
+//            };
+//        }
+//
+//        if (this.channelOrder[0] == -1) {
+//            for (int i = 0; i < channelNumber; i++) {
+//                this.channelOrder[i] = inverseMatrix[channelsManager.numQuad-1][i];
+//            }
+//        }
     }
 
     public int[] getChannelOrder() {

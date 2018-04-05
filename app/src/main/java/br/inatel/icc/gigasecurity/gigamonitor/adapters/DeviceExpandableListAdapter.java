@@ -23,13 +23,13 @@ import android.widget.Toast;
 
 import com.crashlytics.android.answers.Answers;
 import com.crashlytics.android.answers.CustomEvent;
+import com.video.opengl.GLSurfaceView20;
 
 import org.json.JSONObject;
 
 import java.util.ArrayList;
 
 import br.inatel.icc.gigasecurity.gigamonitor.R;
-import br.inatel.icc.gigasecurity.gigamonitor.activities.Channel;
 import br.inatel.icc.gigasecurity.gigamonitor.activities.DeviceChannelOrderActivity;
 import br.inatel.icc.gigasecurity.gigamonitor.activities.DeviceListActivity;
 import br.inatel.icc.gigasecurity.gigamonitor.activities.DevicePlaybackActivity;
@@ -42,6 +42,7 @@ import br.inatel.icc.gigasecurity.gigamonitor.listeners.LoginDeviceListener;
 import br.inatel.icc.gigasecurity.gigamonitor.managers.CustomGridLayoutManager;
 import br.inatel.icc.gigasecurity.gigamonitor.model.ChannelsManager;
 import br.inatel.icc.gigasecurity.gigamonitor.model.Device;
+import br.inatel.icc.gigasecurity.gigamonitor.model.DeviceChannelsManager;
 import br.inatel.icc.gigasecurity.gigamonitor.ui.OverlayMenu;
 import br.inatel.icc.gigasecurity.gigamonitor.ui.OverlayPTZ;
 import br.inatel.icc.gigasecurity.gigamonitor.ui.SurfaceViewComponent;
@@ -216,10 +217,11 @@ public class DeviceExpandableListAdapter extends BaseExpandableListAdapter {
         ((Activity)mContext).runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                ChannelsManager deviceChannelsManager = mDeviceManager.getDeviceChannelsManagers().get(groupPosition);
-                deviceChannelsManager.numQuad = nextNumQuad(deviceChannelsManager.numQuad, groupViewHolder.get(groupPosition).mDevice.getChannelNumber());
-                deviceChannelsManager.lastNumQuad = deviceChannelsManager.numQuad;
-                deviceChannelsManager.stopChannels(0);
+                Device device = groupViewHolder.get(groupPosition).mDevice;
+                ChannelsManager channelsManager = mDeviceManager.findChannelManagerByDevice(device);
+                channelsManager.numQuad = nextNumQuad(channelsManager.numQuad, groupViewHolder.get(groupPosition).mDevice.getChannelNumber());
+                channelsManager.lastNumQuad = channelsManager.numQuad;
+                channelsManager.stopChannels(0);
                 mDeviceManager.clearStart();
 
                 childViewHolder.get(groupPosition).gridLayoutManager.setSpanCount(mDeviceManager.getDeviceChannelsManagers().get(groupPosition).numQuad);
@@ -227,18 +229,11 @@ public class DeviceExpandableListAdapter extends BaseExpandableListAdapter {
 //                        childViewHolder.get(groupPosition).gridLayoutManager.scrollToPositionWithOffset(deviceChannelsManager.firstItemOfPage(deviceChannelsManager.currentPage), 0);
 //                        Log.d(TAG, "run: " + deviceChannelsManager.currentPage + " " + deviceChannelsManager.lastFirstVisibleItem + " " + deviceChannelsManager.firstItemOfPage(deviceChannelsManager.currentPage));
                 childViewHolder.get(groupPosition).mRecyclerAdapter.notifyDataSetChanged();
-                deviceChannelsManager.changeSurfaceViewSize();
-
-                deviceChannelsManager.resetScale();
+                channelsManager.changeSurfaceViewSize();
+                channelsManager.resetScale();
                 //deviceChannelsManager.reOrderSurfaceViewComponents();
 
-                // Teste changeQuad Alexandre
-                Device device = groupViewHolder.get(groupPosition).mDevice;
-                ChannelsManager channelsManager = mDeviceManager.findChannelManagerByDevice(device);
-                int [] channelOrder = device.getChannelOrder();
-                for (int i=0; i<device.getChannelNumber(); i++) {
-                    channelsManager.surfaceViewComponents.get(channelsManager.inverseMatrix[channelsManager.numQuad - 1][i]).mySurfaceViewNewChannelId = channelOrder[i];
-                }
+                setChannelOrder(device, mDeviceManager);
             }
         });
     }
@@ -541,7 +536,7 @@ public class DeviceExpandableListAdapter extends BaseExpandableListAdapter {
                 childViewHolder.gridLayoutManager.scrollToPosition(mDeviceManager.getDeviceChannelsManagers().get(position).lastFirstVisibleItem);
                 int [] channelOrder = mDevice.getChannelOrder();
                 Log.e("DeviceExpandable", ""+channelOrder[0]+", "+channelOrder[1]+", "+channelOrder[2]+", "+channelOrder[3]);
-                setPreviousChannelOrder(mDevice, mDeviceManager);
+                setChannelOrder(mDevice, mDeviceManager);
             }
 
             @Override
@@ -579,16 +574,31 @@ public class DeviceExpandableListAdapter extends BaseExpandableListAdapter {
 
         });
     }
-    // funcao em testes pra arrumar o grid anterior!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-    public void setPreviousChannelOrder(Device device, DeviceManager deviceManager) {
-        int [] channelOrder = device.getChannelOrder();
-        int numberOfChannels = device.getChannelNumber();        // montar lista de exibição
 
+    // funcao em testes pra arrumar o grid !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+    public void setChannelOrder(Device device, DeviceManager deviceManager) {
         ChannelsManager channelsManager = deviceManager.findChannelManagerByDevice(device);
-        int [][] inverseMatrix = channelsManager.inverseMatrix;
 
-        for (int i = 0; i < numberOfChannels; i++) {
-            channelsManager.surfaceViewComponents.get(inverseMatrix[channelsManager.numQuad-1][i]).mySurfaceViewNewChannelId = channelOrder[i];
+        if (device.getChannelNumber() == 16 && channelsManager.numQuad == 3) {
+            device.setChannelNumber(18);
+            channelsManager.clearSurfaceViewComponents();
+            channelsManager.createComponents();
+
+        } else {
+            if (device.getChannelNumber() == 18 && channelsManager.numQuad != 3) {
+                device.setChannelNumber(16);
+                channelsManager.clearSurfaceViewComponents();
+                channelsManager.createComponents();
+            }
+        }
+
+        channelsManager.initMatrix();
+
+        int [] channelOrder = device.getChannelOrder();
+
+        for (int i = 0; i < device.getChannelNumber(); i++) {
+            //Log.e("i, sfcm, chOrder, matrix",""+i+" "+channelsManager.surfaceViewComponents.size()+" "+channelOrder.length+" "+channelsManager.inverseMatrix[2].length);
+            channelsManager.surfaceViewComponents.get(channelsManager.inverseMatrix[channelsManager.numQuad - 1][i]).mySurfaceViewNewChannelId = channelOrder[i];
         }
     }
 

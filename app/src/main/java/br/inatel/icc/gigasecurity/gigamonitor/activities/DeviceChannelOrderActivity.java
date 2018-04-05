@@ -71,6 +71,9 @@ public class DeviceChannelOrderActivity extends ActionBarActivity implements Vie
 
         int [][] inverseMatrix = channelsManager.inverseMatrix;
         // montar lista de exibição
+        if (numberOfChannels == 18) {
+            numberOfChannels = 16;
+        }
         for (int i = 0; i < numberOfChannels; i++) {
             arrayOfSurfaceViewComponents.add(i, channelsManager.surfaceViewComponents.get(inverseMatrix[channelsManager.numQuad-1][i]));
             adapter.add(new Channel("Canal " + (arrayOfSurfaceViewComponents.get(i).mySurfaceViewNewChannelId+1), arrayOfSurfaceViewComponents.get(i).mySurfaceViewNewChannelId, arrayOfSurfaceViewComponents.get(i).mySurfaceViewNewChannelId));
