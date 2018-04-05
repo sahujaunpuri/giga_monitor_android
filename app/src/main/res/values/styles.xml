@@ -86,8 +86,9 @@
         <item name="android:textColor">@color/text_color</item>
         <item name="android:textAllCaps">true</item>
         <item name="android:layout_marginTop">9dp</item>
-        <item name="android:layout_marginLeft">9dp</item>
-        <item name="android:layout_marginRight">9dp</item>
+        <item name="android:layout_marginLeft">6dp</item>
+        <item name="android:layout_marginRight">6dp</item>
+        <item name="android:layout_marginBottom">6dp</item>
         <item name="android:fontFamily">@font/lato_regular</item>
     </style>
 
