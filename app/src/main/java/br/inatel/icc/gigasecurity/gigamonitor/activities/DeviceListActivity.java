@@ -181,19 +181,19 @@ public class DeviceListActivity extends ActionBarActivity implements View.OnClic
     protected void onResume() {
         super.onResume();
 
-        try {
-
-            mManager = DeviceManager.getInstance();
-            mDevice = mDeviceManager.getDevices().get(1);
-
-            int[] channelOrder = mDevice.getChannelOrder();
-            Log.e("Device List Order: ", ""+channelOrder[0]+", "+channelOrder[1]+", "+channelOrder[2]+", "+channelOrder[3]);
-
-        } catch (NullPointerException e) {
-
-            Log.e("onResume Bug: ", e.toString());
-
-        }
+//        try {
+//
+//            mManager = DeviceManager.getInstance();
+//            mDevice = mDeviceManager.getDevices().get(1);
+//
+//            int[] channelOrder = mDevice.getChannelOrder();
+//            Log.e("Device List Order: ", ""+channelOrder[0]+", "+channelOrder[1]+", "+channelOrder[2]+", "+channelOrder[3]);
+//
+//        } catch (NullPointerException e) {
+//
+//            Log.e("onResume Bug: ", e.toString());
+//
+//        }
 
         if(mDeviceManager.collapse >=0 && previousGroup == mDeviceManager.collapse) {
             if(mExpandableListView.isGroupExpanded(mDeviceManager.collapse))
