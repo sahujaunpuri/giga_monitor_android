@@ -138,8 +138,18 @@ public abstract class ChannelsManager implements IFunSDKResult {
 
     public FrameLayout.LayoutParams changeSurfaceViewSize(int option) {
         mDeviceManager.getScreenSize();
-        int surfaceViewWidth = (int) Math.ceil((mDeviceManager.screenWidth / numQuad));// + numQuad;
-        int surfaceViewHeight = ((mDeviceManager.screenHeight / 3) + 10) / numQuad;
+        int surfaceViewHeight = 0;
+
+        switch (numQuad) {
+            case 1:
+                surfaceViewHeight = mDeviceManager.screenHeight / 3;
+                break;
+            default:
+                surfaceViewHeight = ((mDeviceManager.screenHeight / 3) + 10) / numQuad;
+                break;
+        }
+
+        int surfaceViewWidth = (int) Math.ceil((mDeviceManager.screenWidth / numQuad));
 
         if (mContext.getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE) {
             surfaceViewHeight = (mDeviceManager.screenHeight) / numQuad;
@@ -149,12 +159,21 @@ public abstract class ChannelsManager implements IFunSDKResult {
         switch(option) {
             case 1:
                 surfaceViewHeight += 75;
+                if (numQuad == 1) {
+                    surfaceViewHeight += 85;
+                }
                 break;
             case 2:
                 surfaceViewHeight += 125;
+                if (numQuad == 1) {
+                    surfaceViewHeight += 135;
+                }
                 break;
             case 3:
                 surfaceViewHeight += 250;
+                if (numQuad == 1) {
+                    surfaceViewHeight += 260;
+                }
                 break;
             default:
                 break;
@@ -170,25 +189,12 @@ public abstract class ChannelsManager implements IFunSDKResult {
     }
 
     public FrameLayout.LayoutParams changeSurfaceViewSize() {
-        int option = 0;
         mDeviceManager.getScreenSize();
         int surfaceViewWidth = (int) Math.ceil((mDeviceManager.screenWidth / numQuad));// + numQuad;
         int surfaceViewHeight = ((mDeviceManager.screenHeight / 3) + 10) / numQuad;
 
         if (mContext.getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE) {
             surfaceViewHeight = (mDeviceManager.screenHeight) / numQuad;
-            option = 0;
-        }
-
-        switch(option) {
-            case 1:
-                surfaceViewHeight += 75;
-                break;
-            case 2:
-                surfaceViewHeight += 125;
-                break;
-            default:
-                break;
         }
 
         surfaceViewLayout.width = surfaceViewWidth;

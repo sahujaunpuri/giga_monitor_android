@@ -226,12 +226,9 @@ public class DeviceExpandableListAdapter extends BaseExpandableListAdapter {
                 mDeviceManager.clearStart();
 
                 childViewHolder.get(groupPosition).gridLayoutManager.setSpanCount(mDeviceManager.getDeviceChannelsManagers().get(groupPosition).numQuad);
-//                        deviceChannelsManager.currentPage = deviceChannelsManager.pageNumber(deviceChannelsManager.lastFirstVisibleItem);
-//                        childViewHolder.get(groupPosition).gridLayoutManager.scrollToPositionWithOffset(deviceChannelsManager.firstItemOfPage(deviceChannelsManager.currentPage), 0);
-//                        Log.d(TAG, "run: " + deviceChannelsManager.currentPage + " " + deviceChannelsManager.lastFirstVisibleItem + " " + deviceChannelsManager.firstItemOfPage(deviceChannelsManager.currentPage));
                 childViewHolder.get(groupPosition).mRecyclerAdapter.notifyDataSetChanged();
+                setLayoutSize(groupPosition, childViewHolder.get(groupPosition));
                 deviceChannelsManager.changeSurfaceViewSize();
-
                 deviceChannelsManager.resetScale();
                 deviceChannelsManager.reOrderSurfaceViewComponents();
             }
@@ -643,10 +640,10 @@ public class DeviceExpandableListAdapter extends BaseExpandableListAdapter {
                 deviceChannelsManager.stopChannels(0);
                 mDeviceManager.clearStart();
                 childViewHolder.get(devicePosition).mRecyclerAdapter.notifyDataSetChanged();
+                setLayoutSize(devicePosition, childViewHolder.get(devicePosition), option);
                 deviceChannelsManager.changeSurfaceViewSize(option);
                 deviceChannelsManager.resetScale();
                 deviceChannelsManager.reOrderSurfaceViewComponents();
-                setLayoutSize(devicePosition, childViewHolder.get(devicePosition), option);
             }
         });
 
