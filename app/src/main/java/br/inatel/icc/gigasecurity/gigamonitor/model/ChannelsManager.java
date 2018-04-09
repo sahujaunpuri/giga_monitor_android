@@ -136,6 +136,39 @@ public abstract class ChannelsManager implements IFunSDKResult {
         surfaceViewComponents.remove(svc);
     }
 
+    public FrameLayout.LayoutParams changeSurfaceViewSize(int option) {
+        mDeviceManager.getScreenSize();
+        int surfaceViewWidth = (int) Math.ceil((mDeviceManager.screenWidth / numQuad));// + numQuad;
+        int surfaceViewHeight = ((mDeviceManager.screenHeight / 3) + 10) / numQuad;
+
+        if (mContext.getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE) {
+            surfaceViewHeight = (mDeviceManager.screenHeight) / numQuad;
+            option = 0;
+        }
+
+        switch(option) {
+            case 1:
+                surfaceViewHeight += 75;
+                break;
+            case 2:
+                surfaceViewHeight += 125;
+                break;
+            case 3:
+                surfaceViewHeight += 250;
+                break;
+            default:
+                break;
+        }
+
+        surfaceViewLayout.width = surfaceViewWidth;
+        surfaceViewLayout.height = surfaceViewHeight;
+
+        pbParam.width = surfaceViewWidth / 4;
+        pbParam.height = surfaceViewHeight / 4;
+
+        return surfaceViewLayout;
+    }
+
     public FrameLayout.LayoutParams changeSurfaceViewSize() {
         int option = 0;
         mDeviceManager.getScreenSize();

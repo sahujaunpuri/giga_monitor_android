@@ -237,6 +237,7 @@ public class DeviceExpandableListAdapter extends BaseExpandableListAdapter {
             }
         });
     }
+
     private View.OnClickListener openFavoritesList(){
         return new View.OnClickListener() {
             @Override
@@ -455,6 +456,53 @@ public class DeviceExpandableListAdapter extends BaseExpandableListAdapter {
         }
     }
 
+    private void setLayoutSize(final int groupPosition, final ChildViewHolder childViewHolder, int option) {
+        DisplayMetrics displayMetrics = Resources.getSystem().getDisplayMetrics();
+        int viewWidth = displayMetrics.widthPixels;
+        int viewHeight;
+
+        if(displayMetrics.widthPixels%2 != 0)
+            viewWidth -= 1;
+
+
+        if(mContext.getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE) {
+            viewHeight = displayMetrics.heightPixels;
+            option = 0;
+        } else{
+            viewHeight = ((displayMetrics.heightPixels / 3)+10);
+        }
+
+        switch(option) {
+            case 1:
+                viewHeight += 150;
+                break;
+            case 2:
+                viewHeight += 250;
+                break;
+            case 3:
+                viewHeight += 500;
+                break;
+            default:
+                break;
+        }
+
+        final int width = viewWidth;
+        final int height = viewHeight;
+
+
+
+
+        ((Activity)mContext).runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                childViewHolder.convertView.getLayoutParams().height = height;
+                childViewHolder.convertView.getLayoutParams().width = width;
+                mDeviceManager.getDeviceChannelsManagers().get(groupPosition).resetScale();
+            }
+        });
+    }
+
+
     private void setLayoutSize(final int groupPosition, final ChildViewHolder childViewHolder) {
         int option = 0;
         DisplayMetrics displayMetrics = Resources.getSystem().getDisplayMetrics();
@@ -586,6 +634,57 @@ public class DeviceExpandableListAdapter extends BaseExpandableListAdapter {
         mDeviceManager.getDeviceChannelsManagers().get(groupPosition).changeSurfaceViewSize();
     }
 
+
+    public void expandDeviceScreen(final int devicePosition, final int option) {
+        ((Activity)mContext).runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                ChannelsManager deviceChannelsManager = mDeviceManager.getDeviceChannelsManagers().get(devicePosition);
+                deviceChannelsManager.stopChannels(0);
+                mDeviceManager.clearStart();
+                childViewHolder.get(devicePosition).mRecyclerAdapter.notifyDataSetChanged();
+                deviceChannelsManager.changeSurfaceViewSize(option);
+                deviceChannelsManager.resetScale();
+                deviceChannelsManager.reOrderSurfaceViewComponents();
+                setLayoutSize(devicePosition, childViewHolder.get(devicePosition), option);
+            }
+        });
+
+    }
+
+    private void showMoreDialogExpandSelection(final int groupPosition) {
+        final AlertDialog.Builder builder = new AlertDialog.Builder(mContext);
+            ((DeviceListActivity) mContext).runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    builder.setTitle("Escolha o tamanho:")
+                            .setItems(new CharSequence[]{"1x", "2x", "3x"},
+                                    new DialogInterface.OnClickListener() {
+                                        @Override
+                                        public void onClick(DialogInterface dialog, int which) {
+                                            int option = 0;
+                                            switch (which) {
+                                                case 0:
+                                                    option = 1;
+                                                    break;
+                                                case 1:
+                                                    option = 2;
+                                                    break;
+                                                case 2:
+                                                    option = 3;
+                                                    break;
+                                                default:
+                                                    option = 0;
+                                                    break;
+                                            }
+                                            expandDeviceScreen(groupPosition, option);
+                                        }
+                                    });
+                    builder.show();
+                }
+            });
+    }
+
     private void showMoreDialog(final GroupViewHolder groupViewHolder, final int groupPosition) {
         final AlertDialog.Builder builder = new AlertDialog.Builder(mContext);
         if(!groupViewHolder.mDevice.getSerialNumber().equals("Favoritos"))
@@ -593,7 +692,7 @@ public class DeviceExpandableListAdapter extends BaseExpandableListAdapter {
                 @Override
                 public void run() {
                     builder.setTitle("")
-                            .setItems(new CharSequence[]{"Configurações", "Controle Remoto", "Playback", "Otimizar"},
+                            .setItems(new CharSequence[]{"Configurações", "Controle Remoto", "Playback", "Otimizar", "Expandir"},
                                     new DialogInterface.OnClickListener() {
                                         @Override
                                         public void onClick(DialogInterface dialog, int which) {
@@ -611,6 +710,9 @@ public class DeviceExpandableListAdapter extends BaseExpandableListAdapter {
                                                     break;
                                                 case 3:
                                                     showCustomDialog(groupViewHolder);
+                                                    break;
+                                                case 4:
+                                                    showMoreDialogExpandSelection(groupPosition);
                                                     break;
                                             }
                                         }
@@ -637,8 +739,6 @@ public class DeviceExpandableListAdapter extends BaseExpandableListAdapter {
                     builder.show();
                 }
             });
-
-
     }
 
     private void startSettingsActivity(Device mDevice) {
