@@ -389,38 +389,14 @@ public class Device implements Serializable {
     }
 
     public void setChannelNumber(int channelNumber) {
-        int[][] inverseMatrix;
         this.channelNumber = channelNumber;
-        if (channelsManager != null && channelNumber > 1) {
+        if (channelsManager != null && channelNumber > 3) {
             this.channelsManager.numQuad = 2;
-            this.channelsManager.lastNumQuad = 2;
+            this.channelsManager.lastNumQuad = 1;
         } else if(channelsManager != null){
             this.channelsManager.numQuad = 1;
             this.channelsManager.lastNumQuad = 1;
         }
-//        if (channelNumber <= 16 && this.channelsManager.numQuad != 3 && channelsManager != null) {
-//            inverseMatrix = new int[][]{
-//                    {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15}, // 1x1
-//                    {0, 2, 1, 3, 4, 6, 5, 7, 8, 10, 9, 11, 12, 14, 13, 15}, // 2x2
-//                    {0, 3, 6, 1, 4, 7, 2, 5, 8, 9, 12, 15, 10, 13, 11, 14}, // 3x3
-//                    {0, 4, 8, 12, 1, 5, 9, 13, 2, 6, 10, 14, 3, 7, 11, 15} // 4x4
-//            };
-//        } else {
-//            // Caso numQuad = 3;
-//            Log.e("NumQuad = 3", "inverseMatrix device.java");
-//            inverseMatrix = new int[][]{
-//                    {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17}, // 1x1
-//                    {0, 2, 1, 3, 4, 6, 5, 7, 8, 10, 9, 11, 12, 14, 13, 15, 17, 16}, // 2x2
-//                    {0, 3, 6, 1, 4, 7, 2, 5, 8, 9, 12, 15, 10, 13, 16, 11, 14, 17}, // 3x3
-//                    {0, 4, 8, 12, 1, 5, 9, 13, 2, 6, 10, 14, 3, 7, 11, 15, 16, 17} // 4x4
-//            };
-//        }
-//
-//        if (this.channelOrder[0] == -1) {
-//            for (int i = 0; i < channelNumber; i++) {
-//                this.channelOrder[i] = inverseMatrix[channelsManager.numQuad-1][i];
-//            }
-//        }
     }
 
     public int[] getChannelOrder() {

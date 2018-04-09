@@ -17,20 +17,20 @@
         <TextView
             style="@style/ActionBarTextView"
             android:text="Voltar"
+            android:layout_height="36dp"
             android:id="@+id/text_view_back"
             android:layout_width="0dp"
             android:layout_weight="1"
-            android:layout_gravity="center"
-            android:gravity="center"
+            android:gravity="center_horizontal|bottom"
             android:padding="0dp"
             android:layout_margin="0dp"/>
 
         <TextView
             style="@style/ActionBarTitle"
             android:text="ORDENAÇÃO"
+            android:layout_height="36dp"
             android:layout_width="0dp"
             android:layout_weight="2"
-            android:layout_gravity="bottom"
             android:gravity="center"
             android:padding="0dp"
             android:layout_margin="0dp"/>
@@ -38,14 +38,13 @@
         <TextView
             style="@style/ActionBarTextView"
             android:text="Aplicar"
+            android:layout_height="36dp"
             android:id="@+id/text_view_apply"
             android:layout_width="0dp"
             android:layout_weight="1"
-            android:layout_gravity="center"
-            android:gravity="center"
+            android:gravity="center_horizontal|bottom"
             android:padding="0dp"
             android:layout_margin="0dp"/>
-
 
     </LinearLayout>
 
@@ -58,7 +57,7 @@
             android:id="@+id/number_of_channels"
             android:layout_width="0dp"
             android:layout_weight="1"
-            android:layout_height="wrap_content"
+            android:layout_height="match_parent"
             android:layout_gravity="center"
             android:gravity="center"
             android:padding="16dp"
@@ -69,7 +68,7 @@
             android:id="@+id/restore_defaults"
             android:layout_width="0dp"
             android:layout_weight="1"
-            android:layout_height="wrap_content"
+            android:layout_height="54dp"
             android:layout_gravity="center"
             android:text="Restaurar Padrão"
             android:gravity="center"
@@ -77,10 +76,7 @@
             android:textSize="16sp"
             android:textStyle="bold"/>
 
-
     </LinearLayout>
-
-
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -109,7 +105,6 @@
 
     </LinearLayout>
 
-
     <com.mobeta.android.dslv.DragSortListView xmlns:android="http://schemas.android.com/apk/res/android"
         xmlns:dslv="http://schemas.android.com/apk/res-auto"
         android:id="@+id/list"
@@ -130,14 +125,5 @@
         dslv:sort_enabled="true"
         dslv:track_drag_sort="false"
         dslv:use_default_controller="true" />
-
-
-    <!--<ListView-->
-    <!--android:id="@+id/list"-->
-    <!--android:layout_width="match_parent"-->
-    <!--android:layout_height="wrap_content">-->
-
-    <!--</ListView>-->
-
 
 </LinearLayout>

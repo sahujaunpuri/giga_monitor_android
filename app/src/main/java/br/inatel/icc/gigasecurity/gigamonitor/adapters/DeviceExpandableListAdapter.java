@@ -610,10 +610,12 @@ public class DeviceExpandableListAdapter extends BaseExpandableListAdapter {
 
             for (int i = 1; i <= obsoleteChannels; i++) {
                 ImageView blankView = new ImageView(mContext);
-                blankView.setBackgroundColor(Color.BLACK);
-                blankView.setImageResource(R.drawable.ic_videocam_off_black_12dp);
-                blankView.setScaleType(ImageView.ScaleType.CENTER);
+                blankView.setImageResource(R.drawable.giga_logo);
+                blankView.setBackgroundColor(Color.parseColor("#D9D9D9"));
+                //blankView.setImageResource(R.drawable.ic_videocam_off_black_12dp);
+                //blankView.setScaleType(ImageView.ScaleType.CENTER);
 
+                Log.e("DeviceExpandable", ""+i+" "+channelsManager.numQuad+" "+channelsManager.inverseMatrix[channelsManager.numQuad - 1].length);
                 channelsManager.surfaceViewComponents.get(channelsManager.inverseMatrix[channelsManager.numQuad - 1][device.getChannelNumber() - i]).removeAllViews();
                 channelsManager.surfaceViewComponents.get(channelsManager.inverseMatrix[channelsManager.numQuad - 1][device.getChannelNumber() - i]).addView(blankView);
             }
