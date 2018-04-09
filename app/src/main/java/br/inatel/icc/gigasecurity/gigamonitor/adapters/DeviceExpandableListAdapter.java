@@ -227,7 +227,7 @@ public class DeviceExpandableListAdapter extends BaseExpandableListAdapter {
 
                 childViewHolder.get(groupPosition).gridLayoutManager.setSpanCount(mDeviceManager.getDeviceChannelsManagers().get(groupPosition).numQuad);
                 childViewHolder.get(groupPosition).mRecyclerAdapter.notifyDataSetChanged();
-                setLayoutSize(groupPosition, childViewHolder.get(groupPosition));
+//                setLayoutSize(groupPosition, childViewHolder.get(groupPosition));
                 deviceChannelsManager.changeSurfaceViewSize();
                 deviceChannelsManager.resetScale();
                 deviceChannelsManager.reOrderSurfaceViewComponents();
@@ -689,7 +689,7 @@ public class DeviceExpandableListAdapter extends BaseExpandableListAdapter {
                 @Override
                 public void run() {
                     builder.setTitle("")
-                            .setItems(new CharSequence[]{"Configurações", "Controle Remoto", "Playback", "Otimizar", "Expandir"},
+                            .setItems(new CharSequence[]{"Configurações", "Controle Remoto", "Playback", "Otimizar"},
                                     new DialogInterface.OnClickListener() {
                                         @Override
                                         public void onClick(DialogInterface dialog, int which) {

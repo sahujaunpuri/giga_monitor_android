@@ -82,20 +82,20 @@
     <style name="ActionBarTextView">
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">25dp</item>
-        <item name="android:textSize">12dp</item>
+        <item name="android:textSize">10dp</item>
         <item name="android:textColor">@color/text_color</item>
         <item name="android:textAllCaps">true</item>
         <item name="android:layout_marginTop">9dp</item>
         <item name="android:layout_marginLeft">3dp</item>
         <item name="android:layout_marginRight">3dp</item>
-        <item name="android:layout_marginBottom">6dp</item>
+        <item name="android:layout_marginBottom">3dp</item>
         <item name="android:fontFamily">@font/lato_regular</item>
     </style>
 
     <style name="ActionBarTitle">
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">wrap_content</item>
-        <item name="android:textSize">18dp</item>
+        <item name="android:textSize">16dp</item>
         <item name="android:textColor">@color/giga_green</item>
         <item name="android:textAllCaps">true</item>
         <item name="android:layout_marginLeft">10dp</item>
