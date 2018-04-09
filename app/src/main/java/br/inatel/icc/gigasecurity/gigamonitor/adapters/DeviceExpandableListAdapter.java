@@ -344,6 +344,15 @@ public class DeviceExpandableListAdapter extends BaseExpandableListAdapter {
         return convertView;
     }
 
+
+//    @Override
+//    public void onGroupExpanded(int groupPosition) {
+//        super.onGroupExpanded(groupPosition);
+//        GroupViewHolder currentGroupViewHolder = groupViewHolder.get(groupPosition);
+//        ChildViewHolder currentChildViewHolder = childViewHolder.get(groupPosition);
+//        showExpanded(groupPosition, currentGroupViewHolder, currentChildViewHolder);
+//    }
+
     private void showExpanded(final int groupPosition, final GroupViewHolder groupViewHolder, final ChildViewHolder childViewHolder) {
         ((DeviceListActivity) mContext).runOnUiThread(new Runnable() {
             @Override
@@ -358,13 +367,14 @@ public class DeviceExpandableListAdapter extends BaseExpandableListAdapter {
                     groupViewHolder.ivRefresh.setVisibility(View.GONE);
                 }
                 if (groupViewHolder.mDevice.getChannelNumber() == 0) {
+                    childViewHolder.tvMessage.setVisibility(View.VISIBLE);
                     if(groupViewHolder.mDevice.isFavorite) {
                         childViewHolder.tvMessage.setText("Nenhum favorito adicionado.");
                         groupViewHolder.ivRefresh.setVisibility(View.GONE);
+                        groupViewHolder.ivAddMore.setVisibility(View.VISIBLE);
                     }
                     else
                         childViewHolder.tvMessage.setText("Nenhum canal encontrado.");
-                    childViewHolder.tvMessage.setVisibility(View.VISIBLE);
                     childViewHolder.recyclerViewChannels.setVisibility(View.GONE);
                     groupViewHolder.ivMore.setVisibility(View.GONE);
                 }
@@ -385,26 +395,6 @@ public class DeviceExpandableListAdapter extends BaseExpandableListAdapter {
     }
 
 
-//    @Override
-//    public void onGroupExpanded(int groupPosition) {
-//        super.onGroupExpanded(groupPosition);
-//        try {
-//            super.onGroupCollapsed(groupPosition);
-//            final GroupViewHolder currentGroupViewHolder = groupViewHolder.get(groupPosition);
-//            ((DeviceListActivity) mContext).runOnUiThread(new Runnable() {
-//                @Override
-//                public void run() {
-//                    currentGroupViewHolder.ivRefresh.setVisibility(View.VISIBLE);
-//                    if (currentGroupViewHolder.mDevice.getSerialNumber().equals("Favoritos") || currentGroupViewHolder.mDevice.isLogged) {
-//                        currentGroupViewHolder.ivRefresh.setVisibility(View.GONE);
-//                    }
-//
-//                }
-//            });
-//        } catch (IndexOutOfBoundsException |  NullPointerException e) {
-//            e.printStackTrace();
-//        }
-//    }
 
     @Override
     public void onGroupCollapsed(int groupPosition){
@@ -425,16 +415,10 @@ public class DeviceExpandableListAdapter extends BaseExpandableListAdapter {
                     currentChildViewHolder.overlayMenu.setVisibility(View.GONE);
                     currentChildViewHolder.recyclerViewChannels.removeAllViewsInLayout();
                     currentChildViewHolder.recyclerViewChannels.removeAllViewsInLayout();
-                    //                currentChildViewHolder.recyclerViewChannels = null;
                 }
             });
-
-            //        mDeviceManager.getDeviceChannelsManagers().get(groupPosition).clearSurfaceViewComponents();
-
             mDeviceManager.removeLoginListener(currentGroupViewHolder.mDevice.getId());
             mDeviceManager.clearStart();
-
-            //        onChangeOrientation(groupPosition);
         } catch (IndexOutOfBoundsException |  NullPointerException e) {
             e.printStackTrace();
         }
