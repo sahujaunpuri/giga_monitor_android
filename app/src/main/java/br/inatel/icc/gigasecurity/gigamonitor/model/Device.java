@@ -111,7 +111,7 @@ public class Device implements Serializable {
     private int connectionMethod = -1; //0 - IP:port, 1 - DDNS:port, 2 - SerialNumber
     public int loginAttempt = 1;
     public ChannelsManager channelsManager;
-    public String message = "Conectando via IP";
+    public String message = "";
     @Expose private boolean ipPriorityConnection;
     @Expose private boolean domainPriorityConnection;
     @Expose private boolean cloudPriorityConnection;

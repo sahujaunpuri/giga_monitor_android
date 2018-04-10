@@ -356,18 +356,39 @@ public class DeviceExpandableListAdapter extends BaseExpandableListAdapter {
             updateChildView(mDevices.get(groupPosition), currentGroupViewHolder, childViewHolder, groupPosition);
             childViewHolder.gridLayoutManager.scrollToPosition(mDeviceManager.getDeviceChannelsManagers().get(groupPosition).lastFirstVisibleItem);
             updateQuad(groupPosition);
-            showExpanded(groupPosition, currentGroupViewHolder, childViewHolder);
+//            showExpanded(groupPosition, currentGroupViewHolder, childViewHolder);
         }
 
         setLayoutSize(groupPosition, childViewHolder);
         return convertView;
     }
 
+    @Override
+    public void onGroupExpanded(int groupPosition) {
+        super.onGroupExpanded(groupPosition);
+        GroupViewHolder currentGroupViewHolder = null;
+        ChildViewHolder currentChildViewHolder = null;
+        if (groupViewHolder.size() != 0) {
+            currentGroupViewHolder = groupViewHolder.get(groupPosition);
+        }
+
+        if (childViewHolder.size() != 0) {
+            currentChildViewHolder = childViewHolder.get(groupPosition);
+        }
+        try {
+            if (currentGroupViewHolder != null && currentChildViewHolder != null) {
+                showExpanded(groupPosition, currentGroupViewHolder, currentChildViewHolder);
+            }
+        } catch (Exception error) {
+            error.printStackTrace();
+        }
+    }
+
     private void showExpanded(final int groupPosition, final GroupViewHolder groupViewHolder, final ChildViewHolder childViewHolder) {
         ((DeviceListActivity) mContext).runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                if (groupViewHolder.mDevice.isOnline) {
+                if (groupViewHolder.mDevice.isOnline && groupViewHolder.mDevice.getChannelNumber() > 0) {
                     childViewHolder.tvMessage.setVisibility(View.GONE);
                 }
                 groupViewHolder.ivQuad.setVisibility(View.GONE);
