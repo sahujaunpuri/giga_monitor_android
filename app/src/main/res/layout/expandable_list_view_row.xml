@@ -33,39 +33,39 @@
                     android:id="@+id/tv_hostname_list_device" />
 
                 <ImageView
-                    android:layout_width="120dp"
+                    android:layout_width="100dp"
                     android:layout_height="30dp"
                     android:src="@drawable/otimizar_btn_style"
                     android:visibility="invisible"
                     android:id="@+id/iv_otimizar"/>
 
                 <ImageView
-                    android:layout_width="30dp"
-                    android:layout_height="30dp"
+                    android:layout_width="25dp"
+                    android:layout_height="25dp"
                     android:layout_marginLeft="6dp"
                     android:src="@drawable/refresh_btn_style"
                     android:visibility="gone"
                     android:id="@+id/iv_refresh" />
 
                 <ImageView
-                    android:layout_width="30dp"
-                    android:layout_height="30dp"
+                    android:layout_width="25dp"
+                    android:layout_height="25dp"
                     android:visibility="gone"
                     android:layout_marginLeft="6dp"
                     android:src="@drawable/add_btn_style"
                     android:id="@+id/iv_add_fav" />
 
                 <ImageView
-                    android:layout_width="30dp"
-                    android:layout_height="30dp"
+                    android:layout_width="25dp"
+                    android:layout_height="25dp"
                     android:visibility="invisible"
                     android:layout_marginLeft="6dp"
                     android:src="@drawable/grid_btn_style"
                     android:id="@+id/iv_grid_list_device" />
 
                 <ImageView
-                    android:layout_width="30dp"
-                    android:layout_height="30dp"
+                    android:layout_width="25dp"
+                    android:layout_height="25dp"
                     android:visibility="gone"
                     android:layout_marginLeft="6dp"
                     android:src="@drawable/config_btn_style"
