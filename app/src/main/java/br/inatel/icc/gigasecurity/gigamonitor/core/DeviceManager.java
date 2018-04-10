@@ -593,7 +593,7 @@ public class DeviceManager implements IFunSDKResult {
 
     public void handleNatInfo(JSONObject jsonObject, Device device){
         try{
-            if(jsonObject != null) {
+            if(jsonObject != null && device != null) {
                 JSONObject json = null;
                 if (jsonObject.has("Status.NatInfo"))
                     json = jsonObject.getJSONObject("Status.NatInfo");
