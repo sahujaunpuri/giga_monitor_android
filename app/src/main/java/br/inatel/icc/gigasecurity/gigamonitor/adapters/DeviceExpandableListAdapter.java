@@ -314,6 +314,24 @@ public class DeviceExpandableListAdapter extends BaseExpandableListAdapter {
         }
     }
 
+    public void updateQuad(final int groupPosition) {
+        ((Activity)mContext).runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                ChannelsManager deviceChannelsManager = mDeviceManager.getDeviceChannelsManagers().get(groupPosition);
+                deviceChannelsManager.stopChannels(0);
+                mDeviceManager.clearStart();
+
+                childViewHolder.get(groupPosition).gridLayoutManager.setSpanCount(mDeviceManager.getDeviceChannelsManagers().get(groupPosition).numQuad);
+                childViewHolder.get(groupPosition).mRecyclerAdapter.notifyDataSetChanged();
+                setLayoutSize(groupPosition, childViewHolder.get(groupPosition));
+                deviceChannelsManager.changeSurfaceViewSize();
+                deviceChannelsManager.resetScale();
+                deviceChannelsManager.reOrderSurfaceViewComponents();
+            }
+        });
+    }
+
     @Override
     public View getChildView(final int groupPosition, int childPosition, boolean isLastChild, View convertView, ViewGroup parent) {
         ChildViewHolder childViewHolder;
@@ -337,21 +355,13 @@ public class DeviceExpandableListAdapter extends BaseExpandableListAdapter {
         } else {
             updateChildView(mDevices.get(groupPosition), currentGroupViewHolder, childViewHolder, groupPosition);
             childViewHolder.gridLayoutManager.scrollToPosition(mDeviceManager.getDeviceChannelsManagers().get(groupPosition).lastFirstVisibleItem);
+            updateQuad(groupPosition);
             showExpanded(groupPosition, currentGroupViewHolder, childViewHolder);
         }
 
         setLayoutSize(groupPosition, childViewHolder);
         return convertView;
     }
-
-
-//    @Override
-//    public void onGroupExpanded(int groupPosition) {
-//        super.onGroupExpanded(groupPosition);
-//        GroupViewHolder currentGroupViewHolder = groupViewHolder.get(groupPosition);
-//        ChildViewHolder currentChildViewHolder = childViewHolder.get(groupPosition);
-//        showExpanded(groupPosition, currentGroupViewHolder, currentChildViewHolder);
-//    }
 
     private void showExpanded(final int groupPosition, final GroupViewHolder groupViewHolder, final ChildViewHolder childViewHolder) {
         ((DeviceListActivity) mContext).runOnUiThread(new Runnable() {
@@ -660,7 +670,7 @@ public class DeviceExpandableListAdapter extends BaseExpandableListAdapter {
                 @Override
                 public void run() {
                     builder.setTitle("")
-                            .setItems(new CharSequence[]{"Configurações", "Controle Remoto", "Playback", "Otimizar"},
+                            .setItems(new CharSequence[]{"Configurações", "Controle Remoto", "Playback", "Otimizar", "Expandir"},
                                     new DialogInterface.OnClickListener() {
                                         @Override
                                         public void onClick(DialogInterface dialog, int which) {
