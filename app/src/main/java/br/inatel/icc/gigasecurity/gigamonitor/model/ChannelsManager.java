@@ -259,6 +259,7 @@ public abstract class ChannelsManager implements IFunSDKResult {
                     if (svc.mScaleFactor > 1.F)
                         svc.mySurfaceView.resetScaleInfo();
                 }
+                Log.d(TAG, "reset oK!");
             }
         });
     }
