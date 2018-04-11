@@ -99,8 +99,6 @@ public class Device implements Serializable {
     @Expose public int talkOutChannel;
     @Expose public String connectionString;
     @Expose private String connectionNetworkName = null;
-    @Expose public boolean optimize = false;
-    @Expose public boolean alreadyOptimized = false;
     @Expose private JSONObject simplifyEncodeJson;
     @Expose public boolean isFavorite = false;
     @Expose private boolean isEnable = true;

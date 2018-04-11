@@ -81,20 +81,20 @@
     <!--Action Bar-->
     <style name="ActionBarTextView">
         <item name="android:layout_width">wrap_content</item>
-        <item name="android:layout_height">25dp</item>
+        <item name="android:layout_height">40dp</item>
         <item name="android:textSize">10dp</item>
         <item name="android:textColor">@color/text_color</item>
+        <item name="android:gravity">center</item>
+        <item name="android:layout_marginLeft">6dp</item>
         <item name="android:textAllCaps">true</item>
-        <item name="android:layout_marginTop">9dp</item>
-        <item name="android:layout_marginLeft">3dp</item>
-        <item name="android:layout_marginRight">3dp</item>
-        <item name="android:layout_marginBottom">3dp</item>
         <item name="android:fontFamily">@font/lato_regular</item>
     </style>
 
     <style name="ActionBarTitle">
-        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_width">0dp</item>
         <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_weight">1</item>
+        <item name="android:gravity">center_horizontal</item>
         <item name="android:textSize">16dp</item>
         <item name="android:textColor">@color/giga_green</item>
         <item name="android:textAllCaps">true</item>
@@ -317,7 +317,7 @@
 
     <!--Expandable List View Row-->
     <style name="ExpandableListViewRowTextViewDeviceName">
-        <item name="android:layout_width">80dp</item>
+        <item name="android:layout_width">100dp</item>
         <item name="android:layout_height">wrap_content</item>
         <item name="android:textColor">@color/default_color</item>
         <item name="android:text">Device Name</item>

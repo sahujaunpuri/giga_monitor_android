@@ -336,12 +336,12 @@ public class DeviceExpandableListAdapter extends BaseExpandableListAdapter {
     public View getChildView(final int groupPosition, int childPosition, boolean isLastChild, View convertView, ViewGroup parent) {
         ChildViewHolder childViewHolder;
 
-        if(convertView == null || this.childViewHolder.get(groupPosition).recyclerViewChannels == null){
+        if (convertView == null || this.childViewHolder.get(groupPosition).recyclerViewChannels == null) {
             childViewHolder = initChildViewHolder(parent, groupPosition);
             convertView = childViewHolder.convertView;
             initGridRecycler(groupPosition, childViewHolder);
             convertView.setTag(childViewHolder);
-        } else if (((ChildViewHolder) convertView.getTag()).position != groupPosition){
+        } else if (((ChildViewHolder) convertView.getTag()).position != groupPosition) {
             childViewHolder = this.childViewHolder.get(groupPosition);
             convertView = childViewHolder.convertView;
         } else {
@@ -350,7 +350,7 @@ public class DeviceExpandableListAdapter extends BaseExpandableListAdapter {
 
         GroupViewHolder currentGroupViewHolder = groupViewHolder.get(groupPosition);
 
-        if(!currentGroupViewHolder.mDevice.isLogged) {
+        if (!currentGroupViewHolder.mDevice.isLogged) {
             loginDevice(currentGroupViewHolder.mDevice, currentGroupViewHolder, childViewHolder, groupPosition);
         } else {
             updateChildView(mDevices.get(groupPosition), currentGroupViewHolder, childViewHolder, groupPosition);
@@ -363,27 +363,6 @@ public class DeviceExpandableListAdapter extends BaseExpandableListAdapter {
         return convertView;
     }
 
-    @Override
-    public void onGroupExpanded(int groupPosition) {
-        super.onGroupExpanded(groupPosition);
-        GroupViewHolder currentGroupViewHolder = null;
-        ChildViewHolder currentChildViewHolder = null;
-        if (groupViewHolder.size() != 0) {
-            currentGroupViewHolder = groupViewHolder.get(groupPosition);
-        }
-
-        if (childViewHolder.size() != 0) {
-            currentChildViewHolder = childViewHolder.get(groupPosition);
-        }
-        try {
-            if (currentGroupViewHolder != null && currentChildViewHolder != null) {
-                showExpanded(groupPosition, currentGroupViewHolder, currentChildViewHolder);
-            }
-        } catch (Exception error) {
-            error.printStackTrace();
-        }
-    }
-
     private void showExpanded(final int groupPosition, final GroupViewHolder groupViewHolder, final ChildViewHolder childViewHolder) {
         ((DeviceListActivity) mContext).runOnUiThread(new Runnable() {
             @Override
@@ -392,7 +371,7 @@ public class DeviceExpandableListAdapter extends BaseExpandableListAdapter {
                     childViewHolder.tvMessage.setVisibility(View.GONE);
                 }
                 groupViewHolder.ivQuad.setVisibility(View.GONE);
-                groupViewHolder.ivOtimizar.setVisibility(View.INVISIBLE);
+                groupViewHolder.ivOtimizar.setVisibility(View.GONE);
                 groupViewHolder.ivRefresh.setVisibility(View.VISIBLE);
                 if (groupViewHolder.mDevice.isFavorite || groupViewHolder.mDevice.isLogged) {
                     groupViewHolder.ivRefresh.setVisibility(View.GONE);
@@ -441,7 +420,7 @@ public class DeviceExpandableListAdapter extends BaseExpandableListAdapter {
                     currentGroupViewHolder.ivMore.setVisibility(View.GONE);
                     currentGroupViewHolder.ivQuad.setVisibility(View.GONE);
                     currentGroupViewHolder.ivRefresh.setVisibility(View.GONE);
-                    currentGroupViewHolder.ivOtimizar.setVisibility(View.INVISIBLE);
+                    currentGroupViewHolder.ivOtimizar.setVisibility(View.GONE);
                     currentChildViewHolder.recyclerViewChannels.setVisibility(View.GONE);
                     currentChildViewHolder.overlayMenu.setVisibility(View.GONE);
                     currentChildViewHolder.recyclerViewChannels.removeAllViewsInLayout();
@@ -602,7 +581,7 @@ public class DeviceExpandableListAdapter extends BaseExpandableListAdapter {
                             mDevice.isLogged = false;
                             groupViewHolder.ivQuad.setVisibility(View.GONE);
                             groupViewHolder.ivMore.setVisibility(View.GONE);
-                            groupViewHolder.ivOtimizar.setVisibility(View.INVISIBLE);
+                            groupViewHolder.ivOtimizar.setVisibility(View.GONE);
                             groupViewHolder.ivRefresh.setVisibility(View.VISIBLE);
                             childViewHolder.recyclerViewChannels.setVisibility(View.GONE);
                             String errorMsg;
@@ -657,19 +636,22 @@ public class DeviceExpandableListAdapter extends BaseExpandableListAdapter {
                 @Override
                 public void run() {
                     builder.setTitle("Escolha o tamanho:")
-                            .setItems(new CharSequence[]{"1x", "2x", "3x"},
+                            .setItems(new CharSequence[]{"Normal","2x", "3x", "4x"},
                                     new DialogInterface.OnClickListener() {
                                         @Override
                                         public void onClick(DialogInterface dialog, int which) {
                                             int option = 0;
                                             switch (which) {
                                                 case 0:
-                                                    option = 1;
+                                                    option = 0;
                                                     break;
                                                 case 1:
-                                                    option = 2;
+                                                    option = 1;
                                                     break;
                                                 case 2:
+                                                    option = 2;
+                                                    break;
+                                                case 3:
                                                     option = 3;
                                                     break;
                                                 default:
