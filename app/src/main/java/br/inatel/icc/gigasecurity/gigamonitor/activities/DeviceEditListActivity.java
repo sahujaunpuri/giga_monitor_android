@@ -46,7 +46,7 @@ public class DeviceEditListActivity extends ActionBarActivity implements View.On
         initComponents();
         setListeners();
 
-        mAdapter = new DeviceEditAdapter(this, mDevices);
+        mAdapter = new DeviceEditAdapter(this, mDevices, false);
         lv.setAdapter(mAdapter);
 
         getSupportActionBar().hide();
@@ -87,7 +87,7 @@ public class DeviceEditListActivity extends ActionBarActivity implements View.On
                     mDevices.remove(from);
                     mDevices.add(to, item);
 
-                    mAdapter = new DeviceEditAdapter(DeviceEditListActivity.this, mDevices);
+                    mAdapter = new DeviceEditAdapter(DeviceEditListActivity.this, mDevices,  mAdapter.modifiedDevice);
                     lv.setAdapter(mAdapter);
 //                    mAdapter.notifyDataSetChanged();
 
@@ -105,7 +105,7 @@ public class DeviceEditListActivity extends ActionBarActivity implements View.On
 
 
 //                    mAdapter.notifyDataSetChanged();
-                    mAdapter = new DeviceEditAdapter(DeviceEditListActivity.this, mDevices);
+                    mAdapter = new DeviceEditAdapter(DeviceEditListActivity.this, mDevices, mAdapter.modifiedDevice);
                     lv.setAdapter(mAdapter);
 
 
@@ -130,7 +130,7 @@ public class DeviceEditListActivity extends ActionBarActivity implements View.On
     public void onResume(){
         super.onResume();
         mDevices = mDeviceManager.getDevices();
-        mAdapter = new DeviceEditAdapter(DeviceEditListActivity.this, mDevices);
+        mAdapter = new DeviceEditAdapter(DeviceEditListActivity.this, mDevices, false);
         lv.setAdapter(mAdapter);
     }
 
@@ -168,7 +168,7 @@ public class DeviceEditListActivity extends ActionBarActivity implements View.On
             return true;
         }
         if (id == R.id.action_finish) {
-            if(!deleted && !moved)
+            if(!deleted && !moved && !mAdapter.modifiedDevice)
                 finish();
             else {
                 exitAndSave();
@@ -178,7 +178,9 @@ public class DeviceEditListActivity extends ActionBarActivity implements View.On
         if (id == android.R.id.home) {
             if (deleted || moved) {
                 showBackConfirmation();
-            } else {
+            } else if(mAdapter.modifiedDevice) {
+                exitAndSave();
+            }else{
                 finish();
             }
             return true;
@@ -223,7 +225,9 @@ public class DeviceEditListActivity extends ActionBarActivity implements View.On
             case R.id.text_view_back:
                 if (deleted || moved) {
                     showBackConfirmation();
-                } else {
+                } else if(mAdapter.modifiedDevice) {
+                    exitAndSave();
+                }else{
                     finish();
                 }
                 break;

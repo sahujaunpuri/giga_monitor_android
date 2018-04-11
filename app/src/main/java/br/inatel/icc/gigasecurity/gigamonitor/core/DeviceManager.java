@@ -793,7 +793,19 @@ public class DeviceManager implements IFunSDKResult {
             }
             favoriteManager.createComponents();
         }
-        return deviceChannelsManagers;
+//        return deviceChannelsManagers;
+        return enabledDeviceChannelsManagers();
+    }
+
+    //fix temporário, otimizar. Encontrar uma forma de atualizar a lista de channelsmanager quando o usuário modificar algum device
+    // pra não precisar ficar passando pelo laço toda vez que der o get
+    private ArrayList<ChannelsManager> enabledDeviceChannelsManagers(){
+        ArrayList<ChannelsManager> enabledDeviceChannelsManagers = new ArrayList<>();
+        for(ChannelsManager channelsManager : deviceChannelsManagers){
+            if(channelsManager.mDevice.isEnable())
+                enabledDeviceChannelsManagers.add(channelsManager);
+        }
+        return enabledDeviceChannelsManagers;
     }
 
     public ChannelsManager findChannelManagerByDevice(Device device) {
