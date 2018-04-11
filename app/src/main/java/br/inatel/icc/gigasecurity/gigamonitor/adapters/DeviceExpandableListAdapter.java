@@ -691,7 +691,7 @@ public class DeviceExpandableListAdapter extends BaseExpandableListAdapter {
                 @Override
                 public void run() {
                     builder.setTitle("")
-                            .setItems(new CharSequence[]{"Configurações", "Controle Remoto", "Playback", "Otimizar"/*, "Expandir"*/},
+                            .setItems(new CharSequence[]{"Configurações", "Controle Remoto", "Playback", "Otimizar", "Expandir"},
                                     new DialogInterface.OnClickListener() {
                                         @Override
                                         public void onClick(DialogInterface dialog, int which) {
@@ -710,9 +710,9 @@ public class DeviceExpandableListAdapter extends BaseExpandableListAdapter {
                                                 case 3:
                                                     showCustomDialog(groupViewHolder);
                                                     break;
-                                                /*case 4:
+                                                case 4:
                                                     showMoreDialogExpandSelection(groupPosition);
-                                                    break;*/
+                                                    break;
                                             }
                                         }
                                     });
