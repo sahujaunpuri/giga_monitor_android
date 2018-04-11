@@ -30,11 +30,13 @@ public class DeviceEditAdapter extends BaseAdapter {
     private ArrayList<Device> mDevices;
     private DeviceManager mDeviceManager;
     private Context mContex;
+    public boolean modifiedDevice;
 
-    public DeviceEditAdapter(Context context, ArrayList<Device> devices) {
+    public DeviceEditAdapter(Context context, ArrayList<Device> devices, boolean modifiedDevice) {
         this.mContex = context;
         this.mDevices = devices;
         this.mDeviceManager = DeviceManager.getInstance();
+        modifiedDevice = modifiedDevice;
     }
 
     @Override
@@ -101,6 +103,7 @@ public class DeviceEditAdapter extends BaseAdapter {
             @Override
             public void onClick(View view) {
                 mDevices.get(position).setEnable(holder.enable.isChecked());
+                modifiedDevice = true;
             }
         });
 
