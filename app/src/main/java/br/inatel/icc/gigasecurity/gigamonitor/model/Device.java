@@ -390,13 +390,17 @@ public class Device implements Serializable {
 
     public void setChannelNumber(int channelNumber) {
         this.channelNumber = channelNumber;
-        if (channelsManager != null && channelNumber > 3) {
+        if (channelsManager != null && channelNumber > 1) {
             this.channelsManager.numQuad = 2;
-            this.channelsManager.lastNumQuad = 1;
+            this.channelsManager.lastNumQuad = 2;
         } else if(channelsManager != null){
             this.channelsManager.numQuad = 1;
             this.channelsManager.lastNumQuad = 1;
         }
+    }
+
+    public void setChannelNumberForQuad(int channelNumber) {
+        this.channelNumber = channelNumber;
     }
 
     public int[] getChannelOrder() {

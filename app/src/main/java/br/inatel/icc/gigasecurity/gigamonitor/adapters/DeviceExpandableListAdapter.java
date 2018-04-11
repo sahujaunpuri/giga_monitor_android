@@ -226,6 +226,7 @@ public class DeviceExpandableListAdapter extends BaseExpandableListAdapter {
                 channelsManager.lastNumQuad = channelsManager.numQuad;
                 channelsManager.stopChannels(0);
                 mDeviceManager.clearStart();
+                Log.e("NUMQUAD CHANGEQUAD",  ""+channelsManager.numQuad);
 
                 childViewHolder.get(groupPosition).gridLayoutManager.setSpanCount(mDeviceManager.getDeviceChannelsManagers().get(groupPosition).numQuad);
 //                        deviceChannelsManager.currentPage = deviceChannelsManager.pageNumber(deviceChannelsManager.lastFirstVisibleItem);
@@ -237,7 +238,7 @@ public class DeviceExpandableListAdapter extends BaseExpandableListAdapter {
                 //deviceChannelsManager.reOrderSurfaceViewComponents();
 
                 //Orderação dos canais de acordo com a preferência do cliente
-                setChannelOrder(device, mDeviceManager);
+                setChannelOrder(device, channelsManager);
             }
         });
     }
@@ -540,7 +541,8 @@ public class DeviceExpandableListAdapter extends BaseExpandableListAdapter {
                 childViewHolder.gridLayoutManager.scrollToPosition(mDeviceManager.getDeviceChannelsManagers().get(position).lastFirstVisibleItem);
                 int [] channelOrder = mDevice.getChannelOrder();
                 Log.e("DeviceExpandable", ""+channelOrder[0]+", "+channelOrder[1]+", "+channelOrder[2]+", "+channelOrder[3]);
-                setChannelOrder(mDevice, mDeviceManager);
+                ChannelsManager channelsManager = mDeviceManager.findChannelManagerByDevice(mDevice);
+                setChannelOrder(mDevice, channelsManager);
             }
 
             @Override
@@ -580,9 +582,7 @@ public class DeviceExpandableListAdapter extends BaseExpandableListAdapter {
     }
 
     // funcao em testes pra arrumar o grid !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-    public void setChannelOrder(Device device, DeviceManager deviceManager) {
-
-        ChannelsManager channelsManager = deviceManager.findChannelManagerByDevice(device);
+    public void setChannelOrder(Device device, ChannelsManager channelsManager) {
 
         channelsManager.initMatrix();
 
@@ -592,16 +592,16 @@ public class DeviceExpandableListAdapter extends BaseExpandableListAdapter {
         if (channelsManager.numQuad == 3) {
 
             if (device.getChannelNumber() == 8){
-                device.setChannelNumber(9);
+                device.setChannelNumberForQuad(9);
                 obsoleteChannels = 1;
             }
             if (device.getChannelNumber() == 16) {
-                device.setChannelNumber(18);
+                device.setChannelNumberForQuad(18);
                 obsoleteChannels = 2;
             }
 
             if (device.getChannelNumber() == 32) {
-                device.setChannelNumber(36);
+                device.setChannelNumberForQuad(36);
                 obsoleteChannels = 4;
             }
 
@@ -615,7 +615,6 @@ public class DeviceExpandableListAdapter extends BaseExpandableListAdapter {
                 //blankView.setImageResource(R.drawable.ic_videocam_off_black_12dp);
                 //blankView.setScaleType(ImageView.ScaleType.CENTER);
 
-                Log.e("DeviceExpandable", ""+i+" "+channelsManager.numQuad+" "+channelsManager.inverseMatrix[channelsManager.numQuad - 1].length);
                 channelsManager.surfaceViewComponents.get(channelsManager.inverseMatrix[channelsManager.numQuad - 1][device.getChannelNumber() - i]).removeAllViews();
                 channelsManager.surfaceViewComponents.get(channelsManager.inverseMatrix[channelsManager.numQuad - 1][device.getChannelNumber() - i]).addView(blankView);
             }
@@ -623,19 +622,19 @@ public class DeviceExpandableListAdapter extends BaseExpandableListAdapter {
         } else {
             // Outros casos
             if (device.getChannelNumber() == 18 && channelsManager.numQuad != 3) {
-                device.setChannelNumber(16);
+                device.setChannelNumberForQuad(16);
                 channelsManager.clearSurfaceViewComponents();
                 channelsManager.createComponents();
             }
 
             if (device.getChannelNumber() == 9 && channelsManager.numQuad != 3) {
-                device.setChannelNumber(8);
+                device.setChannelNumberForQuad(8);
                 channelsManager.clearSurfaceViewComponents();
                 channelsManager.createComponents();
             }
 
             if (device.getChannelNumber() == 36 && channelsManager.numQuad != 3) {
-                device.setChannelNumber(32);
+                device.setChannelNumberForQuad(32);
                 channelsManager.clearSurfaceViewComponents();
                 channelsManager.createComponents();
             }
