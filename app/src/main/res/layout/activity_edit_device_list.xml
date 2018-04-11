@@ -60,8 +60,8 @@
         dslv:track_drag_sort="false"
         dslv:use_default_controller="true"
         dslv:sort_enabled="true"
-        dslv:remove_enabled="true"
-        dslv:drag_start_mode="onDown"
+        dslv:remove_enabled="false"
+        dslv:drag_start_mode="onLongPress"
         dslv:remove_mode="flingRemove"
         android:divider="@null"
         android:dividerHeight="0dp"/>

@@ -183,6 +183,7 @@ public class DeviceSearchListActivity extends ActionBarActivity implements View.
         Bundle extras = new Bundle();
         Device device = mDevices.get(item);
         device.setIpPriorityConnection(true);
+        device.setCloudPriorityConnection(true);
         extras.putSerializable("device", device);
         extras.putInt("index", -2);
 
