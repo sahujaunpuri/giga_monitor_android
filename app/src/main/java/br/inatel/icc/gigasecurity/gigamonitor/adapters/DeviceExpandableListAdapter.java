@@ -612,8 +612,6 @@ public class DeviceExpandableListAdapter extends BaseExpandableListAdapter {
                 ImageView blankView = new ImageView(mContext);
                 blankView.setImageResource(R.drawable.giga_logo);
                 blankView.setBackgroundColor(Color.parseColor("#D9D9D9"));
-                //blankView.setImageResource(R.drawable.ic_videocam_off_black_12dp);
-                //blankView.setScaleType(ImageView.ScaleType.CENTER);
 
                 channelsManager.surfaceViewComponents.get(channelsManager.inverseMatrix[channelsManager.numQuad - 1][device.getChannelNumber() - i]).removeAllViews();
                 channelsManager.surfaceViewComponents.get(channelsManager.inverseMatrix[channelsManager.numQuad - 1][device.getChannelNumber() - i]).addView(blankView);

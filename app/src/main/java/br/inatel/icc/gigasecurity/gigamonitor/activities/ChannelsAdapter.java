@@ -40,7 +40,6 @@ public class ChannelsAdapter extends ArrayAdapter<Channel> {
 
         return listItemView;
     }
-
 }
 
 

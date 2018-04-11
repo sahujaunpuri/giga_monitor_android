@@ -17,6 +17,7 @@
         <TextView
             style="@style/ActionBarTextView"
             android:text="Voltar"
+            android:fontFamily="@font/lato_black"
             android:layout_height="36dp"
             android:id="@+id/text_view_back"
             android:layout_width="0dp"
@@ -28,6 +29,7 @@
         <TextView
             style="@style/ActionBarTitle"
             android:text="ORDENAÇÃO"
+            android:fontFamily="@font/lato_black"
             android:layout_height="36dp"
             android:layout_width="0dp"
             android:layout_weight="2"
@@ -37,7 +39,8 @@
 
         <TextView
             style="@style/ActionBarTextView"
-            android:text="Aplicar"
+            android:text="Salvar"
+            android:fontFamily="@font/lato_black"
             android:layout_height="36dp"
             android:id="@+id/text_view_apply"
             android:layout_width="0dp"
@@ -62,10 +65,12 @@
             android:gravity="center"
             android:padding="16dp"
             android:textSize="16sp"
-            android:textStyle="bold"/>
+            android:textStyle="bold"
+            android:fontFamily="@font/lato_black" />
 
         <TextView
             android:id="@+id/restore_defaults"
+            android:textColor="@color/text_green_color"
             android:layout_width="0dp"
             android:layout_weight="1"
             android:layout_height="54dp"
@@ -74,7 +79,8 @@
             android:gravity="center"
             android:padding="16dp"
             android:textSize="16sp"
-            android:textStyle="bold"/>
+            android:textStyle="bold"
+            android:fontFamily="@font/lato_black" />
 
     </LinearLayout>
 
@@ -86,22 +92,24 @@
         <TextView
             android:layout_width="0dp"
             android:layout_weight="1"
+            android:textColor="@color/text_green_color"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:gravity="center"
             android:text="Posição"
             android:textSize="16sp"
-            android:textStyle="bold"/>
+            android:fontFamily="@font/lato_black" />
 
         <TextView
             android:layout_width="0dp"
-            android:layout_weight="3"
+            android:layout_weight="2"
+            android:textColor="@color/text_green_color"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:gravity="center"
             android:text="Nome do Canal"
             android:textSize="16sp"
-            android:textStyle="bold"/>
+            android:fontFamily="@font/lato_black"/>
 
     </LinearLayout>
 
