@@ -75,18 +75,6 @@ public class DeviceListActivity extends ActionBarActivity implements View.OnClic
         SharedPreferences.Editor editor = prefs.edit();
         if(mDevices.size() == 1) {
             startInitialActivity();
-            editor.putBoolean("newUser", true);
-            editor.putBoolean("cloud2", false);
-            editor.commit();
-        } else {
-            if (prefs.getBoolean("cloud2", true)) {
-                editor.putBoolean("newUser", false);
-                editor.commit();
-                for (Device device : mDevices) {
-                    if (!device.alreadyOptimized)
-                        device.optimize = true;
-                }
-            }
         }
 
         try {
