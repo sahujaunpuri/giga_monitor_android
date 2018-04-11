@@ -235,7 +235,7 @@ public class DeviceExpandableListAdapter extends BaseExpandableListAdapter {
                 childViewHolder.get(groupPosition).mRecyclerAdapter.notifyDataSetChanged();
                 channelsManager.changeSurfaceViewSize();
                 channelsManager.resetScale();
-                //deviceChannelsManager.reOrderSurfaceViewComponents();
+                //channelsManager.reOrderSurfaceViewComponents();
 
                 //Orderação dos canais de acordo com a preferência do cliente
                 setChannelOrder(device, channelsManager);
@@ -615,6 +615,7 @@ public class DeviceExpandableListAdapter extends BaseExpandableListAdapter {
 
                 channelsManager.surfaceViewComponents.get(channelsManager.inverseMatrix[channelsManager.numQuad - 1][device.getChannelNumber() - i]).removeAllViews();
                 channelsManager.surfaceViewComponents.get(channelsManager.inverseMatrix[channelsManager.numQuad - 1][device.getChannelNumber() - i]).addView(blankView);
+                channelsManager.surfaceViewComponents.get(channelsManager.inverseMatrix[channelsManager.numQuad - 1][device.getChannelNumber() - i]).playType = 2;
             }
 
         } else {
@@ -641,12 +642,14 @@ public class DeviceExpandableListAdapter extends BaseExpandableListAdapter {
         int[] channelOrder = device.getChannelOrder();
 
         int camNumber;
-        if (channelOrder.length > device.getChannelNumber())
+
+        if (channelOrder.length > device.getChannelNumber()) {
             camNumber = device.getChannelNumber();
-        else camNumber = channelOrder.length;
+        } else {
+            camNumber = channelOrder.length;
+        }
 
         for (int i = 0; i < camNumber; i++) {
-            //Log.e("i, sfcm, chOrder, matrix",""+i+" "+channelsManager.surfaceViewComponents.size()+" "+channelOrder.length+" "+channelsManager.inverseMatrix[2].length);
             channelsManager.surfaceViewComponents.get(channelsManager.inverseMatrix[channelsManager.numQuad - 1][i]).mySurfaceViewNewChannelId = channelOrder[i];
         }
     }

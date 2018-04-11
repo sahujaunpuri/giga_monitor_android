@@ -1,7 +1,6 @@
 package br.inatel.icc.gigasecurity.gigamonitor.model;
 
 import android.app.Activity;
-import android.util.Log;
 
 import com.lib.IFunSDKResult;
 import com.video.opengl.GLSurfaceView20;
@@ -55,7 +54,6 @@ public class DeviceChannelsManager extends ChannelsManager implements IFunSDKRes
     /** Grid Functions **/
     public void reOrderSurfaceViewComponents() {
         initMatrix();
-        Log.e("Bug", "" + numQuad + " " + inverseMatrix[numQuad - 1].length);
         try {
             for (SurfaceViewComponent svc : surfaceViewComponents) {
                 svc.mySurfaceViewOrderId = inverseMatrix[numQuad - 1][svc.mySurfaceViewNewChannelId];

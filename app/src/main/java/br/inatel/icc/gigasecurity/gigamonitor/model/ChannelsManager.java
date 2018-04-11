@@ -541,17 +541,9 @@ public abstract class ChannelsManager implements IFunSDKResult {
                     } else {
                         if(svc.playType == 0) {
                             svc.setConnected(false);
-//                            if(startTry++ < 4)
-                                onStartVideo(svc);
-                            /*else {
-                                startTry = 0;
-                                mDeviceManager.logoutDevice(mDevice);
-                            }*/
-//                            mDeviceManager.addToStart(svc);
-
                             onStartVideo(svc);
 
-                        } else{
+                        } else if (playType == 1) {
                             onPlayPlayback(fileToStart, svc);
                         }
 

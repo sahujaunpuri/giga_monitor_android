@@ -44,7 +44,7 @@ public class SurfaceViewComponent extends FrameLayout {
     private boolean isConnected = false;
     public boolean isPlaying = false;
     public boolean isREC = false;
-    public int playType = 0; //0 - live, 1 - playback live
+    public int playType = 0; //0 - live, 1 - playback live, 2 - view de preenchimento
     public boolean isSeeking = false;
     public int seekPercentage = 0;
     public boolean isFavorite = false;
