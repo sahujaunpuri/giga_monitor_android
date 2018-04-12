@@ -397,6 +397,10 @@ public class Device implements Serializable {
         }
     }
 
+    public String getMessage() {
+        return message;
+    }
+
     public int getNumberOfAlarmsIn() {
         return numberOfAlarmsIn;
     }

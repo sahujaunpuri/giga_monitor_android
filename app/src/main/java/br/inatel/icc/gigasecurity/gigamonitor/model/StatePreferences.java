@@ -11,4 +11,5 @@ public class StatePreferences {
     public int previousLastGrid = -1;
     public int previousHD = -1;
     public int previousLastVisibleChannel = -1;
+    public int previousExpand;
 }
