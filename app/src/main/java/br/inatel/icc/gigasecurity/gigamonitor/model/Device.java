@@ -397,6 +397,10 @@ public class Device implements Serializable {
         }
     }
 
+    public ChannelsManager getChannelsManager() {
+        return channelsManager;
+    }
+
     public String getMessage() {
         return message;
     }

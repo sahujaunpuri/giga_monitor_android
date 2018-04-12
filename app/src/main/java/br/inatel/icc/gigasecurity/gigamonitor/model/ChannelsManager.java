@@ -53,6 +53,7 @@ public abstract class ChannelsManager implements IFunSDKResult {
     public int lastFirstVisibleItem;
     public int lastLastVisibleItem;
     public int lastFirstItemBeforeSelectChannel;
+    public int lastExpand;
     public int currentPage;
     public int channelNumber;
     public int ptzChannel;

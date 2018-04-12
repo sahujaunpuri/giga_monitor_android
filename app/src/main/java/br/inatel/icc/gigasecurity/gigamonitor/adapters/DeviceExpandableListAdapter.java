@@ -181,9 +181,7 @@ public class DeviceExpandableListAdapter extends BaseExpandableListAdapter {
         childViewHolder.gridLayoutManager = new CustomGridLayoutManager(mContext, mDeviceManager.getDeviceChannelsManagers().get(groupPosition).numQuad, GridLayoutManager.HORIZONTAL, false);
         childViewHolder.recyclerViewChannels.setLayoutManager(childViewHolder.gridLayoutManager);
         childViewHolder.mRecyclerAdapter = new ChannelRecyclerViewAdapter(mContext, groupViewHolder.get(groupPosition).mDevice, childViewHolder, mDeviceManager.getDeviceChannelsManagers().get(groupPosition));
-//        childViewHolder.mRecyclerAdapter.setHasStableIds(true);
         childViewHolder.recyclerViewChannels.setAdapter(childViewHolder.mRecyclerAdapter);
-//        childViewHolder.recyclerViewChannels.setHasFixedSize(true);
         childViewHolder.recyclerViewChannels.setItemViewCacheSize(0);
         childViewHolder.recyclerViewChannels.setOnScrollListener(createOnScrollListener(groupPosition));
     }
@@ -215,10 +213,9 @@ public class DeviceExpandableListAdapter extends BaseExpandableListAdapter {
                 deviceChannelsManager.lastNumQuad = deviceChannelsManager.numQuad;
                 deviceChannelsManager.stopChannels(0);
                 mDeviceManager.clearStart();
-
                 childViewHolder.get(groupPosition).gridLayoutManager.setSpanCount(mDeviceManager.getDeviceChannelsManagers().get(groupPosition).numQuad);
                 childViewHolder.get(groupPosition).mRecyclerAdapter.notifyDataSetChanged();
-                setLayoutSize(groupPosition, childViewHolder.get(groupPosition));
+                setLayoutSize(groupPosition, childViewHolder.get(groupPosition), deviceChannelsManager.lastExpand);
                 deviceChannelsManager.changeSurfaceViewSize();
                 deviceChannelsManager.resetScale();
                 deviceChannelsManager.reOrderSurfaceViewComponents();
@@ -312,7 +309,7 @@ public class DeviceExpandableListAdapter extends BaseExpandableListAdapter {
                 ChannelsManager deviceChannelsManager = mDeviceManager.getDeviceChannelsManagers().get(groupPosition);
                 deviceChannelsManager.stopChannels(0);
                 mDeviceManager.clearStart();
-
+//                mDeviceManager.getDevices().get(groupPosition).getChannelsManager();
                 childViewHolder.get(groupPosition).gridLayoutManager.setSpanCount(mDeviceManager.getDeviceChannelsManagers().get(groupPosition).numQuad);
                 childViewHolder.get(groupPosition).mRecyclerAdapter.notifyDataSetChanged();
                 setLayoutSize(groupPosition, childViewHolder.get(groupPosition));
@@ -617,6 +614,7 @@ public class DeviceExpandableListAdapter extends BaseExpandableListAdapter {
                 deviceChannelsManager.stopChannels(0);
                 mDeviceManager.clearStart();
                 childViewHolder.get(devicePosition).mRecyclerAdapter.notifyDataSetChanged();
+                deviceChannelsManager.lastExpand = option;
                 setLayoutSize(devicePosition, childViewHolder.get(devicePosition), option);
                 deviceChannelsManager.changeSurfaceViewSize(option);
                 deviceChannelsManager.resetScale();

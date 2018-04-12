@@ -204,6 +204,7 @@ public class DeviceListActivity extends ActionBarActivity implements View.OnClic
                 statePreferences.previousGrid = channelsManager.numQuad;
                 statePreferences.previousLastGrid = channelsManager.lastNumQuad;
                 statePreferences.previousLastVisibleChannel = channelsManager.lastFirstItemBeforeSelectChannel;
+                statePreferences.previousExpand = channelsManager.lastExpand;
             }
             mDeviceManager.saveState(statePreferences);
         } catch (Exception error) {
