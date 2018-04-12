@@ -235,10 +235,13 @@ public class DeviceExpandableListAdapter extends BaseExpandableListAdapter {
                 childViewHolder.get(groupPosition).mRecyclerAdapter.notifyDataSetChanged();
                 channelsManager.changeSurfaceViewSize();
                 channelsManager.resetScale();
-                //channelsManager.reOrderSurfaceViewComponents();
-
-                //Orderação dos canais de acordo com a preferência do cliente
-                setChannelOrder(device, channelsManager);
+                Log.e("Device Name", device.getDeviceName());
+                if (device.getDeviceName().equals("Favoritos")) {
+                    channelsManager.reOrderSurfaceViewComponents();
+                } else {
+                    //Orderação dos canais de acordo com a preferência do cliente
+                    setChannelOrder(device, channelsManager);
+                }
             }
         });
     }
@@ -637,6 +640,26 @@ public class DeviceExpandableListAdapter extends BaseExpandableListAdapter {
                 channelsManager.clearSurfaceViewComponents();
                 channelsManager.createComponents();
             }
+
+//            // caso Favorites < 4
+//            if (device.getChannelNumber() <= 4 && channelsManager.numQuad == 2) {
+//                obsoleteChannels = 4 - device.getChannelNumber();
+//                device.setChannelNumberForQuad(4);
+//                Log.e("Channel Number", ""+device.getChannelNumber());
+//
+//                channelsManager.clearSurfaceViewComponents();
+//                channelsManager.createComponents();
+//
+//                for (int i = 1; i <= obsoleteChannels; i++) {
+//                    ImageView blankView = new ImageView(mContext);
+//                    blankView.setImageResource(R.drawable.giga_logo);
+//                    blankView.setBackgroundColor(Color.parseColor("#D9D9D9"));
+//
+//                    channelsManager.surfaceViewComponents.get(channelsManager.inverseMatrix[channelsManager.numQuad - 1][device.getChannelNumber() - i]).removeAllViews();
+//                    channelsManager.surfaceViewComponents.get(channelsManager.inverseMatrix[channelsManager.numQuad - 1][device.getChannelNumber() - i]).addView(blankView);
+//                    channelsManager.surfaceViewComponents.get(channelsManager.inverseMatrix[channelsManager.numQuad - 1][device.getChannelNumber() - i]).playType = 2;
+//                }
+//            }
         }
 
         int[] channelOrder = device.getChannelOrder();

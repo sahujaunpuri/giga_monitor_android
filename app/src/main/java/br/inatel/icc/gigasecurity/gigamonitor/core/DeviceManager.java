@@ -1198,8 +1198,8 @@ public class DeviceManager implements IFunSDKResult {
     }
 
     public void addFavorite(SurfaceViewComponent channel) {
-        Log.d(TAG, "addFavorite: channel " + channel.mySurfaceViewNewChannelId);
-        favoritesList.add(new FavoritePair(channel.deviceId, channel.mySurfaceViewNewChannelId));
+        Log.d(TAG, "addFavorite: channel " + channel.mySurfaceViewChannelId);
+        favoritesList.add(new FavoritePair(channel.deviceId, channel.mySurfaceViewChannelId));
         channel.setFavorite(true);
 //        if(favoriteChannels == 0)
 //            expandableListAdapter.notifyDataSetChanged();

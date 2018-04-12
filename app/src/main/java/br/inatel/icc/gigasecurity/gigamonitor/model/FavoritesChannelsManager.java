@@ -133,7 +133,7 @@ public class FavoritesChannelsManager extends ChannelsManager implements IFunSDK
         return 0;
     }
 
-    public void enableHD(SurfaceViewComponent svc){
+    public void enableHD(SurfaceViewComponent svc) {
         Log.d(TAG, "enableHD: " + svc.mySurfaceViewOrderId + " disable: " + hdChannel);
         if(hdChannel > -1) {
             disableHD(surfaceViewComponents.get(hdChannel));
@@ -141,7 +141,6 @@ public class FavoritesChannelsManager extends ChannelsManager implements IFunSDK
         hdChannel = svc.mySurfaceViewOrderId;
         svc.setStreamType(0);
         restartVideo(svc);
-
     }
 
     public void disableHD(SurfaceViewComponent svc){
