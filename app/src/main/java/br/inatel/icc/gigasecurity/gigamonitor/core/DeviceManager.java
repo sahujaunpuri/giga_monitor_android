@@ -271,6 +271,7 @@ public class DeviceManager implements IFunSDKResult {
                 state.previousGrid = mPreferences.getInt("previousGrid", -1);
                 state.previousLastGrid = mPreferences.getInt("previousLastGrid", -1);
                 state.previousHD = mPreferences.getInt("previousHD", -1);
+                state.previousExpand = mPreferences.getInt("previousExpand", -1);
                 channelsManager.lastFirstVisibleItem = state.previousChannel;
                 channelsManager.numQuad = state.previousGrid;
                 channelsManager.lastNumQuad = state.previousLastGrid;
