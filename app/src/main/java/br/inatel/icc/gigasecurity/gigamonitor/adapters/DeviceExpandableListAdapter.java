@@ -380,31 +380,36 @@ public class DeviceExpandableListAdapter extends BaseExpandableListAdapter {
                 groupViewHolder.ivRefresh.setVisibility(View.VISIBLE);
                 if (groupViewHolder.mDevice.isFavorite || groupViewHolder.mDevice.isLogged) {
                     groupViewHolder.ivRefresh.setVisibility(View.GONE);
+                    groupViewHolder.ivOtimizar.setVisibility(View.GONE);
                 }
                 if (groupViewHolder.mDevice.getChannelNumber() == 0) {
-                    if(groupViewHolder.mDevice.isFavorite) {
+                    if (groupViewHolder.mDevice.isFavorite) {
                         childViewHolder.tvMessage.setText("Nenhum favorito adicionado.");
                         groupViewHolder.ivRefresh.setVisibility(View.GONE);
-                    }
-                    else
+                    } else {
                         childViewHolder.tvMessage.setText("Nenhum canal encontrado.");
+                    }
                     childViewHolder.tvMessage.setVisibility(View.VISIBLE);
                     childViewHolder.recyclerViewChannels.setVisibility(View.GONE);
                     groupViewHolder.ivMore.setVisibility(View.GONE);
-                }
-                else if (groupViewHolder.mDevice.getChannelNumber() > 0 && groupViewHolder.mDevice.isLogged) {
-                    childViewHolder.tvMessage.setVisibility(View.GONE);
-                    if (groupViewHolder.mDevice.isFavorite) {
-                        groupViewHolder.ivAddMore.setVisibility(View.VISIBLE);
-                    }
-                    childViewHolder.recyclerViewChannels.setVisibility(View.VISIBLE);
-                    groupViewHolder.ivMore.setVisibility(View.VISIBLE);
-                    if(groupViewHolder.mDevice.getChannelNumber() > 1 ) {
-                        groupViewHolder.ivQuad.setVisibility(View.VISIBLE);
-                        groupViewHolder.ivOtimizar.setVisibility(View.VISIBLE);
-                        if (groupViewHolder.mDevice.optimize) {
-                            groupViewHolder.mDevice.optimize = false;
-                            groupViewHolder.ivOtimizar.setVisibility(View.VISIBLE);
+                } else {
+                    if (groupViewHolder.mDevice.getChannelNumber() > 0 && groupViewHolder.mDevice.isLogged) {
+                        childViewHolder.tvMessage.setVisibility(View.GONE);
+                        if (groupViewHolder.mDevice.isFavorite) {
+                            groupViewHolder.ivAddMore.setVisibility(View.VISIBLE);
+                            groupViewHolder.ivMore.setVisibility(View.VISIBLE);
+                        }
+                        childViewHolder.recyclerViewChannels.setVisibility(View.VISIBLE);
+                        groupViewHolder.ivMore.setVisibility(View.VISIBLE);
+                        if (groupViewHolder.mDevice.getChannelNumber() > 1) {
+                            groupViewHolder.ivQuad.setVisibility(View.VISIBLE);
+                            if (!groupViewHolder.mDevice.isFavorite) {
+                                groupViewHolder.ivOtimizar.setVisibility(View.VISIBLE);
+                                if (groupViewHolder.mDevice.optimize) {
+                                    groupViewHolder.mDevice.optimize = false;
+                                    groupViewHolder.ivOtimizar.setVisibility(View.VISIBLE);
+                                }
+                            }
                         }
                     }
                 }
@@ -705,7 +710,7 @@ public class DeviceExpandableListAdapter extends BaseExpandableListAdapter {
                 @Override
                 public void run() {
                     builder.setTitle("")
-                            .setItems(new CharSequence[]{"Configurações", "Controle Remoto", "Playback", "Otimizar", "Ordem dos Canais"},
+                            .setItems(new CharSequence[]{"Configurações", "Controle Remoto", "Playback", "Otimizar", "Ordenção de Canais"},
                                     new DialogInterface.OnClickListener() {
                                         @Override
                                         public void onClick(DialogInterface dialog, int which) {
@@ -740,13 +745,16 @@ public class DeviceExpandableListAdapter extends BaseExpandableListAdapter {
                 @Override
                 public void run() {
                     builder.setTitle("")
-                            .setItems(new CharSequence[]{"Limpar Favoritos"},
+                            .setItems(new CharSequence[]{"Limpar Favoritos", "Ordenação de Canais"},
                                     new DialogInterface.OnClickListener() {
                                         @Override
                                         public void onClick(DialogInterface dialog, int which) {
                                             switch (which) {
                                                 case 0:
                                                     mDeviceManager.cleanFavorites();
+                                                    break;
+                                                case 1:
+                                                    startDeviceChannelOrderActivity(groupViewHolder.mDevice);
                                                     break;
                                             }
                                         }
