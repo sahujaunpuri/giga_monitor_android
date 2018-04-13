@@ -753,6 +753,7 @@ public class DeviceExpandableListAdapter extends BaseExpandableListAdapter {
                                                 case 0:
                                                     mDeviceManager.cleanFavorites();
                                                     break;
+                                                    // ordenacao
                                                 case 1:
                                                     startDeviceChannelOrderActivity(groupViewHolder.mDevice);
                                                     break;
