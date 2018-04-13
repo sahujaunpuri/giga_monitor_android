@@ -9,6 +9,7 @@ import android.widget.TextView;
 import com.mobeta.android.dslv.DragSortListView;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import br.inatel.icc.gigasecurity.gigamonitor.R;
 import br.inatel.icc.gigasecurity.gigamonitor.core.DeviceManager;
@@ -141,12 +142,32 @@ public class DeviceChannelOrderActivity extends ActionBarActivity implements Vie
 
     private void exitAndSave() {
 
+        List<Integer> favoritesArray = new ArrayList<>();
+        // Verificar se posicão é favorito
+        for (int i = 0; i < numberOfChannels; i++) {
+            // Verificar se posicão é favorito
+            if (arrayOfSurfaceViewComponents.get(i).isFavorite) {
+                favoritesArray.add(arrayOfSurfaceViewComponents.get(i).mySurfaceViewNewChannelId);
+                Log.e("Favorite Added", ""+arrayOfSurfaceViewComponents.get(i).mySurfaceViewNewChannelId);
+            }
+            arrayOfSurfaceViewComponents.get(i).setFavorite(false);
+        }
+
         // Change surface view order as draggable list shows
         for (int i = 0; i < numberOfChannels; i++) {
             // Fazer a alteração do surfaceView
             arrayOfSurfaceViewComponents.get(i).mySurfaceViewNewChannelId = arrayOfChannels.get(i).getChannelOldGrid();
             channelOrder[i] = arrayOfChannels.get(i).getChannelOldGrid();
         }
+
+        if (favoritesArray.size() > 0) {
+            for (int i = 0; i < numberOfChannels; i++) {
+                if (favoritesArray.contains(arrayOfSurfaceViewComponents.get(i).mySurfaceViewNewChannelId)){
+                    arrayOfSurfaceViewComponents.get(i).setFavorite(true);
+                }
+            }
+        }
+
         //channelOrder[0] = -1;
         mDevice.setChannelOrder(channelOrder);
         finish();

@@ -157,7 +157,7 @@ public class ChannelRecyclerViewAdapter extends RecyclerView.Adapter<ChannelRecy
             deviceChannelsManager.lastFirstVisibleItem = deviceChannelsManager.lastFirstItemBeforeSelectChannel;
             deviceChannelsManager.lastLastVisibleItem = deviceChannelsManager.lastFirstItemBeforeSelectChannel + deviceChannelsManager.numQuad;
         }
-        deviceChannelsManager.reOrderSurfaceViewComponents();
+        //deviceChannelsManager.reOrderSurfaceViewComponents();
 
         deviceChannelsManager.changeSurfaceViewSize();
     }

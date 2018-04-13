@@ -8,7 +8,6 @@ import android.content.Intent;
 import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.graphics.Color;
-import android.opengl.Visibility;
 import android.os.Bundle;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -19,18 +18,17 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseExpandableListAdapter;
 import android.widget.ExpandableListView;
-import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.crashlytics.android.answers.Answers;
 import com.crashlytics.android.answers.CustomEvent;
-import com.video.opengl.GLSurfaceView20;
 
 import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import br.inatel.icc.gigasecurity.gigamonitor.R;
 import br.inatel.icc.gigasecurity.gigamonitor.activities.DeviceChannelOrderActivity;
@@ -45,7 +43,6 @@ import br.inatel.icc.gigasecurity.gigamonitor.listeners.LoginDeviceListener;
 import br.inatel.icc.gigasecurity.gigamonitor.managers.CustomGridLayoutManager;
 import br.inatel.icc.gigasecurity.gigamonitor.model.ChannelsManager;
 import br.inatel.icc.gigasecurity.gigamonitor.model.Device;
-import br.inatel.icc.gigasecurity.gigamonitor.model.DeviceChannelsManager;
 import br.inatel.icc.gigasecurity.gigamonitor.ui.OverlayMenu;
 import br.inatel.icc.gigasecurity.gigamonitor.ui.OverlayPTZ;
 import br.inatel.icc.gigasecurity.gigamonitor.ui.SurfaceViewComponent;
@@ -672,8 +669,26 @@ public class DeviceExpandableListAdapter extends BaseExpandableListAdapter {
             camNumber = channelOrder.length;
         }
 
+        List<Integer> favoritesArray = new ArrayList<>();
+        // Verificar se posicão é favorito
+        for (int i = 0; i < camNumber; i++) {
+            // Verificar se posicão é favorito
+            if (channelsManager.surfaceViewComponents.get(i).isFavorite) {
+                favoritesArray.add(channelsManager.surfaceViewComponents.get(i).mySurfaceViewNewChannelId);
+            }
+            channelsManager.surfaceViewComponents.get(i).setFavorite(false);
+        }
+
         for (int i = 0; i < camNumber; i++) {
             channelsManager.surfaceViewComponents.get(channelsManager.inverseMatrix[channelsManager.numQuad - 1][i]).mySurfaceViewNewChannelId = channelOrder[i];
+        }
+
+        if (favoritesArray.size() > 0) {
+            for (int i = 0; i < camNumber; i++) {
+                if (favoritesArray.contains(channelsManager.surfaceViewComponents.get(i).mySurfaceViewNewChannelId)){
+                    channelsManager.surfaceViewComponents.get(i).setFavorite(true);
+                }
+            }
         }
     }
 
