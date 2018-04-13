@@ -344,6 +344,7 @@ public class DeviceExpandableListAdapter extends BaseExpandableListAdapter {
             } else {
                 loginDevice(currentGroupViewHolder.mDevice, currentGroupViewHolder, childViewHolder, groupPosition);
                 childViewHolder.tvMessage.setVisibility(View.VISIBLE);
+                currentGroupViewHolder.ivRefresh.setVisibility(View.VISIBLE);
             }
 
         } else {
