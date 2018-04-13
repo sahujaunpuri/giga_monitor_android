@@ -277,7 +277,8 @@ public class DeviceManager implements IFunSDKResult {
                 channelsManager.lastNumQuad = state.previousLastGrid;
                 channelsManager.reOrderSurfaceViewComponents();
                 channelsManager.lastFirstItemBeforeSelectChannel = mPreferences.getInt("previousLastVisibleChannel", -1);
-                channelsManager.changeSurfaceViewSize();
+                channelsManager.lastExpand = state.previousExpand;
+                channelsManager.changeSurfaceViewSize(channelsManager.lastExpand);
                 if (state.previousHD > -1 && channelsManager.surfaceViewComponents.size() > state.previousHD) {
                     if(!mDevices.get(state.previousGroup).getSerialNumber().equals("Favoritos"))
                         state.previousHD = findChannelManagerByDevice(mDevices.get(state.previousGroup)).getChannelSelected(state.previousHD);
@@ -790,8 +791,10 @@ public class DeviceManager implements IFunSDKResult {
                     favoriteManager = new FavoritesChannelsManager(device);
                     deviceChannelsManager = favoriteManager;
                     favoriteDevice.channelsManager = favoriteManager;
-                } else
+                } else {
                     deviceChannelsManager = new DeviceChannelsManager(device);
+                    device.setChannelsManager(deviceChannelsManager);
+                }
                 deviceChannelsManagers.add(deviceChannelsManager);
             }
             favoriteManager.createComponents();

@@ -313,7 +313,7 @@ public class DeviceExpandableListAdapter extends BaseExpandableListAdapter {
                 childViewHolder.get(groupPosition).gridLayoutManager.setSpanCount(mDeviceManager.getDeviceChannelsManagers().get(groupPosition).numQuad);
                 childViewHolder.get(groupPosition).mRecyclerAdapter.notifyDataSetChanged();
                 setLayoutSize(groupPosition, childViewHolder.get(groupPosition));
-                deviceChannelsManager.changeSurfaceViewSize();
+                deviceChannelsManager.changeSurfaceViewSize(mDeviceManager.getDeviceChannelsManagers().get(groupPosition).lastExpand);
                 deviceChannelsManager.resetScale();
                 deviceChannelsManager.reOrderSurfaceViewComponents();
             }
@@ -354,7 +354,8 @@ public class DeviceExpandableListAdapter extends BaseExpandableListAdapter {
             showExpanded(groupPosition, currentGroupViewHolder, childViewHolder);
 
         }
-        setLayoutSize(groupPosition, childViewHolder);
+        int option = mDeviceManager.getDeviceChannelsManagers().get(groupPosition).lastExpand;
+        setLayoutSize(groupPosition, childViewHolder, option);
         Log.d(TAG, "Set layout ok!");
         return convertView;
     }
