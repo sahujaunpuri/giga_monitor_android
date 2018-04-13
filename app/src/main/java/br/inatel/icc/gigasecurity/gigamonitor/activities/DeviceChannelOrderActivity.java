@@ -149,8 +149,9 @@ public class DeviceChannelOrderActivity extends ActionBarActivity implements Vie
             if (arrayOfSurfaceViewComponents.get(i).isFavorite) {
                 favoritesArray.add(arrayOfSurfaceViewComponents.get(i).mySurfaceViewNewChannelId);
                 Log.e("Favorite Added", ""+arrayOfSurfaceViewComponents.get(i).mySurfaceViewNewChannelId);
+                mManager.removeFavorite(arrayOfSurfaceViewComponents.get(i));
             }
-            arrayOfSurfaceViewComponents.get(i).setFavorite(false);
+            //arrayOfSurfaceViewComponents.get(i).setFavorite(false);
         }
 
         // Change surface view order as draggable list shows
@@ -163,7 +164,8 @@ public class DeviceChannelOrderActivity extends ActionBarActivity implements Vie
         if (favoritesArray.size() > 0) {
             for (int i = 0; i < numberOfChannels; i++) {
                 if (favoritesArray.contains(arrayOfSurfaceViewComponents.get(i).mySurfaceViewNewChannelId)){
-                    arrayOfSurfaceViewComponents.get(i).setFavorite(true);
+                    //arrayOfSurfaceViewComponents.get(i).setFavorite(true);
+                    mManager.addFavorite(arrayOfSurfaceViewComponents.get(i));
                 }
             }
         }

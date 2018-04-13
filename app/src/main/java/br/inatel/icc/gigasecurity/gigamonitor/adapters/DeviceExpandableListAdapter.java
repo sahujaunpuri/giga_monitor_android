@@ -675,8 +675,9 @@ public class DeviceExpandableListAdapter extends BaseExpandableListAdapter {
             // Verificar se posicão é favorito
             if (channelsManager.surfaceViewComponents.get(i).isFavorite) {
                 favoritesArray.add(channelsManager.surfaceViewComponents.get(i).mySurfaceViewNewChannelId);
+                DeviceManager.getInstance().removeFavorite(channelsManager.surfaceViewComponents.get(i));
             }
-            channelsManager.surfaceViewComponents.get(i).setFavorite(false);
+            //channelsManager.surfaceViewComponents.get(i).setFavorite(false);
         }
 
         for (int i = 0; i < camNumber; i++) {
@@ -686,7 +687,8 @@ public class DeviceExpandableListAdapter extends BaseExpandableListAdapter {
         if (favoritesArray.size() > 0) {
             for (int i = 0; i < camNumber; i++) {
                 if (favoritesArray.contains(channelsManager.surfaceViewComponents.get(i).mySurfaceViewNewChannelId)){
-                    channelsManager.surfaceViewComponents.get(i).setFavorite(true);
+                    //channelsManager.surfaceViewComponents.get(i).setFavorite(true);
+                    DeviceManager.getInstance().addFavorite(channelsManager.surfaceViewComponents.get(i));
                 }
             }
         }
