@@ -277,7 +277,8 @@ public class DeviceManager implements IFunSDKResult {
                 channelsManager.lastNumQuad = state.previousLastGrid;
                 channelsManager.reOrderSurfaceViewComponents();
                 channelsManager.lastFirstItemBeforeSelectChannel = mPreferences.getInt("previousLastVisibleChannel", -1);
-                channelsManager.changeSurfaceViewSize();
+                channelsManager.lastExpand = state.previousExpand;
+                channelsManager.changeSurfaceViewSize(channelsManager.lastExpand);
                 if (state.previousHD > -1 && channelsManager.surfaceViewComponents.size() > state.previousHD) {
                     if(!mDevices.get(state.previousGroup).getSerialNumber().equals("Favoritos"))
                         state.previousHD = findChannelManagerByDevice(mDevices.get(state.previousGroup)).getChannelSelected(state.previousHD);
@@ -297,11 +298,13 @@ public class DeviceManager implements IFunSDKResult {
             state.previousChannel = channelsManager.lastFirstVisibleItem;
             state.previousGrid = channelsManager.numQuad;
             state.previousLastGrid = channelsManager.lastNumQuad;
+            state.previousExpand = channelsManager.lastExpand;
             editor.putInt("previousChannel", state.previousChannel);
             editor.putInt("previousGrid", state.previousGrid);
             editor.putInt("previousLastGrid", state.previousLastGrid);
             editor.putInt("previousHD", channelsManager.hdChannel);
             editor.putInt("previousLastVisibleChannel", channelsManager.lastFirstItemBeforeSelectChannel);
+            editor.putInt("previousExpand", channelsManager.lastExpand);
         }
         editor.apply();
     }
@@ -788,8 +791,10 @@ public class DeviceManager implements IFunSDKResult {
                     favoriteManager = new FavoritesChannelsManager(device);
                     deviceChannelsManager = favoriteManager;
                     favoriteDevice.channelsManager = favoriteManager;
-                } else
+                } else {
                     deviceChannelsManager = new DeviceChannelsManager(device);
+                    device.setChannelsManager(deviceChannelsManager);
+                }
                 deviceChannelsManagers.add(deviceChannelsManager);
             }
             favoriteManager.createComponents();
@@ -1667,19 +1672,7 @@ public class DeviceManager implements IFunSDKResult {
                         break;*/
                     }
 
-//                     salvar json como txt
-                    /*File file = new File("/storage/emulated/0/", msgContent.str + ".txt");
-                    try {
-                        FileWriter writer = new FileWriter(file);
-                        writer.append(json.toString());
-                        writer.flush();
-                        writer.close();
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }*/
                 } else{
-//                    if(msgContent != null && msgContent.str.equals("Uart.PTZ"))
-//                        break;
                     try {
                         Device device = findDeviceById(msgContent.seq);
 //                        FunSDK.DevGetConfigByJson(getHandler(), device.connectionString, msgContent.str, 4096, -1, 10000, device.getId());

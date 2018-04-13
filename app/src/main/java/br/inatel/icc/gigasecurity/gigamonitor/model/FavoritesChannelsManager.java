@@ -39,7 +39,7 @@ public class FavoritesChannelsManager extends ChannelsManager implements IFunSDK
             createComponent(currentManager, favorite.channelNumber, position);
             position++;
         }
-        changeSurfaceViewSize();
+        changeSurfaceViewSize(mDevice.getChannelsManager().lastExpand);
     }
 
     public void createComponent(ChannelsManager channelsManager, int i, int position){

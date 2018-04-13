@@ -397,6 +397,14 @@ public class Device implements Serializable {
         }
     }
 
+    public ChannelsManager getChannelsManager() {
+        return channelsManager;
+    }
+
+    public void setChannelsManager(ChannelsManager channelsManager) {
+        this.channelsManager = channelsManager;
+    }
+
     public String getMessage() {
         return message;
     }
