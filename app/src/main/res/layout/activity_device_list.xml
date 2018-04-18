@@ -68,7 +68,8 @@
         android:id="@+id/expandable_list_view2"
         android:groupIndicator="@null"
         android:background="@android:color/white"
-        android:transcriptMode="alwaysScroll"
-        android:clipToPadding="false"/>
+        android:transcriptMode="normal"
+        android:clipToPadding="false"
+        android:dividerHeight="0dp" />
 
 </LinearLayout>

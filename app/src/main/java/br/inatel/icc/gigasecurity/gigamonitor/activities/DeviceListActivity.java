@@ -116,8 +116,6 @@ public class DeviceListActivity extends ActionBarActivity implements View.OnClic
         }
 
         mDeviceManager.setSharedPreferences(mContext.getSharedPreferences("state", MODE_PRIVATE));
-        getSupportActionBar().hide();
-
     }
 
     @Override
@@ -137,13 +135,7 @@ public class DeviceListActivity extends ActionBarActivity implements View.OnClic
             getWindow().clearFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
             getSupportActionBar().hide();
             mLinearLayoutHeader.setVisibility(View.VISIBLE);
-
-            SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(mContext);
-            boolean cloud2 = prefs.getBoolean("cloud2", true);
-            boolean newUser = prefs.getBoolean("newUser", true);
-//            if (cloud2 && !newUser) {
-                mImageViewCloud3Btn.setVisibility(View.VISIBLE);
-//            }
+            mImageViewCloud3Btn.setVisibility(View.VISIBLE);
         }
 
         if(previousGroup != -1)
