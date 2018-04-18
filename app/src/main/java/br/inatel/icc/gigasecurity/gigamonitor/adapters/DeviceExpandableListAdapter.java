@@ -273,6 +273,8 @@ public class DeviceExpandableListAdapter extends BaseExpandableListAdapter {
         };
     }
 
+
+
     @Override
     public View getGroupView(final int groupPosition, final boolean isExpanded, View convertView, ViewGroup parent) {
         try {
