@@ -147,5 +147,30 @@
 
     </ScrollView>
 
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_marginTop="3dp">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/text_view_version_name"
+            android:text="version name"
+            android:textSize="8dp"
+            android:gravity="center"
+            android:layout_marginRight="6dp"
+            android:layout_marginLeft="6dp"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/text_view_version_code"
+            android:text="version code"
+            android:textSize="8dp"
+            android:gravity="center"/>
+
+    </LinearLayout>
 
 </LinearLayout>

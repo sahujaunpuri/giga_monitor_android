@@ -2,6 +2,8 @@ package br.inatel.icc.gigasecurity.gigamonitor.activities;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
 import android.view.Menu;
@@ -26,7 +28,7 @@ public class InitialActivity extends ActionBarActivity implements View.OnClickLi
     private Discovery mDiscoveryThread;
     private MenuItem atualizeButton;
     private ImageView ivSearch;
-    private TextView tvDevicesFound, tvCancel, tvSearchingDevices;
+    private TextView tvDevicesFound, tvCancel, tvSearchingDevices, tvVersionName, tvVersionCode;
     private ImageButton imgBtnNewDevice, imgBtnQrCode, imgBtnRefresh;
     private Context mContext;
     private DeviceManager mDeviceManager;
@@ -58,12 +60,25 @@ public class InitialActivity extends ActionBarActivity implements View.OnClickLi
         ivSearch           = (ImageView) findViewById(R.id.ic_search);
         tvSearchingDevices = (TextView) findViewById(R.id.text_view_searching);
         imgBtnRefresh      = (ImageButton) findViewById(R.id.image_btn_refresh);
+        tvVersionName      = (TextView) findViewById(R.id.text_view_version_name);
+        tvVersionCode      = (TextView) findViewById(R.id.text_view_version_code);
+
 
         imgBtnRefresh.setOnClickListener(this);
         imgBtnQrCode.setOnClickListener(this);
         imgBtnNewDevice.setOnClickListener(this);
         tvDevicesFound.setOnClickListener(this);
         tvCancel.setOnClickListener(this);
+
+        try {
+            PackageInfo pInfo = this.getPackageManager().getPackageInfo(getPackageName(), 0);
+            String version = pInfo.versionName;
+            int build  = pInfo.versionCode;
+            tvVersionName.setText("Versão: " + version);
+            tvVersionCode.setText("Build: " + build);
+        } catch (PackageManager.NameNotFoundException e) {
+            e.printStackTrace();
+        }
     }
 
     @Override
