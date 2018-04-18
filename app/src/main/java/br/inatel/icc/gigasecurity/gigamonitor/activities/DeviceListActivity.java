@@ -81,11 +81,14 @@ public class DeviceListActivity extends ActionBarActivity implements View.OnClic
             mExpandableListView.setOnGroupClickListener(new ExpandableListView.OnGroupClickListener() {
                 @Override
                 public boolean onGroupClick(ExpandableListView parent, View v, int groupPosition, long id) {
+                    int duration = 500;  //miliseconds
+                    int offset = 0;      //fromListTop
                     if(mDeviceManager.networkType == -1)
                         return true;
                     if (previousGroup == -1) {
                         previousGroup = groupPosition;
                         parent.expandGroup(groupPosition, true);
+                        mExpandableListView.smoothScrollToPositionFromTop(groupPosition,offset,duration);
                         return true;
                     } else if (mDeviceManager.getDeviceChannelsManagers().get(previousGroup).recCounter > 0) {
                         Toast.makeText(mContext, "Finalize a gravação", Toast.LENGTH_SHORT).show();
@@ -98,6 +101,7 @@ public class DeviceListActivity extends ActionBarActivity implements View.OnClic
                     } else {
                         parent.collapseGroup(previousGroup);
                         parent.expandGroup(groupPosition, true);
+                        mExpandableListView.smoothScrollToPositionFromTop(groupPosition,offset,duration);
                         previousGroup = groupPosition;
                         return true;
                     }
