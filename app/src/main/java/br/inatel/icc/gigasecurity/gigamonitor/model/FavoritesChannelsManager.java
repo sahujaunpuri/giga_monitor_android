@@ -7,6 +7,7 @@ import com.lib.FunSDK;
 import com.lib.IFunSDKResult;
 import com.video.opengl.GLSurfaceView20;
 
+import br.inatel.icc.gigasecurity.gigamonitor.core.DeviceManager;
 import br.inatel.icc.gigasecurity.gigamonitor.ui.SurfaceViewComponent;
 
 /**
@@ -26,19 +27,27 @@ public class FavoritesChannelsManager extends ChannelsManager implements IFunSDK
         int position = 0;
         surfaceViewComponents.clear();
         mySurfaceViews.clear();
-        if(mDevice.getChannelNumber()>1){
-            numQuad = 2;
-            lastNumQuad = 2;
-        }else{
-            numQuad = 1;
-            lastNumQuad = 1;
-        }
-        for(FavoritePair favorite : mDeviceManager.favoritesList){
+//        if(mDevice.getChannelNumber()>1){
+//            numQuad = 2;
+//            lastNumQuad = 2;
+//        }else{
+//            numQuad = 1;
+//            lastNumQuad = 1;
+//        }
+        for (FavoritePair favorite : mDeviceManager.favoritesList) {
             Device currentDevice = mDeviceManager.findDeviceById(favorite.deviceId);
             ChannelsManager currentManager = mDeviceManager.findChannelManagerByDevice(currentDevice);
             createComponent(currentManager, favorite.channelNumber, position);
             position++;
         }
+
+        // create empty views, if it exists
+        for (int i = DeviceManager.getInstance().favoritesList.size(); i < mDevice.getChannelNumber(); i++) {
+            Device currentDevice = mDeviceManager.findDeviceById(mDevice.getId());
+            ChannelsManager currentManager = mDeviceManager.findChannelManagerByDevice(currentDevice);
+            createComponent(currentManager, i, i);
+        }
+            //this.reOrderSurfaceViewComponents();
         changeSurfaceViewSize(mDevice.getChannelsManager().lastExpand);
     }
 
@@ -50,7 +59,9 @@ public class FavoritesChannelsManager extends ChannelsManager implements IFunSDK
             mySurfaceViews.add(mySurfaceView);
 
             SurfaceViewComponent surfaceViewComponent = new SurfaceViewComponent(mContext, this, position);
+
             surfaceViewComponent.mySurfaceViewChannelId = i;
+            surfaceViewComponent.mySurfaceViewNewChannelId = i;
             surfaceViewComponent.mySurfaceViewOrderId = position;
             if (channelsManager.mDevice == null) {
                 return;
@@ -114,7 +125,7 @@ public class FavoritesChannelsManager extends ChannelsManager implements IFunSDK
             public void run() {
                 try {
                     if (mDeviceManager.findDeviceById(svc.deviceId).isLogged)
-                        svc.mPlayerHandler = FunSDK.MediaRealPlay(mUserID, svc.deviceConnection, svc.mySurfaceViewChannelId, svc.streamType, svc.mySurfaceView, svc.mySurfaceViewOrderId);
+                        svc.mPlayerHandler = FunSDK.MediaRealPlay(mUserID, svc.deviceConnection, svc.mySurfaceViewNewChannelId, svc.streamType, svc.mySurfaceView, svc.mySurfaceViewOrderId);
                 } catch (Exception error) {
                     error.printStackTrace();
                 }
@@ -132,7 +143,7 @@ public class FavoritesChannelsManager extends ChannelsManager implements IFunSDK
         return 0;
     }
 
-    public void enableHD(SurfaceViewComponent svc){
+    public void enableHD(SurfaceViewComponent svc) {
         Log.d(TAG, "enableHD: " + svc.mySurfaceViewOrderId + " disable: " + hdChannel);
         if(hdChannel > -1) {
             disableHD(surfaceViewComponents.get(hdChannel));
@@ -140,7 +151,6 @@ public class FavoritesChannelsManager extends ChannelsManager implements IFunSDK
         hdChannel = svc.mySurfaceViewOrderId;
         svc.setStreamType(0);
         restartVideo(svc);
-
     }
 
     public void disableHD(SurfaceViewComponent svc){

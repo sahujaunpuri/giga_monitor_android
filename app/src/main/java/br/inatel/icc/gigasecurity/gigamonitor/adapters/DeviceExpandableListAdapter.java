@@ -7,12 +7,14 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.res.Configuration;
 import android.content.res.Resources;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.SurfaceView;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseExpandableListAdapter;
@@ -22,11 +24,14 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import br.inatel.icc.gigasecurity.gigamonitor.R;
+import br.inatel.icc.gigasecurity.gigamonitor.activities.DeviceChannelOrderActivity;
 import br.inatel.icc.gigasecurity.gigamonitor.activities.DeviceListActivity;
 import br.inatel.icc.gigasecurity.gigamonitor.activities.DevicePlaybackActivity;
 import br.inatel.icc.gigasecurity.gigamonitor.activities.DeviceRemoteControlActivity;
+import br.inatel.icc.gigasecurity.gigamonitor.activities.FavoriteDeviceChannelOrderActivity;
 import br.inatel.icc.gigasecurity.gigamonitor.activities.FavoritesDevicesListActivity;
 import br.inatel.icc.gigasecurity.gigamonitor.config.ConfigMenuActivity;
 import br.inatel.icc.gigasecurity.gigamonitor.core.DeviceManager;
@@ -35,6 +40,7 @@ import br.inatel.icc.gigasecurity.gigamonitor.managers.CustomGridLayoutManager;
 import br.inatel.icc.gigasecurity.gigamonitor.model.ChannelsManager;
 import br.inatel.icc.gigasecurity.gigamonitor.model.Device;
 import br.inatel.icc.gigasecurity.gigamonitor.ui.CustomTypeDialog;
+import br.inatel.icc.gigasecurity.gigamonitor.model.FavoritePair;
 import br.inatel.icc.gigasecurity.gigamonitor.ui.OverlayMenu;
 import br.inatel.icc.gigasecurity.gigamonitor.ui.OverlayPTZ;
 import br.inatel.icc.gigasecurity.gigamonitor.ui.SurfaceViewComponent;
@@ -134,7 +140,7 @@ public class DeviceExpandableListAdapter extends BaseExpandableListAdapter {
         groupViewHolder.ivOtimizar   = (ImageView) convertView.findViewById(R.id.iv_otimizar);
         groupViewHolder.tvDeviceName = (TextView) convertView.findViewById(R.id.tv_hostname_list_device);
         groupViewHolder.mDevice      = mDevices.get(groupPosition);
-        groupViewHolder.position    = groupPosition;
+        groupViewHolder.position     = groupPosition;
         groupViewHolder.tvDeviceName.setText(groupViewHolder.mDevice.deviceName);
         groupViewHolder.ivMore.setOnClickListener(createMoreListener(groupPosition));
         groupViewHolder.ivQuad.setOnClickListener(createQuadListener(groupPosition));
@@ -208,17 +214,25 @@ public class DeviceExpandableListAdapter extends BaseExpandableListAdapter {
         ((Activity)mContext).runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                ChannelsManager deviceChannelsManager = mDeviceManager.getDeviceChannelsManagers().get(groupPosition);
-                deviceChannelsManager.numQuad = nextNumQuad(deviceChannelsManager.numQuad, groupViewHolder.get(groupPosition).mDevice.getChannelNumber());
-                deviceChannelsManager.lastNumQuad = deviceChannelsManager.numQuad;
-                deviceChannelsManager.stopChannels(0);
+                Device device = groupViewHolder.get(groupPosition).mDevice;
+                ChannelsManager channelsManager = mDeviceManager.findChannelManagerByDevice(device);
+                channelsManager.numQuad = nextNumQuad(channelsManager.numQuad, groupViewHolder.get(groupPosition).mDevice.getChannelNumber());
+                channelsManager.lastNumQuad = channelsManager.numQuad;
+                channelsManager.stopChannels(0);
                 mDeviceManager.clearStart();
                 childViewHolder.get(groupPosition).gridLayoutManager.setSpanCount(mDeviceManager.getDeviceChannelsManagers().get(groupPosition).numQuad);
                 childViewHolder.get(groupPosition).mRecyclerAdapter.notifyDataSetChanged();
-                setLayoutSize(groupPosition, childViewHolder.get(groupPosition), deviceChannelsManager.lastExpand);
-                deviceChannelsManager.changeSurfaceViewSize();
-                deviceChannelsManager.resetScale();
-                deviceChannelsManager.reOrderSurfaceViewComponents();
+                setLayoutSize(groupPosition, childViewHolder.get(groupPosition), channelsManager.lastExpand);
+
+                channelsManager.changeSurfaceViewSize();
+                channelsManager.resetScale();
+
+                if (device.getDeviceName().equals("Favoritos")) {
+                    //setChannelOrderForFavorites(device, channelsManager);
+                    channelsManager.reOrderSurfaceViewComponents();
+                } else {
+                    setChannelOrder(device, channelsManager);
+                }
             }
         });
     }
@@ -369,12 +383,20 @@ public class DeviceExpandableListAdapter extends BaseExpandableListAdapter {
                 if (groupViewHolder.mDevice.isOnline && groupViewHolder.mDevice.getChannelNumber() > 0) {
                     childViewHolder.tvMessage.setVisibility(View.GONE);
                 }
+
+//                // teste de iniciar favoritos ja ordenados
+//                if (groupViewHolder.mDevice.isFavorite) {
+//                    setChannelOrderForFavorites(groupViewHolder.mDevice,groupViewHolder.mDevice.channelsManager);
+//                    //loginDevice(groupViewHolder.mDevice, groupViewHolder, childViewHolder, groupPosition);
+//                }
+
                 groupViewHolder.ivQuad.setVisibility(View.GONE);
                 groupViewHolder.ivOtimizar.setVisibility(View.GONE);
                 groupViewHolder.ivRefresh.setVisibility(View.VISIBLE);
                 childViewHolder.tvMessage.setVisibility(View.VISIBLE);
                 if (groupViewHolder.mDevice.isFavorite) {
                     groupViewHolder.ivRefresh.setVisibility(View.GONE);
+                    groupViewHolder.ivOtimizar.setVisibility(View.GONE);
                 }
                 if (groupViewHolder.mDevice.getChannelNumber() == 0) {
                     childViewHolder.tvMessage.setVisibility(View.VISIBLE);
@@ -405,8 +427,6 @@ public class DeviceExpandableListAdapter extends BaseExpandableListAdapter {
             }
         });
     }
-
-
 
     @Override
     public void onGroupCollapsed(int groupPosition){
@@ -567,6 +587,10 @@ public class DeviceExpandableListAdapter extends BaseExpandableListAdapter {
                 updateGrid(position, mDeviceManager.getDeviceChannelsManagers().get(position));
                 showExpanded(position, groupViewHolder, childViewHolder);
                 childViewHolder.gridLayoutManager.scrollToPosition(mDeviceManager.getDeviceChannelsManagers().get(position).lastFirstVisibleItem);
+                int [] channelOrder = mDevice.getChannelOrder();
+                Log.e("DeviceExpandable", ""+channelOrder[0]+", "+channelOrder[1]+", "+channelOrder[2]+", "+channelOrder[3]);
+                ChannelsManager channelsManager = mDeviceManager.findChannelManagerByDevice(mDevice);
+                setChannelOrder(mDevice, channelsManager);
             }
 
             @Override
@@ -603,6 +627,175 @@ public class DeviceExpandableListAdapter extends BaseExpandableListAdapter {
             }
 
         });
+    }
+
+    // funcao em testes pra arrumar o grid !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+    public void setChannelOrder(Device device, ChannelsManager channelsManager) {
+
+        channelsManager.initMatrix();
+
+        int obsoleteChannels = 0;
+
+        // Caso 3x3
+        if (channelsManager.numQuad == 3) {
+
+            if (device.getChannelNumber() == 8){
+                device.setChannelNumberForQuad(9);
+                obsoleteChannels = 1;
+            }
+            if (device.getChannelNumber() == 16) {
+                device.setChannelNumberForQuad(18);
+                obsoleteChannels = 2;
+            }
+
+            if (device.getChannelNumber() == 32) {
+                device.setChannelNumberForQuad(36);
+                obsoleteChannels = 4;
+            }
+
+            channelsManager.clearSurfaceViewComponents();
+            channelsManager.createComponents();
+
+            for (int i = 1; i <= obsoleteChannels; i++) {
+                ImageView blankView = new ImageView(mContext);
+                blankView.setImageResource(R.drawable.giga_logo);
+                blankView.setBackgroundColor(Color.parseColor("#D9D9D9"));
+
+                channelsManager.surfaceViewComponents.get(channelsManager.inverseMatrix[channelsManager.numQuad - 1][device.getChannelNumber() - i]).removeAllViews();
+                channelsManager.surfaceViewComponents.get(channelsManager.inverseMatrix[channelsManager.numQuad - 1][device.getChannelNumber() - i]).addView(blankView);
+                channelsManager.surfaceViewComponents.get(channelsManager.inverseMatrix[channelsManager.numQuad - 1][device.getChannelNumber() - i]).playType = 2;
+            }
+
+        } else {
+            // Outros casos
+            if (device.getChannelNumber() == 18 && channelsManager.numQuad != 3) {
+                device.setChannelNumberForQuad(16);
+                channelsManager.clearSurfaceViewComponents();
+                channelsManager.createComponents();
+            }
+
+            if (device.getChannelNumber() == 9 && channelsManager.numQuad != 3) {
+                device.setChannelNumberForQuad(8);
+                channelsManager.clearSurfaceViewComponents();
+                channelsManager.createComponents();
+            }
+
+            if (device.getChannelNumber() == 36 && channelsManager.numQuad != 3) {
+                device.setChannelNumberForQuad(32);
+                channelsManager.clearSurfaceViewComponents();
+                channelsManager.createComponents();
+            }
+        }
+
+        int[] channelOrder = device.getChannelOrder();
+
+        int camNumber;
+
+        if (channelOrder.length > device.getChannelNumber()) {
+            camNumber = device.getChannelNumber();
+        } else {
+            camNumber = channelOrder.length;
+        }
+
+        List<Integer> favoritesArray = new ArrayList<>();
+        // Verificar se posicão é favorito
+        for (int i = 0; i < camNumber; i++) {
+            // Verificar se posicão é favorito
+            if (channelsManager.surfaceViewComponents.get(i).isFavorite) {
+                favoritesArray.add(channelsManager.surfaceViewComponents.get(i).mySurfaceViewNewChannelId);
+                DeviceManager.getInstance().removeFavorite(channelsManager.surfaceViewComponents.get(i));
+            }
+        }
+
+        for (int i = 0; i < camNumber; i++) {
+            channelsManager.surfaceViewComponents.get(channelsManager.inverseMatrix[channelsManager.numQuad - 1][i]).mySurfaceViewNewChannelId = channelOrder[i];
+        }
+
+        if (favoritesArray.size() > 0) {
+            for (int i = 0; i < camNumber; i++) {
+                if (favoritesArray.contains(channelsManager.surfaceViewComponents.get(i).mySurfaceViewNewChannelId)){
+                    DeviceManager.getInstance().addFavorite(channelsManager.surfaceViewComponents.get(i));
+                }
+            }
+        }
+    }
+
+
+
+    public void setChannelOrderForFavorites(Device device, ChannelsManager channelsManager) {
+
+        channelsManager.initMatrix();
+
+        int obsoleteChannels = 0;
+
+        device.setChannelNumberForQuad(DeviceManager.getInstance().favoritesList.size());
+
+        // Caso 3x3
+        if (channelsManager.numQuad == 3) {
+
+            if (device.getChannelNumber() <= 8){
+                device.setChannelNumberForQuad(9);
+                obsoleteChannels = 9 - DeviceManager.getInstance().favoritesList.size();
+            }
+            if (device.getChannelNumber() > 9 && device.getChannelNumber() <= 17) {
+                device.setChannelNumberForQuad(18);
+                obsoleteChannels = 18 - DeviceManager.getInstance().favoritesList.size();
+            }
+
+            if (device.getChannelNumber() > 18 && device.getChannelNumber() <= 35) {
+                device.setChannelNumberForQuad(36);
+                obsoleteChannels = 36 - DeviceManager.getInstance().favoritesList.size();
+            }
+
+        } else {
+            // Outros casos
+            if (device.getChannelNumber() < 4 && channelsManager.numQuad > 1) {
+                device.setChannelNumberForQuad(4);
+                obsoleteChannels = 4 - DeviceManager.getInstance().favoritesList.size();
+            }
+
+            if (device.getChannelNumber() > 4 && device.getChannelNumber() < 8 && channelsManager.numQuad > 1) {
+                device.setChannelNumberForQuad(8);
+                obsoleteChannels = 8 - DeviceManager.getInstance().favoritesList.size();
+            }
+
+            if (device.getChannelNumber() > 8 && device.getChannelNumber() < 16 && channelsManager.numQuad > 1) {
+                device.setChannelNumberForQuad(16);
+                obsoleteChannels = 16 - DeviceManager.getInstance().favoritesList.size();
+            }
+
+            if (device.getChannelNumber() > 16 && device.getChannelNumber() < 32 && channelsManager.numQuad > 1) {
+                device.setChannelNumberForQuad(32);
+                obsoleteChannels = 32 - DeviceManager.getInstance().favoritesList.size();
+            }
+        }
+
+        channelsManager.clearSurfaceViewComponents();
+        channelsManager.createComponents();
+
+        for (int i = 1; i <= obsoleteChannels; i++) {
+            ImageView blankView = new ImageView(mContext);
+            blankView.setImageResource(R.drawable.giga_logo);
+            blankView.setBackgroundColor(Color.parseColor("#D9D9D9"));
+
+            channelsManager.surfaceViewComponents.get(channelsManager.inverseMatrix[channelsManager.numQuad - 1][device.getChannelNumber() - i]).removeAllViews();
+            channelsManager.surfaceViewComponents.get(channelsManager.inverseMatrix[channelsManager.numQuad - 1][device.getChannelNumber() - i]).addView(blankView);
+            channelsManager.surfaceViewComponents.get(channelsManager.inverseMatrix[channelsManager.numQuad - 1][device.getChannelNumber() - i]).playType = 2;
+        }
+
+        int[] channelOrder = device.getChannelOrder();
+
+        int camNumber;
+
+        if (channelOrder.length > device.getChannelNumber()) {
+            camNumber = device.getChannelNumber();
+        } else {
+            camNumber = channelOrder.length;
+        }
+
+        for (int i = 0; i < camNumber; i++) {
+            channelsManager.surfaceViewComponents.get(channelsManager.inverseMatrix[channelsManager.numQuad - 1][i]).mySurfaceViewNewChannelId = channelOrder[i];
+        }
     }
 
     public void onChangeOrientation(int groupPosition){
@@ -671,7 +864,7 @@ public class DeviceExpandableListAdapter extends BaseExpandableListAdapter {
                 @Override
                 public void run() {
                     builder.setTitle("")
-                            .setItems(new CharSequence[]{"Configurações", "Controle Remoto", "Playback", "Otimizar", "Expandir"},
+                            .setItems(new CharSequence[]{"Configurações", "Controle Remoto", "Playback", "Otimizar", "Expandir", "Ordenção de Canais"},
                                     new DialogInterface.OnClickListener() {
                                         @Override
                                         public void onClick(DialogInterface dialog, int which) {
@@ -693,6 +886,9 @@ public class DeviceExpandableListAdapter extends BaseExpandableListAdapter {
                                                 case 4:
                                                     showMoreDialogExpandSelection(groupPosition);
                                                     break;
+                                                case 5:
+                                                    startDeviceChannelOrderActivity(groupViewHolder.mDevice);
+                                                    break;
                                             }
                                         }
                                     });
@@ -704,7 +900,7 @@ public class DeviceExpandableListAdapter extends BaseExpandableListAdapter {
                 @Override
                 public void run() {
                     builder.setTitle("")
-                            .setItems(new CharSequence[]{"Limpar Favoritos"},
+                            .setItems(new CharSequence[]{"Limpar Favoritos"},//, "Ordenação de Canais"},
                                     new DialogInterface.OnClickListener() {
                                         @Override
                                         public void onClick(DialogInterface dialog, int which) {
@@ -712,6 +908,10 @@ public class DeviceExpandableListAdapter extends BaseExpandableListAdapter {
                                                 case 0:
                                                     mDeviceManager.cleanFavorites();
                                                     break;
+                                                    // ordenacao
+//                                                case 1:
+//                                                    startFavoriteDeviceChannelOrderActivity(groupViewHolder.mDevice);
+//                                                    break;
                                             }
                                         }
                                     });
@@ -752,6 +952,40 @@ public class DeviceExpandableListAdapter extends BaseExpandableListAdapter {
             extras.putSerializable("device", mDevices.indexOf(mDevice));
 
             Intent intent = new Intent(mContext, DeviceRemoteControlActivity.class);
+            intent.putExtras(extras);
+
+            mContext.startActivity(intent);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void startDeviceChannelOrderActivity(Device mDevice) {
+        try {
+            Log.d("DeviceExpandableListAdapter", "Device index: " + mDevices.indexOf(mDevice));
+            Log.d("DeviceExpandableListAdapter", "Device index: " + indexOfDeviceByName(mDevice.deviceName));
+
+            Bundle extras = new Bundle();
+            extras.putSerializable("device", mDevices.indexOf(mDevice));
+
+            Intent intent = new Intent(mContext, DeviceChannelOrderActivity.class);
+            intent.putExtras(extras);
+
+            mContext.startActivity(intent);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void startFavoriteDeviceChannelOrderActivity(Device mDevice) {
+        try {
+            Log.d("DeviceExpandableListAdapter", "Device index: " + mDevices.indexOf(mDevice));
+            Log.d("DeviceExpandableListAdapter", "Device index: " + indexOfDeviceByName(mDevice.deviceName));
+
+            Bundle extras = new Bundle();
+            extras.putSerializable("device", mDevices.indexOf(mDevice));
+
+            Intent intent = new Intent(mContext, FavoriteDeviceChannelOrderActivity.class);
             intent.putExtras(extras);
 
             mContext.startActivity(intent);

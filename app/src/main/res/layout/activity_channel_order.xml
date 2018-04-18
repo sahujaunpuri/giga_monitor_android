@@ -1,0 +1,137 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="@android:color/white">
+
+    <LinearLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center"
+        android:id="@+id/layout_header"
+        android:background="@android:color/white"
+        android:layout_marginBottom="0dp">
+
+        <TextView
+            style="@style/ActionBarTextView"
+            android:text="Voltar"
+            android:fontFamily="@font/lato_black"
+            android:layout_height="36dp"
+            android:id="@+id/text_view_back"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:gravity="center_horizontal|bottom"
+            android:padding="0dp"
+            android:layout_margin="0dp"/>
+
+        <TextView
+            style="@style/ActionBarTitle"
+            android:text="ORDENAÇÃO"
+            android:fontFamily="@font/lato_black"
+            android:layout_height="36dp"
+            android:layout_width="0dp"
+            android:layout_weight="2"
+            android:gravity="center"
+            android:padding="0dp"
+            android:layout_margin="0dp"/>
+
+        <TextView
+            style="@style/ActionBarTextView"
+            android:text="Salvar"
+            android:fontFamily="@font/lato_black"
+            android:layout_height="36dp"
+            android:id="@+id/text_view_apply"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:gravity="center_horizontal|bottom"
+            android:padding="0dp"
+            android:layout_margin="0dp"/>
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <TextView
+            android:id="@+id/number_of_channels"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="match_parent"
+            android:layout_gravity="center"
+            android:gravity="center"
+            android:padding="16dp"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            android:fontFamily="@font/lato_black" />
+
+        <TextView
+            android:id="@+id/restore_defaults"
+            android:textColor="@color/text_green_color"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="54dp"
+            android:layout_gravity="center"
+            android:text="Restaurar Padrão"
+            android:gravity="center"
+            android:padding="16dp"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            android:fontFamily="@font/lato_black" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:textColor="@color/text_green_color"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:gravity="center"
+            android:text="Posição"
+            android:textSize="16sp"
+            android:fontFamily="@font/lato_black" />
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_weight="2"
+            android:textColor="@color/text_green_color"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:gravity="center"
+            android:text="Nome do Canal"
+            android:textSize="16sp"
+            android:fontFamily="@font/lato_black"/>
+
+    </LinearLayout>
+
+    <com.mobeta.android.dslv.DragSortListView xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:dslv="http://schemas.android.com/apk/res-auto"
+        android:id="@+id/list"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:divider="@null"
+        android:dividerHeight="0dp"
+        android:fastScrollEnabled="true"
+        dslv:collapsed_height="2dp"
+        dslv:drag_enabled="true"
+        dslv:drag_scroll_start="3.30"
+        dslv:drag_start_mode="onLongPress"
+        dslv:float_alpha="0.6"
+        dslv:float_background_color="@color/default_color"
+        dslv:max_drag_scroll_speed="0.5"
+        dslv:remove_enabled="false"
+        dslv:slide_shuffle_speed="0.3"
+        dslv:sort_enabled="true"
+        dslv:track_drag_sort="false"
+        dslv:use_default_controller="true" />
+
+</LinearLayout>

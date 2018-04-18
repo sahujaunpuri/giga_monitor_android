@@ -98,6 +98,12 @@
                 android:value=".config.ConfigMenuActivity" />
         </activity>
         <activity
+            android:name=".activities.DeviceChannelOrderActivity"
+            android:label="Reordenação de Canais" />
+        <activity
+            android:name=".activities.FavoriteDeviceChannelOrderActivity"
+            android:label="Reordenação de Canais" />
+        <activity
             android:name=".activities.InitialActivity"
             android:label="@string/title_activity_initial" />
         <activity

@@ -1249,8 +1249,8 @@ public class DeviceManager implements IFunSDKResult {
     }
 
     public void addFavorite(SurfaceViewComponent channel) {
-        Log.d(TAG, "addFavorite: channel " + channel.mySurfaceViewChannelId);
-        favoritesList.add(new FavoritePair(channel.deviceId, channel.mySurfaceViewChannelId));
+        Log.d(TAG, "addFavorite: channel " + channel.mySurfaceViewNewChannelId);
+        favoritesList.add(new FavoritePair(channel.deviceId, channel.mySurfaceViewNewChannelId));
         channel.setFavorite(true);
 //        if(favoriteChannels == 0)
 //            expandableListAdapter.notifyDataSetChanged();
@@ -1263,11 +1263,11 @@ public class DeviceManager implements IFunSDKResult {
     }
 
     public void removeFavorite(SurfaceViewComponent channel) {
-        Log.d(TAG, "removeFavorite: channel " + channel.mySurfaceViewChannelId);
-        FavoritePair favorite = new FavoritePair(channel.deviceId, channel.mySurfaceViewChannelId);
+        Log.d(TAG, "removeFavorite: channel " + channel.mySurfaceViewNewChannelId);
+        FavoritePair favorite = new FavoritePair(channel.deviceId, channel.mySurfaceViewNewChannelId);
         favoritesList.remove(favorite);
         channel.setFavorite(false);
-        int channelPosition = findChannelManagerByDevice(channel.deviceId).getChannelSelected(channel.mySurfaceViewChannelId);
+        int channelPosition = findChannelManagerByDevice(channel.deviceId).getChannelSelected(channel.mySurfaceViewNewChannelId);
         findChannelManagerByDevice(channel.deviceId).surfaceViewComponents.get(channelPosition).setFavorite(false);
         favoriteChannels--;
         favoriteDevice.setChannelNumber(favoriteChannels);

@@ -10,7 +10,6 @@ import java.util.Comparator;
 
 import br.inatel.icc.gigasecurity.gigamonitor.ui.SurfaceViewComponent;
 
-
 public class DeviceChannelsManager extends ChannelsManager implements IFunSDKResult {
     String TAG = "DeviceChannelsManager";
 
@@ -37,10 +36,10 @@ public class DeviceChannelsManager extends ChannelsManager implements IFunSDKRes
         mySurfaceView.setLayoutParams(surfaceViewLayout);
         mySurfaceViews.add(i, mySurfaceView);
 
-
         SurfaceViewComponent surfaceViewComponent = new SurfaceViewComponent(mContext, this, i);
 
         surfaceViewComponent.mySurfaceViewChannelId = i;
+        surfaceViewComponent.mySurfaceViewNewChannelId = i;
         surfaceViewComponent.mySurfaceViewOrderId = i;
         surfaceViewComponent.deviceConnection = mDevice.connectionString;
         surfaceViewComponent.deviceId = mDevice.getId();
@@ -55,11 +54,16 @@ public class DeviceChannelsManager extends ChannelsManager implements IFunSDKRes
     /** Grid Functions **/
     public void reOrderSurfaceViewComponents() {
         initMatrix();
-        for (SurfaceViewComponent svc : surfaceViewComponents) {
-            svc.mySurfaceViewOrderId = inverseMatrix[numQuad - 1][svc.mySurfaceViewChannelId];
+        try {
+            for (SurfaceViewComponent svc : surfaceViewComponents) {
+                svc.mySurfaceViewOrderId = inverseMatrix[numQuad - 1][svc.mySurfaceViewNewChannelId];
+            }
+        } catch (ArrayIndexOutOfBoundsException e) {
+
         }
 
-        Collections.sort(surfaceViewComponents, new Comparator<SurfaceViewComponent>() {
+        Collections.sort(surfaceViewComponents,
+                new Comparator<SurfaceViewComponent>() {
             public int compare(SurfaceViewComponent svc1, SurfaceViewComponent svc2) {
                 return svc1.mySurfaceViewOrderId - svc2.mySurfaceViewOrderId;
             }
@@ -91,7 +95,7 @@ public class DeviceChannelsManager extends ChannelsManager implements IFunSDKRes
         if(hdChannel > -1) {
             disableHD(surfaceViewComponents.get(getChannelSelected(hdChannel)));
         }
-        hdChannel = svc.mySurfaceViewChannelId;
+        hdChannel = svc.mySurfaceViewNewChannelId;
         svc.setStreamType(0);
         restartVideo(svc);
     }

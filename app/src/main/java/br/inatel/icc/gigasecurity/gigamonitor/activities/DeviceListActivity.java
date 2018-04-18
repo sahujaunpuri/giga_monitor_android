@@ -49,6 +49,10 @@ public class DeviceListActivity extends ActionBarActivity implements View.OnClic
     private ImageButton mImageViewCloud3Btn;
     private LinearLayout mLinearLayoutHeader;
 
+    // teste
+    public DeviceManager mManager;
+    public Device mDevice;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -167,6 +171,21 @@ public class DeviceListActivity extends ActionBarActivity implements View.OnClic
     @Override
     protected void onResume() {
         super.onResume();
+
+//        try {
+//
+//            mManager = DeviceManager.getInstance();
+//            mDevice = mDeviceManager.getDevices().get(1);
+//
+//            int[] channelOrder = mDevice.getChannelOrder();
+//            Log.e("Device List Order: ", ""+channelOrder[0]+", "+channelOrder[1]+", "+channelOrder[2]+", "+channelOrder[3]);
+//
+//        } catch (NullPointerException e) {
+//
+//            Log.e("onResume Bug: ", e.toString());
+//
+//        }
+
         if(mDeviceManager.collapse >=0 && previousGroup == mDeviceManager.collapse) {
             if(mExpandableListView.isGroupExpanded(mDeviceManager.collapse))
                 mExpandableListView.collapseGroup(mDeviceManager.collapse);
@@ -191,7 +210,6 @@ public class DeviceListActivity extends ActionBarActivity implements View.OnClic
         getSupportActionBar().hide();
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
         mImageViewCloud3Btn.setVisibility(View.VISIBLE);
-
     }
 
     @Override
