@@ -1,6 +1,6 @@
 <resources xmlns:tools="http://schemas.android.com/tools" xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <style name="Theme.Giga" parent="Theme.AppCompat.Light">
+    <style name="Theme.Giga" parent="Theme.AppCompat.Light.NoActionBar">
         <item name="android:actionBarStyle" tools:ignore="NewApi">@style/ActionBarGiga</item>
         <item name="actionBarStyle">@style/ActionBarGiga</item>
         <item name="colorPrimaryDark">@color/primary_color</item>
