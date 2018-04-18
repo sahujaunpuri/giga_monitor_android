@@ -36,6 +36,7 @@ import br.inatel.icc.gigasecurity.gigamonitor.activities.DeviceChannelOrderActiv
 import br.inatel.icc.gigasecurity.gigamonitor.activities.DeviceListActivity;
 import br.inatel.icc.gigasecurity.gigamonitor.activities.DevicePlaybackActivity;
 import br.inatel.icc.gigasecurity.gigamonitor.activities.DeviceRemoteControlActivity;
+import br.inatel.icc.gigasecurity.gigamonitor.activities.FavoriteDeviceChannelOrderActivity;
 import br.inatel.icc.gigasecurity.gigamonitor.activities.FavoritesDevicesListActivity;
 import br.inatel.icc.gigasecurity.gigamonitor.config.ConfigMenuActivity;
 import br.inatel.icc.gigasecurity.gigamonitor.core.DeviceManager;
@@ -225,7 +226,6 @@ public class DeviceExpandableListAdapter extends BaseExpandableListAdapter {
                 channelsManager.lastNumQuad = channelsManager.numQuad;
                 channelsManager.stopChannels(0);
                 mDeviceManager.clearStart();
-                Log.e("NUMQUAD CHANGEQUAD",  ""+channelsManager.numQuad);
 
                 childViewHolder.get(groupPosition).gridLayoutManager.setSpanCount(mDeviceManager.getDeviceChannelsManagers().get(groupPosition).numQuad);
 //                        deviceChannelsManager.currentPage = deviceChannelsManager.pageNumber(deviceChannelsManager.lastFirstVisibleItem);
@@ -234,12 +234,9 @@ public class DeviceExpandableListAdapter extends BaseExpandableListAdapter {
                 childViewHolder.get(groupPosition).mRecyclerAdapter.notifyDataSetChanged();
                 channelsManager.changeSurfaceViewSize();
                 channelsManager.resetScale();
-                Log.e("Device Name", device.getDeviceName());
                 if (device.getDeviceName().equals("Favoritos")) {
-                    //channelsManager.reOrderSurfaceViewComponents();
                     setChannelOrderForFavorites(device, channelsManager);
                 } else {
-                    //Orderação dos canais de acordo com a preferência do cliente
                     setChannelOrder(device, channelsManager);
                 }
             }
@@ -378,6 +375,13 @@ public class DeviceExpandableListAdapter extends BaseExpandableListAdapter {
                 if (groupViewHolder.mDevice.isOnline) {
                     childViewHolder.tvMessage.setVisibility(View.GONE);
                 }
+
+//                // teste de iniciar favoritos ja ordenados
+//                if (groupViewHolder.mDevice.isFavorite) {
+//                    setChannelOrderForFavorites(groupViewHolder.mDevice,groupViewHolder.mDevice.channelsManager);
+//                    //loginDevice(groupViewHolder.mDevice, groupViewHolder, childViewHolder, groupPosition);
+//                }
+
                 groupViewHolder.ivQuad.setVisibility(View.GONE);
                 groupViewHolder.ivOtimizar.setVisibility(View.INVISIBLE);
                 groupViewHolder.ivRefresh.setVisibility(View.VISIBLE);
@@ -538,9 +542,11 @@ public class DeviceExpandableListAdapter extends BaseExpandableListAdapter {
     }
 
     private void loginDevice(final Device mDevice, final GroupViewHolder groupViewHolder, final ChildViewHolder childViewHolder, final int position) {
+        Log.e("loginDevice","tentando logar 0...");
         mDeviceManager.loginDevice(mDevice, new LoginDeviceListener() {
             @Override
             public void onLoginSuccess(Device device) {
+                Log.e("loginDevice","tentando logar 1...");
                 mDevice.isLogged = true;
                 mDeviceManager.clearStart();
                 groupViewHolder.ivRefresh.setVisibility(View.GONE);
@@ -550,7 +556,13 @@ public class DeviceExpandableListAdapter extends BaseExpandableListAdapter {
                 int [] channelOrder = mDevice.getChannelOrder();
                 Log.e("DeviceExpandable", ""+channelOrder[0]+", "+channelOrder[1]+", "+channelOrder[2]+", "+channelOrder[3]);
                 ChannelsManager channelsManager = mDeviceManager.findChannelManagerByDevice(mDevice);
-                setChannelOrder(mDevice, channelsManager);
+                if (mDevice.isFavorite){
+                    setChannelOrderForFavorites(mDevice, channelsManager);
+                    Log.d("loginDevice","tentando logar FAVORITO");
+                } else {
+                    setChannelOrder(mDevice, channelsManager);
+                    Log.d("loginDevice","tentando logar NORMAL");
+                }
             }
 
             @Override
@@ -814,7 +826,7 @@ public class DeviceExpandableListAdapter extends BaseExpandableListAdapter {
                                                     break;
                                                     // ordenacao
                                                 case 1:
-                                                    startDeviceChannelOrderActivity(groupViewHolder.mDevice);
+                                                    startFavoriteDeviceChannelOrderActivity(groupViewHolder.mDevice);
                                                     break;
                                             }
                                         }
@@ -875,6 +887,23 @@ public class DeviceExpandableListAdapter extends BaseExpandableListAdapter {
             extras.putSerializable("device", mDevices.indexOf(mDevice));
 
             Intent intent = new Intent(mContext, DeviceChannelOrderActivity.class);
+            intent.putExtras(extras);
+
+            mContext.startActivity(intent);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void startFavoriteDeviceChannelOrderActivity(Device mDevice) {
+        try {
+            Log.d("DeviceExpandableListAdapter", "Device index: " + mDevices.indexOf(mDevice));
+            Log.d("DeviceExpandableListAdapter", "Device index: " + indexOfDeviceByName(mDevice.deviceName));
+
+            Bundle extras = new Bundle();
+            extras.putSerializable("device", mDevices.indexOf(mDevice));
+
+            Intent intent = new Intent(mContext, FavoriteDeviceChannelOrderActivity.class);
             intent.putExtras(extras);
 
             mContext.startActivity(intent);
