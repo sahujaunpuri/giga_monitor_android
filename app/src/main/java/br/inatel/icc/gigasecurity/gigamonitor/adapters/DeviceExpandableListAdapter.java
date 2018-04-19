@@ -367,8 +367,12 @@ public class DeviceExpandableListAdapter extends BaseExpandableListAdapter {
             updateChildView(mDevices.get(groupPosition), currentGroupViewHolder, childViewHolder, groupPosition);
             childViewHolder.gridLayoutManager.scrollToPosition(mDeviceManager.getDeviceChannelsManagers().get(groupPosition).lastFirstVisibleItem);
             updateQuad(groupPosition);
+            if (currentGroupViewHolder.mDevice.isFavorite) {
+                // fazer ordenacao de favorito
+            } else {
+                setChannelOrder(currentGroupViewHolder.mDevice, currentGroupViewHolder.mDevice.channelsManager);
+            }
             showExpanded(groupPosition, currentGroupViewHolder, childViewHolder);
-
         }
         int option = mDeviceManager.getDeviceChannelsManagers().get(groupPosition).lastExpand;
         setLayoutSize(groupPosition, childViewHolder, option);
@@ -590,7 +594,12 @@ public class DeviceExpandableListAdapter extends BaseExpandableListAdapter {
                 int [] channelOrder = mDevice.getChannelOrder();
                 Log.e("DeviceExpandable", ""+channelOrder[0]+", "+channelOrder[1]+", "+channelOrder[2]+", "+channelOrder[3]);
                 ChannelsManager channelsManager = mDeviceManager.findChannelManagerByDevice(mDevice);
-                setChannelOrder(mDevice, channelsManager);
+                if (mDevice.isFavorite) {
+                    // ordenacao de favoritos
+                } else {
+                    setChannelOrder(mDevice, channelsManager);
+                }
+
             }
 
             @Override
@@ -632,6 +641,7 @@ public class DeviceExpandableListAdapter extends BaseExpandableListAdapter {
     // funcao em testes pra arrumar o grid !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
     public void setChannelOrder(Device device, ChannelsManager channelsManager) {
 
+        Log.e("setChannelOrder","channeNumber, numQuad: " + device.getChannelNumber() + ", " + channelsManager.numQuad);
         channelsManager.initMatrix();
 
         int obsoleteChannels = 0;
@@ -639,22 +649,25 @@ public class DeviceExpandableListAdapter extends BaseExpandableListAdapter {
         // Caso 3x3
         if (channelsManager.numQuad == 3) {
 
-            if (device.getChannelNumber() == 8){
+            if (device.getChannelNumber() == 8 || device.getChannelNumber() == 9){
                 device.setChannelNumberForQuad(9);
                 obsoleteChannels = 1;
             }
-            if (device.getChannelNumber() == 16) {
+
+            if (device.getChannelNumber() == 16 || device.getChannelNumber() == 18) {
                 device.setChannelNumberForQuad(18);
                 obsoleteChannels = 2;
             }
 
-            if (device.getChannelNumber() == 32) {
+            if (device.getChannelNumber() == 32 || device.getChannelNumber() == 36) {
                 device.setChannelNumberForQuad(36);
                 obsoleteChannels = 4;
             }
 
             channelsManager.clearSurfaceViewComponents();
             channelsManager.createComponents();
+
+            Log.e("Obsolete Channels", ""+obsoleteChannels);
 
             for (int i = 1; i <= obsoleteChannels; i++) {
                 ImageView blankView = new ImageView(mContext);
