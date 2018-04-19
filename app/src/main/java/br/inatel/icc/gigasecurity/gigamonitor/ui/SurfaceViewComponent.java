@@ -518,7 +518,7 @@ public class SurfaceViewComponent extends FrameLayout {
                     if(mChannelsManager.mDevice.getSerialNumber().equals("Favoritos")) {
                         mChannelsManager.mRecyclerAdapter.singleQuad(mySurfaceViewOrderId);
                     }else {
-                        mChannelsManager.mRecyclerAdapter.singleQuad(mySurfaceViewNewChannelId);
+                        mChannelsManager.mRecyclerAdapter.singleQuad(mySurfaceViewOrderId);
                     }
                 }
             });

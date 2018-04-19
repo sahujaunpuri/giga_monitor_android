@@ -731,9 +731,10 @@ public class DeviceExpandableListAdapter extends BaseExpandableListAdapter {
                 }
             }
         }
+
+        channelsManager.changeSurfaceViewSize();
+        channelsManager.resetScale();
     }
-
-
 
     public void setChannelOrderForFavorites(Device device, ChannelsManager channelsManager) {
 
@@ -809,6 +810,9 @@ public class DeviceExpandableListAdapter extends BaseExpandableListAdapter {
         for (int i = 0; i < camNumber; i++) {
             channelsManager.surfaceViewComponents.get(channelsManager.inverseMatrix[channelsManager.numQuad - 1][i]).mySurfaceViewNewChannelId = channelOrder[i];
         }
+
+        channelsManager.changeSurfaceViewSize();
+        channelsManager.resetScale();
     }
 
     public void onChangeOrientation(int groupPosition){
