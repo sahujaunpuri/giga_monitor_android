@@ -13,7 +13,7 @@
     <Switch
         android:id="@+id/switch_enable_device"
         style="@style/Switch"
-        android:layout_marginTop="50dp"
+        android:layout_marginTop="25dp"
         android:theme="@style/GigaSwitch" />
 
     <ImageView

@@ -53,6 +53,7 @@ public abstract class ChannelsManager implements IFunSDKResult {
     public int lastFirstVisibleItem;
     public int lastLastVisibleItem;
     public int lastFirstItemBeforeSelectChannel;
+    public int lastExpand;
     public int currentPage;
     public int channelNumber;
     public int ptzChannel;
@@ -102,20 +103,46 @@ public abstract class ChannelsManager implements IFunSDKResult {
     }
 
     public void initMatrix() {
-        if (mDevice.getChannelNumber() <= 16) {
+        // Caso quad != 3
+        if (mDevice.getChannelNumber() <= 18 && numQuad != 3) {
             inverseMatrix = new int[][]{
-                    {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15},
-                    {0, 2, 1, 3, 4, 6, 5, 7, 8, 10, 9, 11, 12, 14, 13, 15},
-                    {0, 3, 6, 1, 4, 7, 2, 5, 8, 9, 12, 15, 10, 13, 11, 14},
-                    {0, 4, 8, 12, 1, 5, 9, 13, 2, 6, 10, 14, 3, 7, 11, 15}
+                    {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15}, // 1x1
+                    {0, 2, 1, 3, 4, 6, 5, 7, 8, 10, 9, 11, 12, 14, 13, 15}, // 2x2
+                    {0, 3, 6, 1, 4, 7, 2, 5, 8, 9, 12, 15, 10, 13, 11, 14}, // 3x3
+                    {0, 4, 8, 12, 1, 5, 9, 13, 2, 6, 10, 14, 3, 7, 11, 15} // 4x4
             };
-        } else
+        }
+        // Caso quad == 3
+        if (mDevice.getChannelNumber() <= 18 && numQuad == 3) {
+
+            Log.e("NumQuad = 3", "inverseMatrix channels mannager");
+            inverseMatrix = new int[][]{
+                    {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17}, // 1x1
+                    {0, 2, 1, 3, 4, 6, 5, 7, 8, 10, 9, 11, 12, 14, 13, 15, 17, 16}, // 2x2
+                    {0, 3, 6, 1, 4, 7, 2, 5, 8, 9, 12, 15, 10, 13, 16, 11, 14, 17}, // 3x3
+                    {0, 4, 8, 12, 1, 5, 9, 13, 2, 6, 10, 14, 3, 7, 11, 15, 16, 17} // 4x4
+            };
+        }
+
+        // Caso quad != 3
+        if (mDevice.getChannelNumber() > 30 && numQuad != 3) {
             inverseMatrix = new int[][]{
                     {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31},
                     {0, 2, 1, 3, 4, 6, 5, 7, 8, 10, 9, 11, 12, 14, 13, 15, 16, 18, 17, 19, 20, 22, 21, 23, 24, 26, 25, 27, 28, 30, 29, 31},
                     {0, 3, 6, 1, 4, 7, 2, 5, 8, 9, 12, 15, 10, 13, 16, 11, 14, 17, 18, 21, 24, 19, 22, 25, 20, 23, 26, 27, 30, 28, 31, 29},
                     {0, 4, 8, 12, 1, 5, 9, 13, 2, 6, 10, 14, 3, 7, 11, 15, 16, 20, 24, 28, 17, 21, 25, 29, 18, 22, 26, 30, 19, 23, 27, 31}
             };
+        }
+
+        // Caso quad != 3
+        if (mDevice.getChannelNumber() > 30 && numQuad == 3) {
+            inverseMatrix = new int[][]{
+                    {0, 3, 6, 1, 4, 7, 2, 5, 8, 9, 12, 15, 10, 13, 16, 11, 14, 17, 18, 21, 24, 19, 22, 25, 20, 23, 26, 27, 30, 33, 28, 31, 34, 29, 32, 35},
+                    {0, 3, 6, 1, 4, 7, 2, 5, 8, 9, 12, 15, 10, 13, 16, 11, 14, 17, 18, 21, 24, 19, 22, 25, 20, 23, 26, 27, 30, 33, 28, 31, 34, 29, 32, 35},
+                    {0, 3, 6, 1, 4, 7, 2, 5, 8, 9, 12, 15, 10, 13, 16, 11, 14, 17, 18, 21, 24, 19, 22, 25, 20, 23, 26, 27, 30, 33, 28, 31, 34, 29, 32, 35},
+                    {0, 3, 6, 1, 4, 7, 2, 5, 8, 9, 12, 15, 10, 13, 16, 11, 14, 17, 18, 21, 24, 19, 22, 25, 20, 23, 26, 27, 30, 33, 28, 31, 34, 29, 32, 35}
+            };
+        }
     }
 
     public abstract void createComponents();
@@ -136,11 +163,20 @@ public abstract class ChannelsManager implements IFunSDKResult {
         surfaceViewComponents.remove(svc);
     }
 
-    public FrameLayout.LayoutParams changeSurfaceViewSize() {
-        int option = 0;
+    public FrameLayout.LayoutParams changeSurfaceViewSize(int option) {
         mDeviceManager.getScreenSize();
-        int surfaceViewWidth = (int) Math.ceil((mDeviceManager.screenWidth / numQuad));// + numQuad;
-        int surfaceViewHeight = ((mDeviceManager.screenHeight / 3) + 10) / numQuad;
+        int surfaceViewHeight = 0;
+
+        switch (numQuad) {
+            case 1:
+                surfaceViewHeight = mDeviceManager.screenHeight / 3;
+                break;
+            default:
+                surfaceViewHeight = ((mDeviceManager.screenHeight / 3) + 10) / numQuad;
+                break;
+        }
+
+        int surfaceViewWidth = (int) Math.ceil((mDeviceManager.screenWidth / numQuad));
 
         if (mContext.getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE) {
             surfaceViewHeight = (mDeviceManager.screenHeight) / numQuad;
@@ -150,12 +186,42 @@ public abstract class ChannelsManager implements IFunSDKResult {
         switch(option) {
             case 1:
                 surfaceViewHeight += 75;
+                if (numQuad == 1) {
+                    surfaceViewHeight += 85;
+                }
                 break;
             case 2:
                 surfaceViewHeight += 125;
+                if (numQuad == 1) {
+                    surfaceViewHeight += 135;
+                }
+                break;
+            case 3:
+                surfaceViewHeight += 250;
+                if (numQuad == 1) {
+                    surfaceViewHeight += 260;
+                }
                 break;
             default:
                 break;
+        }
+
+        surfaceViewLayout.width = surfaceViewWidth;
+        surfaceViewLayout.height = surfaceViewHeight;
+
+        pbParam.width = surfaceViewWidth / 4;
+        pbParam.height = surfaceViewHeight / 4;
+
+        return surfaceViewLayout;
+    }
+
+    public FrameLayout.LayoutParams changeSurfaceViewSize() {
+        mDeviceManager.getScreenSize();
+        int surfaceViewWidth = (int) Math.ceil((mDeviceManager.screenWidth / numQuad));// + numQuad;
+        int surfaceViewHeight = ((mDeviceManager.screenHeight / 3) + 10) / numQuad;
+
+        if (mContext.getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE) {
+            surfaceViewHeight = (mDeviceManager.screenHeight) / numQuad;
         }
 
         surfaceViewLayout.width = surfaceViewWidth;
@@ -220,6 +286,7 @@ public abstract class ChannelsManager implements IFunSDKResult {
                     if (svc.mScaleFactor > 1.F)
                         svc.mySurfaceView.resetScaleInfo();
                 }
+                Log.d(TAG, "reset oK!");
             }
         });
     }
@@ -233,7 +300,7 @@ public abstract class ChannelsManager implements IFunSDKResult {
 //    }
 
     public void onStartVideo(final SurfaceViewComponent svc) {
-        svc.mPlayerHandler = FunSDK.MediaRealPlay(mUserID, mDevice.connectionString, svc.mySurfaceViewChannelId, svc.streamType, svc.mySurfaceView, svc.mySurfaceViewOrderId);
+        svc.mPlayerHandler = FunSDK.MediaRealPlay(mUserID, mDevice.connectionString, svc.mySurfaceViewNewChannelId, svc.streamType, svc.mySurfaceView, svc.mySurfaceViewOrderId);
     }
 
     // NOT TESTED
@@ -243,7 +310,7 @@ public abstract class ChannelsManager implements IFunSDKResult {
     }
 
     public void setPlayView(final SurfaceViewComponent svc){
-        FunSDK.MediaSetPlayView(svc.mPlayerHandler, mySurfaceViews.get(svc.mySurfaceViewChannelId), mUserID);
+        FunSDK.MediaSetPlayView(svc.mPlayerHandler, mySurfaceViews.get(svc.mySurfaceViewNewChannelId), mUserID);
     }
 
     public void onPause(SurfaceViewComponent svc){
@@ -388,13 +455,13 @@ public abstract class ChannelsManager implements IFunSDKResult {
     public void ptzControl(int command, SurfaceViewComponent svc, boolean stop){
         //EPTZCMD
         int toStop = stop ? 1 : 0;
-        FunSDK.DevPTZControl(mUserID, svc.deviceConnection, svc.mySurfaceViewChannelId, command, toStop, 3, svc.mySurfaceViewChannelId);
+        FunSDK.DevPTZControl(mUserID, svc.deviceConnection, svc.mySurfaceViewNewChannelId, command, toStop, 3, svc.mySurfaceViewNewChannelId);
     }
 
     public void handleVisibleChannels() {
         if (this.lastLastVisibleItem - this.lastFirstVisibleItem == this.numQuad * this.numQuad - 1 || this.lastLastVisibleItem == this.surfaceViewComponents.size() - 1) {
             for (final SurfaceViewComponent svc : this.surfaceViewComponents) {
-                if (svc.mySurfaceViewChannelId >= this.lastFirstVisibleItem && svc.mySurfaceViewChannelId <= lastLastVisibleItem) {
+                if (svc.mySurfaceViewNewChannelId >= this.lastFirstVisibleItem && svc.mySurfaceViewNewChannelId <= lastLastVisibleItem) {
                     if (!svc.isPlaying /*&& svc.isConnected*/) {
                         svc.isLoading(true);
                         onStartVideo(svc);
@@ -465,7 +532,7 @@ public abstract class ChannelsManager implements IFunSDKResult {
     }
 
     public void enablePTZ(boolean enabled, SurfaceViewComponent svc){
-        int channel = svc.mySurfaceViewChannelId;
+        int channel = svc.mySurfaceViewNewChannelId;
         if(enabled){
             if(ptzChannel > -1 && ptzChannel != channel) {
                 surfaceViewComponents.get(channel).ptzOverlay = surfaceViewComponents.get(ptzChannel).ptzOverlay;
@@ -527,17 +594,9 @@ public abstract class ChannelsManager implements IFunSDKResult {
                     } else {
                         if(svc.playType == 0) {
                             svc.setConnected(false);
-//                            if(startTry++ < 4)
-                                onStartVideo(svc);
-                            /*else {
-                                startTry = 0;
-                                mDeviceManager.logoutDevice(mDevice);
-                            }*/
-//                            mDeviceManager.addToStart(svc);
-
                             onStartVideo(svc);
 
-                        } else{
+                        } else if (playType == 1) {
                             onPlayPlayback(fileToStart, svc);
                         }
 
@@ -632,7 +691,7 @@ public abstract class ChannelsManager implements IFunSDKResult {
                         if (file.length() > 1000) {
                             String message = null;
                             if (svc.playType == 0) {
-                                message = "Gravação do canal " + (svc.mySurfaceViewChannelId + 1) + " finalizada";
+                                message = "Gravação do canal " + (svc.mySurfaceViewNewChannelId + 1) + " finalizada";
                             } else {
                                 message = mContext.getResources().getString(R.string.playback_record_message);
                             }

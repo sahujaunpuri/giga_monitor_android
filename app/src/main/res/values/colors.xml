@@ -11,6 +11,7 @@
     <color name="btn_blue_text_color">#14397f</color>
     <color name="btn_blue_background_color">#def3f9</color>
     <color name="btn_green_background_color">#eff9d8</color>
+    <color name="text_green_color">#88d70e</color>
 
     <color name="contents_text">#ff000000</color>
     <color name="encode_view">#ffffffff</color>

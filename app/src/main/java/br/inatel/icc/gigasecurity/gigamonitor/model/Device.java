@@ -99,11 +99,10 @@ public class Device implements Serializable {
     @Expose public int talkOutChannel;
     @Expose public String connectionString;
     @Expose private String connectionNetworkName = null;
-    @Expose public boolean optimize = false;
-    @Expose public boolean alreadyOptimized = false;
     @Expose private JSONObject simplifyEncodeJson;
     @Expose public boolean isFavorite = false;
     @Expose private boolean isEnable = true;
+    @Expose private int[] channelOrder = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31};
 
     //State
     public boolean isLogged = false;
@@ -111,7 +110,7 @@ public class Device implements Serializable {
     private int connectionMethod = -1; //0 - IP:port, 1 - DDNS:port, 2 - SerialNumber
     public int loginAttempt = 1;
     public ChannelsManager channelsManager;
-    public String message = "Conectando via IP";
+    public String message = "";
     @Expose private boolean ipPriorityConnection;
     @Expose private boolean domainPriorityConnection;
     @Expose private boolean cloudPriorityConnection;
@@ -121,7 +120,6 @@ public class Device implements Serializable {
     @Expose private boolean loginByCloud = true;
     @Expose private int nextConnectionType = 0;
     public boolean allAttempstFail = false;
-
 
     private Calendar systemTime;
 
@@ -170,12 +168,12 @@ public class Device implements Serializable {
         this.ipPriorityConnection = true;
         this.domainPriorityConnection = true;
         this.cloudPriorityConnection = true;
+        this.channelOrder[0] = -1;
     }
 
     public Device(String deviceName) {
         this.deviceName = deviceName;
     }
-
 
     public Device(String deviceName, String ipAddress, String submask, String macAddress, String gateway, String serialNumber, int tcpPort, String gigaCode) {
         this.deviceName = deviceName;
@@ -385,6 +383,7 @@ public class Device implements Serializable {
     }
 
     public int getChannelNumber() {
+
         return channelNumber;
     }
 
@@ -397,6 +396,30 @@ public class Device implements Serializable {
             this.channelsManager.numQuad = 1;
             this.channelsManager.lastNumQuad = 1;
         }
+    }
+
+    public ChannelsManager getChannelsManager() {
+        return channelsManager;
+    }
+
+    public void setChannelsManager(ChannelsManager channelsManager) {
+        this.channelsManager = channelsManager;
+    }
+
+    public String getMessage() {
+        return message;
+    }
+
+    public void setChannelNumberForQuad(int channelNumber) {
+        this.channelNumber = channelNumber;
+    }
+
+    public int[] getChannelOrder() {
+       return channelOrder;
+    }
+
+    public void setChannelOrder(int[] channelOrder){
+       this.channelOrder = channelOrder;
     }
 
     public int getNumberOfAlarmsIn() {

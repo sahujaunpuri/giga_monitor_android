@@ -271,12 +271,14 @@ public class DeviceManager implements IFunSDKResult {
                 state.previousGrid = mPreferences.getInt("previousGrid", -1);
                 state.previousLastGrid = mPreferences.getInt("previousLastGrid", -1);
                 state.previousHD = mPreferences.getInt("previousHD", -1);
+                state.previousExpand = mPreferences.getInt("previousExpand", -1);
                 channelsManager.lastFirstVisibleItem = state.previousChannel;
                 channelsManager.numQuad = state.previousGrid;
                 channelsManager.lastNumQuad = state.previousLastGrid;
                 channelsManager.reOrderSurfaceViewComponents();
                 channelsManager.lastFirstItemBeforeSelectChannel = mPreferences.getInt("previousLastVisibleChannel", -1);
-                channelsManager.changeSurfaceViewSize();
+                channelsManager.lastExpand = state.previousExpand;
+                channelsManager.changeSurfaceViewSize(channelsManager.lastExpand);
                 if (state.previousHD > -1 && channelsManager.surfaceViewComponents.size() > state.previousHD) {
                     if(!mDevices.get(state.previousGroup).getSerialNumber().equals("Favoritos"))
                         state.previousHD = findChannelManagerByDevice(mDevices.get(state.previousGroup)).getChannelSelected(state.previousHD);
@@ -296,11 +298,13 @@ public class DeviceManager implements IFunSDKResult {
             state.previousChannel = channelsManager.lastFirstVisibleItem;
             state.previousGrid = channelsManager.numQuad;
             state.previousLastGrid = channelsManager.lastNumQuad;
+            state.previousExpand = channelsManager.lastExpand;
             editor.putInt("previousChannel", state.previousChannel);
             editor.putInt("previousGrid", state.previousGrid);
             editor.putInt("previousLastGrid", state.previousLastGrid);
             editor.putInt("previousHD", channelsManager.hdChannel);
             editor.putInt("previousLastVisibleChannel", channelsManager.lastFirstItemBeforeSelectChannel);
+            editor.putInt("previousExpand", channelsManager.lastExpand);
         }
         editor.apply();
     }
@@ -593,7 +597,7 @@ public class DeviceManager implements IFunSDKResult {
 
     public void handleNatInfo(JSONObject jsonObject, Device device){
         try{
-            if(jsonObject != null) {
+            if(jsonObject != null && device != null) {
                 JSONObject json = null;
                 if (jsonObject.has("Status.NatInfo"))
                     json = jsonObject.getJSONObject("Status.NatInfo");
@@ -787,13 +791,27 @@ public class DeviceManager implements IFunSDKResult {
                     favoriteManager = new FavoritesChannelsManager(device);
                     deviceChannelsManager = favoriteManager;
                     favoriteDevice.channelsManager = favoriteManager;
-                } else
+                } else {
                     deviceChannelsManager = new DeviceChannelsManager(device);
+                    device.setChannelsManager(deviceChannelsManager);
+                }
                 deviceChannelsManagers.add(deviceChannelsManager);
             }
             favoriteManager.createComponents();
         }
-        return deviceChannelsManagers;
+//        return deviceChannelsManagers;
+        return enabledDeviceChannelsManagers();
+    }
+
+    //fix temporário, otimizar. Encontrar uma forma de atualizar a lista de channelsmanager quando o usuário modificar algum device
+    // pra não precisar ficar passando pelo laço toda vez que der o get
+    private ArrayList<ChannelsManager> enabledDeviceChannelsManagers(){
+        ArrayList<ChannelsManager> enabledDeviceChannelsManagers = new ArrayList<>();
+        for(ChannelsManager channelsManager : deviceChannelsManagers){
+            if(channelsManager.mDevice.isEnable())
+                enabledDeviceChannelsManagers.add(channelsManager);
+        }
+        return enabledDeviceChannelsManagers;
     }
 
     public ChannelsManager findChannelManagerByDevice(Device device) {
@@ -924,7 +942,8 @@ public class DeviceManager implements IFunSDKResult {
 
         for (final Device device : mDevices) {
             if (device.isLogged) {
-                devicesToLogout.add(device);
+                if (!device.isFavorite)
+                    devicesToLogout.add(device);
             }
         }
 
@@ -1231,8 +1250,8 @@ public class DeviceManager implements IFunSDKResult {
     }
 
     public void addFavorite(SurfaceViewComponent channel) {
-        Log.d(TAG, "addFavorite: channel " + channel.mySurfaceViewChannelId);
-        favoritesList.add(new FavoritePair(channel.deviceId, channel.mySurfaceViewChannelId));
+        Log.d(TAG, "addFavorite: channel " + channel.mySurfaceViewNewChannelId);
+        favoritesList.add(new FavoritePair(channel.deviceId, channel.mySurfaceViewNewChannelId));
         channel.setFavorite(true);
 //        if(favoriteChannels == 0)
 //            expandableListAdapter.notifyDataSetChanged();
@@ -1245,11 +1264,11 @@ public class DeviceManager implements IFunSDKResult {
     }
 
     public void removeFavorite(SurfaceViewComponent channel) {
-        Log.d(TAG, "removeFavorite: channel " + channel.mySurfaceViewChannelId);
-        FavoritePair favorite = new FavoritePair(channel.deviceId, channel.mySurfaceViewChannelId);
+        Log.d(TAG, "removeFavorite: channel " + channel.mySurfaceViewNewChannelId);
+        FavoritePair favorite = new FavoritePair(channel.deviceId, channel.mySurfaceViewNewChannelId);
         favoritesList.remove(favorite);
         channel.setFavorite(false);
-        int channelPosition = findChannelManagerByDevice(channel.deviceId).getChannelSelected(channel.mySurfaceViewChannelId);
+        int channelPosition = findChannelManagerByDevice(channel.deviceId).getChannelSelected(channel.mySurfaceViewNewChannelId);
         findChannelManagerByDevice(channel.deviceId).surfaceViewComponents.get(channelPosition).setFavorite(false);
         favoriteChannels--;
         favoriteDevice.setChannelNumber(favoriteChannels);
@@ -1282,7 +1301,9 @@ public class DeviceManager implements IFunSDKResult {
 
     public void cleanFavorites() {
         for (FavoritePair pair : favoritesList) {
-            findChannelManagerByDevice(pair.deviceId).surfaceViewComponents.get(pair.channelNumber).setFavorite(false);
+            for (int i = 0; i < findChannelManagerByDevice(pair.deviceId).surfaceViewComponents.size(); i++) {
+                findChannelManagerByDevice(pair.deviceId).surfaceViewComponents.get(i).setFavorite(false);
+            }
         }
         favoritesList = new ArrayList<FavoritePair>();
         favoriteChannels = 0;
@@ -1654,19 +1675,7 @@ public class DeviceManager implements IFunSDKResult {
                         break;*/
                     }
 
-//                     salvar json como txt
-                    /*File file = new File("/storage/emulated/0/", msgContent.str + ".txt");
-                    try {
-                        FileWriter writer = new FileWriter(file);
-                        writer.append(json.toString());
-                        writer.flush();
-                        writer.close();
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }*/
                 } else{
-//                    if(msgContent != null && msgContent.str.equals("Uart.PTZ"))
-//                        break;
                     try {
                         Device device = findDeviceById(msgContent.seq);
 //                        FunSDK.DevGetConfigByJson(getHandler(), device.connectionString, msgContent.str, 4096, -1, 10000, device.getId());

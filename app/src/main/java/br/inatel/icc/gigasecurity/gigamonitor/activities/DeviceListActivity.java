@@ -49,6 +49,10 @@ public class DeviceListActivity extends ActionBarActivity implements View.OnClic
     private ImageButton mImageViewCloud3Btn;
     private LinearLayout mLinearLayoutHeader;
 
+    // teste
+    public DeviceManager mManager;
+    public Device mDevice;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -75,29 +79,20 @@ public class DeviceListActivity extends ActionBarActivity implements View.OnClic
         SharedPreferences.Editor editor = prefs.edit();
         if(mDevices.size() == 1) {
             startInitialActivity();
-            editor.putBoolean("newUser", true);
-            editor.putBoolean("cloud2", false);
-            editor.commit();
-        } else {
-            if (prefs.getBoolean("cloud2", true)) {
-                editor.putBoolean("newUser", false);
-                editor.commit();
-                for (Device device : mDevices) {
-                    if (!device.alreadyOptimized)
-                        device.optimize = true;
-                }
-            }
         }
 
         try {
             mExpandableListView.setOnGroupClickListener(new ExpandableListView.OnGroupClickListener() {
                 @Override
                 public boolean onGroupClick(ExpandableListView parent, View v, int groupPosition, long id) {
+                    int duration = 500;  //miliseconds
+                    int offset = 0;      //fromListTop
                     if(mDeviceManager.networkType == -1)
                         return true;
                     if (previousGroup == -1) {
                         previousGroup = groupPosition;
                         parent.expandGroup(groupPosition, true);
+                        mExpandableListView.smoothScrollToPositionFromTop(groupPosition,offset,duration);
                         return true;
                     } else if (mDeviceManager.getDeviceChannelsManagers().get(previousGroup).recCounter > 0) {
                         Toast.makeText(mContext, "Finalize a gravação", Toast.LENGTH_SHORT).show();
@@ -110,6 +105,7 @@ public class DeviceListActivity extends ActionBarActivity implements View.OnClic
                     } else {
                         parent.collapseGroup(previousGroup);
                         parent.expandGroup(groupPosition, true);
+                        mExpandableListView.smoothScrollToPositionFromTop(groupPosition,offset,duration);
                         previousGroup = groupPosition;
                         return true;
                     }
@@ -120,8 +116,6 @@ public class DeviceListActivity extends ActionBarActivity implements View.OnClic
         }
 
         mDeviceManager.setSharedPreferences(mContext.getSharedPreferences("state", MODE_PRIVATE));
-        getSupportActionBar().hide();
-
     }
 
     @Override
@@ -141,13 +135,7 @@ public class DeviceListActivity extends ActionBarActivity implements View.OnClic
             getWindow().clearFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
             getSupportActionBar().hide();
             mLinearLayoutHeader.setVisibility(View.VISIBLE);
-
-            SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(mContext);
-            boolean cloud2 = prefs.getBoolean("cloud2", true);
-            boolean newUser = prefs.getBoolean("newUser", true);
-//            if (cloud2 && !newUser) {
-                mImageViewCloud3Btn.setVisibility(View.VISIBLE);
-//            }
+            mImageViewCloud3Btn.setVisibility(View.VISIBLE);
         }
 
         if(previousGroup != -1)
@@ -175,6 +163,21 @@ public class DeviceListActivity extends ActionBarActivity implements View.OnClic
     @Override
     protected void onResume() {
         super.onResume();
+
+//        try {
+//
+//            mManager = DeviceManager.getInstance();
+//            mDevice = mDeviceManager.getDevices().get(1);
+//
+//            int[] channelOrder = mDevice.getChannelOrder();
+//            Log.e("Device List Order: ", ""+channelOrder[0]+", "+channelOrder[1]+", "+channelOrder[2]+", "+channelOrder[3]);
+//
+//        } catch (NullPointerException e) {
+//
+//            Log.e("onResume Bug: ", e.toString());
+//
+//        }
+
         if(mDeviceManager.collapse >=0 && previousGroup == mDeviceManager.collapse) {
             if(mExpandableListView.isGroupExpanded(mDeviceManager.collapse))
                 mExpandableListView.collapseGroup(mDeviceManager.collapse);
@@ -200,6 +203,7 @@ public class DeviceListActivity extends ActionBarActivity implements View.OnClic
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
         mImageViewCloud3Btn.setVisibility(View.VISIBLE);
 
+        mDeviceManager.loginAllDevices();
     }
 
     @Override
@@ -216,6 +220,7 @@ public class DeviceListActivity extends ActionBarActivity implements View.OnClic
                 statePreferences.previousGrid = channelsManager.numQuad;
                 statePreferences.previousLastGrid = channelsManager.lastNumQuad;
                 statePreferences.previousLastVisibleChannel = channelsManager.lastFirstItemBeforeSelectChannel;
+                statePreferences.previousExpand = channelsManager.lastExpand;
             }
             mDeviceManager.saveState(statePreferences);
         } catch (Exception error) {
