@@ -942,7 +942,8 @@ public class DeviceManager implements IFunSDKResult {
 
         for (final Device device : mDevices) {
             if (device.isLogged) {
-                devicesToLogout.add(device);
+                if (!device.isFavorite)
+                    devicesToLogout.add(device);
             }
         }
 
@@ -1300,7 +1301,9 @@ public class DeviceManager implements IFunSDKResult {
 
     public void cleanFavorites() {
         for (FavoritePair pair : favoritesList) {
-            findChannelManagerByDevice(pair.deviceId).surfaceViewComponents.get(pair.channelNumber).setFavorite(false);
+            for (int i = 0; i < findChannelManagerByDevice(pair.deviceId).surfaceViewComponents.size(); i++) {
+                findChannelManagerByDevice(pair.deviceId).surfaceViewComponents.get(i).setFavorite(false);
+            }
         }
         favoritesList = new ArrayList<FavoritePair>();
         favoriteChannels = 0;

@@ -355,20 +355,25 @@ public class DeviceExpandableListAdapter extends BaseExpandableListAdapter {
         GroupViewHolder currentGroupViewHolder = groupViewHolder.get(groupPosition);
 
         if (!currentGroupViewHolder.mDevice.isLogged) {
+            Log.e("Não logado","mDevice.isFavorite, getNumber: " + currentGroupViewHolder.mDevice.isFavorite + ", " + currentGroupViewHolder.mDevice.getChannelNumber());
             if (currentGroupViewHolder.mDevice.isFavorite && currentGroupViewHolder.mDevice.getChannelNumber() == 0) {
-
             } else {
                 loginDevice(currentGroupViewHolder.mDevice, currentGroupViewHolder, childViewHolder, groupPosition);
                 childViewHolder.tvMessage.setVisibility(View.VISIBLE);
                 currentGroupViewHolder.ivRefresh.setVisibility(View.VISIBLE);
             }
-
+            //showExpanded(groupPosition, currentGroupViewHolder, childViewHolder);
         } else {
+            Log.e("Logado","mDevice.isFavorite, getNumber: " + currentGroupViewHolder.mDevice.isFavorite + ", " + currentGroupViewHolder.mDevice.getChannelNumber());
             updateChildView(mDevices.get(groupPosition), currentGroupViewHolder, childViewHolder, groupPosition);
             childViewHolder.gridLayoutManager.scrollToPosition(mDeviceManager.getDeviceChannelsManagers().get(groupPosition).lastFirstVisibleItem);
             updateQuad(groupPosition);
+            if (currentGroupViewHolder.mDevice.isFavorite) {
+                // fazer ordenacao de favorito
+            } else {
+                setChannelOrder(currentGroupViewHolder.mDevice, currentGroupViewHolder.mDevice.channelsManager);
+            }
             showExpanded(groupPosition, currentGroupViewHolder, childViewHolder);
-
         }
         int option = mDeviceManager.getDeviceChannelsManagers().get(groupPosition).lastExpand;
         setLayoutSize(groupPosition, childViewHolder, option);
@@ -383,13 +388,6 @@ public class DeviceExpandableListAdapter extends BaseExpandableListAdapter {
                 if (groupViewHolder.mDevice.isOnline && groupViewHolder.mDevice.getChannelNumber() > 0) {
                     childViewHolder.tvMessage.setVisibility(View.GONE);
                 }
-
-//                // teste de iniciar favoritos ja ordenados
-//                if (groupViewHolder.mDevice.isFavorite) {
-//                    setChannelOrderForFavorites(groupViewHolder.mDevice,groupViewHolder.mDevice.channelsManager);
-//                    //loginDevice(groupViewHolder.mDevice, groupViewHolder, childViewHolder, groupPosition);
-//                }
-
                 groupViewHolder.ivQuad.setVisibility(View.GONE);
                 groupViewHolder.ivOtimizar.setVisibility(View.GONE);
                 groupViewHolder.ivRefresh.setVisibility(View.VISIBLE);
@@ -424,6 +422,30 @@ public class DeviceExpandableListAdapter extends BaseExpandableListAdapter {
                         groupViewHolder.ivOtimizar.setVisibility(View.VISIBLE);
                     }
                 }
+
+                // teste
+
+                if (groupViewHolder.mDevice.isFavorite && groupViewHolder.mDevice.getChannelNumber() > 0) {
+                    childViewHolder.tvMessage.setVisibility(View.GONE);
+                    groupViewHolder.ivRefresh.setVisibility(View.GONE);
+                    groupViewHolder.ivOtimizar.setVisibility(View.GONE);
+                    groupViewHolder.ivQuad.setVisibility(View.VISIBLE);
+                    groupViewHolder.ivMore.setVisibility(View.VISIBLE);
+                    groupViewHolder.ivAddMore.setVisibility(View.VISIBLE);
+                    childViewHolder.recyclerViewChannels.setVisibility(View.VISIBLE);
+                }
+
+                if (groupViewHolder.mDevice.isFavorite && groupViewHolder.mDevice.getChannelNumber() == 0) {
+                    childViewHolder.tvMessage.setVisibility(View.VISIBLE);
+                    childViewHolder.tvMessage.setText("Nenhum canal encontrado.");
+                    groupViewHolder.ivRefresh.setVisibility(View.VISIBLE);
+                    groupViewHolder.ivOtimizar.setVisibility(View.GONE);
+                    groupViewHolder.ivQuad.setVisibility(View.GONE);
+                    groupViewHolder.ivMore.setVisibility(View.GONE);
+                    groupViewHolder.ivAddMore.setVisibility(View.GONE);
+                    childViewHolder.recyclerViewChannels.setVisibility(View.GONE);
+                }
+
             }
         });
     }
@@ -587,10 +609,12 @@ public class DeviceExpandableListAdapter extends BaseExpandableListAdapter {
                 updateGrid(position, mDeviceManager.getDeviceChannelsManagers().get(position));
                 showExpanded(position, groupViewHolder, childViewHolder);
                 childViewHolder.gridLayoutManager.scrollToPosition(mDeviceManager.getDeviceChannelsManagers().get(position).lastFirstVisibleItem);
-                int [] channelOrder = mDevice.getChannelOrder();
-                Log.e("DeviceExpandable", ""+channelOrder[0]+", "+channelOrder[1]+", "+channelOrder[2]+", "+channelOrder[3]);
                 ChannelsManager channelsManager = mDeviceManager.findChannelManagerByDevice(mDevice);
-                setChannelOrder(mDevice, channelsManager);
+                if (mDevice.isFavorite) {
+                    // favorite ordenation
+                } else {
+                    setChannelOrder(mDevice, channelsManager);
+                }
             }
 
             @Override
@@ -632,6 +656,7 @@ public class DeviceExpandableListAdapter extends BaseExpandableListAdapter {
     // funcao em testes pra arrumar o grid !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
     public void setChannelOrder(Device device, ChannelsManager channelsManager) {
 
+        Log.e("setChannelOrder","channeNumber, numQuad: " + device.getChannelNumber() + ", " + channelsManager.numQuad);
         channelsManager.initMatrix();
 
         int obsoleteChannels = 0;
@@ -639,22 +664,25 @@ public class DeviceExpandableListAdapter extends BaseExpandableListAdapter {
         // Caso 3x3
         if (channelsManager.numQuad == 3) {
 
-            if (device.getChannelNumber() == 8){
+            if (device.getChannelNumber() == 8 || device.getChannelNumber() == 9){
                 device.setChannelNumberForQuad(9);
                 obsoleteChannels = 1;
             }
-            if (device.getChannelNumber() == 16) {
+
+            if (device.getChannelNumber() == 16 || device.getChannelNumber() == 18) {
                 device.setChannelNumberForQuad(18);
                 obsoleteChannels = 2;
             }
 
-            if (device.getChannelNumber() == 32) {
+            if (device.getChannelNumber() == 32 || device.getChannelNumber() == 36) {
                 device.setChannelNumberForQuad(36);
                 obsoleteChannels = 4;
             }
 
             channelsManager.clearSurfaceViewComponents();
             channelsManager.createComponents();
+
+            Log.e("Obsolete Channels", ""+obsoleteChannels);
 
             for (int i = 1; i <= obsoleteChannels; i++) {
                 ImageView blankView = new ImageView(mContext);
@@ -718,9 +746,10 @@ public class DeviceExpandableListAdapter extends BaseExpandableListAdapter {
                 }
             }
         }
+
+        channelsManager.changeSurfaceViewSize();
+        channelsManager.resetScale();
     }
-
-
 
     public void setChannelOrderForFavorites(Device device, ChannelsManager channelsManager) {
 
@@ -796,6 +825,9 @@ public class DeviceExpandableListAdapter extends BaseExpandableListAdapter {
         for (int i = 0; i < camNumber; i++) {
             channelsManager.surfaceViewComponents.get(channelsManager.inverseMatrix[channelsManager.numQuad - 1][i]).mySurfaceViewNewChannelId = channelOrder[i];
         }
+
+        channelsManager.changeSurfaceViewSize();
+        channelsManager.resetScale();
     }
 
     public void onChangeOrientation(int groupPosition){
