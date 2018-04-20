@@ -1300,7 +1300,7 @@ public class DeviceManager implements IFunSDKResult {
 
     public void cleanFavorites() {
         for (FavoritePair pair : favoritesList) {
-            for (int i = 0; i < findChannelManagerByDevice(pair.deviceId).surfaceViewComponents .size(); i++) {
+            for (int i = 0; i < findChannelManagerByDevice(pair.deviceId).surfaceViewComponents.size(); i++) {
                 findChannelManagerByDevice(pair.deviceId).surfaceViewComponents.get(i).setFavorite(false);
             }
         }
