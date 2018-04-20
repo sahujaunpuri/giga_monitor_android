@@ -118,6 +118,7 @@ public class DeviceListActivity extends ActionBarActivity implements View.OnClic
         mDeviceManager.setSharedPreferences(mContext.getSharedPreferences("state", MODE_PRIVATE));
         getSupportActionBar().hide();
 
+        //mDeviceManager.loginAllDevices();
     }
 
     @Override
@@ -210,6 +211,8 @@ public class DeviceListActivity extends ActionBarActivity implements View.OnClic
         getSupportActionBar().hide();
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
         mImageViewCloud3Btn.setVisibility(View.VISIBLE);
+
+        mDeviceManager.loginAllDevices();
     }
 
     @Override

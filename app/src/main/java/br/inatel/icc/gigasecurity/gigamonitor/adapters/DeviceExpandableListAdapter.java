@@ -591,15 +591,12 @@ public class DeviceExpandableListAdapter extends BaseExpandableListAdapter {
                 updateGrid(position, mDeviceManager.getDeviceChannelsManagers().get(position));
                 showExpanded(position, groupViewHolder, childViewHolder);
                 childViewHolder.gridLayoutManager.scrollToPosition(mDeviceManager.getDeviceChannelsManagers().get(position).lastFirstVisibleItem);
-                int [] channelOrder = mDevice.getChannelOrder();
-                Log.e("DeviceExpandable", ""+channelOrder[0]+", "+channelOrder[1]+", "+channelOrder[2]+", "+channelOrder[3]);
                 ChannelsManager channelsManager = mDeviceManager.findChannelManagerByDevice(mDevice);
                 if (mDevice.isFavorite) {
-                    // ordenacao de favoritos
+                    // favorite ordenation
                 } else {
                     setChannelOrder(mDevice, channelsManager);
                 }
-
             }
 
             @Override
