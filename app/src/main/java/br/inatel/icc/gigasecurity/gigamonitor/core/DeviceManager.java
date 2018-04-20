@@ -942,7 +942,8 @@ public class DeviceManager implements IFunSDKResult {
 
         for (final Device device : mDevices) {
             if (device.isLogged) {
-                devicesToLogout.add(device);
+                if (!device.isFavorite)
+                    devicesToLogout.add(device);
             }
         }
 
